@@ -21,7 +21,7 @@ ui <- fluidPage(
     
     theme = bs_theme(version = 4, bootswatch = "minty"), #font and colors
     
-    titlePanel("Computation of Selection Accuracy Indexes"),
+    titlePanel("Impact of Item biases on Selection Accuracy Indices"),
 
     sidebarLayout(
         
@@ -44,28 +44,29 @@ ui <- fluidPage(
             #     
             #     class = "numeric"
             # ),
-            
-            textInput('lambda_r', 'lambda_r: enter a vector of factor loadings for the reference group (comma delimited)', "0,1,2,3"),
-            textInput('tau_r', 'tau_r: enter a vector of measurement intercepts for the reference group (comma delimited)', "0,1,2,3"),
-            textInput('theta_r', 'theta_r: enter a matrix of the unique factor variances and covariances 
-  #            for the reference group (comma delimited)', "0,1,2,3"),
+            textInput('lambda_r', 'Input factor loadings for the reference group', "1.00, 1.66, 2.30, 2.29"),
+            textInput('lambda_f', 'Input factor loadings for the focal group', "1.00, 1.66, 2.30, 2.29"),
+            textInput('tau_r', 'Input measurement intercepts for the reference group', "1.54, 1.36, 1.16, 1.08"),
+            textInput('tau_f', 'Input measurement intercepts for the focal group', "0.68, 1.36, 1.16, 1.08"),
+            textInput('theta_r', 'Input the diagonal of the unique factor variance-covariance matrix for the reference group', "1.20, 0.81, 0.32, 0.32"),
+            textInput('theta_f', 'Input the diagonal of the unique factor variance-covariance matrix for the focal group', "0.72, 0.81, 0.32, 0.32"),
             
             #might need some javascript to limit the range
-            switchInput("usepropsel", "Use propsel?", TRUE),
+            switchInput("usepropsel", "Select 10% population?", TRUE),
             
             box(id = "cut_zBox", width = '800px',
-                numericInput("cut_z", "cut_z: ", value = 0.5, min = 0, max = 1, step = 0.01)
+                numericInput("cut_z", "Cutoff score on the observed composite:", value = 0.5, min = 0, max = 1, step = 0.01)
             ),
             
             box(id = "propBox", width = '800px',
-                numericInput("prop", "propsel:", value = 0.5, min = 0, max = 1, step = 0.01),
+                numericInput("prop", "Selection proportion:", value = 0.1, min = 0, max = 1, step = 0.01),
             ),
             
-            numericInput("pmix", "pmix_ref:", value = 0.5, min = 0, max = 1, step = 0.01),
-            numericInput("kappa_r", "kappa_r:", value = 0.5, min = 0, max = 1, step = 0.01),
-            numericInput("kappa_f", "kappa_f:", value = 0.0, min = 0, max = 1, step = 0.01),
-            numericInput("phi_r", "phi_r:", value = 1., min = 0, max = 1, step = 0.01),
-            numericInput("phi_f", "phi_f:", value = 1., min = 0, max = 1, step = 0.01),
+            numericInput("pmix", "Mixing proportion:", value = 0.5, min = 0, max = 1, step = 0.01),
+            numericInput("kappa_r", "Latent factor mean (reference):", value = 0.0, min = 0, max = 1, step = 0.01),
+            numericInput("kappa_f", "Latent factor mean (focal):", value = 0.0, min = 0, max = 1, step = 0.01),
+            numericInput("phi_r", "Latent factor variance (reference):", value =  0.354^2., min = 0, max = 1, step = 0.01),
+            numericInput("phi_f", "Latent factor variance (focal):", value =  0.354^2., min = 0, max = 1, step = 0.01),
             
         ),
 
@@ -93,20 +94,25 @@ server <- function(input, output) {
     output$distPlot <- renderPlot({
         
         lambda_rNumeric <- as.numeric(unlist(strsplit(input$lambda_r,",")))
+        lambda_fNumeric <- as.numeric(unlist(strsplit(input$lambda_f,",")))
         tau_rNumeric <- as.numeric(unlist(strsplit(input$tau_r,",")))
+        tau_fNumeric <- as.numeric(unlist(strsplit(input$tau_f,",")))
         theta_rNumeric <- as.numeric(unlist(strsplit(input$theta_r,",")))
+        theta_fNumeric <- as.numeric(unlist(strsplit(input$theta_f,",")))
         
         if(input$usepropsel){
-            PartInv(propsel = input$prop, pmix_ref = input$pmix ,kappa_r = input$kappa_r, 
-                    kappa_f = input$kappa_f, phi_r = input$phi_r,  phi_f = input$phi_f,
-                    lambda_r = c(lambda_rNumeric), tau_r = c(tau_rNumeric), 
-                    Theta_r = diag(theta_rNumeric))
+          PartInv(propsel = input$prop, pmix_ref = input$pmix ,kappa_r = input$kappa_r, 
+                  kappa_f = input$kappa_f, phi_r = input$phi_r,  phi_f = input$phi_f,
+                  lambda_r = c(lambda_rNumeric),lambda_f = c(lambda_fNumeric), tau_r = c(tau_rNumeric), 
+                  tau_f = c(tau_fNumeric),
+                  Theta_r = diag(theta_rNumeric),Theta_f = diag(theta_rNumeric))
         }
         else{
             PartInv(cut_z = input$cut_z , pmix_ref = input$pmix ,kappa_r = input$kappa_r, 
                     kappa_f = input$kappa_f, phi_r = input$phi_r,  phi_f = input$phi_f,
-                    lambda_r = c(lambda_rNumeric), tau_r = c(tau_rNumeric), 
-                    Theta_r = diag(theta_rNumeric))
+                    lambda_r = c(lambda_rNumeric),lambda_f = c(lambda_fNumeric), tau_r = c(tau_rNumeric), 
+                    tau_f = c(tau_fNumeric),
+                    Theta_r = diag(theta_rNumeric),Theta_f = diag(theta_rNumeric))
         }
        
         
@@ -116,20 +122,25 @@ server <- function(input, output) {
     output$text <- renderPrint({
         
         lambda_rNumeric <- as.numeric(unlist(strsplit(input$lambda_r,",")))
+        lambda_fNumeric <- as.numeric(unlist(strsplit(input$lambda_f,",")))
         tau_rNumeric <- as.numeric(unlist(strsplit(input$tau_r,",")))
+        tau_fNumeric <- as.numeric(unlist(strsplit(input$tau_f,",")))
         theta_rNumeric <- as.numeric(unlist(strsplit(input$theta_r,",")))
+        theta_fNumeric <- as.numeric(unlist(strsplit(input$theta_f,",")))
         
         if(input$usepropsel){
             PartInv(propsel = input$prop, pmix_ref = input$pmix ,kappa_r = input$kappa_r, 
                     kappa_f = input$kappa_f, phi_r = input$phi_r,  phi_f = input$phi_f,
-                    lambda_r = c(lambda_rNumeric), tau_r = c(tau_rNumeric), 
-                    Theta_r = diag(theta_rNumeric)) [[4]]
+                    lambda_r = c(lambda_rNumeric),lambda_f = c(lambda_fNumeric), tau_r = c(tau_rNumeric), 
+                    tau_f = c(tau_fNumeric),
+                    Theta_r = diag(theta_rNumeric),Theta_f = diag(theta_rNumeric)) [[4]]
         }
         else{
             PartInv(cut_z = input$cut_z , pmix_ref = input$pmix ,kappa_r = input$kappa_r, 
                     kappa_f = input$kappa_f, phi_r = input$phi_r,  phi_f = input$phi_f,
-                    lambda_r = c(lambda_rNumeric), tau_r = c(tau_rNumeric), 
-                    Theta_r = diag(theta_rNumeric))
+                    lambda_r = c(lambda_rNumeric),lambda_f = c(lambda_fNumeric), tau_r = c(tau_rNumeric), 
+                    tau_f = c(tau_fNumeric),
+                    Theta_r = diag(theta_rNumeric),Theta_f = diag(theta_rNumeric))[[4]]
         }
         
         
