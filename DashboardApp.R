@@ -30,31 +30,31 @@ ui <- dashboardPage(
                                     div(style="display:inline-block;margin-right: 52%;padding-bottom: 10px;",
                                         actionButton("resetButton", "reset inputs") ),
                                 
-                                    textInput('lambda_r', 'lambda_r: enter a vector of factor loadings for the reference group (comma delimited)', "0,1,2,3"),
-                                    textInput('lambda_f', 'lambda_f: enter a vector of factor loadings for the focal group (comma delimited)', "0,1,2,3"),
-                                    switchInput("uselambda_f", "Include lambda_f?", FALSE),
-                                    textInput('tau_r', 'tau_r: enter a vector of measurement intercepts for the reference group (comma delimited)', "0,1,2,3"),
-                                    textInput('tau_f', 'tau_f: enter a vector of measurement intercepts for the focal group (comma delimited)', "0,1,2,3"),
-                                    switchInput("usetau_f", "Include tau_f?", FALSE),
-                                    textInput('theta_r', 'theta_r: enter a matrix of the unique factor variances and covariances 
-  #            for the reference group (comma delimited)', "0,1,2,3"),
-                                    textInput('theta_f', 'theta_f: enter a matrix of the unique factor variances and covariances 
-  #            for the focal group (comma delimited)', "0,1,2,3"),
-                                    switchInput("usetheta_f", "Include theta_f?", FALSE)
+                                    textInput('lambda_r', 'Input factor loadings for the reference group', "1.00, 1.66, 2.30, 2.29"),
+                                    textInput('lambda_f', 'Input factor loadings for the focal group', "1.00, 1.66, 2.30, 2.29"),
+                                    switchInput("uselambda_f", "Focal group?", FALSE, size = "mini"),
+                                    textInput('tau_r', 'Input measurement intercepts for the reference group', "1.54, 1.36, 1.16, 1.08"),
+                                    textInput('tau_f', 'Input measurement intercepts for the focal group', "0.68, 1.36, 1.16, 1.08"),
+                                    switchInput("usetau_f", "Focal group?", FALSE, size = "mini"),
+                                    textInput('theta_r', 'Input the diagonal of the unique factor variance-covariance matrix for the reference group',
+                                              "1.20, 0.81, 0.32, 0.32"),
+                                    textInput('theta_f', 'Input the diagonal of the unique factor variance-covariance matrix for the focal group', 
+                                              "0.72, 0.81, 0.32, 0.32"),
+                                    switchInput("usetheta_f", "Focal group?", FALSE, size = "mini")
                                     ),
                                 box(
                                     #use propsel
                                     switchInput("usepropsel", "Use propsel?", FALSE),
                                     #plot contour TF
-                                    numericInput("cut_z", "cut_z: ", value = 0.5, min = 0, max = 1, step = 0.01),
-                                    numericInput("prop", "propsel:", value = 0.5, min = 0, max = 1, step = 0.01),
-                                    numericInput("pmix", "pmix_ref:", value = 0.5, min = 0, max = 1, step = 0.01),
-                                    numericInput("kappa_r", "kappa_r:", value = 0.5, min = 0, max = 1, step = 0.01),
-                                    numericInput("kappa_f", "kappa_f:", value = 0.0, min = 0, max = 1, step = 0.01),
-                                    switchInput("usekappa_f", "Include kappa_f?", FALSE),
-                                    numericInput("phi_r", "phi_r:", value = 1., min = 0, max = 1, step = 0.01),
-                                    numericInput("phi_f", "phi_f:", value = 1., min = 0, max = 1, step = 0.01),
-                                    switchInput("usephi_f", "Include phi_f?", FALSE)
+                                    numericInput("cut_z", "Cutoff score on the observed composite:", value = 0.5, min = 0, max = 1, step = 0.01),
+                                    numericInput("prop", "Selection proportion:", value = 0.1, min = 0, max = 1, step = 0.01),
+                                    numericInput("pmix", "Mixing proportion:", value = 0.5, min = 0, max = 1, step = 0.01),
+                                    numericInput("kappa_r", "Latent factor mean (reference):", value = 0.5, min = 0, max = 1, step = 0.01),
+                                    numericInput("kappa_f", "Latent factor mean (focal):", value = 0.0, min = 0, max = 1, step = 0.01),
+                                    switchInput("usekappa_f", "Focal group?", FALSE, size = "mini"),
+                                    numericInput("phi_r", "Latent factor variance (reference):", value = 1., min = 0, max = 1, step = 0.01),
+                                    numericInput("phi_f", "Latent factor variance (focal):", value = 1., min = 0, max = 1, step = 0.01),
+                                    switchInput("usephi_f", "Focal group?", FALSE, size = "mini")
                                 )
                             )
                         
