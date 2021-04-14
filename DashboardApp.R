@@ -24,7 +24,7 @@ dashboardBody(useShinyjs(),  #(need for shinyjs toggle to work)
                             
                             textInput(
                               'lambda_r',
-                              'Input factor loadings for the reference group', "1.00, 1.66, 2.30, 2.29"
+                              'Input factor loadings $\\lambda$ for the reference group', "1.00, 1.66, 2.30, 2.29"
                             ),
                             textInput(
                               'lambda_f',
