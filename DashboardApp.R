@@ -1,7 +1,9 @@
+
 library(shiny)
 library(shinydashboard) #UI
 library(shinyjs) #toggle hide, reset
 library(shinyWidgets) #using for a single button
+library(shinyMatrix)#for matrix input
 
 #dashboard page using shinydashboard
 ui <- dashboardPage(
@@ -50,7 +52,30 @@ dashboardBody(useShinyjs(),  #(need for shinyjs toggle to work)
                               'Input the diagonal of the unique factor variance-covariance matrix for the focal group', 
                               "0.72, 0.81, 0.32, 0.32"
                             ),
-                            switchInput("usetheta_f", "Focal group?", FALSE)
+                            switchInput("usetheta_f", "Focal group?", FALSE),
+                            
+                            tags$h4("tau example"),
+                            matrixInput(
+                              "sampleOut",
+                              value = matrix(runif(4), 1, 4, dimnames = list(NULL, c("1","2","3","4"))),
+                              rows = list(
+                                
+                              ),
+                              cols = list(
+                                names = FALSE,
+                                extend = FALSE
+                              )
+                            ),
+                            
+                            tags$h4("theta example"),
+                            sliderInput("matrixSlider", "",
+                                        min = 2, max = 8,
+                                        value = 4),
+                            
+                            uiOutput(
+                              "sampleOutAdjustable",
+                            ),
+                            
                           ),
                           box(
                             #use propsel
@@ -58,7 +83,7 @@ dashboardBody(useShinyjs(),  #(need for shinyjs toggle to work)
                             #plot contour TF
                             numericInput(
                               "cut_z",
-                              "Cutoff score on the observed composite:",,
+                              "Cutoff score on the observed composite:",
                               value = 0.5,
                               min = 0,
                               max = 1,
@@ -128,6 +153,7 @@ dashboardBody(useShinyjs(),  #(need for shinyjs toggle to work)
                         fluidPage(fluidRow(
                           h2("Matrix"),
                           fluidRow(box(title = "future content"),)
+                          
                         )))
               ))
                         )
@@ -135,6 +161,20 @@ dashboardBody(useShinyjs(),  #(need for shinyjs toggle to work)
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   source('PartInv.R', local = TRUE)
+  
+  output$sampleOutAdjustable <- renderUI({
+    matrixInput(
+      "sampleOut",
+      value = matrix("1",input$matrixSlider,input$matrixSlider),
+      rows = list(
+         ),
+      cols = list(
+        names = FALSE,
+        extend = FALSE
+      ),
+      paste = TRUE,
+    )
+  })
   
   observeEvent(input$usepropsel, {
     if (input$usepropsel == TRUE) {
@@ -196,6 +236,14 @@ server <- function(input, output) {
     as.numeric(unlist(strsplit(input$theta_f, ",")))
   })
   
+  exampleNumeric <- reactive({
+    as.numeric(c(input$sampleOut))
+  })
+  
+  sampleOutAdjustableNumeric <- reactive({
+    input$sampleOutAdjustable
+  })
+  
   lambda_f <- reactive({
     if (input$uselambda_f == FALSE) {
       lambda_f = lambda_rNumeric()
@@ -204,7 +252,6 @@ server <- function(input, output) {
       lambda_f = lambda_fNumeric()
     }
   })
-  
   tau_f <- reactive({
     if (input$usetau_f == FALSE) {
       tau_f = tau_rNumeric()
@@ -213,7 +260,6 @@ server <- function(input, output) {
       tau_f = tau_fNumeric()
     }
   })
-  
   theta_f <- reactive({
     if (input$usetheta_f == FALSE) {
       theta_f = theta_rNumeric()
@@ -222,7 +268,6 @@ server <- function(input, output) {
       theta_f = theta_fNumeric()
     }
   })
-  
   kappa_f <- reactive({
     if (input$usekappa_f == FALSE) {
       kappa_f = input$kappa_r
@@ -231,7 +276,6 @@ server <- function(input, output) {
       kappa_f = input$kappa_f
     }
   })
-  
   phi_f <- reactive({
     if (input$usephi_f == FALSE) {
       phi_f = input$phi_r
@@ -253,7 +297,7 @@ server <- function(input, output) {
         phi_f = phi_f(),
         lambda_r = lambda_rNumeric(),
         lambda_f = lambda_f(),
-        tau_f = tau_f(),
+        tau_f = exampleNumeric(), #tau_f() #EXAMPLE
         Theta_f = theta_f(),
         tau_r = tau_rNumeric(),
         Theta_r = diag(theta_rNumeric())
@@ -277,11 +321,11 @@ server <- function(input, output) {
         Theta_r = diag(theta_rNumeric())
       )
     }
-    
-    
   })
   
   output$table <- renderTable(rownames = TRUE, {
+    print(sampleOutAdjustableNumeric())
+    
     if (input$usepropsel == FALSE) {
       PartInv(
         plot_contour = FALSE,
