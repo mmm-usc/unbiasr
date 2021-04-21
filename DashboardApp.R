@@ -1,7 +1,7 @@
 
 library(shiny)
 library(shinydashboard) #UI
-library(shinyjs) #toggle hide, reset
+library(shinyjs) #toggle hide, reset, inlinecss
 library(shinyWidgets) #using for a single button
 library(shinyMatrix)#for matrix input
 
@@ -15,148 +15,166 @@ ui <- dashboardPage(
                      menuItem("Outputs", tabName = "outputs", icon = icon("table")),
                      menuItem("Matrix", tabName = "matrix", icon = icon("th"))
                    )),
-dashboardBody(useShinyjs(),  #(need for shinyjs toggle to work)
-              tabItems(
-                tabItem(tabName = "inputs",
-                        fluidPage(withMathJax(),fluidRow(
-                          h1("INPUTS"),
-                          box(
-                            div(style = "display:inline-block;margin-right: 52%;padding-bottom: 10px;",
-                                actionButton("resetButton", "reset inputs")),
-                            
-                            textInput(
-                              'lambda_r',
-                              'Input factor loadings \\( \\lambda \\) for the reference group', "1.00, 1.66, 2.30, 2.29"
-                            ),
-                            textInput(
-                              'lambda_f',
-                              'Input factor loadings for the focal group', "1.00, 1.66, 2.30, 2.29"
-                            ),
-                            switchInput("uselambda_f", "Focal group?", FALSE),
-                            textInput(
-                              'tau_r',
-                              'Input measurement intercepts for the reference group', "1.54, 1.36, 1.16, 1.08"
-                            ),
-                            textInput(
-                              'tau_f',
-                              'Input measurement intercepts for the focal group', "0.68, 1.36, 1.16, 1.08"
-                            ),
-                            switchInput("usetau_f", "Focal group?", FALSE),
-                            textInput(
-                              'theta_r',
-                              'Input the diagonal of the unique factor variance-covariance matrix for the reference group',
-                              "1.20, 0.81, 0.32, 0.32"
-                            ),
-                            textInput(
-                              'theta_f',
-                              'Input the diagonal of the unique factor variance-covariance matrix for the focal group', 
-                              "0.72, 0.81, 0.32, 0.32"
-                            ),
-                            switchInput("usetheta_f", "Focal group?", FALSE),
-                            
-                            tags$h4("tau example"),
-                            matrixInput(
-                              "sampleOut",
-                              value = matrix(runif(4), 1, 4, dimnames = list(NULL, c("1","2","3","4"))),
-                              rows = list(
-                                
-                              ),
-                              cols = list(
-                                names = FALSE,
-                                extend = FALSE
-                              )
-                            ),
-                            
-                            tags$h4("theta example"),
-                            sliderInput("matrixSlider", "",
-                                        min = 2, max = 8,
-                                        value = 4),
-                            
-                            uiOutput(
-                              "sampleOutAdjustable",
-                            ),
-                            
-                          ),
-                          box(
-                            #use propsel
-                            switchInput("usepropsel", "Select 10% population?", FALSE),
-                            #plot contour TF
-                            numericInput(
-                              "cut_z",
-                              "Cutoff score on the observed composite:",
-                              value = 0.5,
-                              min = 0,
-                              max = 1,
-                              step = 0.01
-                            ),
-                            numericInput(
-                              "prop",
-                              "Selection proportion:",
-                              value = 0.5,
-                              min = 0,
-                              max = 1,
-                              step = 0.01
-                            ),
-                            numericInput(
-                              "pmix",
-                              "Mixing proportion:",
-                              value = 0.5,
-                              min = 0,
-                              max = 1,
-                              step = 0.01
-                            ),
-                            numericInput(
-                              "kappa_r",
-                              "Latent factor mean (reference):", 
-                              value = 0.5, 
-                              min = 0, 
-                              max = 1, 
-                              step = 0.01
-                            ),
-                            numericInput(
-                              "kappa_f",
-                              "Latent factor mean (focal):",
-                              value = 0.0,
-                              min = 0,
-                              max = 1,
-                              step = 0.01
-                            ),
-                            switchInput("usekappa_f", "Focal group?", FALSE),
-                            numericInput(
-                              "phi_r",
-                              "Latent factor variance (reference):",
-                              value = 1.,
-                              min = 0,
-                              max = 1,
-                              step = 0.01
-                            ),
-                            numericInput(
-                              "phi_f",
-                              "Latent factor variance (focal):",
-                              value = 1.,
-                              min = 0,
-                              max = 1,
-                              step = 0.01
-                            ),
-                            switchInput("usephi_f", "Focal group?", FALSE)
-                          )
-                        ))),
-                tabItem(tabName = "outputs",
-                        fluidPage(fluidRow(
-                          h2("OUTPUTS"),
-                          fluidRow(
-                            box(title = "plot title", plotOutput("distPlot")),
-                            box(title = "table title", tableOutput("table"))
-                          )
-                        ))),
-                tabItem(tabName = "matrix",
-                        fluidPage(fluidRow(
-                          h2("Matrix"),
-                          fluidRow(box(title = "future content"),)
-                          
-                        )))
-              ))
-                        )
+
+  dashboardBody(
+    useShinyjs(),
+    #(need for shinyjs toggle to work)
+    #inlinecss using shinyjs and css settings for matrix styling
+    inlineCSS(
+      ".matrix-input-table td
+          {
+              border:1px solid #D3D3D3;
+              padding: 0px 8px;
+              color: #333333;
+              height: 35px !important;
+          }"
+    ),
+    tabItems(
+      tabItem(tabName = "inputs",
+              fluidPage(withMathJax(), fluidRow(
+                h1("INPUTS"),
+                box(
+                  div(style = "display:inline-block;margin-right: 52%;padding-bottom: 10px;",
+                      actionButton("resetButton", "reset inputs")),
+                  
+                  textInput(
+                    'lambda_r',
+                    'Input factor loadings \\( \\lambda \\) for the reference group',
+                    "1.00, 1.66, 2.30, 2.29"
+                  ),
+                  textInput(
+                    'lambda_f',
+                    'Input factor loadings for the focal group',
+                    "1.00, 1.66, 2.30, 2.29"
+                  ),
+                  switchInput("uselambda_f", "Focal group?", FALSE),
+                  textInput(
+                    'tau_r',
+                    'Input measurement intercepts for the reference group',
+                    "1.54, 1.36, 1.16, 1.08"
+                  ),
+                  textInput(
+                    'tau_f',
+                    'Input measurement intercepts for the focal group',
+                    "0.68, 1.36, 1.16, 1.08"
+                  ),
+                  switchInput("usetau_f", "Focal group?", FALSE),
+                  textInput(
+                    'theta_r',
+                    'Input the diagonal of the unique factor variance-covariance matrix for the reference group',
+                    "1.20, 0.81, 0.32, 0.32"
+                  ),
+                  textInput(
+                    'theta_f',
+                    'Input the diagonal of the unique factor variance-covariance matrix for the focal group',
+                    "0.72, 0.81, 0.32, 0.32"
+                  ),
+                  switchInput("usetheta_f", "Focal group?", FALSE),
+                  
+                  tags$h4("tau example"),
+                  
+                  
+                  matrixInput(
+                    "sampleOut",
+                    value = matrix(runif(4), 1, 4, dimnames = list(NULL, c("1", "2", "3", "4"))),
+                    rows = list(),
+                    cols = list(names = FALSE,
+                                extend = FALSE)
+                  ),
+                  
+                  tags$h4("theta example"),
+                  sliderInput(
+                    "matrixSlider",
+                    "",
+                    min = 2,
+                    max = 8,
+                    value = 4
+                  ),
+                  
+                  uiOutput("sampleOutAdjustable"),
+                  
+                ),
+                box(
+                  #use propsel
+                  switchInput("usepropsel", "Select 10% population?", FALSE),
+                  #plot contour TF
+                  numericInput(
+                    "cut_z",
+                    "Cutoff score on the observed composite:",
+                    value = 0.5,
+                    min = 0,
+                    max = 1,
+                    step = 0.01
+                  ),
+                  numericInput(
+                    "prop",
+                    "Selection proportion:",
+                    value = 0.5,
+                    min = 0,
+                    max = 1,
+                    step = 0.01
+                  ),
+                  numericInput(
+                    "pmix",
+                    "Mixing proportion:",
+                    value = 0.5,
+                    min = 0,
+                    max = 1,
+                    step = 0.01
+                  ),
+                  numericInput(
+                    "kappa_r",
+                    "Latent factor mean (reference):",
+                    value = 0.5,
+                    min = 0,
+                    max = 1,
+                    step = 0.01
+                  ),
+                  numericInput(
+                    "kappa_f",
+                    "Latent factor mean (focal):",
+                    value = 0.0,
+                    min = 0,
+                    max = 1,
+                    step = 0.01
+                  ),
+                  switchInput("usekappa_f", "Focal group?", FALSE),
+                  numericInput(
+                    "phi_r",
+                    "Latent factor variance (reference):",
+                    value = 1.,
+                    min = 0,
+                    max = 1,
+                    step = 0.01
+                  ),
+                  numericInput(
+                    "phi_f",
+                    "Latent factor variance (focal):",
+                    value = 1.,
+                    min = 0,
+                    max = 1,
+                    step = 0.01
+                  ),
+                  switchInput("usephi_f", "Focal group?", FALSE)
+                )
+              ))),
+      tabItem(tabName = "outputs",
+              fluidPage(fluidRow(
+                h2("OUTPUTS"),
+                fluidRow(
+                  box(title = "plot title", plotOutput("distPlot")),
+                  box(title = "table title", tableOutput("table"))
+                )
+              ))),
+      tabItem(tabName = "matrix",
+              fluidPage(fluidRow(
+                h2("Matrix"),
+                fluidRow(box(title = "future content"), )
+                
+              )))
+    )
+  )
+)
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -164,17 +182,21 @@ server <- function(input, output) {
   
   output$sampleOutAdjustable <- renderUI({
     matrixInput(
-      "sampleOut",
-      value = matrix("1",input$matrixSlider,input$matrixSlider),
-      rows = list(
-         ),
-      cols = list(
-        names = FALSE,
-        extend = FALSE
-      ),
+      "sampleOutAdj",
+      value = matrix("1", input$matrixSlider, input$matrixSlider),
+      rows = list(),
+      cols = list(names = FALSE,
+                  extend = FALSE),
       paste = TRUE,
     )
   })
+  
+  #this is how to get the matrix to plug in
+  sampleOutAdjustableNumeric <- reactive({
+    input$sampleOutAdj #output matrix
+  })
+  
+  
   
   observeEvent(input$usepropsel, {
     if (input$usepropsel == TRUE) {
@@ -240,10 +262,6 @@ server <- function(input, output) {
     as.numeric(c(input$sampleOut))
   })
   
-  sampleOutAdjustableNumeric <- reactive({
-    input$sampleOutAdjustable
-  })
-  
   lambda_f <- reactive({
     if (input$uselambda_f == FALSE) {
       lambda_f = lambda_rNumeric()
@@ -297,7 +315,8 @@ server <- function(input, output) {
         phi_f = phi_f(),
         lambda_r = lambda_rNumeric(),
         lambda_f = lambda_f(),
-        tau_f = exampleNumeric(), #tau_f() #EXAMPLE
+        tau_f = exampleNumeric(),
+        #tau_f() #EXAMPLE
         Theta_f = theta_f(),
         tau_r = tau_rNumeric(),
         Theta_r = diag(theta_rNumeric())
