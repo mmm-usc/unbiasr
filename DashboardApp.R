@@ -18,7 +18,7 @@ ui <- dashboardPage(
 dashboardBody(useShinyjs(),  #(need for shinyjs toggle to work)
               tabItems(
                 tabItem(tabName = "inputs",
-                        fluidPage(fluidRow(
+                        fluidPage(withMathJax(),fluidRow(
                           h1("INPUTS"),
                           box(
                             div(style = "display:inline-block;margin-right: 52%;padding-bottom: 10px;",
@@ -26,7 +26,7 @@ dashboardBody(useShinyjs(),  #(need for shinyjs toggle to work)
                             
                             textInput(
                               'lambda_r',
-                              'Input factor loadings $\\lambda$ for the reference group', "1.00, 1.66, 2.30, 2.29"
+                              'Input factor loadings \\( \\lambda \\) for the reference group', "1.00, 1.66, 2.30, 2.29"
                             ),
                             textInput(
                               'lambda_f',
