@@ -321,6 +321,8 @@ server <- function(input, output) {
         tau_r = tau_rNumeric(),
         Theta_r = diag(theta_rNumeric())
       )
+      title("Relationship between true latent construct scores
+               and observed test scores", cex.main = 1)
     }
     else{
       PartInv(
@@ -342,7 +344,7 @@ server <- function(input, output) {
     }
   })
   
-  output$table <- renderTable(rownames = TRUE, {
+  output$table <- renderTable(caption ="Impact of Item Bias on Selection Accuracy Indices",rownames = TRUE, {
     print(sampleOutAdjustableNumeric())
     
     if (input$usepropsel == FALSE) {
