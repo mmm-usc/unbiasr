@@ -44,29 +44,29 @@ ui <- dashboardPage(
                   ),
                   textInput(
                     'lambda_f',
-                    'Input factor loadings for the focal group',
+                    'Input factor loadings \\( \\lambda \\) for the focal group',
                     "1.00, 1.66, 2.30, 2.29"
                   ),
                   switchInput("uselambda_f", "Focal group?", FALSE),
                   textInput(
                     'tau_r',
-                    'Input measurement intercepts for the reference group',
+                    'Input measurement intercepts \\( \\tau \\) for the reference group',
                     "1.54, 1.36, 1.16, 1.08"
                   ),
                   textInput(
                     'tau_f',
-                    'Input measurement intercepts for the focal group',
+                    'Input measurement intercepts \\( \\tau \\) for the focal group',
                     "0.68, 1.36, 1.16, 1.08"
                   ),
                   switchInput("usetau_f", "Focal group?", FALSE),
                   textInput(
                     'theta_r',
-                    'Input the diagonal of the unique factor variance-covariance matrix for the reference group',
+                    'Input the diagonal of the unique factor variance-covariance matrix \\( \\theta \\) for the reference group',
                     "1.20, 0.81, 0.32, 0.32"
                   ),
                   textInput(
                     'theta_f',
-                    'Input the diagonal of the unique factor variance-covariance matrix for the focal group',
+                    'Input the diagonal of the unique factor variance-covariance matrix \\( \\theta \\) for the focal group',
                     "0.72, 0.81, 0.32, 0.32"
                   ),
                   switchInput("usetheta_f", "Focal group?", FALSE),
@@ -124,7 +124,7 @@ ui <- dashboardPage(
                   ),
                   numericInput(
                     "kappa_r",
-                    "Latent factor mean (reference):",
+                    "Latent factor mean \\( \\kappa \\) for the reference group:",
                     value = 0.5,
                     min = 0,
                     max = 1,
@@ -132,7 +132,7 @@ ui <- dashboardPage(
                   ),
                   numericInput(
                     "kappa_f",
-                    "Latent factor mean (focal):",
+                    "Latent factor mean \\( \\kappa \\) for the focal group:",
                     value = 0.0,
                     min = 0,
                     max = 1,
@@ -141,7 +141,7 @@ ui <- dashboardPage(
                   switchInput("usekappa_f", "Focal group?", FALSE),
                   numericInput(
                     "phi_r",
-                    "Latent factor variance (reference):",
+                    "Latent factor variance \\( \\phi \\) for the reference group:",
                     value = 1.,
                     min = 0,
                     max = 1,
@@ -149,7 +149,7 @@ ui <- dashboardPage(
                   ),
                   numericInput(
                     "phi_f",
-                    "Latent factor variance (focal):",
+                    "Latent factor variance \\( \\phi \\) for the focal group:",
                     value = 1.,
                     min = 0,
                     max = 1,
