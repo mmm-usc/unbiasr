@@ -162,8 +162,9 @@ ui <- dashboardPage(
               fluidPage(fluidRow(
                 h2("OUTPUTS"),
                 fluidRow(
-                  box(title = "plot name", plotOutput("distPlot")),
-                  box(title = "table title", tableOutput("table"))
+                  box(title = "Relationship Between True Latent Construct Scores
+               and Observed Test Scores", plotOutput("distPlot")),
+                  box(title = "Impact of Item Bias on Selection Accuracy Indices", tableOutput("table"))
                 )
               ))),
       tabItem(tabName = "other",
@@ -407,8 +408,6 @@ server <- function(input, output) {
         tau_r = tau_rNumeric(),
         Theta_r = theta_r()
       )
-      title("Relationship between true latent construct scores
-               and observed test scores", cex.main = 1)
     }
     else{
       PartInv(
