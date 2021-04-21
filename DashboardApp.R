@@ -13,11 +13,11 @@ ui <- dashboardPage(
                    sidebarMenu(
                      menuItem("Inputs", tabName = "inputs", icon = icon("dashboard")),
                      menuItem("Outputs", tabName = "outputs", icon = icon("table")),
-                     menuItem("Matrix", tabName = "matrix", icon = icon("th"))
+                     menuItem("Other", tabName = "other", icon = icon("th"))
                    )),
   dashboardBody(
+    #need this for shinyjs features to work
     useShinyjs(),
-    #(need for shinyjs toggle to work)
     #inlinecss using shinyjs and css settings for matrix styling
     inlineCSS(
       ".matrix-input-table td
@@ -39,59 +39,59 @@ ui <- dashboardPage(
                   textInput(
                     'lambda_r',
                     'Input factor loadings for the reference group',
-                    "1.00, 1.66, 2.30, 2.29"
+                    placeholder = "1.00, 1.66, 2.30, 2.29"
                   ),
                   textInput(
                     'lambda_f',
                     'Input factor loadings for the focal group',
-                    "1.00, 1.66, 2.30, 2.29"
+                    placeholder = "1.00, 1.66, 2.30, 2.29"
                   ),
                   switchInput("uselambda_f", "Focal group?", FALSE),
                   textInput(
                     'tau_r',
                     'Input measurement intercepts for the reference group',
-                    "1.54, 1.36, 1.16, 1.08"
+                    placeholder = "1.54, 1.36, 1.16, 1.08"
                   ),
                   textInput(
                     'tau_f',
                     'Input measurement intercepts for the focal group',
-                    "0.68, 1.36, 1.16, 1.08"
+                    placeholder = "0.68, 1.36, 1.16, 1.08"
                   ),
                   switchInput("usetau_f", "Focal group?", FALSE),
+                  h4('unique factor variance-covariance'),
+                  switchInput("useMatrix", "Matrix input?", FALSE, inline = TRUE),
+                  switchInput("usetheta_f", "Focal group?", FALSE, inline = TRUE),
                   textInput(
                     'theta_r',
                     'Input the diagonal of the unique factor variance-covariance matrix for the reference group',
-                    "1.20, 0.81, 0.32, 0.32"
+                    placeholder = "1.20, 0.81, 0.32, 0.32"
+  
                   ),
                   textInput(
                     'theta_f',
                     'Input the diagonal of the unique factor variance-covariance matrix for the focal group',
-                    "0.72, 0.81, 0.32, 0.32"
-                  ),
-                  switchInput("usetheta_f", "Focal group?", FALSE),
-                  
-                  tags$h4("tau example"),
-                  
-                  
-                  matrixInput(
-                    "sampleOut",
-                    value = matrix(runif(4), 1, 4, dimnames = list(NULL, c("1", "2", "3", "4"))),
-                    rows = list(),
-                    cols = list(names = FALSE,
-                                extend = FALSE)
+                    placeholder = "0.72, 0.81, 0.32, 0.32"
                   ),
                   
-                  tags$h4("theta example"),
                   sliderInput(
-                    "matrixSlider",
-                    "",
+                    "theta_rSlider",
+                    "Input the unique factor variance-covariance matrix for the reference group",
                     min = 2,
-                    max = 8,
-                    value = 4
+                    max = 5,
+                    value = 2
+                  ),
+                  uiOutput("theta_rMatrixUI"),
+                  
+                  sliderInput(
+                    "theta_fSlider",
+                    "Input the unique factor variance-covariance matrix for the focal group",
+                    min = 2,
+                    max = 5,
+                    value = 2
                   ),
                   
-                  uiOutput("sampleOutAdjustable"),
-                  
+                  uiOutput("theta_fMatrixUI"),
+ 
                 ),
                 box(
                   #use propsel
@@ -161,13 +161,13 @@ ui <- dashboardPage(
               fluidPage(fluidRow(
                 h2("OUTPUTS"),
                 fluidRow(
-                  box(title = "plot title", plotOutput("distPlot")),
+                  box(title = "plot name", plotOutput("distPlot")),
                   box(title = "table title", tableOutput("table"))
                 )
               ))),
-      tabItem(tabName = "matrix",
+      tabItem(tabName = "other",
               fluidPage(fluidRow(
-                h2("Matrix"),
+                h2("Other"),
                 fluidRow(box(title = "future content"), )
                 
               )))
@@ -179,23 +179,42 @@ ui <- dashboardPage(
 server <- function(input, output) {
   source('PartInv.R', local = TRUE)
   
-  output$sampleOutAdjustable <- renderUI({
+  #MATRIX TABLES
+  
+  output$theta_fMatrixUI <- renderUI({
     matrixInput(
-      "sampleOutAdj",
-      value = matrix("1", input$matrixSlider, input$matrixSlider),
+      "theta_fMatrixInput",
+      value = matrix("1", input$theta_fSlider, input$theta_fSlider),
       rows = list(),
       cols = list(names = FALSE,
-                  extend = FALSE),
+                  
+                extend = FALSE),
+      class = "numeric",
       paste = TRUE,
     )
   })
   
   #this is how to get the matrix to plug in
-  sampleOutAdjustableNumeric <- reactive({
-    input$sampleOutAdj #output matrix
+  theta_fMatrixOutput <- reactive({
+    input$theta_fMatrixInput
   })
   
+  output$theta_rMatrixUI <- renderUI({
+    matrixInput(
+      "theta_rMatrixInput",
+      value = matrix("1", input$theta_rSlider, input$theta_rSlider),
+      rows = list(),
+      cols = list(names = FALSE,
+                  extend = FALSE),
+      class = "numeric",
+      paste = TRUE,
+    )
+  })
   
+  #this is how to get the matrix to plug in
+  theta_rMatrixOutput <- reactive({
+    input$theta_rMatrixInput
+  })
   
   observeEvent(input$usepropsel, {
     if (input$usepropsel == TRUE) {
@@ -212,9 +231,6 @@ server <- function(input, output) {
   observeEvent(input$usetau_f, {
     shinyjs::toggle(id = "tau_f")
   })
-  observeEvent(input$usetheta_f, {
-    shinyjs::toggle(id = "theta_f")
-  })
   observeEvent(input$usekappa_f, {
     shinyjs::toggle(id = "kappa_f")
   })
@@ -222,7 +238,64 @@ server <- function(input, output) {
     shinyjs::toggle(id = "phi_f")
   })
   
+  #listens for either a button press from theta or from useMatrix
+  listenFromThetaMatrix <- reactive({
+    list(input$usetheta_f,input$useMatrix)
+  })
+  #if either button is pressed
+  observeEvent(listenFromThetaMatrix(), {
+    #for every combination of button presses, show/hide appropriate inputs
+    if (input$useMatrix == FALSE & input$usetheta_f == TRUE){
+      shinyjs::show(id = "theta_f")
+      shinyjs::show(id = "theta_r")
+      
+      shinyjs::hide(id = "theta_rSlider")
+      shinyjs::hide(id = "theta_rMatrixUI")
+      shinyjs::hide(id = "theta_fSlider")
+      shinyjs::hide(id = "theta_fMatrixUI")
+    }
+    else if (input$useMatrix == FALSE & input$usetheta_f == FALSE){
+      shinyjs::hide(id = "theta_f")
+      shinyjs::show(id = "theta_r")
+      
+      shinyjs::hide(id = "theta_rSlider")
+      shinyjs::hide(id = "theta_rMatrixUI")
+      shinyjs::hide(id = "theta_fSlider")
+      shinyjs::hide(id = "theta_fMatrixUI")
+    }
+    else if(input$useMatrix == TRUE & input$usetheta_f == FALSE){
+      shinyjs::hide(id = "theta_f")
+      shinyjs::hide(id = "theta_r")
+      
+      shinyjs::show(id = "theta_rSlider")
+      shinyjs::show(id = "theta_rMatrixUI")
+      shinyjs::hide(id = "theta_fSlider")
+      shinyjs::hide(id = "theta_fMatrixUI")
+    }
+    else{
+      shinyjs::hide(id = "theta_f")
+      shinyjs::hide(id = "theta_r")
+      
+      shinyjs::show(id = "theta_rMatrixUI")
+      shinyjs::show(id = "theta_fMatrixUI")
+      shinyjs::show(id = "theta_rSlider")
+      shinyjs::show(id = "theta_fSlider")
+    }
+    
+  })
+  
+  
   observeEvent(input$resetButton, {
+    reset("usepropsel")
+    reset("uselambda_f")
+    reset("usetau_f")
+    reset("usetheta_f")
+    reset("usekappa_f")
+    reset("usephi_f")
+    reset("useMatrix")
+    reset("theta_rSlider")
+    reset("theta_fSlider")
+    
     reset("prop")
     reset("cut_z")
     reset("pmix")
@@ -236,6 +309,7 @@ server <- function(input, output) {
     reset("kappa_r")
     reset("phi_f")
     reset("phi_r")
+    
   })
   
   lambda_rNumeric <- reactive({
@@ -257,10 +331,6 @@ server <- function(input, output) {
     as.numeric(unlist(strsplit(input$theta_f, ",")))
   })
   
-  exampleNumeric <- reactive({
-    as.numeric(c(input$sampleOut))
-  })
-  
   lambda_f <- reactive({
     if (input$uselambda_f == FALSE) {
       lambda_f = lambda_rNumeric()
@@ -277,14 +347,31 @@ server <- function(input, output) {
       tau_f = tau_fNumeric()
     }
   })
+  
   theta_f <- reactive({
-    if (input$usetheta_f == FALSE) {
-      theta_f = theta_rNumeric()
+    if (input$usetheta_f == FALSE & input$useMatrix == FALSE) {
+      theta_f = diag(theta_rNumeric())
+    }
+    else if(input$usetheta_f == TRUE & input$useMatrix == FALSE){
+      theta_f = diag(theta_fNumeric())
+    }
+    else if(input$usetheta_f == TRUE & input$useMatrix == TRUE){
+      theta_f = theta_fMatrixOutput()
     }
     else{
-      theta_f = theta_fNumeric()
+      theta_f = theta_rMatrixOutput()
     }
   })
+  
+  theta_r <- reactive({
+    if (input$useMatrix == TRUE) {
+      theta_r = theta_rMatrixOutput()
+    }
+    else{
+      theta_r = diag(theta_rNumeric())
+    }
+  })
+  
   kappa_f <- reactive({
     if (input$usekappa_f == FALSE) {
       kappa_f = input$kappa_r
@@ -314,11 +401,10 @@ server <- function(input, output) {
         phi_f = phi_f(),
         lambda_r = lambda_rNumeric(),
         lambda_f = lambda_f(),
-        tau_f = exampleNumeric(),
-        #tau_f() #EXAMPLE
+        tau_f = tau_f(),
         Theta_f = theta_f(),
         tau_r = tau_rNumeric(),
-        Theta_r = diag(theta_rNumeric())
+        Theta_r = theta_r()
       )
     }
     else{
@@ -336,13 +422,13 @@ server <- function(input, output) {
         tau_f = tau_f(),
         Theta_f = theta_f(),
         tau_r = tau_rNumeric(),
-        Theta_r = diag(theta_rNumeric())
+        Theta_r = theta_r()
       )
     }
   })
   
   output$table <- renderTable(rownames = TRUE, {
-    print(sampleOutAdjustableNumeric())
+    print(theta_fMatrixOutput())
     
     if (input$usepropsel == FALSE) {
       PartInv(
@@ -358,7 +444,7 @@ server <- function(input, output) {
         tau_f = tau_f(),
         Theta_f = theta_f(),
         tau_r = tau_rNumeric(),
-        Theta_r = diag(theta_rNumeric())
+        Theta_r = theta_r()
       )[[4]]
     }
     else{
@@ -376,7 +462,7 @@ server <- function(input, output) {
         tau_f = tau_f(),
         Theta_f = theta_f(),
         tau_r = tau_rNumeric(),
-        Theta_r = diag(theta_rNumeric())
+        Theta_r = theta_r()
       )[[4]]
     }
   })
