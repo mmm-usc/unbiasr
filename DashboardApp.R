@@ -76,16 +76,16 @@ ui <- dashboardPage(
                   
                   sliderInput(
                     "theta_rSlider",
-                    "Input the unique factor variance-covariance matrix for the reference group",
+                    "Input the unique factor variance-covariance matrix \\( \\theta \\)for the reference group",
                     min = 2,
                     max = 5,
                     value = 2
                   ),
                   uiOutput("theta_rMatrixUI"),
-                  
+                   
                   sliderInput(
                     "theta_fSlider",
-                    "Input the unique factor variance-covariance matrix for the focal group",
+                    "Input the unique factor variance-covariance matrix \\( \\theta \\) for the focal group",
                     min = 2,
                     max = 5,
                     value = 2
@@ -96,7 +96,7 @@ ui <- dashboardPage(
                 ),
                 box(
                   #use propsel
-                  switchInput("usepropsel", "Select 10% population?", FALSE),
+                  switchInput("usepropsel", "Select a part of population?", FALSE),
                   #plot contour TF
                   numericInput(
                     "cut_z",
@@ -109,7 +109,7 @@ ui <- dashboardPage(
                   numericInput(
                     "prop",
                     "Selection proportion:",
-                    value = 0.5,
+                    value = 0.25,
                     min = 0,
                     max = 1,
                     step = 0.01
