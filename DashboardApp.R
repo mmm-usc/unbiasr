@@ -1,11 +1,11 @@
 
 library(shiny)
-library(shinydashboard) #UI
-library(shinyjs) #toggle hide, reset, inlinecss
-library(shinyWidgets) #using for a single button
-library(shinyMatrix)#for matrix input
+library(shinydashboard) #GUI
+library(shinyjs) #show/hide/toggle, reset, inlineCSS
+library(shinyWidgets) #switchInput
+library(shinyMatrix) #matrixInput
 
-#dashboard page using shinydashboard
+#dashboardPage UI using shinydashboard
 ui <- dashboardPage(
   dashboardHeader(title = "Computation of Selection Accuracy Indexes",
                   titleWidth = 400),
@@ -15,11 +15,10 @@ ui <- dashboardPage(
                      menuItem("Outputs", tabName = "outputs", icon = icon("table")),
                      menuItem("Other", tabName = "other", icon = icon("th"))
                    )),
-
   dashboardBody(
-    #need this for shinyjs features to work
+    #include for shinyjs features to work
     useShinyjs(),
-    #inlinecss using shinyjs and css settings for matrix styling
+    #inlinecss using shinyjs and css for matrixInput styling
     inlineCSS(
       ".matrix-input-table td
           {
@@ -29,14 +28,18 @@ ui <- dashboardPage(
               height: 35px !important;
           }"
     ),
+    #pages
     tabItems(
+      #frontpage
       tabItem(tabName = "inputs",
+              #withMathJax() for greek char display
               fluidPage(withMathJax(), fluidRow(
                 h1("INPUTS"),
                 box(
+                  #style for alignment of reset button
                   div(style = "display:inline-block;margin-right: 52%;padding-bottom: 10px;",
                       actionButton("resetButton", "reset inputs")),
-                  
+                  #textInput for multi-value inputs
                   textInput(
                     'lambda_r',
                     'Input factor loadings \\( \\lambda \\) for the reference group',
@@ -66,23 +69,25 @@ ui <- dashboardPage(
                     'theta_r',
                     'Input the diagonal of the unique factor variance-covariance matrix \\( \\theta \\) for the reference group',
                     placeholder = "1.20, 0.81, 0.32, 0.32"
-  
+                    
                   ),
                   textInput(
                     'theta_f',
                     'Input the diagonal of the unique factor variance-covariance matrix \\( \\theta \\) for the focal group',
                     placeholder = "0.72, 0.81, 0.32, 0.32"
                   ),
-                  
+                  #sliderInput for size of matrix
                   sliderInput(
-                    "theta_rSlider",
+                    "matrixSlider",
                     "Input the unique factor variance-covariance matrix \\( \\theta \\)for the reference group",
                     min = 2,
                     max = 5,
                     value = 2
                   ),
+                  #uiOutput used for dynamic inputs
+                  #allows slider to change size of matrixInput
+                  #logic defined in renderUI
                   uiOutput("theta_rMatrixUI"),
-                   
                   sliderInput(
                     "theta_fSlider",
                     "Input the unique factor variance-covariance matrix \\( \\theta \\) for the focal group",
@@ -90,10 +95,9 @@ ui <- dashboardPage(
                     max = 5,
                     value = 2
                   ),
-                  
                   uiOutput("theta_fMatrixUI"),
- 
                 ),
+                #next column
                 box(
                   #use propsel
                   switchInput("usepropsel", "Select a part of population?", FALSE),
@@ -158,6 +162,7 @@ ui <- dashboardPage(
                   switchInput("usephi_f", "Focal group?", FALSE)
                 )
               ))),
+      #output page
       tabItem(tabName = "outputs",
               fluidPage(fluidRow(
                 h2("OUTPUTS"),
@@ -167,44 +172,29 @@ ui <- dashboardPage(
                   box(title = "Impact of Item Bias on Selection Accuracy Indices", tableOutput("table"))
                 )
               ))),
+      #unused third page
       tabItem(tabName = "other",
               fluidPage(fluidRow(
                 h2("Other"),
-                fluidRow(box(title = "future content"), )
+                fluidRow(box(title = "future content"),)
                 
               )))
     )
   )
 )
 
-# Define server logic required to draw a histogram
+#SERVER-SIDE
 server <- function(input, output) {
+  #include local file PartInv.R
   source('PartInv.R', local = TRUE)
   
-  #MATRIX TABLES
-  
+  #renderUI output for Matrix Inputs
   output$theta_fMatrixUI <- renderUI({
+    #Create matrixInput for focal
     matrixInput(
       "theta_fMatrixInput",
-      value = matrix("1", input$theta_fSlider, input$theta_fSlider),
-      rows = list(),
-      cols = list(names = FALSE,
-                  
-                extend = FALSE),
-      class = "numeric",
-      paste = TRUE,
-    )
-  })
-  
-  #this is how to get the matrix to plug in
-  theta_fMatrixOutput <- reactive({
-    input$theta_fMatrixInput
-  })
-  
-  output$theta_rMatrixUI <- renderUI({
-    matrixInput(
-      "theta_rMatrixInput",
-      value = matrix("1", input$theta_rSlider, input$theta_rSlider),
+      #use input from matrixSlider to determine x and y size of matrix
+      value = matrix("1", input$matrixSlider, input$matrixSlider),
       rows = list(),
       cols = list(names = FALSE,
                   extend = FALSE),
@@ -213,13 +203,38 @@ server <- function(input, output) {
     )
   })
   
-  #this is how to get the matrix to plug in
+  #reactive expression triggered when input value changes
+  #when triggered, reactive expression updates the output
+  theta_fMatrixOutput <- reactive({
+    input$theta_fMatrixInput
+  })
+  
+  #renderUI output for Matrix Inputs
+  output$theta_rMatrixUI <- renderUI({
+    #Create matrixInput for referance 
+    matrixInput(
+      "theta_rMatrixInput",
+      #use input from matrixSlider to determine x and y size of matrix
+      value = matrix("1", input$matrixSlider, input$matrixSlider),
+      rows = list(),
+      cols = list(names = FALSE,
+                  extend = FALSE),
+      class = "numeric",
+      paste = TRUE,
+    )
+  })
+  
+  #reactive expression triggered when input value changes
+  #when triggered, reactive expression updates the output
   theta_rMatrixOutput <- reactive({
     input$theta_rMatrixInput
   })
   
+  #when a button press is observed for usepropsel
   observeEvent(input$usepropsel, {
+    #this function evaluates this statement
     if (input$usepropsel == TRUE) {
+      #and shows/hides the appropriate inputs
       shinyjs::hide(id = "cut_z")
       shinyjs::show(id = "prop")
     } else{
@@ -227,7 +242,9 @@ server <- function(input, output) {
       shinyjs::hide(id = "prop")
     }
   })
+  #when a button press is observed for uselambda_f
   observeEvent(input$uselambda_f, {
+    #this funtion toggles between show and hide for the input
     shinyjs::toggle(id = "lambda_f")
   })
   observeEvent(input$usetau_f, {
@@ -240,38 +257,35 @@ server <- function(input, output) {
     shinyjs::toggle(id = "phi_f")
   })
   
-  #listens for either a button press from theta or from useMatrix
+  #listens for either a button press from usetheta_f or from useMatrix
   listenFromThetaMatrix <- reactive({
-    list(input$usetheta_f,input$useMatrix)
+    list(input$usetheta_f, input$useMatrix)
   })
-  #if either button is pressed
+  #if either button press is observed
   observeEvent(listenFromThetaMatrix(), {
-    #for every combination of button presses, show/hide appropriate inputs
-    if (input$useMatrix == FALSE & input$usetheta_f == TRUE){
+    #for every combination of the two buttons, show/hide the appropriate inputs
+    if (input$useMatrix == FALSE & input$usetheta_f == TRUE) {
       shinyjs::show(id = "theta_f")
       shinyjs::show(id = "theta_r")
       
-      shinyjs::hide(id = "theta_rSlider")
+      shinyjs::hide(id = "matrixSlider")
       shinyjs::hide(id = "theta_rMatrixUI")
-      shinyjs::hide(id = "theta_fSlider")
       shinyjs::hide(id = "theta_fMatrixUI")
     }
-    else if (input$useMatrix == FALSE & input$usetheta_f == FALSE){
+    else if (input$useMatrix == FALSE & input$usetheta_f == FALSE) {
       shinyjs::hide(id = "theta_f")
       shinyjs::show(id = "theta_r")
       
-      shinyjs::hide(id = "theta_rSlider")
       shinyjs::hide(id = "theta_rMatrixUI")
-      shinyjs::hide(id = "theta_fSlider")
+      shinyjs::hide(id = "matrixSlider")
       shinyjs::hide(id = "theta_fMatrixUI")
     }
-    else if(input$useMatrix == TRUE & input$usetheta_f == FALSE){
+    else if (input$useMatrix == TRUE & input$usetheta_f == FALSE) {
       shinyjs::hide(id = "theta_f")
       shinyjs::hide(id = "theta_r")
       
-      shinyjs::show(id = "theta_rSlider")
+      shinyjs::show(id = "matrixSlider")
       shinyjs::show(id = "theta_rMatrixUI")
-      shinyjs::hide(id = "theta_fSlider")
       shinyjs::hide(id = "theta_fMatrixUI")
     }
     else{
@@ -280,14 +294,14 @@ server <- function(input, output) {
       
       shinyjs::show(id = "theta_rMatrixUI")
       shinyjs::show(id = "theta_fMatrixUI")
-      shinyjs::show(id = "theta_rSlider")
-      shinyjs::show(id = "theta_fSlider")
+      shinyjs::show(id = "matrixSlider")
     }
     
   })
   
-  
+  #if resetButton is pressed
   observeEvent(input$resetButton, {
+    #reset all
     reset("usepropsel")
     reset("uselambda_f")
     reset("usetau_f")
@@ -314,6 +328,8 @@ server <- function(input, output) {
     
   })
   
+  #turn every textInput into a numeric list
+  #reactive allows these values to be defined outside of the output render
   lambda_rNumeric <- reactive({
     as.numeric(unlist(strsplit(input$lambda_r, ",")))
   })
@@ -333,6 +349,7 @@ server <- function(input, output) {
     as.numeric(unlist(strsplit(input$theta_f, ",")))
   })
   
+  #set lambda_f to lambda_r input or lambda_f input depending on button press
   lambda_f <- reactive({
     if (input$uselambda_f == FALSE) {
       lambda_f = lambda_rNumeric()
@@ -350,14 +367,16 @@ server <- function(input, output) {
     }
   })
   
+  #set theta_f output to either the diagonal inputs or matrix inputs
+  #for theta_r and theta_f depending on button presses
   theta_f <- reactive({
     if (input$usetheta_f == FALSE & input$useMatrix == FALSE) {
       theta_f = diag(theta_rNumeric())
     }
-    else if(input$usetheta_f == TRUE & input$useMatrix == FALSE){
+    else if (input$usetheta_f == TRUE & input$useMatrix == FALSE) {
       theta_f = diag(theta_fNumeric())
     }
-    else if(input$usetheta_f == TRUE & input$useMatrix == TRUE){
+    else if (input$usetheta_f == TRUE & input$useMatrix == TRUE) {
       theta_f = theta_fMatrixOutput()
     }
     else{
@@ -391,8 +410,11 @@ server <- function(input, output) {
     }
   })
   
+  #distribution plot output
   output$distPlot <- renderPlot({
     if (input$usepropsel == FALSE) {
+      #plug everything into PartInv function
+      #calls to reactive funtions have () brackets
       PartInv(
         plot_contour = TRUE,
         cut_z = input$cut_z,
@@ -432,6 +454,8 @@ server <- function(input, output) {
   output$table <- renderTable(rownames = TRUE, {
     print(theta_fMatrixOutput())
     if (input$usepropsel == FALSE) {
+      #plug everything into PartInv function
+      #calls to reactive funtions have () brackets
       PartInv(
         plot_contour = FALSE,
         cut_z = input$cut_z,
@@ -469,5 +493,5 @@ server <- function(input, output) {
   })
 }
 
-# Run the application
+# setting up the server
 shinyApp(ui = ui, server = server)
