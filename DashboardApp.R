@@ -1,4 +1,5 @@
 
+# Load required packages
 library(shiny)
 library(shinydashboard) #GUI
 library(shinyjs) #show/hide/toggle, reset, inlineCSS
