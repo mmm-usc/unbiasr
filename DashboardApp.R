@@ -77,9 +77,10 @@ ui <- dashboardPage(
                     placeholder = "0.72, 0.81, 0.32, 0.32"
                   ),
                   #sliderInput for size of matrix
+                  #also includes title for theta_rMatrix
                   sliderInput(
                     "matrixSlider",
-                    "input the unique factor variance-covariance matrix",
+                    "input the unique factor variance-covariance matrix \\( \\theta \\) for the reference group",
                     min = 2,
                     max = 5,
                     value = 2
@@ -88,6 +89,7 @@ ui <- dashboardPage(
                   #allows slider to change size of matrixInput
                   #logic defined in renderUI
                   uiOutput("theta_rMatrixUI"),
+                  strong(id ="theta_fMatrixTitle","input the unique factor variance-covariance matrix \\( \\theta \\) for the focal group"),
                   uiOutput("theta_fMatrixUI"),
                 ),
                 #next column
@@ -262,6 +264,7 @@ server <- function(input, output) {
       
       shinyjs::hide(id = "matrixSlider")
       shinyjs::hide(id = "theta_rMatrixUI")
+      shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
     }
     else if (input$useMatrix == FALSE & input$usetheta_f == FALSE) {
@@ -270,6 +273,7 @@ server <- function(input, output) {
       
       shinyjs::hide(id = "theta_rMatrixUI")
       shinyjs::hide(id = "matrixSlider")
+      shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
     }
     else if (input$useMatrix == TRUE & input$usetheta_f == FALSE) {
@@ -278,6 +282,7 @@ server <- function(input, output) {
       
       shinyjs::show(id = "matrixSlider")
       shinyjs::show(id = "theta_rMatrixUI")
+      shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
     }
     else{
@@ -285,6 +290,7 @@ server <- function(input, output) {
       shinyjs::hide(id = "theta_r")
       
       shinyjs::show(id = "theta_rMatrixUI")
+      shinyjs::show(id = "theta_fMatrixTitle")
       shinyjs::show(id = "theta_fMatrixUI")
       shinyjs::show(id = "matrixSlider")
     }
@@ -411,9 +417,12 @@ server <- function(input, output) {
     #prevents error messages from popping up
     #displays message telling user what inputs need to be filled
     validate(
-      need(input$lambda_r, "Input for factor loadings of reference group is missing"),
-      need(input$theta_r, "Input for measurement intercepts of reference group is missing"),
-      need(input$tau_r, "Input for actor variance-covariance matrix of reference group is missing")
+      need(input$lambda_r, "Input for factor loadings of reference group is missing\n"),
+      need(input$tau_r, "Input for actor variance-covariance matrix of reference group is missing\n"),
+      #only checks for numeric input of theta_r when matrix is not being used as input
+      if(input$useMatrix == FALSE){
+        need(input$theta_r,"Input for measurement intercepts of reference group is missing\n")
+      }
     )
     
     if (input$usepropsel == FALSE) {
@@ -461,8 +470,11 @@ server <- function(input, output) {
     #prevents error messages from popping up
     validate(
       need(input$lambda_r,""),
-      need(input$theta_r,""),
-      need(input$tau_r,"")
+      need(input$tau_r,""),
+      #only checks for numeric input of theta_r when matrix is not being used as input
+      if(input$useMatrix == FALSE){
+        need(input$theta_r,"")
+      }
     )
     
     if (input$usepropsel == FALSE) {
