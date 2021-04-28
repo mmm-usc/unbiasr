@@ -181,6 +181,7 @@ server <- function(input, output) {
   
   #renderUI output for Matrix Inputs
   output$theta_fMatrixUI <- renderUI({
+    
     #Create matrixInput for focal
     matrixInput(
       "theta_fMatrixInput",
@@ -401,8 +402,20 @@ server <- function(input, output) {
     }
   })
   
+  
+  
   #distribution plot output
   output$distPlot <- renderPlot({
+    
+    #makes sure inputs are filled before program runs
+    #prevents error messages from popping up
+    #displays message telling user what inputs need to be filled
+    validate(
+      need(input$lambda_r, "Input for factor loadings of reference group is missing"),
+      need(input$theta_r, "Input for measurement intercepts of reference group is missing"),
+      need(input$tau_r, "Input for actor variance-covariance matrix of reference group is missing")
+    )
+    
     if (input$usepropsel == FALSE) {
       #plug everything into PartInv function
       #calls to reactive funtions have () brackets
@@ -443,7 +456,15 @@ server <- function(input, output) {
   })
   
   output$table <- renderTable(rownames = TRUE, {
-    print(theta_fMatrixOutput())
+    
+    #makes sure inputs are filled before program runs
+    #prevents error messages from popping up
+    validate(
+      need(input$lambda_r,""),
+      need(input$theta_r,""),
+      need(input$tau_r,"")
+    )
+    
     if (input$usepropsel == FALSE) {
       #plug everything into PartInv function
       #calls to reactive funtions have () brackets
