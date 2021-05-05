@@ -20,7 +20,7 @@ ui <- dashboardPage(
   dashboardBody(
     #include for shinyjs features to work
     useShinyjs(),
-    #inlinecss using shinyjs and css for matrixInput styling
+    #inlinecss using shinyjs, implements css for matrixInput styling
     inlineCSS(
       ".matrix-input-table td
           {
@@ -53,6 +53,7 @@ ui <- dashboardPage(
                     'Input factor loadings \\( \\lambda \\) for the focal group',
                     placeholder = "1.00, 1.66, 2.30, 2.29"
                   ),
+                  #switchInput button using shinyWidgets
                   switchInput("uselambda_f", "Focal group?", FALSE),
                   textInput(
                     'tau_r',
@@ -67,6 +68,7 @@ ui <- dashboardPage(
                   switchInput("usetau_f", "Focal group?", FALSE),
                   h4('unique factor variance-covariance'),
                   
+                  #div to style buttons inline
                   div(style = "display:inline-block, float:right",
                       switchInput("useMatrix", "Matrix input?", FALSE, inline = TRUE),
                       switchInput("usetheta_f", "Focal group?", FALSE, inline = TRUE)),
@@ -83,16 +85,19 @@ ui <- dashboardPage(
                     placeholder = "0.72, 0.81, 0.32, 0.32"
                   ),
                   
-                  #uiOutput used for dynamic inputs
-                  #logic defined in renderUI
+                  #strong is a text output in bold
                   strong(id ="theta_rMatrixTitle", "input the unique factor variance-covariance matrix \\( \\theta \\) for the referance group"),
+                  #uiOutput used for dynamic inputs
+                  #Outputs matrix rows & cols based on number of values in lambda_r
+                  #logic defined in renderUI
                   uiOutput("theta_rMatrixUI"),
                   strong(id ="theta_fMatrixTitle","input the unique factor variance-covariance matrix \\( \\theta \\) for the focal group"),
                   uiOutput("theta_fMatrixUI"),
                 ),
-                #next column
+                #next box column
                 box(
                   switchInput("usepropsel", "Select 10% population?", FALSE),
+                  #numeric input for single number values
                   numericInput(
                     "cut_z",
                     "Cutoff score on the observed composite:",
@@ -181,10 +186,13 @@ server <- function(input, output) {
   
   #renderUI output for Matrix Inputs
   output$theta_fMatrixUI <- renderUI({
+    #validate makes sure need statements are true before running
     validate(
-      if(length(lambda_rNumeric()) != length(tau_rNumeric())){
-        need(length(lambda_rNumeric()) == length(tau_rNumeric()), "loadings and intercepts need to have the same value")
-      }
+        #don't execute until loadings and intercepts have the same number of values
+        #display message if need statement not met
+        need(length(lambda_rNumeric()) == length(tau_rNumeric()), "loadings and intercepts need to have the same value"),
+        need(input$lambda_r, "Input for factor loadings of reference group is missing\n"),
+        need(input$tau_r, "Input for actor variance-covariance matrix of reference group is missing\n")
     )
     #Create matrixInput for focal
     matrixInput(
@@ -208,9 +216,9 @@ server <- function(input, output) {
   #renderUI output for Matrix Inputs
   output$theta_rMatrixUI <- renderUI({
     validate(
-      if(length(lambda_rNumeric()) != length(tau_rNumeric())){
-        need(length(lambda_rNumeric()) == length(tau_rNumeric()), "loadings and intercepts need to have the same value")
-      }
+      need(length(lambda_rNumeric()) == length(tau_rNumeric()), "loadings and intercepts need to have the same value"),
+      need(input$lambda_r, "Input for factor loadings of reference group is missing\n"),
+      need(input$tau_r, "Input for actor variance-covariance matrix of reference group is missing\n")
     )
     #Create matrixInput for referance 
     matrixInput(
@@ -425,19 +433,22 @@ server <- function(input, output) {
       
       need(input$tau_r, "Input for actor variance-covariance matrix of reference group is missing\n"),
       
+      need(length(lambda_rNumeric()) == length(tau_rNumeric()), "loadings and intercepts need to have the same value"),
+      
       #only checks for numeric input of theta_r when matrix is not being used as input
       if(input$useMatrix == FALSE){
         need(input$theta_r,"Input for measurement intercepts of reference group is missing\n")
       },
       
-      if(length(lambda_rNumeric()) != length(tau_rNumeric())){
-        need(length(lambda_rNumeric()) == length(tau_rNumeric()), "loadings and intercepts need to have the same value")
-      },
+      #probably a better way to do this but for some reason its not liking my && operator
+      #if(input$usetheta_f == TRUE){
+      #    need(length(unique(theta_f()))/length(lambda_fNumeric()) != 1, "theta_f matrix empty")
+      #},
       
-      if(length(unique(theta_rMatrixOutput()))/length(lambda_rNumeric())[1] == 1 && input$useMatrix == TRUE){
-        need(length(unique(theta_rMatrixOutput()))/length(lambda_rNumeric())[1] != 1, "fill out matrix!")
+      
+      if(input$useMatrix == TRUE){
+        need(length(unique(theta_r()))/length(lambda_rNumeric())[1] != 1, "matrix empty")
       }
-      
       
     )
     
