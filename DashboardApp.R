@@ -1,4 +1,5 @@
 
+# Load required packages
 library(shiny)
 library(shinydashboard) #GUI
 library(shinyjs) #show/hide/toggle, reset, inlineCSS
@@ -9,7 +10,7 @@ library(shinyMatrix) #matrixInput
 ui <- dashboardPage(
   dashboardHeader(title = "Computation of Selection Accuracy Indexes",
                   titleWidth = 400),
-  dashboardSidebar(width = 175,
+  dashboardSidebar(width = 105,
                    sidebarMenu(
                      menuItem("Inputs", tabName = "inputs", icon = icon("dashboard")),
                      menuItem("Outputs", tabName = "outputs", icon = icon("table")),
