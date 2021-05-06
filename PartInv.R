@@ -145,7 +145,7 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
 PartInv <- function(propsel, cut_z = NULL, kappa_r, kappa_f = kappa_r, 
                     phi_r, phi_f = phi_r, lambda_r, lambda_f = lambda_r, 
                     Theta_r, Theta_f = Theta_r, tau_r, tau_f = tau_r, 
-                    pmix_ref = 0.5, plot_contour = TRUE, ...) {
+                    pmix_ref = 0.5, plot_contour = TRUE, labels = c("Reference group", "Focal group"), ...) {
   # Evaluate partial measurement invariance using Millsap & Kwok's (2004) 
   # approach
   #
@@ -220,7 +220,9 @@ PartInv <- function(propsel, cut_z = NULL, kappa_r, kappa_f = kappa_r,
                     row.names = c("A (true positive)", "B (false positive)", 
                                   "C (true negative)", "D (false negative)", 
                                   "Proportion selected", "Success ratio", 
-                                  "Sensitivity", "Specificity"))
+                                  "Sensitivity", "Specificity")
+                   )
+  colnames(dat) <- labels
   p <- NULL
   if (plot_contour) {
     x_lim <- range(c(kappa_r + c(-3, 3) * sd_xir, 
@@ -235,7 +237,7 @@ PartInv <- function(propsel, cut_z = NULL, kappa_r, kappa_f = kappa_r,
     contour_bvnorm(kappa_f, sd_xif, mean_zf, sd_zf, cov12 = cov_z_xif, 
                    add = TRUE, lty = "dashed", lwd = 2, col = "blue", 
                    ...)
-    legend("topleft", c("Reference group", "Focal group"),
+    legend("topleft", labels,
            lty = c("solid", "dashed"), col = c("red", "blue"))
     abline(h = cut_z, v = cut_xi)
     x_cord <- rep(cut_xi + c(.25, -.25) * sd_xir, 2)
@@ -246,18 +248,18 @@ PartInv <- function(propsel, cut_z = NULL, kappa_r, kappa_f = kappa_r,
   list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
        summary = round(dat, 3), p = p)
 }
-
-#PartInv(.25, kappa_r = 0.5, kappa_f = 0, phi_r = 1, 
-#      lambda_r = c(.3, .5, .9, .7), tau_r = c(.225, .025, .010, .240), 
-#      Theta_r = diag(.96, 4))
-
-# PartInv(cut_z = 3.23, kappa_r = 0.5, kappa_f = 0, phi_r = 1, 
-#         lambda_r = c(.3, .5, .9, .7), tau_r = c(.225, .025, .010, .240), 
-#         Theta_r = diag(.96, 4))
 # 
-# PartInv(.25, kappa_r = 0.5, kappa_f = 0, phi_r = 1, 
-#         lambda_r = c(.3, .5, .9, .7), tau_r = c(.225, .025, .010, .240), 
-#         tau_f = c(.225, -.05, .240, -.025), 
+# PartInv(.25, kappa_r = 0.5, kappa_f = 0, phi_r = 1,
+#      lambda_r = c(.3, .5, .9, .7), tau_r = c(.225, .025, .010, .240),
+#      Theta_r = diag(.96, 4), labels = c("female", "male"))[4]
+# 
+# PartInv(cut_z = 3.23, kappa_r = 0.5, kappa_f = 0, phi_r = 1,
+#         lambda_r = c(.3, .5, .9, .7), tau_r = c(.225, .025, .010, .240),
+#         Theta_r = diag(.96, 4), labels = c("Junior", "Senior"))
+# 
+# PartInv(.25, kappa_r = 0.5, kappa_f = 0, phi_r = 1,
+#         lambda_r = c(.3, .5, .9, .7), tau_r = c(.225, .025, .010, .240),
+#         tau_f = c(.225, -.05, .240, -.025),
 #         Theta_r = diag(.96, 4))
 # 
 # PartInv(propsel = .25, kappa_r = 0.5, kappa_f = 0, phi_r = 1, 
