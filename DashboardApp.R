@@ -13,13 +13,14 @@ ui <- dashboardPage(
   dashboardSidebar(width = 105,
                    sidebarMenu(
                      menuItem("Inputs", tabName = "inputs", icon = icon("dashboard")),
-                     menuItem("Outputs", tabName = "outputs", icon = icon("table")),
-                     menuItem("Other", tabName = "other", icon = icon("th"))
+                     menuItem("Outputs", tabName = "outputs", icon = icon("table"))
+                     #third menu item for future implementation
+                     #menuItem("Other", tabName = "other", icon = icon("th"))
                    )),
   dashboardBody(
     #include for shinyjs features to work
     useShinyjs(),
-    #inlinecss using shinyjs and css for matrixInput styling
+    #inlinecss using shinyjs, implements css for matrixInput styling
     inlineCSS(
       ".matrix-input-table td
           {
@@ -27,7 +28,8 @@ ui <- dashboardPage(
               padding: 0px 8px;
               color: #333333;
               height: 35px !important;
-          }"
+          } "
+      
     ),
     #pages
     tabItems(
@@ -51,6 +53,7 @@ ui <- dashboardPage(
                     'Input factor loadings \\( \\lambda \\) for the focal group',
                     placeholder = "1.00, 1.66, 2.30, 2.29"
                   ),
+                  #switchInput button using shinyWidgets
                   switchInput("uselambda_f", "Focal group?", FALSE),
                   textInput(
                     'tau_r',
@@ -64,8 +67,12 @@ ui <- dashboardPage(
                   ),
                   switchInput("usetau_f", "Focal group?", FALSE),
                   h4('unique factor variance-covariance'),
-                  switchInput("useMatrix", "Matrix input?", FALSE, inline = TRUE),
-                  switchInput("usetheta_f", "Focal group?", FALSE, inline = TRUE),
+                  
+                  #div to style buttons inline
+                  div(style = "display:inline-block, float:right",
+                      switchInput("useMatrix", "Matrix input?", FALSE, inline = TRUE),
+                      switchInput("usetheta_f", "Focal group?", FALSE, inline = TRUE)),
+                  
                   textInput(
                     'theta_r',
                     'Input the diagonal of the unique factor variance-covariance matrix \\( \\theta \\) for the reference group',
@@ -86,8 +93,10 @@ ui <- dashboardPage(
                     max = 5,
                     value = 2
                   ),
+                  #strong is a text output in bold
+                  strong(id ="theta_rMatrixTitle", "input the unique factor variance-covariance matrix \\( \\theta \\) for the referance group"),
                   #uiOutput used for dynamic inputs
-                  #allows slider to change size of matrixInput
+                  #Outputs matrix rows & cols based on number of values in lambda_r
                   #logic defined in renderUI
                   uiOutput("theta_rMatrixUI"),
                   sliderInput(
@@ -100,11 +109,12 @@ ui <- dashboardPage(
                   strong(id ="theta_fMatrixTitle","input the unique factor variance-covariance matrix \\( \\theta \\) for the focal group"),
                   uiOutput("theta_fMatrixUI"),
                 ),
-                #next column
+                #next box column
                 box(
                   #use propsel
-                  switchInput("usepropsel", "Select a part of population?", FALSE),
+                  switchInput("usepropsel", "Select population based on percentage?", FALSE),
                   #plot contour TF
+                  #numeric input for single number values
                   numericInput(
                     "cut_z",
                     "Cutoff score on the observed composite:",
@@ -174,14 +184,14 @@ ui <- dashboardPage(
                and Observed Test Scores", plotOutput("distPlot")),
                   box(title = "Impact of Item Bias on Selection Accuracy Indices", tableOutput("table"))
                 )
-              ))),
-      #unused third page
-      tabItem(tabName = "other",
-              fluidPage(fluidRow(
-                h2("Other"),
-                fluidRow(box(title = "future content"),)
-                
               )))
+      #,
+      #unused third page for future implementation
+      #tabItem(tabName = "other",
+              #fluidPage(fluidRow(
+                #h2("Other"),
+                #fluidRow(box(title = "future content"),)
+              #)))
     )
   )
 )
@@ -193,12 +203,19 @@ server <- function(input, output) {
   
   #renderUI output for Matrix Inputs
   output$theta_fMatrixUI <- renderUI({
-    
+    #validate makes sure need statements are true before running
+    validate(
+        #don't execute until loadings and intercepts have the same number of values
+        #display message if need statement not met
+        need(length(lambda_rNumeric()) == length(tau_rNumeric()), "loadings and intercepts need to have the same value"),
+        need(input$lambda_r, "Input for factor loadings of reference group is missing\n"),
+        need(input$tau_r, "Input for actor variance-covariance matrix of reference group is missing\n")
+    )
     #Create matrixInput for focal
     matrixInput(
       "theta_fMatrixInput",
-      #use input from matrixSlider to determine x and y size of matrix
-      value = matrix("1", input$matrixSlider, input$matrixSlider),
+      #use length of lamda_rNumeric() vector function to determine x and y size of matrix
+      value = matrix("0", length(lambda_rNumeric()), length(lambda_rNumeric())),
       rows = list(),
       cols = list(names = FALSE,
                   extend = FALSE),
@@ -215,11 +232,16 @@ server <- function(input, output) {
   
   #renderUI output for Matrix Inputs
   output$theta_rMatrixUI <- renderUI({
+    validate(
+      need(length(lambda_rNumeric()) == length(tau_rNumeric()), "loadings and intercepts need to have the same value"),
+      need(input$lambda_r, "Input for factor loadings of reference group is missing\n"),
+      need(input$tau_r, "Input for actor variance-covariance matrix of reference group is missing\n")
+    )
     #Create matrixInput for referance 
     matrixInput(
       "theta_rMatrixInput",
-      #use input from matrixSlider to determine x and y size of matrix
-      value = matrix("1", input$matrixSlider, input$matrixSlider),
+      #use length of lamda_rNumeric() vector function to determine x and y size of matrix
+      value = matrix("0", length(lambda_rNumeric()), length(lambda_rNumeric())),
       rows = list(),
       cols = list(names = FALSE,
                   extend = FALSE),
@@ -272,7 +294,7 @@ server <- function(input, output) {
       shinyjs::show(id = "theta_f")
       shinyjs::show(id = "theta_r")
       
-      shinyjs::hide(id = "matrixSlider")
+      shinyjs::hide(id = "theta_rMatrixTitle")
       shinyjs::hide(id = "theta_rMatrixUI")
       shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
@@ -281,8 +303,8 @@ server <- function(input, output) {
       shinyjs::hide(id = "theta_f")
       shinyjs::show(id = "theta_r")
       
+      shinyjs::hide(id = "theta_rMatrixTitle")
       shinyjs::hide(id = "theta_rMatrixUI")
-      shinyjs::hide(id = "matrixSlider")
       shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
     }
@@ -290,7 +312,7 @@ server <- function(input, output) {
       shinyjs::hide(id = "theta_f")
       shinyjs::hide(id = "theta_r")
       
-      shinyjs::show(id = "matrixSlider")
+      shinyjs::show(id = "theta_rMatrixTitle")
       shinyjs::show(id = "theta_rMatrixUI")
       shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
@@ -299,10 +321,10 @@ server <- function(input, output) {
       shinyjs::hide(id = "theta_f")
       shinyjs::hide(id = "theta_r")
       
+      shinyjs::show(id = "theta_rMatrixTitle")
       shinyjs::show(id = "theta_rMatrixUI")
       shinyjs::show(id = "theta_fMatrixTitle")
       shinyjs::show(id = "theta_fMatrixUI")
-      shinyjs::show(id = "matrixSlider")
     }
     
   })
@@ -317,8 +339,6 @@ server <- function(input, output) {
     reset("usekappa_f")
     reset("usephi_f")
     reset("useMatrix")
-    reset("theta_rSlider")
-    reset("theta_fSlider")
     
     reset("prop")
     reset("cut_z")
@@ -422,17 +442,31 @@ server <- function(input, output) {
   
   #distribution plot output
   output$distPlot <- renderPlot({
-    
     #makes sure inputs are filled before program runs
     #prevents error messages from popping up
     #displays message telling user what inputs need to be filled
     validate(
       need(input$lambda_r, "Input for factor loadings of reference group is missing\n"),
+      
       need(input$tau_r, "Input for actor variance-covariance matrix of reference group is missing\n"),
+      
+      need(length(lambda_rNumeric()) == length(tau_rNumeric()), "loadings and intercepts need to have the same value"),
+      
       #only checks for numeric input of theta_r when matrix is not being used as input
       if(input$useMatrix == FALSE){
         need(input$theta_r,"Input for measurement intercepts of reference group is missing\n")
+      },
+      
+      #probably a better way to do this but for some reason its not liking my && operator
+      #if(input$usetheta_f == TRUE){
+      #    need(length(unique(theta_f()))/length(lambda_fNumeric()) != 1, "theta_f matrix empty")
+      #},
+      
+      
+      if(input$useMatrix == TRUE){
+        need(length(unique(theta_r()))/length(lambda_rNumeric())[1] != 1, "matrix empty")
       }
+      
     )
     
     if (input$usepropsel == FALSE) {
