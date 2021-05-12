@@ -75,45 +75,28 @@ ui <- dashboardPage(
                   
                   textInput(
                     'theta_r',
-                    'Input the diagonal of the unique factor variance-covariance matrix \\( \\theta \\) for the reference group',
+                    'Input the diagonal of the unique factor variance-covariance matrix \\( \\Theta \\) for the reference group',
                     placeholder = "1.20, 0.81, 0.32, 0.32"
                     
                   ),
                   textInput(
                     'theta_f',
-                    'Input the diagonal of the unique factor variance-covariance matrix \\( \\theta \\) for the focal group',
+                    'Input the diagonal of the unique factor variance-covariance matrix \\( \\Theta \\) for the focal group',
                     placeholder = "0.72, 0.81, 0.32, 0.32"
                   ),
-                  #sliderInput for size of matrix
-                  #also includes title for theta_rMatrix
-                  sliderInput(
-                    "matrixSlider",
-                    "Input the unique factor variance-covariance matrix \\( \\theta \\)for the reference group",
-                    min = 2,
-                    max = 5,
-                    value = 2
-                  ),
+                  
                   #strong is a text output in bold
-                  strong(id ="theta_rMatrixTitle", "input the unique factor variance-covariance matrix \\( \\theta \\) for the referance group"),
+                  strong(id ="theta_rMatrixTitle", "input the unique factor variance-covariance matrix \\( \\Theta \\) for the referance group"),
                   #uiOutput used for dynamic inputs
                   #Outputs matrix rows & cols based on number of values in lambda_r
                   #logic defined in renderUI
                   uiOutput("theta_rMatrixUI"),
-                  sliderInput(
-                    "theta_fSlider",
-                    "Input the unique factor variance-covariance matrix \\( \\theta \\) for the focal group",
-                    min = 2,
-                    max = 5,
-                    value = 2
-                  ),
-                  strong(id ="theta_fMatrixTitle","input the unique factor variance-covariance matrix \\( \\theta \\) for the focal group"),
+                  strong(id ="theta_fMatrixTitle","input the unique factor variance-covariance matrix \\( \\Theta \\) for the focal group"),
                   uiOutput("theta_fMatrixUI"),
                 ),
                 #next box column
                 box(
-                  #use propsel
-                  switchInput("usepropsel", "Select population based on percentage?", FALSE),
-                  #plot contour TF
+                  switchInput("usepropsel", "Select 10% population?", FALSE),
                   #numeric input for single number values
                   numericInput(
                     "cut_z",
@@ -126,7 +109,7 @@ ui <- dashboardPage(
                   numericInput(
                     "prop",
                     "Selection proportion:",
-                    value = 0.25,
+                    value = 0.5,
                     min = 0,
                     max = 1,
                     step = 0.01
