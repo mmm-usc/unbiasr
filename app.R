@@ -9,6 +9,7 @@ library(rsconnect) #connect to server Shinyapps.io
 
 #dashboardPage UI using shinydashboard
 ui <- dashboardPage(
+  
   dashboardHeader(title = "Computation of Selection Accuracy Indexes",
                   titleWidth = 400),
   dashboardSidebar(width = 105,
@@ -19,27 +20,22 @@ ui <- dashboardPage(
                      #menuItem("Other", tabName = "other", icon = icon("th"))
                    )),
   dashboardBody(
+    tags$head(tags$style(HTML('
+                              #outputBoxTwo {overflow-y: auto; height: 350px}
+                              .box {margin:5px;}
+                              .col-sm-4 {padding:12px !important;}
+                              .col-sm-8 {padding:12px !important;}'
+    ))),
     #include for shinyjs features to work
     useShinyjs(),
-    #inlinecss using shinyjs, implements css for matrixInput styling
-    inlineCSS(
-      ".matrix-input-table td
-          {
-              border:1px solid #D3D3D3;
-              padding: 0px 8px;
-              color: #333333;
-              height: 35px !important;
-          } "
-      
-    ),
     #pages
     tabItems(
       #frontpage
       tabItem(tabName = "inputs",
               #withMathJax() for greek char display
               fluidPage(withMathJax(), fluidRow(
-                h1("INPUTS"),
-                box(
+                box(title = "directions", width=12,  solidHeader = TRUE),
+                box(title = "inputs", status = "primary", solidHeader = TRUE, width= 4,
                   #style for alignment of reset button
                   div(style = "display:inline-block;margin-right: 52%;padding-bottom: 10px;",
                       actionButton("resetButton", "reset inputs")),
@@ -94,10 +90,7 @@ ui <- dashboardPage(
                   uiOutput("theta_rMatrixUI"),
                   strong(id ="theta_fMatrixTitle","input the unique factor variance-covariance matrix \\( \\Theta \\) for the focal group"),
                   uiOutput("theta_fMatrixUI"),
-               ),
-                #next column
-
-                box(
+               
                   switchInput("usepropsel", "Select 10% population?", FALSE),
                   #numeric input for single number values
                   numericInput(
@@ -164,17 +157,20 @@ ui <- dashboardPage(
                   textInput('legend_f',
                             'Input label for the focal group',
                             value = "Focal group")
-                )
+                ),
+                
+                  box(id = "outputBox", title = "Relationship Between True Latent Construct Scores
+               and Observed Test Scores", status = "primary", solidHeader = TRUE, width=8, plotOutput("distPlot")),
+                  box(id = "outputBoxTwo", title = "Impact of Item Bias on Selection Accuracy Indices", status = "primary", solidHeader = TRUE, width=8, tableOutput("table"))
+                
+                
               ))),
+      
       #output page
       tabItem(tabName = "outputs",
               fluidPage(fluidRow(
                 h2("OUTPUTS"),
-                fluidRow(
-                  box(title = "Relationship Between True Latent Construct Scores
-               and Observed Test Scores", plotOutput("distPlot")),
-                  box(title = "Impact of Item Bias on Selection Accuracy Indices", tableOutput("table"))
-                )
+                
               )))
       #,
       #unused third page for future implementation
@@ -506,12 +502,27 @@ server <- function(input, output) {
     #makes sure inputs are filled before program runs
     #prevents error messages from popping up
     validate(
-      need(input$lambda_r,""),
-      need(input$tau_r,""),
+      need(input$lambda_r, "Input for factor loadings of reference group is missing\n"),
+      
+      need(input$tau_r, "Input for actor variance-covariance matrix of reference group is missing\n"),
+      
+      need(length(lambda_rNumeric()) == length(tau_rNumeric()), "loadings and intercepts need to have the same value"),
+      
       #only checks for numeric input of theta_r when matrix is not being used as input
       if(input$useMatrix == FALSE){
-        need(input$theta_r,"")
+        need(input$theta_r,"Input for measurement intercepts of reference group is missing\n")
+      },
+      
+      #probably a better way to do this but for some reason its not liking my && operator
+      #if(input$usetheta_f == TRUE){
+      #    need(length(unique(theta_f()))/length(lambda_fNumeric()) != 1, "theta_f matrix empty")
+      #},
+      
+      
+      if(input$useMatrix == TRUE){
+        need(length(unique(theta_r()))/length(lambda_rNumeric())[1] != 1, "matrix empty")
       }
+      
     )
     
     if (input$usepropsel == FALSE) {
