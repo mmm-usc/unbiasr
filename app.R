@@ -14,13 +14,15 @@ ui <- dashboardPage(
                   titleWidth = 400),
   dashboardSidebar(width = 105,
                    sidebarMenu(
-                     menuItem("Inputs", tabName = "inputs", icon = icon("dashboard")),
-                     menuItem("Outputs", tabName = "outputs", icon = icon("table"))
+                     menuItem("FirstPage", tabName = "firstpage", icon = icon("dashboard")),
+                     menuItem("Other", tabName = "other", icon = icon("table"))
                      #third menu item for future implementation
                      #menuItem("Other", tabName = "other", icon = icon("th"))
                    )),
   dashboardBody(
     tags$head(tags$style(HTML('
+    
+    
                               #outputBoxTwo {overflow-y: auto; height: 350px}
                               .box {margin:5px;}
                               .col-sm-4 {padding:12px !important;}
@@ -31,11 +33,12 @@ ui <- dashboardPage(
     #pages
     tabItems(
       #frontpage
-      tabItem(tabName = "inputs",
+      tabItem(tabName = "firstpage",
               #withMathJax() for greek char display
               fluidPage(withMathJax(), fluidRow(
-                box(title = "directions", width=12,  solidHeader = TRUE),
-                box(title = "inputs", status = "primary", solidHeader = TRUE, width= 4,
+                box(title = "directions", status = "primary", width=12,  solidHeader = FALSE,
+                    p("Pellentesque aliquam, nibh in posuere ullamcorper, nisl tortor tempus ipsum, id elementum diam orci eget ex. Morbi id lacus libero. Vestibulum fermentum imperdiet ultricies. In volutpat eleifend tincidunt. Duis luctus ligula eget lorem sollicitudin maximus. Nunc cursus interdum orci, eu auctor lorem pellentesque eu. Ut tincidunt mauris a mi consequat condimentum. Integer semper ultrices eros, a suscipit dolor porttitor sit amet.")),
+                box(title = "inputs", status = "primary", solidHeader = FALSE, width= 4,
                   #style for alignment of reset button
                   div(style = "display:inline-block;margin-right: 52%;padding-bottom: 10px;",
                       actionButton("resetButton", "reset inputs")),
@@ -50,8 +53,8 @@ ui <- dashboardPage(
                     'Input factor loadings \\( \\lambda \\) for the focal group',
                     placeholder = "1.00, 1.66, 2.30, 2.29"
                   ),
-                  #switchInput button using shinyWidgets
-                  switchInput("uselambda_f", "Focal group?", FALSE),
+                  #materialSwitch button using shinyWidgets
+                  materialSwitch("uselambda_f", "Focal group?", status = "primary", FALSE),
                   textInput(
                     'tau_r',
                     'Input measurement intercepts \\( \\tau \\) for the reference group',
@@ -62,13 +65,13 @@ ui <- dashboardPage(
                     'Input measurement intercepts \\( \\tau \\) for the focal group',
                     placeholder = "0.68, 1.36, 1.16, 1.08"
                   ),
-                  switchInput("usetau_f", "Focal group?", FALSE),
+                  materialSwitch("usetau_f", "Focal group?", status = "primary", FALSE),
                   h4('unique factor variance-covariance'),
                   
                   #div to style buttons inline
                   div(style = "display:inline-block, float:right",
-                      switchInput("useMatrix", "Matrix input?", FALSE, inline = TRUE),
-                      switchInput("usetheta_f", "Focal group?", FALSE, inline = TRUE)),
+                      materialSwitch("useMatrix", "Matrix input?", status = "primary", FALSE, inline = TRUE),
+                      materialSwitch("usetheta_f", "Focal group?", status = "primary", FALSE, inline = TRUE)),
                   
                   textInput(
                     'theta_r',
@@ -91,7 +94,7 @@ ui <- dashboardPage(
                   strong(id ="theta_fMatrixTitle","input the unique factor variance-covariance matrix \\( \\Theta \\) for the focal group"),
                   uiOutput("theta_fMatrixUI"),
                
-                  switchInput("usepropsel", "Select 10% population?", FALSE),
+                  materialSwitch("usepropsel", "Select 10% population?", status = "primary", FALSE),
                   #numeric input for single number values
                   numericInput(
                     "cut_z",
@@ -133,7 +136,7 @@ ui <- dashboardPage(
                     max = 1,
                     step = 0.01
                   ),
-                  switchInput("usekappa_f", "Focal group?", FALSE),
+                  materialSwitch("usekappa_f", "Focal group?", status = "primary", FALSE),
                   numericInput(
                     "phi_r",
                     "Latent factor variance \\( \\phi \\) for the reference group:",
@@ -150,7 +153,7 @@ ui <- dashboardPage(
                     max = 1,
                     step = 0.01
                   ),
-                  switchInput("usephi_f", "Focal group?", FALSE),
+                  materialSwitch("usephi_f", "Focal group?", status = "primary", FALSE),
                   textInput('legend_r',
                             'Input reference group label',
                             value = "Reference group"),
@@ -160,14 +163,14 @@ ui <- dashboardPage(
                 ),
                 
                   box(id = "outputBox", title = "Relationship Between True Latent Construct Scores
-               and Observed Test Scores", status = "primary", solidHeader = TRUE, width=8, plotOutput("distPlot")),
-                  box(id = "outputBoxTwo", title = "Impact of Item Bias on Selection Accuracy Indices", status = "primary", solidHeader = TRUE, width=8, tableOutput("table"))
+               and Observed Test Scores", status = "primary", solidHeader = FALSE, width=8, plotOutput("distPlot")),
+                  box(id = "outputBoxTwo", title = "Impact of Item Bias on Selection Accuracy Indices", status = "primary", solidHeader = FALSE, width=8, tableOutput("table"))
                 
                 
               ))),
       
       #output page
-      tabItem(tabName = "outputs",
+      tabItem(tabName = "other",
               fluidPage(fluidRow(
                 h2("OUTPUTS"),
                 
