@@ -3,7 +3,7 @@
 library(shiny)
 library(shinydashboard) #GUI
 library(shinyjs) #show/hide/toggle, reset, inlineCSS
-library(shinyWidgets) #switchInput
+library(shinyWidgets) #materialSwitch
 library(shinyMatrix) #matrixInput
 library(rsconnect) #connect to server Shinyapps.io 
 
@@ -15,24 +15,22 @@ ui <- dashboardPage(
   dashboardSidebar(width = 105,
                    sidebarMenu(
                      menuItem("FirstPage", tabName = "firstpage", icon = icon("dashboard")),
+                     #unused
                      menuItem("Other", tabName = "other", icon = icon("table"))
-                     #third menu item for future implementation
-                     #menuItem("Other", tabName = "other", icon = icon("th"))
                    )),
   dashboardBody(
-    tags$head(tags$style(HTML('
-    
-    
-                              #outputBoxTwo {overflow-y: auto; height: 350px}
+    #include for shinyjs features to work
+    useShinyjs(),
+    #inlineCSS using shinyjs to style margins and padding as well as size of box
+    inlineCSS('
+                              #outputTableBox {overflow-y: auto; height: 350px}
                               .box {margin:5px;}
                               .col-sm-4 {padding:12px !important;}
                               .col-sm-8 {padding:12px !important;}'
-    ))),
-    #include for shinyjs features to work
-    useShinyjs(),
+    ),
     #pages
     tabItems(
-      #frontpage
+      #page one
       tabItem(tabName = "firstpage",
               #withMathJax() for greek char display
               fluidPage(withMathJax(), fluidRow(
@@ -164,24 +162,15 @@ ui <- dashboardPage(
                 
                   box(id = "outputBox", title = "Relationship Between True Latent Construct Scores
                and Observed Test Scores", status = "primary", solidHeader = FALSE, width=8, plotOutput("distPlot")),
-                  box(id = "outputBoxTwo", title = "Impact of Item Bias on Selection Accuracy Indices", status = "primary", solidHeader = FALSE, width=8, tableOutput("table"))
+                  box(id = "outputTableBox", title = "Impact of Item Bias on Selection Accuracy Indices", status = "primary", solidHeader = FALSE, width=8, tableOutput("table"))
                 
                 
               ))),
       
-      #output page
+      #second page
       tabItem(tabName = "other",
               fluidPage(fluidRow(
-                h2("OUTPUTS"),
-                
               )))
-      #,
-      #unused third page for future implementation
-      #tabItem(tabName = "other",
-              #fluidPage(fluidRow(
-                #h2("Other"),
-                #fluidRow(box(title = "future content"),)
-              #)))
     )
   )
 )
@@ -447,12 +436,6 @@ server <- function(input, output) {
         need(input$theta_r,"Input for measurement intercepts of reference group is missing\n")
       },
       
-      #probably a better way to do this but for some reason its not liking my && operator
-      #if(input$usetheta_f == TRUE){
-      #    need(length(unique(theta_f()))/length(lambda_fNumeric()) != 1, "theta_f matrix empty")
-      #},
-      
-      
       if(input$useMatrix == TRUE){
         need(length(unique(theta_r()))/length(lambda_rNumeric())[1] != 1, "matrix empty")
       }
@@ -515,13 +498,7 @@ server <- function(input, output) {
       if(input$useMatrix == FALSE){
         need(input$theta_r,"Input for measurement intercepts of reference group is missing\n")
       },
-      
-      #probably a better way to do this but for some reason its not liking my && operator
-      #if(input$usetheta_f == TRUE){
-      #    need(length(unique(theta_f()))/length(lambda_fNumeric()) != 1, "theta_f matrix empty")
-      #},
-      
-      
+ 
       if(input$useMatrix == TRUE){
         need(length(unique(theta_r()))/length(lambda_rNumeric())[1] != 1, "matrix empty")
       }
@@ -570,5 +547,5 @@ server <- function(input, output) {
   })
 }
 
-# you dont use this with out server
+#server component
 shinyApp(ui = ui, server = server)
