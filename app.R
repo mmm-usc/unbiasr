@@ -60,7 +60,7 @@ ui <- dashboardPage(
                     #textInput for multi-value inputs
                     textInput(
                       'lambda_r',
-                      'Input factor loadings \\( \\lambda \\) for the reference group',
+                      'Reference group factor loadings \\( \\lambda \\)',
                       placeholder = "1.00, 1.66, 2.30, 2.29"
                     ),
                     textInput(
@@ -72,7 +72,7 @@ ui <- dashboardPage(
                     materialSwitch("uselambda_f", "Focal group?", status = "primary", FALSE),
                     textInput(
                       'tau_r',
-                      'Input measurement intercepts \\( \\tau \\) for the reference group',
+                      'Reference group measurement intercepts \\( \\tau \\)',
                       placeholder = "1.54, 1.36, 1.16, 1.08"
                     ),
                     textInput(
@@ -81,7 +81,7 @@ ui <- dashboardPage(
                       placeholder = "0.68, 1.36, 1.16, 1.08"
                     ),
                     materialSwitch("usetau_f", "Focal group?", status = "primary", FALSE),
-                    h4('unique factor variance-covariance'),
+                    h4('Unique variance-covariance'),
                     
                     #div to style buttons inline
                     div(
@@ -104,7 +104,7 @@ ui <- dashboardPage(
                     
                     textInput(
                       'theta_r',
-                      'Input the diagonal of the unique factor variance-covariance matrix \\( \\Theta \\) for the reference group',
+                      'Reference group uniqueness \\( \\theta \\)',
                       placeholder = "1.20, 0.81, 0.32, 0.32"
                       
                     ),
@@ -544,16 +544,16 @@ server <- function(input, output) {
       ),
       need(
         input$tau_r,
-        "Input for actor variance-covariance matrix of reference group is missing\n"
+        "Input for measurement intercepts of reference group is missing\n"
       ),
       need(
         length(lambda_rNumeric()) == length(tau_rNumeric()),
-        "loadings and intercepts need to have the same value"
+        "loadings and intercepts need to have the same length"
       ),
       #only checks for numeric input of theta_r when matrix is not being used as input
       if (input$useMatrix == FALSE) {
         need(input$theta_r,
-             "Input for measurement intercepts of reference group is missing\n")
+             "Input for unique variance-covariance matrix of reference group is missing\n")
       },
       if (input$useMatrix == TRUE) {
         need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
