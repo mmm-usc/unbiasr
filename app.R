@@ -30,8 +30,8 @@ ui <- dashboardPage(
       '
           #outputTableBox {overflow-y: auto; height: 350px}
           .box {margin:5px;}
-          .col-sm-4 {padding:12px !important;}
-          .col-sm-8 {padding:12px !important;}'
+          .col-sm-4 {padding:6px !important;}
+          .col-sm-8 {padding:6px !important;}'
     ),
     #pages
     tabItems(
@@ -39,7 +39,8 @@ ui <- dashboardPage(
       tabItem(tabName = "firstpage",
               #withMathJax() for greek char display
               fluidPage(
-                withMathJax(), fluidRow(
+                withMathJax(), 
+                fluidRow(
                   box(
                     title = "directions",
                     status = "primary",
@@ -49,14 +50,27 @@ ui <- dashboardPage(
                       "Pellentesque aliquam, nibh in posuere ullamcorper, nisl tortor tempus ipsum, id elementum diam orci eget ex. Morbi id lacus libero. Vestibulum fermentum imperdiet ultricies. In volutpat eleifend tincidunt. Duis luctus ligula eget lorem sollicitudin maximus. Nunc cursus interdum orci, eu auctor lorem pellentesque eu. Ut tincidunt mauris a mi consequat condimentum. Integer semper ultrices eros, a suscipit dolor porttitor sit amet."
                     )
                   ),
+                  column(width = 4,
                   box(
                     title = "inputs",
                     status = "primary",
                     solidHeader = FALSE,
-                    width = 4,
+                    width = 12,
                     #style for alignment of reset button
                     div(style = "display:inline-block;margin-right: 52%;padding-bottom: 10px;",
                         actionButton("resetButton", "reset inputs")),
+                    textInput('legend_r',
+                              'Input reference group label',
+                              value = "Reference group"),
+                    textInput('legend_f',
+                              'Input label for the focal group',
+                              value = "Focal group")
+                  ),
+                  box(
+                    title = "intercepts and loadings",
+                    status = "primary",
+                    solidHeader = FALSE,
+                    width = 12,
                     #textInput for multi-value inputs
                     textInput(
                       'lambda_r',
@@ -81,7 +95,13 @@ ui <- dashboardPage(
                       placeholder = "0.68, 1.36, 1.16, 1.08"
                     ),
                     materialSwitch("usetau_f", "Focal group?", status = "primary", FALSE),
-                    h4('unique factor variance-covariance'),
+                    
+                  ),
+                  box(
+                    title = "unique factor variance-covariance",
+                    status = "primary",
+                    solidHeader = FALSE,
+                    width = 12,
                     
                     #div to style buttons inline
                     div(
@@ -129,32 +149,15 @@ ui <- dashboardPage(
                     ),
                     uiOutput("theta_fMatrixUI"),
                     
-                    materialSwitch("usepropsel", "Select 10% population?", status = "primary", FALSE),
-                    #numeric input for single number values
-                    numericInput(
-                      "cut_z",
-                      "Cutoff score on the observed composite:",
-                      value = 0.5,
-                      min = 0,
-                      max = 1,
-                      step = 0.01
-                    ),
-                    numericInput(
-                      "prop",
-                      "Selection proportion:",
-                      value = 0.5,
-                      min = 0,
-                      max = 1,
-                      step = 0.01
-                    ),
-                    numericInput(
-                      "pmix",
-                      "Mixing proportion:",
-                      value = 0.5,
-                      min = 0,
-                      max = 1,
-                      step = 0.01
-                    ),
+                  ),
+                  
+                  
+                  
+                  box(
+                    title = "mean and variances",
+                    status = "primary",
+                    solidHeader = FALSE,
+                    width = 12,
                     numericInput(
                       "kappa_r",
                       "Latent factor mean \\( \\kappa \\) for the reference group:",
@@ -189,13 +192,42 @@ ui <- dashboardPage(
                       step = 0.01
                     ),
                     materialSwitch("usephi_f", "Focal group?", status = "primary", FALSE),
-                    textInput('legend_r',
-                              'Input reference group label',
-                              value = "Reference group"),
-                    textInput('legend_f',
-                              'Input label for the focal group',
-                              value = "Focal group")
                   ),
+                  box(
+                    title = "cutoffs and mixing proportion",
+                    status = "primary",
+                    solidHeader = FALSE,
+                    width = 12,
+                    materialSwitch("usepropsel", "Select 10% population?", status = "primary", FALSE),
+                    #numeric input for single number values
+                    numericInput(
+                      "cut_z",
+                      "Cutoff score on the observed composite:",
+                      value = 0.5,
+                      min = 0,
+                      max = 1,
+                      step = 0.01
+                    ),
+                    numericInput(
+                      "prop",
+                      "Selection proportion:",
+                      value = 0.5,
+                      min = 0,
+                      max = 1,
+                      step = 0.01
+                    ),
+                    numericInput(
+                      "pmix",
+                      "Mixing proportion:",
+                      value = 0.5,
+                      min = 0,
+                      max = 1,
+                      step = 0.01
+                    ),
+                  ),
+                  ),
+                  
+                  
                   
                   box(
                     id = "outputBox",
@@ -233,22 +265,22 @@ server <- function(input, output) {
   #renderUI output for Matrix Inputs
   output$theta_fMatrixUI <- renderUI({
     #validate makes sure need statements are true before running
-    validate(
-      #don't execute until loadings and intercepts have the same number of values
-      #display message if need statement not met
-      need(
-        length(lambda_rNumeric()) == length(tau_rNumeric()),
-        "loadings and intercepts need to have the same value"
-      ),
-      need(
-        input$lambda_r,
-        "Input for factor loadings of reference group is missing\n"
-      ),
-      need(
-        input$tau_r,
-        "Input for actor variance-covariance matrix of reference group is missing\n"
-      )
-    )
+    # validate(
+    #   #don't execute until loadings and intercepts have the same number of values
+    #   #display message if need statement not met
+    #   need(
+    #     length(lambda_rNumeric()) == length(tau_rNumeric()),
+    #     "loadings and intercepts need to have the same value"
+    #   ),
+    #   need(
+    #     input$lambda_r,
+    #     "Input for factor loadings of reference group is missing\n"
+    #   ),
+    #   need(
+    #     input$tau_r,
+    #     "Input for actor variance-covariance matrix of reference group is missing\n"
+    #   )
+    # )
     #Create matrixInput for focal
     matrixInput(
       "theta_fMatrixInput",
@@ -267,20 +299,20 @@ server <- function(input, output) {
   })
   #renderUI output for Matrix Inputs
   output$theta_rMatrixUI <- renderUI({
-    validate(
-      need(
-        length(lambda_rNumeric()) == length(tau_rNumeric()),
-        "loadings and intercepts need to have the same value"
-      ),
-      need(
-        input$lambda_r,
-        "Input for factor loadings of reference group is missing\n"
-      ),
-      need(
-        input$tau_r,
-        "Input for actor variance-covariance matrix of reference group is missing\n"
-      )
-    )
+    # validate(
+    #   need(
+    #     length(lambda_rNumeric()) == length(tau_rNumeric()),
+    #     "loadings and intercepts need to have the same value"
+    #   ),
+    #   need(
+    #     input$lambda_r,
+    #     "Input for factor loadings of reference group is missing\n"
+    #   ),
+    #   need(
+    #     input$tau_r,
+    #     "Input for actor variance-covariance matrix of reference group is missing\n"
+    #   )
+    # )
     #Create matrixInput for reference
     matrixInput(
       inputId = "theta_rMatrixInput",
