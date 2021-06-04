@@ -119,6 +119,12 @@ ui <- dashboardPage(
                         status = "primary",
                         FALSE,
                         inline = TRUE
+<<<<<<< Updated upstream
+=======
+                      ),
+                      sliderInput("matrixSlider", "Matrix Size",
+                                  min = 2, max = 5, value = 4
+>>>>>>> Stashed changes
                       )
                     ),
                     
@@ -192,6 +198,7 @@ ui <- dashboardPage(
                       step = 0.01
                     ),
                     materialSwitch("usephi_f", "Focal group?", status = "primary", FALSE),
+<<<<<<< Updated upstream
                   ),
                   box(
                     title = "cutoffs and mixing proportion",
@@ -226,6 +233,42 @@ ui <- dashboardPage(
                     ),
                   ),
                   ),
+=======
+                  ),
+                  box(
+                    title = "cutoffs and mixing proportion",
+                    status = "primary",
+                    solidHeader = FALSE,
+                    width = 12,
+                    materialSwitch("usepropsel", "Select 10% population?", status = "primary", FALSE),
+                    #numeric input for single number values
+                    numericInput(
+                      "cut_z",
+                      "Cutoff score on the observed composite:",
+                      value = 0.5,
+                      min = 0,
+                      max = 1,
+                      step = 0.01
+                    ),
+                    numericInput(
+                      "prop",
+                      "Selection proportion:",
+                      value = 0.5,
+                      min = 0,
+                      max = 1,
+                      step = 0.01
+                    ),
+                    numericInput(
+                      "pmix",
+                      "Mixing proportion:",
+                      value = 0.5,
+                      min = 0,
+                      max = 1,
+                      step = 0.01
+                    ),
+                  ),
+                  ),
+>>>>>>> Stashed changes
                   
                   
                   
@@ -285,7 +328,7 @@ server <- function(input, output) {
     matrixInput(
       "theta_fMatrixInput",
       #use length of lamda_rNumeric() vector function to determine x and y size of matrix
-      value = matrix("0", length(lambda_rNumeric()), length(lambda_rNumeric())),
+      value = matrix("0", input$matrixSlider, input$matrixSlider),
       rows = list(names = FALSE),
       cols = list(names = FALSE),
       class = "numeric",
@@ -317,7 +360,7 @@ server <- function(input, output) {
     matrixInput(
       inputId = "theta_rMatrixInput",
       #use length of lamda_rNumeric() for dynamic x and y size of matrix
-      value = matrix("0", length(lambda_rNumeric()), length(lambda_rNumeric())),
+      value = matrix("0", input$matrixSlider, input$matrixSlider),
       rows = list(names = FALSE),
       cols = list(names = FALSE),
       class = "numeric"
@@ -368,6 +411,8 @@ server <- function(input, output) {
       shinyjs::hide(id = "theta_rMatrixUI")
       shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
+      shinyjs::hide(id = "matrixSlider")
+      
     }
     else if (input$useMatrix == FALSE & input$usetheta_f == FALSE) {
       shinyjs::hide(id = "theta_f")
@@ -376,6 +421,7 @@ server <- function(input, output) {
       shinyjs::hide(id = "theta_rMatrixUI")
       shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
+      shinyjs::hide(id = "matrixSlider")
     }
     else if (input$useMatrix == TRUE & input$usetheta_f == FALSE) {
       shinyjs::hide(id = "theta_f")
@@ -384,6 +430,7 @@ server <- function(input, output) {
       shinyjs::show(id = "theta_rMatrixUI")
       shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
+      shinyjs::show(id = "matrixSlider")
     }
     else{
       shinyjs::hide(id = "theta_f")
@@ -392,11 +439,13 @@ server <- function(input, output) {
       shinyjs::show(id = "theta_rMatrixUI")
       shinyjs::show(id = "theta_fMatrixTitle")
       shinyjs::show(id = "theta_fMatrixUI")
+      shinyjs::show(id = "matrixSlider")
     }
   })
   #if resetButton is pressed
   observeEvent(input$resetButton, {
     #reset all
+    reset("matrixSlider")
     reset("usepropsel")
     reset("uselambda_f")
     reset("usetau_f")
@@ -521,8 +570,15 @@ server <- function(input, output) {
              "Input for measurement intercepts of reference group is missing\n")
       },
       if (input$useMatrix == TRUE) {
+<<<<<<< Updated upstream
         need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
              "matrix empty")
+=======
+        need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1, "matrix empty")
+      },
+      if (input$useMatrix == TRUE) {
+        need(input$matrixSlider == lambda_rNumeric(), "Matrix dimensions must match # loadings and intercepts")
+>>>>>>> Stashed changes
       }
     )
     if (input$usepropsel == FALSE) {
