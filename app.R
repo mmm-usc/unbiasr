@@ -120,6 +120,12 @@ ui <- dashboardPage(
                         FALSE,
                         inline = TRUE
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+                      ),
+                      sliderInput("matrixSlider", "Matrix Size",
+                                  min = 2, max = 5, value = 4
+>>>>>>> Stashed changes
 =======
                       ),
                       sliderInput("matrixSlider", "Matrix Size",
@@ -328,7 +334,11 @@ server <- function(input, output) {
     matrixInput(
       "theta_fMatrixInput",
       #use length of lamda_rNumeric() vector function to determine x and y size of matrix
+<<<<<<< Updated upstream
       value = matrix("0", input$matrixSlider, input$matrixSlider),
+=======
+      value = matrix("0", length($matrixSlider), length($matrixSlider)),
+>>>>>>> Stashed changes
       rows = list(names = FALSE),
       cols = list(names = FALSE),
       class = "numeric",
