@@ -522,7 +522,7 @@ server <- function(input, output) {
       ),
       need(
         length(lambda_rNumeric()) == length(tau_rNumeric()),
-        "loadings and intercepts need to have the same value"
+        "loadings and intercepts need to have the same value\n"
       ),
       #only checks for numeric input of theta_r when matrix is not being used as input
       if (input$useMatrix == FALSE) {
@@ -530,10 +530,11 @@ server <- function(input, output) {
              "Input for measurement intercepts of reference group is missing\n")
       },
       if (input$useMatrix == TRUE) {
-        need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1, "matrix empty")
+        need(input$matrixSlider == length(lambda_rNumeric()), "Matrix dimensions must match # loadings and intercepts\n")
       },
       if (input$useMatrix == TRUE) {
-        need(input$matrixSlider == lambda_rNumeric(), "Matrix dimensions must match # loadings and intercepts")
+        need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
+             "matrix empty")
       }
     )
     if (input$usepropsel == FALSE) {
@@ -591,12 +592,15 @@ server <- function(input, output) {
       ),
       need(
         length(lambda_rNumeric()) == length(tau_rNumeric()),
-        "loadings and intercepts need to have the same value"
+        "loadings and intercepts need to have the same value\n"
       ),
       #only checks for numeric input of theta_r when matrix is not being used as input
       if (input$useMatrix == FALSE) {
         need(input$theta_r,
              "Input for measurement intercepts of reference group is missing\n")
+      },
+      if (input$useMatrix == TRUE) {
+        need(input$matrixSlider == length(lambda_rNumeric()), "Matrix dimensions must match # loadings and intercepts\n")
       },
       if (input$useMatrix == TRUE) {
         need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
