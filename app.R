@@ -41,12 +41,15 @@ ui <- dashboardPage(
               fluidPage(
                 withMathJax(), fluidRow(
                   box(
-                    title = "directions",
+                    title = "Directions",
                     status = "primary",
                     width = 12,
                     solidHeader = FALSE,
                     p(
-                      "Pellentesque aliquam, nibh in posuere ullamcorper, nisl tortor tempus ipsum, id elementum diam orci eget ex. Morbi id lacus libero. Vestibulum fermentum imperdiet ultricies. In volutpat eleifend tincidunt. Duis luctus ligula eget lorem sollicitudin maximus. Nunc cursus interdum orci, eu auctor lorem pellentesque eu. Ut tincidunt mauris a mi consequat condimentum. Integer semper ultrices eros, a suscipit dolor porttitor sit amet."
+                      "This application is designed for the use of the Multidimensional Classification Accuracy Analysis (MCAA) Framework 
+                      for evaluating measurement invariance in the personnel selection context. By entering the parameter estimates from the factor model,
+                      such as the factor loadings and intercepts, you will be able to visualize the impact of item bias on selection accuracy indices and 
+                      get a table that summarize the change of selection indices."
                     )
                   ),
                   box(
@@ -548,7 +551,7 @@ server <- function(input, output) {
       ),
       need(
         length(lambda_rNumeric()) == length(tau_rNumeric()),
-        "loadings and intercepts need to have the same length"
+        "loadings and intercepts need to have the same dimension"
       ),
       #only checks for numeric input of theta_r when matrix is not being used as input
       if (input$useMatrix == FALSE) {
