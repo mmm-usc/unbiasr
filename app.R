@@ -30,8 +30,8 @@ ui <- dashboardPage(
       '
           #outputTableBox {overflow-y: auto; height: 350px}
           .box {margin:5px;}
-          .col-sm-4 {padding:12px !important;}
-          .col-sm-8 {padding:12px !important;}'
+          .col-sm-4 {padding:6px !important;}
+          .col-sm-8 {padding:6px !important;}'
     ),
     #pages
     tabItems(
@@ -39,7 +39,8 @@ ui <- dashboardPage(
       tabItem(tabName = "firstpage",
               #withMathJax() for greek char display
               fluidPage(
-                withMathJax(), fluidRow(
+                withMathJax(), 
+                fluidRow(
                   box(
                     title = "Directions",
                     status = "primary",
@@ -52,14 +53,27 @@ ui <- dashboardPage(
                       get a table that summarize the change of selection indices."
                     )
                   ),
+                  column(width = 4,
                   box(
                     title = "inputs",
                     status = "primary",
                     solidHeader = FALSE,
-                    width = 4,
+                    width = 12,
                     #style for alignment of reset button
                     div(style = "display:inline-block;margin-right: 52%;padding-bottom: 10px;",
                         actionButton("resetButton", "reset inputs")),
+                    textInput('legend_r',
+                              'Input reference group label',
+                              value = "Reference group"),
+                    textInput('legend_f',
+                              'Input label for the focal group',
+                              value = "Focal group")
+                  ),
+                  box(
+                    title = "intercepts and loadings",
+                    status = "primary",
+                    solidHeader = FALSE,
+                    width = 12,
                     #textInput for multi-value inputs
                     textInput(
                       'lambda_r',
@@ -84,7 +98,13 @@ ui <- dashboardPage(
                       placeholder = "0.68, 1.36, 1.16, 1.08"
                     ),
                     materialSwitch("usetau_f", "Focal group?", status = "primary", FALSE),
-                    h4('Unique variance-covariance'),
+
+                  ),
+                  box(
+                    title = "unique factor variance-covariance",
+                    status = "primary",
+                    solidHeader = FALSE,
+                    width = 12,
                     
                     #div to style buttons inline
                     div(
@@ -102,6 +122,9 @@ ui <- dashboardPage(
                         status = "primary",
                         FALSE,
                         inline = TRUE
+                      ),
+                      sliderInput("matrixSlider", "Matrix Size",
+                                  min = 2, max = 5, value = 4
                       )
                     ),
                     
@@ -132,32 +155,15 @@ ui <- dashboardPage(
                     ),
                     uiOutput("theta_fMatrixUI"),
                     
-                    materialSwitch("usepropsel", "Select 10% population?", status = "primary", FALSE),
-                    #numeric input for single number values
-                    numericInput(
-                      "cut_z",
-                      "Cutoff score on the observed composite:",
-                      value = 0.5,
-                      min = 0,
-                      max = 1,
-                      step = 0.01
-                    ),
-                    numericInput(
-                      "prop",
-                      "Selection proportion:",
-                      value = 0.5,
-                      min = 0,
-                      max = 1,
-                      step = 0.01
-                    ),
-                    numericInput(
-                      "pmix",
-                      "Mixing proportion:",
-                      value = 0.5,
-                      min = 0,
-                      max = 1,
-                      step = 0.01
-                    ),
+                  ),
+                  
+                  
+                  
+                  box(
+                    title = "mean and variances",
+                    status = "primary",
+                    solidHeader = FALSE,
+                    width = 12,
                     numericInput(
                       "kappa_r",
                       "Latent factor mean \\( \\kappa \\) for the reference group:",
@@ -192,13 +198,42 @@ ui <- dashboardPage(
                       step = 0.01
                     ),
                     materialSwitch("usephi_f", "Focal group?", status = "primary", FALSE),
-                    textInput('legend_r',
-                              'Input reference group label',
-                              value = "Reference group"),
-                    textInput('legend_f',
-                              'Input label for the focal group',
-                              value = "Focal group")
                   ),
+                  box(
+                    title = "cutoffs and mixing proportion",
+                    status = "primary",
+                    solidHeader = FALSE,
+                    width = 12,
+                    materialSwitch("usepropsel", "Select 10% population?", status = "primary", FALSE),
+                    #numeric input for single number values
+                    numericInput(
+                      "cut_z",
+                      "Cutoff score on the observed composite:",
+                      value = 0.5,
+                      min = 0,
+                      max = 1,
+                      step = 0.01
+                    ),
+                    numericInput(
+                      "prop",
+                      "Selection proportion:",
+                      value = 0.5,
+                      min = 0,
+                      max = 1,
+                      step = 0.01
+                    ),
+                    numericInput(
+                      "pmix",
+                      "Mixing proportion:",
+                      value = 0.5,
+                      min = 0,
+                      max = 1,
+                      step = 0.01
+                    ),
+                  ),
+                  ),
+                  
+                  
                   
                   box(
                     id = "outputBox",
@@ -236,27 +271,27 @@ server <- function(input, output) {
   #renderUI output for Matrix Inputs
   output$theta_fMatrixUI <- renderUI({
     #validate makes sure need statements are true before running
-    validate(
-      #don't execute until loadings and intercepts have the same number of values
-      #display message if need statement not met
-      need(
-        length(lambda_rNumeric()) == length(tau_rNumeric()),
-        "loadings and intercepts need to have the same value"
-      ),
-      need(
-        input$lambda_r,
-        "Input for factor loadings of reference group is missing\n"
-      ),
-      need(
-        input$tau_r,
-        "Input for actor variance-covariance matrix of reference group is missing\n"
-      )
-    )
+    # validate(
+    #   #don't execute until loadings and intercepts have the same number of values
+    #   #display message if need statement not met
+    #   need(
+    #     length(lambda_rNumeric()) == length(tau_rNumeric()),
+    #     "loadings and intercepts need to have the same value"
+    #   ),
+    #   need(
+    #     input$lambda_r,
+    #     "Input for factor loadings of reference group is missing\n"
+    #   ),
+    #   need(
+    #     input$tau_r,
+    #     "Input for actor variance-covariance matrix of reference group is missing\n"
+    #   )
+    # )
     #Create matrixInput for focal
     matrixInput(
       "theta_fMatrixInput",
       #use length of lamda_rNumeric() vector function to determine x and y size of matrix
-      value = matrix("0", length(lambda_rNumeric()), length(lambda_rNumeric())),
+      value = matrix("0", input$matrixSlider, input$matrixSlider),
       rows = list(names = FALSE),
       cols = list(names = FALSE),
       class = "numeric",
@@ -270,25 +305,25 @@ server <- function(input, output) {
   })
   #renderUI output for Matrix Inputs
   output$theta_rMatrixUI <- renderUI({
-    validate(
-      need(
-        length(lambda_rNumeric()) == length(tau_rNumeric()),
-        "loadings and intercepts need to have the same value"
-      ),
-      need(
-        input$lambda_r,
-        "Input for factor loadings of reference group is missing\n"
-      ),
-      need(
-        input$tau_r,
-        "Input for actor variance-covariance matrix of reference group is missing\n"
-      )
-    )
+    # validate(
+    #   need(
+    #     length(lambda_rNumeric()) == length(tau_rNumeric()),
+    #     "loadings and intercepts need to have the same value"
+    #   ),
+    #   need(
+    #     input$lambda_r,
+    #     "Input for factor loadings of reference group is missing\n"
+    #   ),
+    #   need(
+    #     input$tau_r,
+    #     "Input for actor variance-covariance matrix of reference group is missing\n"
+    #   )
+    # )
     #Create matrixInput for reference
     matrixInput(
       inputId = "theta_rMatrixInput",
       #use length of lamda_rNumeric() for dynamic x and y size of matrix
-      value = matrix("0", length(lambda_rNumeric()), length(lambda_rNumeric())),
+      value = matrix("0", input$matrixSlider, input$matrixSlider),
       rows = list(names = FALSE),
       cols = list(names = FALSE),
       class = "numeric"
@@ -339,6 +374,8 @@ server <- function(input, output) {
       shinyjs::hide(id = "theta_rMatrixUI")
       shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
+      shinyjs::hide(id = "matrixSlider")
+      
     }
     else if (input$useMatrix == FALSE & input$usetheta_f == FALSE) {
       shinyjs::hide(id = "theta_f")
@@ -347,6 +384,7 @@ server <- function(input, output) {
       shinyjs::hide(id = "theta_rMatrixUI")
       shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
+      shinyjs::hide(id = "matrixSlider")
     }
     else if (input$useMatrix == TRUE & input$usetheta_f == FALSE) {
       shinyjs::hide(id = "theta_f")
@@ -355,6 +393,7 @@ server <- function(input, output) {
       shinyjs::show(id = "theta_rMatrixUI")
       shinyjs::hide(id = "theta_fMatrixTitle")
       shinyjs::hide(id = "theta_fMatrixUI")
+      shinyjs::show(id = "matrixSlider")
     }
     else{
       shinyjs::hide(id = "theta_f")
@@ -363,11 +402,13 @@ server <- function(input, output) {
       shinyjs::show(id = "theta_rMatrixUI")
       shinyjs::show(id = "theta_fMatrixTitle")
       shinyjs::show(id = "theta_fMatrixUI")
+      shinyjs::show(id = "matrixSlider")
     }
   })
   #if resetButton is pressed
   observeEvent(input$resetButton, {
     #reset all
+    reset("matrixSlider")
     reset("usepropsel")
     reset("uselambda_f")
     reset("usetau_f")
@@ -484,12 +525,15 @@ server <- function(input, output) {
       ),
       need(
         length(lambda_rNumeric()) == length(tau_rNumeric()),
-        "Factor loadings and intercepts need to have the same value"
+        "Factor loadings and intercepts need to have the same value\n"
       ),
       #only checks for numeric input of theta_r when matrix is not being used as input
       if (input$useMatrix == FALSE) {
         need(input$theta_r,
              "Input for measurement intercepts of reference group is missing\n")
+      },
+      if (input$useMatrix == TRUE) {
+        need(input$matrixSlider == length(lambda_rNumeric()), "Matrix dimensions must match # loadings and intercepts\n")
       },
       if (input$useMatrix == TRUE) {
         need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
@@ -551,12 +595,15 @@ server <- function(input, output) {
       ),
       need(
         length(lambda_rNumeric()) == length(tau_rNumeric()),
-        "loadings and intercepts need to have the same dimension"
+        "loadings and intercepts need to have the same dimension\n"
       ),
       #only checks for numeric input of theta_r when matrix is not being used as input
       if (input$useMatrix == FALSE) {
         need(input$theta_r,
              "Input for unique variance-covariance matrix of reference group is missing\n")
+      },
+      if (input$useMatrix == TRUE) {
+        need(input$matrixSlider == length(lambda_rNumeric()), "Matrix dimensions must match # loadings and intercepts\n")
       },
       if (input$useMatrix == TRUE) {
         need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
