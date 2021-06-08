@@ -480,11 +480,11 @@ server <- function(input, output) {
       ),
       need(
         input$tau_r,
-        "Input for actor variance-covariance matrix of reference group is missing\n"
+        "Input for factor variance-covariance matrix of reference group is missing\n"
       ),
       need(
         length(lambda_rNumeric()) == length(tau_rNumeric()),
-        "loadings and intercepts need to have the same value"
+        "Factor loadings and intercepts need to have the same value"
       ),
       #only checks for numeric input of theta_r when matrix is not being used as input
       if (input$useMatrix == FALSE) {
