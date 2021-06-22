@@ -1,5 +1,31 @@
 #server-side for pageOne
 
+# Downloadable csv of selected dataset ----
+output$downloadData <- downloadHandler(
+  filename = function() {
+    paste(input$dataset, ".csv", sep = "")
+  },
+  content = function(file) {
+    write.csv(PartInv(
+      propsel = input$prop,
+      plot_contour = FALSE,
+      cut_z = input$cut_z,
+      pmix_ref = input$pmix,
+      kappa_r = input$kappa_r,
+      kappa_f = kappa_f(),
+      phi_r = input$phi_r,
+      phi_f = phi_f(),
+      lambda_r = lambda_rNumeric(),
+      lambda_f = lambda_f(),
+      tau_f = tau_f(),
+      Theta_f = theta_f(),
+      tau_r = tau_rNumeric(),
+      Theta_r = theta_r(),
+      labels = c(input$legend_r, input$legend_f)
+    )[[4]], file, row.names = FALSE)
+  }
+)
+
 #renderUI output for Matrix Inputs
 output$theta_fMatrixUI <- renderUI({
   #Create matrixInput for focal
@@ -238,11 +264,19 @@ output$distPlot <- renderPlot({
         "intercepts for referance and focal groups need to have the same number of values\n"
       )
     },
+    if(input$usetheta_f == TRUE){
+      need(
+        length(theta_rNumeric()) == length(theta_fNumeric()), "(placeholder) diagonals of referance and focal groups must match"
+      )
+    },
     
     #only checks for numeric input of theta_r when matrix is not being used as input
     if (input$useMatrix == FALSE) {
       need(input$theta_r,
            "Input for measurement intercepts of reference group is missing\n")
+    },
+    if (input$useMatrix == FALSE && length(theta_rNumeric()) > 0) {
+      need(length(theta_rNumeric()) == length(lambda_rNumeric()),"number of inputs for measurement intercepts must match factor loadings")
     },
     if (input$useMatrix == TRUE) {
       need(input$matrixSlider == length(lambda_rNumeric()), "Matrix dimensions must match # loadings and intercepts\n")
@@ -321,10 +355,18 @@ output$table <- renderTable(rownames = TRUE, {
         "intercepts for referance and focal groups need to have the same number of values\n"
       )
     },
+    if(input$usetheta_f == TRUE){
+      need(
+        length(theta_rNumeric()) == length(theta_fNumeric()), "(placeholder) diagonals of referance and focal groups must match"
+      )
+    },
     #only checks for numeric input of theta_r when matrix is not being used as input
     if (input$useMatrix == FALSE) {
       need(input$theta_r,
            "Input for unique variance-covariance matrix of reference group is missing\n")
+    },
+    if (input$useMatrix == FALSE && length(theta_rNumeric()) > 0) {
+      need(length(theta_rNumeric()) == length(lambda_rNumeric()),"number of inputs for measurement intercepts must match factor loadings")
     },
     if (input$useMatrix == TRUE) {
       need(input$matrixSlider == length(lambda_rNumeric()), "Matrix dimensions must match # loadings and intercepts\n")

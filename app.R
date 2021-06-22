@@ -53,5 +53,4 @@ server <- function(input, output) {
   
 }
 
-#server component
 shinyApp(ui = ui, server = server)

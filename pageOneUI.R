@@ -205,6 +205,7 @@ list(
            solidHeader = FALSE,
            width = 8,
            tableOutput("table")
-         )
+         ),
+         downloadButton("downloadData", "Download")
        )
      )
