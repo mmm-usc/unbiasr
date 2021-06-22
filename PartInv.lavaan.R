@@ -9,6 +9,18 @@ fit <- cfa(HS.model,
            group.partial = c("x7 ~ 1", "x5 ~ 1", "x3 ~ 1"))
 summary(fit)
 
+mean1 <- colMeans(HolzingerSwineford1939[
+  which(HolzingerSwineford1939$school == "Pasteur"), paste0("x", 1:9)])
+cov1 <- cov(HolzingerSwineford1939[
+  which(HolzingerSwineford1939$school == "Pasteur"), paste0("x", 1:9)])
+fit_sum <- cfa(HS.model, 
+               sample.cov = list(cov1, cov2),
+               sample.mean = list(mean1, mean2),
+               group.equal = c("loadings", "intercepts"), 
+               group.partial = c("x7 ~ 1", "x5 ~ 1", "x3 ~ 1"))
+
+source("PartInv.R")
+
 # HS.model2 <- '  visual =~ NA * x1 + x2 + x3
 #                textual =~ NA * x4 + x5 + x6
 #                  speed =~ NA * x7 + x8 + x9 
@@ -28,21 +40,21 @@ PartInv.lavaan <- function(propsel, object, reference = 1, which_fac = 1,
                            pmix_ref = 0.5, plot_contour = TRUE, 
                            force_strict = FALSE, ...) {
   library(lavaan)  # load `lavaan` package
-  stopifnot(inspect(object, "ngroups") == 2, reference %in% c(1, 2))
-  est <- inspect(object, "est")
-  nfacs <- vapply(est[which(names(est) == "psi")], nrow, numeric(1))
+  stopifnot(object@pta$ngroups == 2, reference %in% c(1, 2))
+  nfacs <- unlist(object@pta$nfac)
   stopifnot(diff(nfacs) == 0, nfacs[1] >= which_fac)
   focal <- 3 - reference
-  kappa_r <- est[which(names(est) == "alpha")][[reference]]
-  kappa_f <- est[which(names(est) == "alpha")][[focal]]
-  phi_r <- est[which(names(est) == "psi")][[reference]]
-  phi_f <- est[which(names(est) == "psi")][[focal]]
-  lambda_r <- est[which(names(est) == "lambda")][[reference]]
-  lambda_f <- est[which(names(est) == "lambda")][[focal]]
-  Theta_r <- est[which(names(est) == "theta")][[reference]]
-  Theta_f <- est[which(names(est) == "theta")][[focal]]
-  tau_r <- est[which(names(est) == "nu")][[reference]]
-  tau_f <- est[which(names(est) == "nu")][[focal]]
+  est <- lavInspect(object, "est")
+  kappa_r <- est[[reference]][["alpha"]]
+  kappa_f <- est[[focal]][["alpha"]]
+  phi_r <- est[[reference]][["psi"]]
+  phi_f <- est[[focal]][["psi"]]
+  lambda_r <- est[[reference]][["lambda"]]
+  lambda_f <- est[[focal]][["lambda"]]
+  Theta_r <- est[[reference]][["theta"]]
+  Theta_f <- est[[focal]][["theta"]]
+  tau_r <- est[[reference]][["nu"]]
+  tau_f <- est[[focal]][["nu"]]
   if (nrow(phi_r > 1)) {
     inds <- which(lambda_r[ , which_fac] != 0)
     kappa_r <- kappa_r[which_fac, ]
@@ -66,4 +78,8 @@ PartInv.lavaan <- function(propsel, object, reference = 1, which_fac = 1,
           Theta_r, Theta_f, tau_r, tau_f, pmix_ref, plot_contour, ...)
 }
 
-PartInv.lavaan(.25, fit, reference = 1, which_fac = 2, force_strict = FALSE)
+PartInv.lavaan(.25, 
+               object = fit, 
+               reference = 1, 
+               which_fac = 2, 
+               force_strict = FALSE)
