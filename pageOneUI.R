@@ -86,7 +86,7 @@ list(
                       inline = TRUE
                     ),
                     sliderInput("matrixSlider", "Matrix Size",
-                                min = 2, max = 5, value = 4
+                                min = 2, max = 10, value = 4
                     )
                   ),
                   
@@ -94,14 +94,12 @@ list(
                     'theta_r',
                     'Reference group uniqueness \\( \\theta \\)',
                     placeholder = "1.20, 0.81, 0.32, 0.32"
-                    
                   ),
                   textInput(
                     'theta_f',
                     'Input the diagonal of the unique factor variance-covariance matrix \\( \\Theta \\) for the focal group',
                     placeholder = "0.72, 0.81, 0.32, 0.32"
                   ),
-                  
                   #strong is a text output in bold
                   strong(
                     id = "theta_rMatrixTitle",
@@ -118,9 +116,6 @@ list(
                   uiOutput("theta_fMatrixUI"),
                   
                 ),
-                
-                
-                
                 box(
                   title = "mean and variances",
                   status = "primary",
@@ -194,9 +189,6 @@ list(
                   ),
                 ),
          ),
-         
-         
-         
          box(
            id = "outputBox",
            title = "Relationship Between True Latent Construct Scores
@@ -214,7 +206,5 @@ list(
            width = 8,
            tableOutput("table")
          )
-         
-         
        )
      )
