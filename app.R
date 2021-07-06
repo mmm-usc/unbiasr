@@ -19,6 +19,11 @@ ui <- dashboardPage(
                        tabName = "firstpage",
                        icon = icon("dashboard")
                      ),
+                     menuItem(
+                       "Reference",
+                       tabName = "Reference",
+                       icon = icon("dashboard")
+                     ),
                      #unused
                      menuItem("Other", tabName = "other", icon = icon("table"))
                    )),
@@ -36,6 +41,57 @@ ui <- dashboardPage(
     #pages
     tabItems(
       #page one
+      tabItem(tabName = "Reference",
+              fluidPage(fluidRow(
+                box(
+                  title = "Summary of the framework",
+                  status = "primary",
+                  width = 12,
+                  solidHeader = FALSE,
+                  p(
+                    "The multidimensional classification accuracy analysis framework (MCAA) is an extension of the selection accuracy
+                    framework proposed by Millsap & Kwok (2004). Since real-world selection usually involves multiple tests or subtests, 
+                    with different weights assigned to each dimension, the MCAA framework is proposed to quantify
+                    the impact of item bias on selection accuracy by examining the changes in 
+                    selection accuracy indices (proportion selected, success ratio, 
+                    sensitivity, specificity) for each subgroup. The adverse impact (AI) ratio 
+                    (i.e., the ratio of the proportions selected between a minority and a majority group with matching latent trait levels) 
+                    is also provided in results. Further details are provided in Lai & Zhang (in revision)."
+                  )),
+                  box(
+                    title = "Example",
+                    status = "primary",
+                    width = 12,
+                    solidHeader = FALSE,
+                    p(
+                      "Here is an example for how to use the app."),
+                    p("The first step is to input group labels for the graph. Next, input factor loadings and intercepts
+                       for each group. Third, input unique factor variance-covariance matrix. Then, input latent factor
+                      means and variances. Last, set selection parameters such as mixing proportion and selection proportion."
+                    ),
+                    img(src="Army example 2.gif", align = "left",height='400px',width='200px'),
+                    ),
+        
+                    box(
+                      title = "Reference",
+                      status = "primary",
+                      width = 12,
+                      solidHeader = FALSE,
+                      p(
+                        "Lai, M. H. C., & Zhang, Y. (In revision). Evaluating the impact of partial factorial invariance in selection using multidimensional tests."),
+                      p("Millsap, R. E., & Kwok, O.-M. (2004). Evaluating the impact of partial factorial invariance on selection in two populations. Psychological Methods, 9, 93–115. https://doi.org/10.1037/1082-989X.9.1.93."
+                      )),
+                      box(
+                        title = "Note",
+                        status = "primary",
+                        width = 12,
+                        solidHeader = FALSE,
+                        p(
+                          "If you have any questions, please email us at mmm.lab.usc@zohomail.com ."
+                        )
+                )
+              ))),
+      #second page
       tabItem(tabName = "firstpage",
               #withMathJax() for greek char display
               fluidPage(
