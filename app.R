@@ -1,4 +1,3 @@
-
 # Load required packages
 library(shiny)
 library(shinydashboard) #GUI
@@ -11,7 +10,6 @@ library(shinytest) #automated snapshot testing
 #dashboardPage UI using shinydashboard
 ui <- dashboardPage(
   dashboardHeader(title = "Computation of Selection Accuracy Indexes",
-                  
                   titleWidth = 400),
   dashboardSidebar(width = 105,
                    sidebarMenu(
@@ -37,8 +35,9 @@ ui <- dashboardPage(
     #pages
     tabItems(
       #page one
-      tabItem(tabName = "firstpage", fluidPage(source('pageOneUI.R', local = TRUE))),
-      
+      tabItem(tabName = "firstpage", fluidPage(source(
+        'pageOneUI.R', local = TRUE
+      ))),
       #second page
       tabItem(tabName = "other", fluidPage(fluidRow()))
     )
@@ -51,7 +50,6 @@ server <- function(input, output) {
   source('PartInv.R', local = TRUE)
   #loads pageOne server file
   source('pageOneServer.R', local = TRUE)
-  
 }
 
 shinyApp(ui = ui, server = server)
