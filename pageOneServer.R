@@ -1,64 +1,56 @@
 #server-side for pageOne
 
-# Downloadable csv of selected dataset ----
-output$downloadData <- downloadHandler(
-  filename = function() {
-    paste(input$dataset, ".csv", sep = "")
-  },
-  content = function(file) {
-    write.csv(PartInv(
-      propsel = input$prop,
-      plot_contour = FALSE,
-      cut_z = input$cut_z,
-      pmix_ref = input$pmix,
-      kappa_r = input$kappa_r,
-      kappa_f = kappa_f(),
-      phi_r = input$phi_r,
-      phi_f = phi_f(),
-      lambda_r = lambda_rNumeric(),
-      lambda_f = lambda_f(),
-      tau_f = tau_f(),
-      Theta_f = theta_f(),
-      tau_r = tau_rNumeric(),
-      Theta_r = theta_r(),
-      labels = c(input$legend_r, input$legend_f)
-    )[[4]], file, row.names = FALSE)
-  }
-)
+#  Downloadable csv of selected dataset ----
+# output$downloadData <- downloadHandler(
+#   filename = function() {
+#     paste(input$dataset, ".csv", sep = "")
+#   },
+#   content = function(file) {
+#     write.csv(PartInv(
+#       propsel = input$prop,
+#       plot_contour = FALSE,
+#       cut_z = input$cut_z,
+#       pmix_ref = input$pmix,
+#       kappa_r = input$kappa_r,
+#       kappa_f = kappa_f(),
+#       phi_r = input$phi_r,
+#       phi_f = phi_f(),
+#       lambda_r = lambda_rNumeric(),
+#       lambda_f = lambda_f(),
+#       tau_f = tau_f(),
+#       Theta_f = theta_f(),
+#       tau_r = tau_rNumeric(),
+#       Theta_r = theta_r(),
+#       labels = c(input$legend_r, input$legend_f)
+#     )[[4]], file, row.names = FALSE)
+#   }
+# )
 
 #renderUI output for Matrix Inputs
 output$theta_fMatrixUI <- renderUI({
-  #Create matrixInput for focal
+  #matrixInput for focal
   matrixInput(
     "theta_fMatrixInput",
-    #use length of lamda_rNumeric() vector function to determine x and y size of matrix
+    #use slider value to determine dimensions of matrix input
     value = matrix("0", input$matrixSlider, input$matrixSlider),
     rows = list(names = FALSE),
     cols = list(names = FALSE),
     class = "numeric",
-    paste = TRUE,
   )
 })
-#reactive expression triggered when input value changes
-theta_fMatrixOutput <- reactive({
-  input$theta_fMatrixInput
-})
+
 #renderUI output for Matrix Inputs
 output$theta_rMatrixUI <- renderUI({
-  #Create matrixInput for reference
+  #matrixInput for referance
   matrixInput(
     inputId = "theta_rMatrixInput",
-    #use length of lamda_rNumeric() for dynamic x and y size of matrix
     value = matrix("0", input$matrixSlider, input$matrixSlider),
     rows = list(names = FALSE),
     cols = list(names = FALSE),
     class = "numeric"
   )
 })
-#reactive expression triggered when input value changes
-theta_rMatrixOutput <- reactive({
-  input$theta_rMatrixInput
-})
+
 #when a button press is observed for usepropsel
 observeEvent(input$usepropsel, {
   #this function evaluates this statement
@@ -71,6 +63,7 @@ observeEvent(input$usepropsel, {
     shinyjs::hide(id = "prop")
   }
 })
+
 #when a button press is observed for uselambda_f
 observeEvent(input$uselambda_f, {
   #this funtion toggles between show and hide for the input
@@ -204,15 +197,15 @@ theta_f <- reactive({
     theta_f = diag(theta_fNumeric())
   }
   else if (input$usetheta_f == TRUE & input$useMatrix == TRUE) {
-    theta_f = theta_fMatrixOutput()
+    theta_f = input$theta_fMatrixInput
   }
   else{
-    theta_f = theta_rMatrixOutput()
+    theta_f = input$theta_rMatrixInput
   }
 })
 theta_r <- reactive({
   if (input$useMatrix == TRUE) {
-    theta_r = theta_rMatrixOutput()
+    theta_r = input$theta_rMatrixInput
   }
   else{
     theta_r = diag(theta_rNumeric())
