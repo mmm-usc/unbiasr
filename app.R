@@ -6,6 +6,7 @@ library(shinyjs) #show/hide/toggle, reset, inlineCSS
 library(shinyWidgets) #materialSwitch
 library(shinyMatrix) #matrixInput
 library(rsconnect) #connect to server Shinyapps.io
+library(shinytest) #automated snapshot testing
 
 #dashboardPage UI using shinydashboard
 ui <- dashboardPage(
