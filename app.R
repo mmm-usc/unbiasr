@@ -65,11 +65,27 @@ ui <- dashboardPage(
                     solidHeader = FALSE,
                     p(
                       "Here is an example for how to use the app."),
-                    p("The first step is to input group labels for the graph. Next, input factor loadings and intercepts
-                       for each group. Third, input unique factor variance-covariance matrix. Then, input latent factor
+                    p("The first step is to input group labels for the graph."
+                    ),
+                    img(src="step 1.png", align = "left",height='400px',width='700px'),
+                    p("Next, input factor loadings and intercepts
+                       for each group."
+                    ),
+                    img(src="step 2.png", align = "left",height='400px',width='700px'),
+                    p("Third, input unique factor variance-covariance matrix. You can choose to enter the diagonal 
+                      of the covariance matrix, or upload the covariance matrix. Note the header should not be included. "
+                    ),
+                    img(src="step 3.png", align = "left",height='400px',width='700px'),
+                    p("Then, input latent factor
                       means and variances. Last, set selection parameters such as mixing proportion and selection proportion."
                     ),
-                    img(src="Army example 2.gif", align = "left",height='400px',width='200px'),
+                    img(src="step 4.png", align = "left",height='400px',width='700px'),
+                    p("Lastly, set selection parameters such as mixing proportion and selection proportion."
+                    ),
+                    img(src="step 5.png", align = "left",height='400px',width='700px'),
+                    p("Here are the graph and the selection accuracy table"
+                    ),
+                    img(src="results.png", align = "left",height='400px',width='700px'),
                     ),
         
                     box(
@@ -78,9 +94,16 @@ ui <- dashboardPage(
                       width = 12,
                       solidHeader = FALSE,
                       p(
-                        "Lai, M. H. C., & Zhang, Y. (In revision). Evaluating the impact of partial factorial invariance in selection using multidimensional tests."),
-                      p("Millsap, R. E., & Kwok, O.-M. (2004). Evaluating the impact of partial factorial invariance on selection in two populations. Psychological Methods, 9, 93–115. https://doi.org/10.1037/1082-989X.9.1.93."
-                      )),
+                        "Lai, M. H. C., & Zhang, Y. (In revision). Evaluating the impact 
+                        of partial factorial invariance in selection using multidimensional tests."),
+                      p("Millsap, R. E., & Kwok, O.-M. (2004). Evaluating the impact of 
+                        partial factorial invariance on selection in two populations. 
+                        Psychological Methods, 9, 93–115. https://doi.org/10.1037/1082-989X.9.1.93."
+                      ),
+                      p("Lai, M. H. C., Kwok, O., Yoon, M., & Hsiao, Y. (2017). 
+                        Understanding the impact of partial factorial invariance on selection 
+                        accuracy: An R script. Structural Equation Modeling: A Multidisciplinary 
+                        Journal, 24, 783-799. https://doi.org/10.1080/10705511.2017.1318703")), 
                       box(
                         title = "Note",
                         status = "primary",
