@@ -78,12 +78,9 @@ observeEvent(input$usekappa_f, {
 observeEvent(input$usephi_f, {
   shinyjs::toggle(id = "phi_f")
 })
-#listens for either a button press from usetheta_f or from useMatrix
-listenFromThetaMatrix <- reactive({
-  list(input$usetheta_f, input$useMatrix)
-})
+
 #if either button press is observed
-observeEvent(listenFromThetaMatrix(), {
+observeEvent(list(input$usetheta_f, input$useMatrix), {
   #for every combination of the two buttons, show/hide the appropriate inputs
   if (input$useMatrix == FALSE & input$usetheta_f == TRUE) {
     shinyjs::show(id = "theta_f")
@@ -123,6 +120,7 @@ observeEvent(listenFromThetaMatrix(), {
     shinyjs::show(id = "matrixSlider")
   }
 })
+
 #if resetButton is pressed
 observeEvent(input$resetButton, {
   #reset all
@@ -170,6 +168,7 @@ theta_rNumeric <- reactive({
 theta_fNumeric <- reactive({
   as.numeric(unlist(strsplit(input$theta_f, ",")))
 })
+
 #set lambda_f to lambda_r input or lambda_f input depending on button press
 lambda_f <- reactive({
   if (input$uselambda_f == FALSE) {
@@ -203,6 +202,7 @@ theta_f <- reactive({
     theta_f = input$theta_rMatrixInput
   }
 })
+
 theta_r <- reactive({
   if (input$useMatrix == TRUE) {
     theta_r = input$theta_rMatrixInput
@@ -229,9 +229,7 @@ phi_f <- reactive({
 })
 #distribution plot output
 output$distPlot <- renderPlot({
-  #makes sure inputs are filled before program runs
-  #prevents error messages from popping up
-  #displays message telling user what inputs need to be filled
+  #validations stop users from entering bad inputs, display messages to users
   validate(
     need(
       input$lambda_r,
@@ -245,34 +243,42 @@ output$distPlot <- renderPlot({
       length(lambda_rNumeric()) == length(tau_rNumeric()),
       "Factor loadings and intercepts need to have the same value\n"
     ),
-    if(input$uselambda_f == TRUE){
+    if (input$uselambda_f == TRUE) {
       need(
         length(lambda_rNumeric()) == length(lambda_fNumeric()),
         "factor loadings for referance and focal groups need to have the same number of values\n"
       )
     },
-    if(input$usetau_f == TRUE){
+    if (input$usetau_f == TRUE) {
       need(
         length(tau_rNumeric()) == length(tau_fNumeric()),
         "intercepts for referance and focal groups need to have the same number of values\n"
       )
     },
-    if(input$usetheta_f == TRUE){
+    if (input$usetheta_f == TRUE) {
       need(
-        length(theta_rNumeric()) == length(theta_fNumeric()), "(placeholder) diagonals of referance and focal groups must match"
+        length(theta_rNumeric()) == length(theta_fNumeric()),
+        "(placeholder) diagonals of referance and focal groups must match"
       )
     },
-    
     #only checks for numeric input of theta_r when matrix is not being used as input
     if (input$useMatrix == FALSE) {
-      need(input$theta_r,
-           "Input for measurement intercepts of reference group is missing\n")
+      need(
+        input$theta_r,
+        "Input for unique variance-covariance matrix of reference group is missing\n"
+      )
     },
     if (input$useMatrix == FALSE && length(theta_rNumeric()) > 0) {
-      need(length(theta_rNumeric()) == length(lambda_rNumeric()),"number of inputs for measurement intercepts must match factor loadings")
+      need(
+        length(theta_rNumeric()) == length(lambda_rNumeric()),
+        "number of inputs for measurement intercepts must match factor loadings"
+      )
     },
     if (input$useMatrix == TRUE) {
-      need(input$matrixSlider == length(lambda_rNumeric()), "Matrix dimensions must match # loadings and intercepts\n")
+      need(
+        input$matrixSlider == length(lambda_rNumeric()),
+        "Matrix dimensions must match # loadings and intercepts\n"
+      )
     },
     if (input$useMatrix == TRUE) {
       need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
@@ -330,39 +336,48 @@ output$table <- renderTable(rownames = TRUE, {
     ),
     need(
       input$tau_r,
-      "Input for measurement intercepts of reference group is missing\n"
+      "Input for factor variance-covariance matrix of reference group is missing\n"
     ),
     need(
       length(lambda_rNumeric()) == length(tau_rNumeric()),
-      "loadings and intercepts need to have the same dimension\n"
+      "Factor loadings and intercepts need to have the same value\n"
     ),
-    if(input$uselambda_f == TRUE){
+    if (input$uselambda_f == TRUE) {
       need(
         length(lambda_rNumeric()) == length(lambda_fNumeric()),
         "factor loadings for referance and focal groups need to have the same number of values\n"
       )
     },
-    if(input$usetau_f == TRUE){
+    if (input$usetau_f == TRUE) {
       need(
         length(tau_rNumeric()) == length(tau_fNumeric()),
         "intercepts for referance and focal groups need to have the same number of values\n"
       )
     },
-    if(input$usetheta_f == TRUE){
+    if (input$usetheta_f == TRUE) {
       need(
-        length(theta_rNumeric()) == length(theta_fNumeric()), "(placeholder) diagonals of referance and focal groups must match"
+        length(theta_rNumeric()) == length(theta_fNumeric()),
+        "(placeholder) diagonals of referance and focal groups must match"
       )
     },
     #only checks for numeric input of theta_r when matrix is not being used as input
     if (input$useMatrix == FALSE) {
-      need(input$theta_r,
-           "Input for unique variance-covariance matrix of reference group is missing\n")
+      need(
+        input$theta_r,
+        "Input for unique variance-covariance matrix of reference group is missing\n"
+      )
     },
     if (input$useMatrix == FALSE && length(theta_rNumeric()) > 0) {
-      need(length(theta_rNumeric()) == length(lambda_rNumeric()),"number of inputs for measurement intercepts must match factor loadings")
+      need(
+        length(theta_rNumeric()) == length(lambda_rNumeric()),
+        "number of inputs for measurement intercepts must match factor loadings"
+      )
     },
     if (input$useMatrix == TRUE) {
-      need(input$matrixSlider == length(lambda_rNumeric()), "Matrix dimensions must match # loadings and intercepts\n")
+      need(
+        input$matrixSlider == length(lambda_rNumeric()),
+        "Matrix dimensions must match # loadings and intercepts\n"
+      )
     },
     if (input$useMatrix == TRUE) {
       need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
