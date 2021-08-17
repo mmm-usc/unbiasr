@@ -118,7 +118,7 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
   #     a two-dimensional space.
   # Error handling
   stopifnot(cor12 >= -1, cor12 <= 1)
-  if (is.null(cov12)) cov12 <- cor12 * sd1 * sd2s
+  if (is.null(cov12)) cov12 <- cor12 * sd1 * sd2
   x_seq <- mean1 + seq(-3, 3, length.out = length_out) * sd1
   y_seq <- mean2 + seq(-3, 3, length.out = length_out) * sd2
   z <- outer(x_seq, y_seq, .bvnorm_kernel, mu_x = mean1, mu_y = mean2, 
