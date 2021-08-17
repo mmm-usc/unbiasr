@@ -191,6 +191,11 @@ PartInv <- function(propsel, cut_z = NULL, kappa_r, kappa_f = kappa_r,
             length(phi_f) == 1)
   if (length(Theta_r) == length(lambda_r)) Theta_r <- diag(Theta_r)
   if (length(Theta_f) == length(lambda_f)) Theta_f <- diag(Theta_f)
+  # Convert 1x1 matrices to vector
+  kappa_r <- c(kappa_r)
+  kappa_f <- c(kappa_f)
+  phi_r <- c(phi_r)
+  phi_f <- c(phi_f)
   library(mnormt)  # load `mnormt` package
   mean_zr <- sum(tau_r) + sum(lambda_r) * kappa_r
   mean_zf <- sum(tau_f) + sum(lambda_f) * kappa_f
