@@ -7,5 +7,5 @@
 # usethis::use_package("rsconnect")
 # usethis::use_package("shinytest")
 
-#pkgload::load_all(".")
-rsconnect::deployApp()
+# pkgload::load_all(".")
+# rsconnect::deployApp()
