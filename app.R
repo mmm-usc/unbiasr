@@ -61,7 +61,7 @@ ui <- dashboardPage(
                     width = 12,
                     #style for alignment of reset button
                     div(style = "display:inline-block;margin-right: 52%;padding-bottom: 10px;",
-                        actionButton("resetButton", "reset inputs")),
+                        actionButton("resetButton", "Clear inputs")),
                     textInput('legend_r',
                               'Input reference group label',
                               value = "Reference group"),
