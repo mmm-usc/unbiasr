@@ -1,32 +1,3 @@
-# TODO: 
-# Debug the PartInv() function to see what it is doing
-
-# Modify the function so that it computes the weighted sum scores 
-# instead of the unweighted sum. Line 193 to 200 is the most relevant. 
-# Consider the example in line 256. It contains 4 items. 
-# An unweighted sum is equivalent to using weights of c(1, 1, 1, 1). If we use
-# a weight of c(1, 1, 0, 1), it means that the third item is excluded. 
-
-# Things to try:
-# 1. Obtain the selection accuracy for the strict invariance model
-# 2. Obtain the selection accuracy for the unweighted sum
-# 3. Obtain the selection accuracy for (a) excluding item 3 and (b) excluding 
-# item 4
-# 4. Explore the selection accuracy of using other kinds of weights 
-# (i.e., with decimals). The goal is to find some weights where the 
-# proportion selected (or success ratio, sensitivity, specificity) is as close
-# to the strict invariance situation as possible. 
-
-# pnormmix <- function(q, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5, 
-#                      lower.tail = TRUE) {
-#   # Distribution function (pdf) of a mixture of two normal distributions. 
-#   #
-#   # Args:
-#   #   q: vector of quantiles
-#   sum(pnorm(q, c(mean1, mean2), c(sd1, sd2), lower.tail = lower.tail) * 
-#         c(pmix1, 1 - pmix1))
-# }
-
 pnormmix <- function(q, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5, 
                      lower.tail = TRUE) {
   # Distribution function (pdf) of a mixture of two normal distributions. 
@@ -118,7 +89,7 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
   #     a two-dimensional space.
   # Error handling
   stopifnot(cor12 >= -1, cor12 <= 1)
-  if (is.null(cov12)) cov12 <- cor12 * sd1 * sd2s
+  if (is.null(cov12)) cov12 <- cor12 * sd1 * sd2
   x_seq <- mean1 + seq(-3, 3, length.out = length_out) * sd1
   y_seq <- mean2 + seq(-3, 3, length.out = length_out) * sd2
   z <- outer(x_seq, y_seq, .bvnorm_kernel, mu_x = mean1, mu_y = mean2, 
@@ -142,50 +113,57 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
   c(A, B, C, D, propsel, success_ratio, sensitivity, specificity)
 }
 
+#' Evaluate partial measurement invariance using Millsap & Kwok's (2004) 
+#' approach
+#' 
+#' @param propsel proportion of selection. If missing, computed using `cut_z`.
+#' @param cut_z prespecified cutoff score on the observed composite.
+#'              This argument is ignored when `propsel` has input.
+#' @param kappa_r latent factor mean for the reference group.
+#' @param kappa_f (optional) latent factor mean for the focal group; 
+#'                if no input, set equal to `kappa_r`.
+#' @param phi_r latent factor variance for the reference group.
+#' @param phi_f (optional) latent factor variance for the focal group; 
+#'              if no input, set equal to `phi_r`.
+#' @param lambda_r a vector of factor loadings for the reference group.
+#' @param lambda_f (optional) a vector of factor loadings for the focal group; 
+#'                 if no input, set equal to `lambda_r`.
+#' @param tau_r a vector of measurement intercepts for the reference group.
+#' @param tau_f (optional) a vector of measurement intercepts for the focal group; 
+#'              if no input, set equal to `tau_r`.
+#' @param Theta_r a matrix of the unique factor variances and covariances 
+#'                for the reference group.
+#' @param Theta_f (optional) a matrix of the unique factor variances and 
+#'                covariances for the focal group; if no input, set equal to 
+#'                `Theta_r`.
+#' @param pmix_ref Proportion of the reference group; default to 0.5 
+#'                 (i.e., two populations have equal size).
+#' @param plot_contour logical; whether the contour of the two populations 
+#'                     should be plotted; default to `TRUE`.
+#' @param ... other arguments passed to the \code{\link[graphics]{contour}} 
+#'            function.
+#' @return a list of four elements and a plot if \code{plot_contour == TRUE}.
+#'   The four elements are
+#' \describe{
+#'   \item{propsel}{echo the same argument as input}
+#'   \item{cutpt_xi}{cut point on the latent scale (xi)}
+#'   \item{cutpt_z}{cut point on the observed scale (Z)}
+#'   \item{summary}{A 8 x 2 table, with columns representing the reference 
+#'                  and the focal groups, and the rows represent probabilities
+#'                  of true positive (A), false positive (B), 
+#'                  true negative (C), false negative (D); proportion selected, 
+#'                  success ratio, sensitivity, and specificity. }
+#' }
+#' @examples
+#' PartInv(.25, kappa_r = 0.5, kappa_f = 0, phi_r = 1,
+#'         lambda_r = c(.3, .5, .9, .7), tau_r = c(.225, .025, .010, .240),
+#'         Theta_r = diag(.96, 4), labels = c("female", "male"))
+#' @export
 PartInv <- function(propsel, cut_z = NULL, kappa_r, kappa_f = kappa_r, 
                     phi_r, phi_f = phi_r, lambda_r, lambda_f = lambda_r, 
                     Theta_r, Theta_f = Theta_r, tau_r, tau_f = tau_r, 
-                    pmix_ref = 0.5, plot_contour = TRUE, labels = c("Reference group", "Focal group"), ...) {
-  # Evaluate partial measurement invariance using Millsap & Kwok's (2004) 
-  # approach
-  #
-  # Args:
-  #   propsel: proportion of selection. If missing, computed using `cut_z`.
-  #   cut_z: prespecified cutoff score on the observed composite. This argument
-  #          is ignored when `propsel` has input.
-  #   kappa_r: latent factor mean for the reference group.
-  #   kappa_f: (optional) latent factor mean for the focal group; 
-  #            if no input, set equal to kappa_r.
-  #   phi_r: latent factor variance for the reference group.
-  #   phi_f: (optional) latent factor variance for the focal group; 
-  #          if no input, set equal to phi_r.
-  #   lambda_r: a vector of factor loadings for the reference group.
-  #   lambda_f: (optional) a vector of factor loadings for the focal group; 
-  #             if no input, set equal to lambda_r.
-  #   tau_r: a vector of measurement intercepts for the reference group.
-  #   tau_f: (optional) a vector of measurement intercepts for the focal group; 
-  #          if no input, set equal to tau_r.
-  #   Theta_r: a matrix of the unique factor variances and covariances 
-  #            for the reference group.
-  #   Theta_f: (optional) a matrix of the unique factor variances and 
-  #            covariances for the focal group; 
-  #            if no input, set equal to Theta_r.
-  #   pmix_ref: Proportion of the reference group; 
-  #             default to 0.5 (i.e., two populations have equal size).
-  #   plot_contour: logical; whether the contour of the two populations 
-  #                 should be plotted; default to TRUE.
-  #   ...: other arguments passed to the `countour` funcction.
-  #
-  #   Returns:
-  #     a list of four elements and a plot if plot_contour == TRUE:
-  #     - propsel: echo the same argument as input.
-  #     - cutpt_xi: cut point on the latent scale (xi).
-  #     - cutpt_z: cut point on the observed scale (Z).
-  #     - summary: A 8 x 2 table, with columns representing the reference
-  #                and the focal groups, and the rows represent
-  #                probabilities of true positive (A), false positive (B), 
-  #                true negative (C), false negative (D); proportion selected, 
-  #                success ratio, sensitivity, and specificity. 
+                    pmix_ref = 0.5, plot_contour = TRUE, 
+                    labels = c("Reference group", "Focal group"), ...) {
   # Error handling
   stopifnot(length(kappa_r) == 1, length(kappa_f) == 1, length(phi_r) == 1, 
             length(phi_f) == 1)
@@ -248,21 +226,3 @@ PartInv <- function(propsel, cut_z = NULL, kappa_r, kappa_f = kappa_r,
   list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
        summary = round(dat, 3), p = p)
 }
-# 
-# PartInv(.25, kappa_r = 0.5, kappa_f = 0, phi_r = 1,
-#      lambda_r = c(.3, .5, .9, .7), tau_r = c(.225, .025, .010, .240),
-#      Theta_r = diag(.96, 4), labels = c("female", "male"))[4]
-# 
-# PartInv(cut_z = 3.23, kappa_r = 0.5, kappa_f = 0, phi_r = 1,
-#         lambda_r = c(.3, .5, .9, .7), tau_r = c(.225, .025, .010, .240),
-#         Theta_r = diag(.96, 4), labels = c("Junior", "Senior"))
-# 
-# PartInv(.25, kappa_r = 0.5, kappa_f = 0, phi_r = 1,
-#         lambda_r = c(.3, .5, .9, .7), tau_r = c(.225, .025, .010, .240),
-#         tau_f = c(.225, -.05, .240, -.025),
-#         Theta_r = diag(.96, 4))
-# 
-# PartInv(propsel = .25, kappa_r = 0.5, kappa_f = 0, phi_r = 1, 
-#         lambda_r = c(.3, .5, .9, .7), lambda_f = c(.3, .5, .7, .5),
-#         tau_r = c(.225, .025, .010, .240), tau_f = c(.225, -0.225, .240, -.025), 
-#         Theta_r = diag(.96, 4))
