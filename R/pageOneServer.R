@@ -258,11 +258,19 @@ server <- function(input, output) {
     },
     if (input$useMatrix == TRUE) {
       need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
-           "matrix empty")
+           "reference matrix empty")
+    },
+    if (input$useMatrix == TRUE && input$usetheta_f == TRUE) {
+      need(length(unique(theta_f())) / length(lambda_rNumeric())[1] != 1,
+           "focal matrix empty")
     },
     if (input$useMatrix == TRUE) {
       need(isSymmetric(input$theta_rMatrixInput) == TRUE,
-           "matrix not symmetrical")
+           "reference matrix not symmetrical")
+    },
+    if (input$useMatrix == TRUE && input$usetheta_f == TRUE) {
+      need(isSymmetric(input$theta_fMatrixInput) == TRUE,
+           "focal matrix not symmetrical")
     }
     
   )})
