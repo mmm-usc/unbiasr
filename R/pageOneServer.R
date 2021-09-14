@@ -231,7 +231,7 @@ server <- function(input, output) {
         "intercepts for referance and focal groups need to have the same number of values\n"
       )
     },
-    if (input$usetheta_f == TRUE) {
+    if (input$useMatrix == FALSE && input$usetheta_f == TRUE) {
       need(
         length(theta_rNumeric()) == length(theta_fNumeric()),
         "(placeholder) diagonals of referance and focal groups must match"
