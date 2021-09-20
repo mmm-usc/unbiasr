@@ -6,6 +6,7 @@ library(shinyWidgets) #materialSwitch
 library(shinyMatrix) #matrixInput
 library(rsconnect) #connect to server Shinyapps.io
 library(shinytest) #automated snapshot testing
+library(roxygen2)
 
 myApp <- function(...) {
   shinyApp(ui = ui, server = server)
