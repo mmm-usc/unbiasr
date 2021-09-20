@@ -1,5 +1,3 @@
-library(testthat)
-source("PartInv.R")
 # Create sample output
 piout <- PartInv(
   .10,
@@ -48,7 +46,7 @@ test_that("PartInv() handles matrix input", {
     Theta_r = diag(.96, 5),
     labels = c("female", "male")
   )
-  expect_equal(piout, piout_mat)
+  expect_equal(piout[1:4], piout_mat[1:4])
 })
 
 test_that("PartInv() handles diagonal input for Theta", {
@@ -62,7 +60,7 @@ test_that("PartInv() handles diagonal input for Theta", {
     Theta_r = rep(.96, 5),
     labels = c("female", "male")
   )
-  expect_equal(piout, piout_diag)
+  expect_equal(piout[1:4], piout_diag[1:4])
 })
 
 test_that("PartInv() output passes logical test", {
