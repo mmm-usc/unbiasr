@@ -231,7 +231,7 @@ server <- function(input, output) {
         "intercepts for referance and focal groups need to have the same number of values\n"
       )
     },
-    if (input$usetheta_f == TRUE) {
+    if (input$useMatrix == FALSE && input$usetheta_f == TRUE) {
       need(
         length(theta_rNumeric()) == length(theta_fNumeric()),
         "(placeholder) diagonals of referance and focal groups must match"
@@ -258,18 +258,27 @@ server <- function(input, output) {
     },
     if (input$useMatrix == TRUE) {
       need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
-           "matrix empty")
+           "reference matrix empty")
+    },
+    if (input$useMatrix == TRUE && input$usetheta_f == TRUE) {
+      need(length(unique(theta_f())) / length(lambda_rNumeric())[1] != 1,
+           "focal matrix empty")
+    },
+    if (input$useMatrix == TRUE) {
+      need(isSymmetric(input$theta_rMatrixInput) == TRUE,
+           "reference matrix not symmetrical")
+    },
+    if (input$useMatrix == TRUE && input$usetheta_f == TRUE) {
+      need(isSymmetric(input$theta_fMatrixInput) == TRUE,
+           "focal matrix not symmetrical")
     }
+    
   )})
   
-  output$distPlot <- renderPlot({
-    
-    #validations checks user inputs before allowing PartInv to run
-    validations()
-
+  partInvOutput <- reactive({
     if (input$usepropsel == FALSE) {
       #plug everything into PartInv function
-      #calls to reactive funtions have () brackets
+      #calls to reactive functions have () brackets
       PartInv(
         plot_contour = TRUE,
         cut_z = input$cut_z,
@@ -285,10 +294,11 @@ server <- function(input, output) {
         tau_r = tau_rNumeric(),
         Theta_r = theta_r(),
         labels = c(input$legend_r, input$legend_f)
-      )
+      )[[4]]
     }
     else{
       PartInv(
+        #propsel adds value as input if true
         propsel = input$prop,
         plot_contour = TRUE,
         cut_z = input$cut_z,
@@ -304,52 +314,17 @@ server <- function(input, output) {
         tau_r = tau_rNumeric(),
         Theta_r = theta_r(),
         labels = c(input$legend_r, input$legend_f)
-      )
+      )[[4]]
     }
   })
   
-  output$table <- renderTable(rownames = TRUE, {
-    #validations checks user inputs before allowing PartInv to run
+  output$distPlot <- renderPlot({
     validations()
-
-    if (input$usepropsel == FALSE) {
-      #plug everything into PartInv function
-      #calls to reactive funtions have () brackets
-      PartInv(
-        plot_contour = FALSE,
-        cut_z = input$cut_z,
-        pmix_ref = input$pmix,
-        kappa_r = input$kappa_r,
-        kappa_f = kappa_f(),
-        phi_r = input$phi_r,
-        phi_f = phi_f(),
-        lambda_r = lambda_rNumeric(),
-        lambda_f = lambda_f(),
-        tau_f = tau_f(),
-        Theta_f = theta_f(),
-        tau_r = tau_rNumeric(),
-        Theta_r = theta_r(),
-        labels = c(input$legend_r, input$legend_f)
-      )[[4]]
-    }
-    else{
-      PartInv(
-        propsel = input$prop,
-        plot_contour = FALSE,
-        cut_z = input$cut_z,
-        pmix_ref = input$pmix,
-        kappa_r = input$kappa_r,
-        kappa_f = kappa_f(),
-        phi_r = input$phi_r,
-        phi_f = phi_f(),
-        lambda_r = lambda_rNumeric(),
-        lambda_f = lambda_f(),
-        tau_f = tau_f(),
-        Theta_f = theta_f(),
-        tau_r = tau_rNumeric(),
-        Theta_r = theta_r(),
-        labels = c(input$legend_r, input$legend_f)
-      )[[4]]
-    }
+    partInvOutput()
+  })
+  
+  output$table <- renderTable(rownames = TRUE, {
+    validations()
+    partInvOutput()
   })
 }
