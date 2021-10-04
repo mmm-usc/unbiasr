@@ -174,7 +174,7 @@ PartInv <- function(propsel, cut_z = NULL, kappa_r, kappa_f = kappa_r,
   kappa_f <- c(kappa_f)
   phi_r <- c(phi_r)
   phi_f <- c(phi_f)
-  library(mnormt)  # load `mnormt` package
+  #library(mnormt)  # load `mnormt` package
   mean_zr <- sum(tau_r) + sum(lambda_r) * kappa_r
   mean_zf <- sum(tau_f) + sum(lambda_f) * kappa_f
   sd_zr <- sqrt(sum(lambda_r)^2 * phi_r + sum(Theta_r))
