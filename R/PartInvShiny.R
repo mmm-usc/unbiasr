@@ -1,4 +1,11 @@
-
+#' Launch the 'PartInv' app
+#'
+#' @import shiny
+#' @import shinydashboard
+#' @importFrom shinyjs useShinyjs inlineCSS reset
+#' @importFrom shinyWidgets materialSwitch
+#' @importFrom shinyMatrix matrixInput
+#' @export
 myApp <- function(...) {
   ui <- dashboardPage(
     dashboardHeader(title = "Computation of Selection Accuracy Indexes",
@@ -586,5 +593,5 @@ myApp <- function(...) {
       partInvOutput()
     })
   }
-  shinyApp(ui = ui, server = server)
+  shinyApp(ui, server = server, ...)
 }
