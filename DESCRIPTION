@@ -23,5 +23,7 @@ Imports:
     shinyjs,
     shinyMatrix,
     shinytest,
+    testthat,
     shinyWidgets,
     roxygen2
+
