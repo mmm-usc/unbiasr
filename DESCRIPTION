@@ -14,16 +14,14 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Suggests: 
+    testthat,
+    shinytest
 Imports: 
     mnormt,
-    pkgload,
-    rsconnect,
     shiny,
     shinydashboard,
     shinyjs,
     shinyMatrix,
-    shinytest,
-    testthat,
     shinyWidgets,
     roxygen2
-

@@ -1,5 +1,7 @@
-#' @import pkgload mnormt rsconnect shiny shinydashboard shinyjs shinyMatrix shinyWidgets roxygen2
-#' @import shinytest testthat
+#' @importFrom stats qchisq pnorm qnorm nlminb
+#' @importFrom mnormt pmnorm
+#' @importFrom graphics legend abline text contour
+#' @importFrom grDevices recordPlot
 
 pnormmix <- function(q, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5, 
                      lower.tail = TRUE) {
