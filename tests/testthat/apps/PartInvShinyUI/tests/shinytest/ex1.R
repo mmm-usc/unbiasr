@@ -1,4 +1,4 @@
-app <- ShinyDriver$new("../")
+app <- ShinyDriver$new("../../")
 app$snapshotInit("ex1")
 
 app$setInputs(lambda_r = "0.677, 0.746, 0.768, 0.664")
