@@ -35,6 +35,20 @@ test_that("Identical selection with the same parameters", {
   expect_equal(piout_eq$summary["Proportion selected", 1], .10)
 })
 
+test_that("Duplicated results with `show_mi_result = TRUE` when inputting invariant model", {
+  piout_eq2 <- PartInv(
+    .10,
+    kappa_r = 0.5,
+    phi_r = 1,
+    lambda_r = c(.3, .5, .9, .7, .8),
+    tau_r = c(.225, .025, .010, .240, .123),
+    Theta_r = diag(.96, 5),
+    labels = c("female", "male"),
+    show_mi_result = TRUE
+  )
+  expect_equal(piout_eq2$summary, piout_eq2$summary_mi)
+})
+
 test_that("PartInv() handles matrix input", {
   piout_mat <- PartInv(
     .10,
@@ -104,4 +118,44 @@ test_that("PartInv() output passes logical test", {
       (sum_ps["C (true negative)", "reference"] + 
          sum_ps["B (false positive)", "reference"])),
     .0005)
+})
+
+test_that("`show_mi_result = TRUE` works properly", {
+  psel <- .2
+  lambda_r <- c(1, .5, .9, .7, .8)
+  lambda_f <- c(1, .8, .9, .7, .8)
+  tau_r <- c(.225, .025, .010, .240, .123)
+  tau_f <- c(.025, .025, .010, .240, .053)
+  Theta_r <- diag(.96, 5)
+  Theta_f <- diag(c(1, .65, .75, .9, .8))
+  # Example favoring reference group
+  piout1_pstrict <- PartInv(
+    psel,
+    kappa_r = 0,
+    kappa_f = -0.1,
+    phi_r = 1.3,
+    phi_f = 1.2,
+    lambda_r = lambda_r,
+    lambda_f = lambda_f,
+    tau_r = tau_r,
+    tau_f = tau_f,
+    Theta_r = Theta_r,
+    Theta_f = Theta_f,
+    labels = c("reference", "focal"),
+    pmix_ref = .2,
+    show_mi_result = TRUE
+  )
+  piout1_strict <- PartInv(
+    psel,
+    kappa_r = 0,
+    kappa_f = -0.1,
+    phi_r = 1.3,
+    phi_f = 1.2,
+    lambda_r = lambda_r * .2 + lambda_f * .8,
+    tau_r = tau_r * .2 + tau_f * .8,
+    Theta_r = Theta_r * .2 + Theta_f * .8,
+    pmix_ref = .2,
+    labels = c("reference", "focal")
+  )
+  expect_equal(piout1_pstrict$summary_mi, piout1_strict$summary)
 })

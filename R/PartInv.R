@@ -99,8 +99,8 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
   y_seq <- mean2 + seq(-3, 3, length.out = length_out) * sd2
   z <- outer(x_seq, y_seq, .bvnorm_kernel, mu_x = mean1, mu_y = mean2, 
              sd_x = sd1, sd_y = sd2, cov_xy = cov12)
-  contour(x_seq, y_seq, z, levels = qchisq(density, 2), drawlabels = FALSE, 
-          bty = bty, ...)
+  contour(x_seq, y_seq, z, levels = qchisq(density, 2), 
+          drawlabels = FALSE, bty = bty, ...)
 }
 
 .partit_bvnorm <- function(cut1, cut2, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, 
@@ -145,6 +145,13 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
 #'                 (i.e., two populations have equal size).
 #' @param plot_contour logical; whether the contour of the two populations 
 #'                     should be plotted; default to `TRUE`.
+#' @param labels Legend labels for the two groups in the graph. Must be a 
+#'               character vector of length 2.
+#' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
+#'                       for both the input parameters and the implied
+#'                       parameters based on a strict invariance model, with
+#'                       common parameter values as weighted averages of
+#'                       the input values using `pmix_ref`.
 #' @param ... other arguments passed to the \code{\link[graphics]{contour}} 
 #'            function.
 #' @return a list of four elements and a plot if \code{plot_contour == TRUE}.
@@ -168,7 +175,9 @@ PartInv <- function(propsel, cut_z = NULL, kappa_r, kappa_f = kappa_r,
                     phi_r, phi_f = phi_r, lambda_r, lambda_f = lambda_r, 
                     Theta_r, Theta_f = Theta_r, tau_r, tau_f = tau_r, 
                     pmix_ref = 0.5, plot_contour = TRUE, 
-                    labels = c("Reference group", "Focal group"), ...) {
+                    labels = c("Reference group", "Focal group"),
+                    show_mi_result = FALSE,
+                    ...) {
   # Error handling
   stopifnot(length(kappa_r) == 1, length(kappa_f) == 1, length(phi_r) == 1, 
             length(phi_f) == 1)
@@ -179,7 +188,7 @@ PartInv <- function(propsel, cut_z = NULL, kappa_r, kappa_f = kappa_r,
   kappa_f <- c(kappa_f)
   phi_r <- c(phi_r)
   phi_f <- c(phi_f)
-  #library(mnormt)  # load `mnormt` package
+  # Partial
   mean_zr <- sum(tau_r) + sum(lambda_r) * kappa_r
   mean_zf <- sum(tau_f) + sum(lambda_f) * kappa_f
   sd_zr <- sqrt(sum(lambda_r)^2 * phi_r + sum(Theta_r))
@@ -233,6 +242,68 @@ PartInv <- function(propsel, cut_z = NULL, kappa_r, kappa_f = kappa_r,
     text(x_cord, y_cord, c("A", "B", "D", "C"))
     p <- recordPlot()
   }
-  list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
-       summary = round(dat, 3), p = p)
+  out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
+              summary = round(dat, 3), p = p,
+              summary_mi = NULL, p_mi = NULL)
+  if (show_mi_result) {
+    # Strict
+    pop_weights <- c(pmix_ref, 1 - pmix_ref)
+    lambda_r <- lambda_f <- 
+      .weighted_average_list(list(lambda_r, lambda_f),
+                                     weights = pop_weights)
+    tau_r <- tau_f <- 
+      .weighted_average_list(list(tau_r, tau_f),
+                                  weights = pop_weights)
+    Theta_r <- Theta_f <- 
+      .weighted_average_list(list(Theta_r, Theta_f),
+                             weights = pop_weights)
+    mean_zr <- sum(tau_r) + sum(lambda_r) * kappa_r
+    mean_zf <- sum(tau_f) + sum(lambda_f) * kappa_f
+    sd_zr <- sqrt(sum(lambda_r)^2 * phi_r + sum(Theta_r))
+    sd_zf <- sqrt(sum(lambda_f)^2 * phi_f + sum(Theta_f))
+    cov_z_xir <- sum(lambda_r) * phi_r
+    cov_z_xif <- sum(lambda_f) * phi_f
+    sd_xir <- sqrt(phi_r)
+    sd_xif <- sqrt(phi_f)
+    cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf, 
+                        pmix_ref, lower.tail = FALSE)
+    cut_xi <- qnormmix(propsel, kappa_r, sd_xir, kappa_f, sd_xif, 
+                       pmix_ref, lower.tail = FALSE)
+    partit_1 <- .partit_bvnorm(cut_xi, cut_z, kappa_r, sd_xir, mean_zr, sd_zr, 
+                               cov12 = cov_z_xir)
+    partit_2 <- .partit_bvnorm(cut_xi, cut_z, kappa_f, sd_xif, mean_zf, sd_zf, 
+                               cov12 = cov_z_xif)
+    dat <- data.frame("Reference" = partit_1, "Focal" = partit_2, 
+                      row.names = c("A (true positive)", "B (false positive)", 
+                                    "C (true negative)", "D (false negative)", 
+                                    "Proportion selected", "Success ratio", 
+                                    "Sensitivity", "Specificity")
+    )
+    colnames(dat) <- labels
+    p <- NULL
+    if (plot_contour) {
+      x_lim <- range(c(kappa_r + c(-3, 3) * sd_xir, 
+                       kappa_f + c(-3, 3) * sd_xif))
+      y_lim <- range(c(mean_zr + c(-3, 3) * sd_zr, 
+                       mean_zf + c(-3, 3) * sd_zf))
+      contour_bvnorm(kappa_r, sd_xir, mean_zr, sd_zr, cov12 = cov_z_xir, 
+                     xlab = bquote("Latent Score" ~ (xi)), 
+                     ylab = bquote("Observed Composite" ~ (italic(Z))), 
+                     lwd = 2, col = "red", xlim = x_lim, ylim = y_lim, 
+                     ...)
+      contour_bvnorm(kappa_f, sd_xif, mean_zf, sd_zf, cov12 = cov_z_xif, 
+                     add = TRUE, lty = "dashed", lwd = 2, col = "blue", 
+                     ...)
+      legend("topleft", labels,
+             lty = c("solid", "dashed"), col = c("red", "blue"))
+      abline(h = cut_z, v = cut_xi)
+      x_cord <- rep(cut_xi + c(.25, -.25) * sd_xir, 2)
+      y_cord <- rep(cut_z + c(.25, -.25) * sd_zr, each = 2)
+      text(x_cord, y_cord, c("A", "B", "D", "C"))
+      p <- recordPlot()
+    }
+    out$summary_mi <- round(dat, 3)
+    out$p_mi <- p
+  }
+  out
 }
