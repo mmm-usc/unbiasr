@@ -43,34 +43,46 @@
 #' @param return_all_outputs: logical; whether the outputs from each call 
 #'        of \code{PartInv_Multi_we} should also be returned as part of the
 #'        returned object; default to FALSE.
-#' @return a list of the following two elements (or a list of the following 
-#'        four elements if return_all_outputs == TRUE):
-#'        - delta_table: a (8 x number of items) dataframe that stores Cohen's 
-#'          h values for the effect size of the impact of item bias for each i
-#'        - h_par_vs_str_ref: a list of length (number of items + 1) containing outputs 
-#'          from \code{ref_acc_indices_h}. Each item in the list is a 
-#'          restructured data frame comparing the various selection accuracy 
-#'          indices for the reference group under the strict and partial 
-#'          invariance conditions, and the corresponding h for each index. The
-#'          first item in the list, 'full', contains the dataframe output for 
-#'          when all items are included, and the remaining dataframes
-#'          can be accessed by specifying i in '...$h_par_vs_str_ref$deleteitem_i'
+#' @return a list of the following elements:
+#'        - h_overall_SR_SE_SP_par: a (3 x number of items) data frame that 
+#'          stores Cohen's h values comparing overall SR, SE, SP  under partial
+#'          invariance when item i is deleted (after the accuracy indices were 
+#'          weighted by the focal and reference group proportions). 
+#'        - delta_h_str_vs_par_ref: a (8 x number of items) data frame that 
+#'          stores the change in Cohen's h comparing accuracy indices for the 
+#'          reference group under strict vs. partial invariance when item i is 
+#'          deleted i.e. the change in h_str_vs_par_ref.
+#'        - h_str_vs_par_ref: a list of length (number of items + 1). Each item 
+#'          in the list is a data frame containing Cohen's h comparing the 
+#'          selection accuracy indices for the reference group under the strict
+#'          vs. partial invariance conditions, for a given set of items. The
+#'          first element in the list, 'full', corresponds to the comparison
+#'          when all items are included. The remaining elements correspond to
+#'          the comparison when item i is deleted, and these can be accessed by
+#'          specifying i in '...$h_str_vs_par_ref$deleteitem_i'
 #'  
+#'         The following lists are also returned if return_all_outputs == TRUE)
 #'          The following two lists of length (number of items + 1) are also 
 #'          returned if the user indicates return_all_outputs == TRUE:
 #'        
-#'       - strict_results: contains outputs from \code{PartInvMulti_we} 
-#'         under strict invariance.
-#'       - partial_results: contains outputs from \code{PartInvMulti_we} 
-#'         under partial invariance. 
+#'       - overall_SR_SE_SP_par: a (3 x number of items + 1) data frame 
+#'         containing overall SR, SE, SP (after the 
+#'         accuracy indices were weighted by the focal and reference group 
+#'         proportions) under partial invariance. The first column refers to the
+#'         case with the full item set, remaining columns refer to the scenario
+#'         when item i is deleted.
+#'       - strict_results: a list of length (number of items + 1) containing
+#'         outputs from \code{PartInvMulti_we} under strict invariance.
+#'       - partial_results: a list of length (number of items + 1) containing
+#'         outputs from \code{PartInvMulti_we} under partial invariance. 
 #'         The first item in either list can be accessed through 
 #'         '...$(partial/strict)_results$full' and contains the 
 #'         \code{PartInvMulti_we} output when all items are included. Remaining 
 #'         items in the list are of the 'deleteitem_i' form, and contain the 
-#'         \code{PartInvMulti_we} output when a given item i is deleted
+#'         \code{PartInvMulti_we} output when item i is deleted.
 #'
 #' @examples
-#' # Multidimensional example
+#' # Multidimensional example 
 #' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
 #' lambda_matrix[1:2, 1] <- c(.322, .655)
 #' lambda_matrix[3:5, 2] <- c(.398, .745, .543)
@@ -87,9 +99,9 @@
 #'                              theta_f_p = c(1, .95, .80, .75, 1),
 #'                              plot_contour = FALSE,
 #'                              return_all_outputs = TRUE)
-#' multi_dim$delta_table
-#' multi_dim$h_par_vs_str_ref$full
-#' multi_dim$h_par_vs_str_ref$deleteitem_1
+#' multi_dim$delta_h_str_vs_par_ref
+#' multi_dim$h_str_vs_par_ref$full
+#' multi_dim$h_str_vs_par_ref$deleteitem_1
 #' multi_dim$strict_results$full
 #' multi_dim$strict_results$deleteitem_1
 #' multi_dim$partial_results$full
@@ -108,9 +120,9 @@
 #'                               theta_r_p = diag(.96, 4),
 #'                               n_dim = 1, plot_contour = FALSE,
 #'                               return_all_outputs = TRUE)
-#' single_dim$delta_table
-#' single_dim$h_par_vs_str_ref$full
-#' single_dim$h_par_vs_str_ref$deleteitem_1
+#' single_dim$delta_h_str_vs_par_ref
+#' single_dim$h_str_vs_par_ref$full
+#' single_dim$h_str_vs_par_ref$deleteitem_1
 #' single_dim$strict_results$full
 #' single_dim$strict_results$deleteitem_1
 #' single_dim$partial_results$full
@@ -129,9 +141,9 @@
 #'                                theta_r_p = diag(.96, 4),
 #'                                n_dim = 1, plot_contour = FALSE,
 #'                                return_all_outputs = FALSE)
-#' single_dim2$delta_table
-#' single_dim2$h_par_vs_str_ref$full
-#' single_dim2$h_par_vs_str_ref$deleteitem_1                                      
+#' single_dim2$delta_h_str_vs_par_ref
+#' single_dim2$h_str_vs_par_ref$full
+#' single_dim2$h_str_vs_par_ref$deleteitem_1                                      
 
 item_deletion_h <- function(propsel, cut_z = NULL, 
                             weights_item, 
@@ -150,12 +162,14 @@ item_deletion_h <- function(propsel, cut_z = NULL,
   
   # Start with pre-allocating space:
   n_items <- length(weights_item)
-  store_str <- store_par <- h_par_vs_str_ref <- vector(mode = "list",
+  store_str <- store_par <- h_str_vs_par_ref_list <- vector(mode = "list",
                                                        n_items + 1)
-  delta_table <- as.data.frame(matrix(nrow = 8, ncol = n_items))
-  h_R_Ef_full <- c()
-  h_R_Ef_del <- delta_h_R_Ef <- as.data.frame(matrix(nrow = 8, ncol = n_items))
-  performance <- perf_del1 <- as.data.frame(matrix(nrow = 3, ncol = n_items)) 
+  delta_h_str_vs_par_ref <- as.data.frame(matrix(nrow = 8, ncol = n_items))
+  h_R_Ef_full <- h_str_vs_par_ref_full <- c()
+  h_R_Ef_del <- h_str_vs_par_ref_del <- delta_h_R_vs_Ef_par <- 
+    as.data.frame(matrix(nrow = 8, ncol = n_items))
+  h_overall_SR_SE_SP_par <- overall3_par_del1 <- 
+    as.data.frame(matrix(nrow = 3, ncol = n_items)) 
   
  # Call PartInvMulti_we with the full item set under strict invariance
   store_str[[1]] <- PartInvMulti_we(propsel, cut_z = cut_z, 
@@ -191,10 +205,14 @@ item_deletion_h <- function(propsel, cut_z = NULL,
   
   # Compare accuracy indices for reference group under strict vs. partial
   # invariance conditions and compute h for full item set
-  h_par_vs_str_ref[[1]] <- ref_acc_indices_h(store_str[[1]], store_par[[1]]) 
+  h_str_vs_par_ref_list[[1]] <- ref_acc_indices_h(store_str[[1]], 
+                                                  store_par[[1]]) 
+  h_str_vs_par_ref_full <- h_str_vs_par_ref_list[[1]]$h
   h_R_Ef_full <- cohens_h(store_par[[1]]$summary$Reference, 
                                      store_par[[1]]$summary$E_R.Focal.)
-  perf_full <- get_perf(pmix_ref, store_par[[1]]$summary)
+  # Re-weight the accuracy indices by focal and group proportions to compute 
+  # overall accuracy indices under partial invariance for the full item set
+  overall3_par_full <- get_perf(pmix_ref, store_par[[1]]$summary)
   
   # (Re)set the proportion selected based on the PartInvMulti_we output when all
   # items are included in the strict invariance condition
@@ -242,12 +260,14 @@ item_deletion_h <- function(propsel, cut_z = NULL,
                     
     # Compute h for the difference in accuracy indices for reference group under
     # strict vs. partial invariance conditions 
-    h_par_vs_str_ref[[i]] <- ref_acc_indices_h(store_str[[i]], store_par[[i]]) 
+    h_str_vs_par_ref_list[[i]] <- ref_acc_indices_h(store_str[[i]], 
+                                                    store_par[[i]])
+    h_str_vs_par_ref_del[i - 1] <- h_str_vs_par_ref_list[[i]]$h
     # Compute the change in Cohen's h comparing accuracy indices for the 
     # reference group under strict vs. partial invariance when item i is deleted
-    # i.e. the change in h_par_vs_str_ref
-    delta_table[i - 1] <- delta_h(h_par_vs_str_ref[[1]]$h, 
-                                  h_par_vs_str_ref[[i]]$h)
+    # i.e. the change in h_str_vs_par_ref 
+    delta_h_str_vs_par_ref[i - 1] <- delta_h(h_str_vs_par_ref_list[[1]]$h, 
+                                  h_str_vs_par_ref_list[[i]]$h)
     
     # Compute h for the difference in accuracy indices under partial invariance
     # for the reference group vs. for the expected accuracy indices for the 
@@ -259,44 +279,55 @@ item_deletion_h <- function(propsel, cut_z = NULL,
     # invariance for the reference group vs. for the expected accuracy indices
     # for the focal group if it followed the same distribution as the reference
     # group when item i is deleted, i.e. the change in h_R_Ef_del
-    delta_h_R_Ef[i - 1] <- round(delta_h(h_R_Ef_full, h_R_Ef_del[i - 1]), 3)
+    delta_h_R_vs_Ef_par[i - 1] <- round(delta_h(h_R_Ef_full,
+                                                h_R_Ef_del[i - 1]), 3)
     
     # Compute overall SR, SE, SP indices under partial invariance by weighting 
     # accuracy indices for the reference and focal groups by their group
     # proportions
-    perf_del1[i - 1] <- get_perf(pmix_ref, store_par[[i]]$summary)
+    overall3_par_del1[i - 1] <- get_perf(pmix_ref, store_par[[i]]$summary)
     # Compute how the overall SR, SE, SP indices change when an item is deleted
-    performance[i - 1] <- cohens_h(perf_full, perf_del1[i - 1])
+    h_overall_SR_SE_SP_par[i - 1] <- cohens_h(overall3_par_full, 
+                                              overall3_par_del1[i - 1])
   }
   
   # Format stored variables
   h_R_Ef <- as.data.frame(cbind(round(h_R_Ef_full, 3), h_R_Ef_del))
-  weighted_SR_SE_SP <- as.data.frame(cbind(round(perf_full, 3),
-                                          round(perf_del1, 3)))
-  performance <- as.data.frame(round(performance, 3))
-  colnames <- paste0(c("full", rep("deleteitem_", n_items)), c("", 1:n_items))
-  names(store_str) <- names(store_par) <- names(h_par_vs_str_ref) <- names(h_R_Ef) <-  
-    names(weighted_SR_SE_SP) <- colnames
-  names(delta_table) <- names(delta_h_R_Ef) <- 
+  h_str_vs_par_ref <- as.data.frame(cbind(round(h_str_vs_par_ref_full, 3), 
+                                          h_str_vs_par_ref_del))
+  overall_SR_SE_SP_par <- as.data.frame(cbind(round(overall3_par_full, 3),
+                                          round(overall3_par_del1, 3)))
+  h_overall_SR_SE_SP_par <- as.data.frame(round(h_overall_SR_SE_SP_par, 3))
+  
+  #colnames <- paste0(c("h(full)", rep("deleteitem_", n_items)), c("", 1:n_items))
+  colnames <- c("h(full)", paste0(rep(paste0("h(-")), c(1:n_items), c(rep(")"))))
+  names(store_str) <- names(store_par) <- names(h_str_vs_par_ref_list) <-
+    names(h_R_Ef) <- names(h_str_vs_par_ref) <- names(overall_SR_SE_SP_par) <-
+    colnames
+  names(delta_h_str_vs_par_ref) <- names(delta_h_R_vs_Ef_par) <- 
     paste0(rep(paste0('\u0394', "h(-")), c(1:n_items), c(rep(")")))
-  names(performance) <- paste0(rep(paste0("h(-")), c(1:n_items), c(rep(")")))
-  rownames(delta_table) <- rownames(h_R_Ef) <- rownames(delta_h_R_Ef) <-
+  names(h_overall_SR_SE_SP_par) <- 
+    paste0(rep(paste0("h(-")), c(1:n_items), c(rep(")")))
+  rownames(delta_h_str_vs_par_ref) <- rownames(h_R_Ef) <- 
+    rownames(delta_h_R_vs_Ef_par) <- rownames(h_str_vs_par_ref) <- 
     c("TP","FP","TN","FN", "PS", "SR", "SE", "SP")
-  rownames(performance) <- rownames(weighted_SR_SE_SP) <- c("SR", "SE", "SP")
+  rownames(h_overall_SR_SE_SP_par) <- rownames(overall_SR_SE_SP_par) <- 
+    c("SR", "SE", "SP")
   
   if (return_all_outputs == TRUE) {
-    return(list("performance" = performance,
-                "delta_h_R_Ef" = delta_h_R_Ef,
-                "delta_table" = delta_table, 
-                "h_par_vs_str_ref" = h_par_vs_str_ref,
-                "weighted_SR_SE_SP" = weighted_SR_SE_SP,
-                "h_R_Ef" = h_R_Ef,
+    return(list("h_overall_SR_SE_SP_par" = h_overall_SR_SE_SP_par,
+                "delta_h_R_vs_Ef_par" = delta_h_R_vs_Ef_par,
+                "delta_h_str_vs_par_ref" = delta_h_str_vs_par_ref, 
+                "h_str_vs_par_ref" = h_str_vs_par_ref,
+                "overall_SR_SE_SP_par" = overall_SR_SE_SP_par,
+                "h_R_vs_Ef_par" = h_R_Ef,
+                "h_str_vs_par_ref_list" = h_str_vs_par_ref_list,
                 "strict_results" = store_str, 
                 "partial_results" = store_par))
   } else {
-    return(list("performance" = performance,
-                "delta_h_R_Ef" = delta_h_R_Ef,
-                "delta_table" = delta_table, 
-                "h_par_vs_str_ref" = h_par_vs_str_ref))
+    return(list("h_overall_SR_SE_SP_par" = h_overall_SR_SE_SP_par,
+                "delta_h_R_vs_Ef_par" = delta_h_R_vs_Ef_par,
+                "delta_h_str_vs_par_ref" = delta_h_str_vs_par_ref, 
+                "h_str_vs_par_ref" = h_str_vs_par_ref))
   }
 }
