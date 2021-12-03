@@ -1,0 +1,267 @@
+---
+title: "item_deletion_examples12.2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(lavaan)
+#library(tidyverse)
+#library(knitr)
+library(here)
+#library(dplyr)
+library(mnormt)
+```
+
+```{r load functions, cache = FALSE, echo=FALSE}
+source(here("item_deletion_h.R"))
+source(here("helper_item_deletion.R"))
+source(here("PartInv_multi.R"))
+source(here("helper.R"))
+source(here("PartInv.R"))
+```
+
+## Example from Lai, Kwok, Yoon and Hsiao (2017) 
+Center for Epidemiological Studies Depression  (CES-D) Scale 
+Positive Affect Factor
+Items: good, hopeful, happy, enjoyed
+Biased items: 1
+```{r}
+ex1_output <- item_deletion_h(weights_item = c(1, 1, 1,  1), 
+                             propsel =.14, n_dim = 1,  
+                             alpha_r = 0,
+                             alpha_f =-0.125,
+                             psi_r = 0.354^2,
+                             psi_f = 0.329^2,
+                             lambda_r_p = c(1.00, 1.66, 2.30, 2.29),
+                             lambda_f_p = c(1.00, 1.66, 2.30, 2.29),
+                             nu_r_p = c(1.54, 1.36, 1.16, 1.08),
+                             nu_f_p = c(0.68, 1.36, 1.16, 1.08),
+                             theta_r_p = diag(c(1.20, 0.81, 0.32, 0.32)), 
+                             theta_f_p = diag(c(0.72, 0.81, 0.32, 0.32)),
+                             weights_latent = 1,
+                             plot_contour = FALSE,
+                             return_all_outputs = TRUE, pmix_ref = 5/7)
+```
+
+**h_overall_SR_SE_SP_par** is the effect size of the comparison between the 
+overall accuracy indices under partial invariance for the full item set vs. the
+overall accuracy indices when one item is deleted, under partial invariance. 
+'Overall' refers to the weighing of accuracy indices for the focal and reference 
+by group proportions to arrive at a weighted average for each index.
+
+
+
+$$\text{h}_{{\text{SR}}^{(-i)}} = 2\text{arcsin}(\sqrt{\text{SR}^\text{full}})-2\text{arcsin}(\sqrt{\text{SR}^{(-i)}})$$
+```{r}
+ex1_output$h_overall_SR_SE_SP_par
+```
+For the 4-item CES-D scale, the negative $\text{h}_{{\text{SR}}^{(-1)}}$,
+$\text{h}_{{\text{SE}}^{(-1)}}$, and $\text{h}_{{\text{SP}}^{(-1)}}$ values 
+indicate that removing the first item led to an improvement in success ratio, 
+sensitivity, and specificity as the reduced set of items led to a larger
+SR, SE, SP. Removing any of the other items harmed SR, SE, SP (indicated by the
+positive h values).
+
+
+**h_R_vs_Ef_par** is the effect size of the comparison between accuracy indices 
+for the reference group vs. the expected indices for the focal group if it 
+followed the same distribution as the reference group, under partial invariance.
+
+$$\text{h}_{{\text{PS}}^{(\text{full})}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(\text{full})}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(\text{full})}})$$
+$$\text{h}_{{\text{PS}}^{(-i)}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(-i)}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(-i)}})$$
+```{r }
+ex1_output$h_R_vs_Ef_par
+```
+
+The 0 values for $\text{h}_{{\text{PS}}^{(-1)}_{\text{ref_Ef}}}$,$\text{h}_{{\text{SR}}^{(-1)}_\text{ref_Ef}}$,
+$\text{h}_{{\text{SE}}^{(-1)}_\text{ref_Ef}}$, $\text{h}_{{\text{SP}}^{(-1)}_\text{ref_Ef}}$ indicate that 
+if we delete the first item, the accuracy indices for the Efocal group under
+partial invariance will be equal to that of the reference group under partial 
+invariance, *thus removing bias*. 
+
+For the full set of items, we see that $\text{h}_{{\text{PS}}^{(\text{full})}_\text{Efocal}}=0.203$, suggesting that if 
+the focal group followed the same distribution as the reference group, the effect
+size of the difference between the proportion selected the accuracy indices for
+Efocal and the reference group would be 0.203. This means that the proportion
+selected in the reference group is larger than the proportion selected in the Efocal
+group when we use the full set of items. Under the expected distribution for the reference group, the Efocal group would 
+have a higher success ratio and a higher specificity than the reference group 
+(full item set, and when one of items 2-4 is deleted), but would have a lower proportion selected and a lower sensitivity.
+
+
+**delta_h_R_vs_Ef_par**
+
+Here, the comparison is between h values for the full item set vs. h when item i is deleted. These h values correspond to the comparison between accuracy indices for the reference group vs. the expected indices for the focal group if it followed the same distribution as the reference group, under partial invariance, i.e., looking at the change in h_R_vs_Ef_par when an item is deleted.
+
+ $$\Delta h_{\text{PS}_\text{ref_Ef}^{(-i)}=} \text{sign}(h_{\text{PS}^{\text{full}}_\text{ref_Ef}} - h_{\text{PS}^{(-i)}_\text{ref_Ef}})||h_{\text{PS}^{(-i)}_\text{ref_Ef}}|-|h_{\text{PS}^{\text{full}}_\text{ref_Ef}}||$$
+```{r }
+ex1_output$delta_h_R_vs_Ef_par
+```
+
+
+Looking at PS, Delta h is only positive for the comparison between the full item
+set and the set where item 1 is deleted. As we know that item 1 is biased, this 
+indicates that seeing a positive delta h in PS is an indication that that item
+should be removed. We see the opposite patterns for item 1 vs. items 2-4 where 
+removing any of item 2, 3, or 4 would harm the accuracy indices.
+
+
+**h_str_vs_par_ref** compares accuracy indices for the reference group under 
+strict vs. partial invariance for a given set of items (full, one item deleted).
+
+$$\text{h}_{{\text{PS}}^{(\text{full})}_\text{str_par}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{str}}^{(\text{full})}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{par}}^{(\text{full})}})$$
+$$\text{h}_{{\text{PS}}^{(-i)}_\text{str_par}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{str}}^{(-i)}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{par}}^{(-i)}})$$
+
+```{r }
+ex1_output$h_str_vs_par_ref
+```
+$\text{h}_{{\text{PS}}^{(\text{full})}_\text{str_par}}=-0.040$ indicates that 
+PS was slightly higher under partial invariance compared to under strict 
+invariance for the full item set and when any of items 2-4 was deleted. Deleting
+item 1 brought the effect size of the difference between strict and partial invariance conditions to 0 for all accuracy indices.
+
+**delta_h_str_vs_par_ref**
+
+Here, the comparison is between h values for the full item set vs. h when item i is deleted. These h values correspond to the comparison between accuracy indices under strict vs. partial invariance, for the reference group. 
+
+$$\Delta h_{\text{PS}_\text{str_par}^{(-i)}=} \text{sign}(h_{\text{PS}^{\text{full}}_\text{str_par}} - h_{\text{PS}^{(-i)}_\text{str_par}})||h_{\text{PS}^{(-i)}_\text{str_par}}|-|h_{\text{PS}^{\text{full}}_\text{str_par}}||$$
+```{r }
+ex1_output$delta_h_str_vs_par_ref
+```
+
+
+
+
+
+## Example from Millsap, Kwok (2004)
+'Evaluating the Impact of Partial Factorial Invariance on
+Selection in Two Populations'
+Biased items: 3, 4
+```{r}
+# Worry subscale of the test anxiety inventory
+ex2_output <- item_deletion_h(weights_item = c(1, 1, 1, 1, 1, 1, 1, 1), 
+                              propsel = 0.1000001,#"90% cutpoint"
+                              #cut_z= 23.29952,
+                             n_dim = 1,  
+                             alpha_r = 0,
+                             alpha_f =-0.126,
+                             psi_r = 0.544,
+                             psi_f = 0.477,
+                             lambda_r_p = c(0.836, 1, 0.904, 0.808, 0.903,
+                                             0.960, 0.934, 0.934),
+                             lambda_f_p = c(0.836, 1, 1.111, 1.001, 0.903, 
+                                             0.960, 0.934, 0.934),
+                             nu_r_p = c(2.114, 2.064, 1.901, 2.004, 2.144,
+                                        1.985, 2.179, 2.230),
+                             nu_f_p= c(2.114, 2.064, 1.880, 1.985, 2.144,
+                                        1.985, 2.179, 2.230),
+                             theta_r_p = diag(c(.517, .523, .631, .585, .481,
+                                                .469,.551,.572)),
+                             theta_f_p = diag(c(.514, .407, .371, .475, .392,
+                                                .335,.454,.457)),
+                             weights_latent = 1,
+                             plot_contour = FALSE,
+                             return_all_outputs = TRUE, pmix_ref = 0.5)
+```
+
+**h_overall_SR_SE_SP_par**
+$$\text{h}_{{\text{SR}}^{(-i)}} = 2\text{arcsin}(\sqrt{\text{SR}^\text{full}})-2\text{arcsin}(\sqrt{\text{SR}^{(-i)}})$$
+
+```{r}
+ex2_output$h_overall_SR_SE_SP_par
+```
+No clear distinction between the biased and non-biased items.
+
+**h_R_vs_Ef_par**
+$$\text{h}_{{\text{PS}}^{(\text{full})}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(\text{full})}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(\text{full})}})$$
+$$\text{h}_{{\text{PS}}^{(-i)}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(-i)}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(-i)}})$$
+```{r }
+ex2_output$h_R_vs_Ef_par
+```
+
+
+```{r }
+ex2_output$delta_h_R_vs_Ef_par
+```
+
+
+```{r }
+ex2_output$h_str_vs_par_ref
+```
+
+```{r }
+ex2_output$delta_h_str_vs_par_ref
+```
+
+
+## Example from Ock, McAbee, Mulfinger, and Oswald (2020)
+'The Practical Effects of Measurement Invariance: Gender Invariance in Two Big Five Personality Measures'
+Biased items: 1, 7, 11, 13, 14
+```{r read data, include  = FALSE}
+data <- read.table("IPIPFFM.dat", header = TRUE)
+head(data)
+male <- data[data$sex == 1, ]
+female <- data[data$sex == 2, ]
+```
+
+```{r specify and fit model}
+# Multidimensional model as specified in Effect size indices.Rmd
+model <- 'A =~  a2 + a5  + a7 + a9
+          C =~  c3 + c4 + c8 + c9
+          E =~ e1 + e4 + e6 + e7
+          N =~ n1 + n2 + n6 + n8
+          O =~ i2 + i8 + i9 + i10
+          a2 ~~ a5
+          e4 ~~ e7  
+          i2 ~~ i10
+          i8 ~~ i9
+          a9 ~~ i9
+          c3 ~~ e6
+          a2 ~~ e7
+          e7 ~~ n2'
+fit_strict <- cfa(model, data = data, group = "sex",
+                  group.equal = c("loadings", "Intercepts", "residuals"),
+                  group.partial = c("e6 ~ 1", "n1 ~ 1", "n2 ~ 1", "a2 ~ 1", 
+                                    #items  1 (A2), 7 (C8), 11 (E6), 13 (N1), 14 (N2)
+                                    "n2 ~~ n2", "n1 ~~ n1", "c8 ~~ c8"),
+                  estimator = "MLR", std.lv = TRUE)
+result <- lavInspect(fit_strict, what = "est")
+```
+
+```{r IPIPFFM item deletion}
+ex3_output <- item_deletion_h(cut_z=2.509731,
+              weights_item = c(0.008125, 0.008125, 0.008125, 0.008125,
+                               0.044875, 0.044875, 0.044875, 0.044875,
+                               0.117325, 0.117325, 0.117325, 0.117325,
+                              -0.048775, -0.048775, -0.048775, -0.048775,
+                               0.0309, 0.0309, 0.0309, 0.0309), 
+              n_dim = 5, 
+              alpha_r = result[[2]]$alpha,
+              alpha_f = result[[1]]$alpha,
+              psi_r = result[[2]]$psi,
+              psi_f = result[[1]]$psi,
+              lambda_r_p = result[[2]]$lambda,
+              lambda_f_p = result[[1]]$lambda,
+              nu_r_p = result[[2]]$nu,
+              nu_f_p = result[[1]]$nu,
+              theta_r_p = result[[2]]$theta,
+              theta_f_p = result[[1]]$theta,
+              weights_latent = c(0.0325, 0.1795, 0.4693, -0.1951, 0.1236),
+              plot_contour = FALSE, print_tables = TRUE,
+              return_all_outputs = TRUE)
+```
+
+```{r}
+ex3_output$h_overall_SR_SE_SP_par
+```
+
+
+
+
+
+
+
+
+
