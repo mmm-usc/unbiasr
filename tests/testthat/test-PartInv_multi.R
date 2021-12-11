@@ -200,7 +200,7 @@ test_that("PartInvMulti_we() runs with no latent weight input", {
                   expect_equal(pimout[1:4], pimout_latwei_null[1:4])
 })
 
-## test weights_item
+## test weights_item is null
 test_that("PartInvMulti_we() runs with no item weight input", {
   pimout_itwei_null <- PartInvMulti_we(propsel = .25,
                                         weights_latent = c(0.0325, 0.1795, 
@@ -218,5 +218,20 @@ test_that("PartInvMulti_we() runs with no item weight input", {
   expect_equal(pimout[1:4], pimout_itwei_null[1:4])
 })
 
-## test 
+## test weights_item is fraction 
 
+test_that("PartInvMulti_we() runs with no latent weight input", {
+  pimout_latwei_null <- PartInvMulti_we(cut_z = 80,
+                                        weights_item = c(rep(1/3, 20)),
+                                        alpha_r = result[[2]]$alpha,
+                                        alpha_f = result[[1]]$alpha,
+                                        psi_r = result[[2]]$psi,
+                                        psi_f = result[[1]]$psi,
+                                        lambda_r = result[[2]]$lambda,
+                                        nu_r = result[[2]]$nu,
+                                        nu_f = result[[1]]$nu,
+                                        Theta_r = result[[2]]$theta,
+                                        Theta_f = result[[1]]$theta
+  )
+  expect_warning(pimout_latwei_null, "Proportion selected is too small. Check cut_z and weights_item.")
+})
