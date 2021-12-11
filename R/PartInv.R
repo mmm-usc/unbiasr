@@ -73,7 +73,7 @@ NULL
 #' @export
 PartInvMulti_we <- function(propsel, cut_z = NULL,
                             weights_item = NULL, 
-                            weights_latent = 1,
+                            weights_latent = NULL,
                             kappa_r, kappa_f = kappa_r,
                             alpha_r = kappa_r, alpha_f = kappa_f,
                             phi_r, phi_f = phi_r, 
