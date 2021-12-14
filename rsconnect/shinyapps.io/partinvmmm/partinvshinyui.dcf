@@ -5,7 +5,7 @@ account: partinvmmm
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4123492
-bundleId: 5100765
+bundleId: 5302679
 url: https://partinvmmm.shinyapps.io/partinvshinyui/
-when: 1633315519.08664
-lastSyncTime: 1633315519.08665
+when: 1638138133.44579
+lastSyncTime: 1638138133.44581

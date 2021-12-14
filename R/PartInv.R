@@ -1,4 +1,4 @@
-#' @import pkgload mnormt rsconnect shiny shinydashboard shinyjs shinyMatrix shinyWidgets roxygen2
+#' @import pkgload mnormt shiny shinydashboard shinyjs shinyMatrix shinyWidgets roxygen2
 #' @import shinytest testthat
 
 pnormmix <- function(q, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5, 

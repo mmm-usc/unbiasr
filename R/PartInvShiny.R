@@ -1,7 +1,20 @@
+#rsconnect::showLogs()
+library(mnormt)
+library(pkgload)
+library(rsconnect)
+library(shiny)
+library(shinydashboard)
+library(shinyjs)
+library(shinyMatrix)
+library(shinytest)
+library(testthat)
+library(shinyWidgets)
+library(roxygen2)
+
 #' Launch the 'PartInv' app
-#'
 #' @import shiny
 #' @import shinydashboard
+#' @import rsconnect
 #' @importFrom shinyjs useShinyjs inlineCSS reset
 #' @importFrom shinyWidgets materialSwitch
 #' @importFrom shinyMatrix matrixInput
