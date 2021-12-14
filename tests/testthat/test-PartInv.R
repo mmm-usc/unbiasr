@@ -93,15 +93,15 @@ test_that("PartInv() output passes logical test", {
   )
   sum_ps <- piout1_pstrict$summary
   sum_s <- piout1_strict$summary
-  psel_pstrict <- unlist(sum_ps["Proportion selected", ])
-  psel_strict <- unlist(sum_s["Proportion selected", ])
+  psel_pstrict <- unlist(sum_ps["Proportion selected", 1:2])
+  psel_strict <- unlist(sum_s["Proportion selected", 1:2])
   expect_equal(sum(psel_pstrict), psel * 2)
   expect_equal(sum(psel_strict), psel * 2)
-  expect_gt(psel_pstrict[["reference"]] - psel_strict[["reference"]], 0)
+  expect_gt(psel_pstrict["Reference"] - psel_strict["Reference"], 0)
   expect_lt(abs(
-    sum_ps["Specificity", "reference"] - 
-      sum_ps["C (true negative)", "reference"] / 
-      (sum_ps["C (true negative)", "reference"] + 
-         sum_ps["B (false positive)", "reference"])),
+    sum_ps["Specificity", "Reference"] - 
+      sum_ps["C (true negative)", "Reference"] / 
+      (sum_ps["C (true negative)", "Reference"] + 
+         sum_ps["B (false positive)", "Reference"])),
     .0005)
 })
