@@ -147,7 +147,8 @@ result <- structure(
           0.454638527570875, -0.159404773244813, -0.309950522703722, 
           -0.175364444285233, 1.11370301060926, -0.0548613801146908, 
           0.293918421161048, -0.244829380643405, 0.454638527570875, 
-          -0.0548613801146908, 1.85938365019618), .Dim = c(5L, 5L), .Dimnames = list(
+          -0.0548613801146908, 1.85938365019618), .Dim = c(5L, 5L), 
+        .Dimnames = list(
             c("A", "C", "E", "N", "O"), c("A", "C", "E", "N", "O"
             )), class = c("lavaan.matrix.symmetric", "matrix")), 
       nu = structure(
@@ -253,19 +254,19 @@ test_that("PartInvMulti_we() runs with no item weight input", {
 ## test weights_item is fraction 
 
 test_that("PartInvMulti_we() runs with no latent weight input", {
-  pimout_latwei_null <- PartInvMulti_we(
-    cut_z = 80,
-    weights_item = c(rep(1/3, 20)),
-    alpha_r = result[[2]]$alpha,
-    alpha_f = result[[1]]$alpha,
-    psi_r = result[[2]]$psi,
-    psi_f = result[[1]]$psi,
-    lambda_r = result[[2]]$lambda,
-    nu_r = result[[2]]$nu,
-    nu_f = result[[1]]$nu,
-    Theta_r = result[[2]]$theta,
-    Theta_f = result[[1]]$theta
-  )
-  expect_warning(pimout_latwei_null, 
-                 "Proportion selected is too small. Check cut_z and weights_item.")
+  expect_warning(
+    pimout_latwei_null <- PartInvMulti_we(
+      cut_z = 80,
+      weights_item = c(rep(1/3, 20)),
+      alpha_r = result[[2]]$alpha,
+      alpha_f = result[[1]]$alpha,
+      psi_r = result[[2]]$psi,
+      psi_f = result[[1]]$psi,
+      lambda_r = result[[2]]$lambda,
+      nu_r = result[[2]]$nu,
+      nu_f = result[[1]]$nu,
+      Theta_r = result[[2]]$theta,
+      Theta_f = result[[1]]$theta
+    ), 
+    "Proportion selected is 1% or less. Check cut_z and weights_item.")
 })
