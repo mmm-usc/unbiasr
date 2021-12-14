@@ -133,7 +133,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                              cov12 = cov_z_xif)
   # selection indices for the focal group if latent dist matches the reference
   mean_zref <- as.numeric(weights_item %*% nu_f + weights_item %*% lambda_f %*% alpha_r)
-  sd_zref <- as.numeric(sqrt(weights_item %*% lambda_f %*% psi_r %*% t(weights_item %*% lambda_r)+ weights_item %*% Theta_f %*% t(weights_item)))
+  sd_zref <- as.numeric(sqrt(weights_item %*% lambda_f %*% psi_r %*% t(weights_item %*% lambda_f)+ weights_item %*% Theta_f %*% t(weights_item)))
   cov_z_xiref <- as.numeric(weights_item %*% lambda_f %*% psi_r %*% t(weights_latent))
   partit_1e2 <- .partit_bvnorm(cut_xi, cut_z, 
                                zeta_r, sd_xir, mean_zref, 
