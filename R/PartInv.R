@@ -101,7 +101,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                             nu_r, nu_f = nu_r,
                             Theta_r, Theta_f = Theta_r, 
                             pmix_ref = 0.5, plot_contour = TRUE, 
-                            labels = c("Reference group", "Focal group"),...) {
+                            labels = c("Reference", "Focal"),...) {
   # For backward compatibility with different input names
   if (missing(nu_r) && !is.null(tau_r)) {
     nu_r <- tau_r
