@@ -48,16 +48,17 @@ NULL
 #'                success ratio, sensitivity, and specificity. 
 #' @examples
 #' # Single dimension
-#' PartInv(propsel = .10,
-#'         weights_item = c(1, 0.9, 0.8, 1),
-#'         weights_latent = 1,
-#'         alpha_r = 0.5,
-#'         alpha_f = 0,
-#'         psi_r = 1,
-#'         lambda_r = c(.3, .5, .9, .7),
-#'         nu_r = c(.225, .025, .010, .240),
-#'         nu_f = c(.225, -.05, .240, -.025),
-#'         Theta_r = diag(.96, 4))
+# PartInv(propsel = .10,
+#         weights_item = c(1, 0.9, 0.8, 1),
+#         weights_latent = 1,
+#         alpha_r = 0.5,
+#         alpha_f = 0,
+#         psi_r = 1,
+#         lambda_r = c(.3, .5, .9, .7),
+#         nu_r = c(.225, .025, .010, .240),
+#         nu_f = c(.225, -.05, .240, -.025),
+#         Theta_r = diag(.96, 4),
+#         labels = c("Female", "Male"))
 #' # multiple dimensions
 #' lambda_matrix <- matrix(0,nrow = 5, ncol = 2)
 #' lambda_matrix[1:2, 1] <- c(.322, .655)
@@ -84,7 +85,8 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                             tau_r = NULL, tau_f = tau_r,
                             nu_r, nu_f = nu_r,
                             Theta_r, Theta_f = Theta_r, 
-                            pmix_ref = 0.5, plot_contour = TRUE, ...) {
+                            pmix_ref = 0.5, plot_contour = TRUE, 
+                            labels = c("Reference group", "Focal group"),...) {
   # For backward compatibility with different input names
   if (missing(nu_r) && !is.null(tau_r)) {
     nu_r <- tau_r
@@ -168,6 +170,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                                   "C (true negative)", "D (false negative)", 
                                   "Proportion selected", "Success ratio", 
                                   "Sensitivity", "Specificity"))
+  colnames(dat) <- c(labels, paste0("E_R(",labels[2],")"))
   # result plot
   p <- NULL
   if (plot_contour) {
@@ -183,7 +186,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     contour_bvnorm(zeta_f, sd_xif, mean_zf, sd_zf, cov12 = cov_z_xif, 
                    add = TRUE, lty = "dashed", lwd = 2, col = "blue", 
                    ...)
-    legend("topleft", c("Reference group", "Focal group"), 
+    legend("topleft", labels, 
            lty = c("solid", "dashed"), col = c("red", "blue"))
     abline(h = cut_z, v = cut_xi)
     x_cord <- rep(cut_xi + c(.25, -.25) * sd_xir, 2)
@@ -220,7 +223,8 @@ PartInv <- PartInvMulti_we
 #                 lambda_r = c(.3, .5, .9, .7),
 #                 nu_r = c(.225, .025, .010, .240),
 #                 nu_f = c(.225, -.05, .240, -.025),
-#                 Theta_r = diag(.96, 4))
+#                 Theta_r = diag(.96, 4),
+#                 labels = c("female", "male"))
 # 
 # PartInvMulti_we(cut_z = 9,
 #                 weights_item = c(1, 1, 1),
@@ -237,9 +241,9 @@ PartInv <- PartInvMulti_we
 #                 Theta_f = NSI_V_theta_foc_conf,
 #                 plot_contour = FALSE)
 # 
-# PartInv(cut_z = 9, kappa_r = NSI_V_kappa_ref_conf, kappa_f = NSI_V_kappa_foc_conf, 
+# PartInv(cut_z = 9, kappa_r = NSI_V_kappa_ref_conf, kappa_f = NSI_V_kappa_foc_conf,
 #         phi_r = NSI_V_phi_ref_conf, phi_f = NSI_V_phi_foc_conf,
-#         lambda_r = NSI_V_lambda_ref_conf, lambda_f = NSI_V_lambda_foc_conf, 
+#         lambda_r = NSI_V_lambda_ref_conf, lambda_f = NSI_V_lambda_foc_conf,
 #         tau_r = NSI_V_tau_ref_conf, tau_f = NSI_V_tau_foc_conf,
 #         Theta_r = NSI_V_theta_ref_conf, Theta_f = NSI_V_theta_foc_conf
 # )[4]
