@@ -13,13 +13,14 @@ NULL
 #' @param cut_z pre-specified cutoff score on the observed composite. This 
 #' argument is ignored when `propsel` has input.
 #' @param weights_item a vector of item weights
-#' @param weights_latent a  vector of latent factor weights
-#' @param alpha_r a vector of latent factor mean for the reference group.
-#' @param alpha_f (optional) a vector of latent factor mean for the focal group; 
+#' @param weights_latent a vector of latent factor weights
+#' @param alpha_r a vector of latent factor means for the reference group.
+#' @param alpha_f (optional) a vector of latent factor means for the focal group; 
 #'            if no input, set equal to alpha_r.
-#' @param psi_r a matrix of latent factor variance for the reference group.
-#' @param psi_f (optional) a matrix of latent factor variance for the focal group; 
-#'          if no input, set equal to psi_r.
+#' @param psi_r a matrix of latent factor variance-covariances for the
+#'            reference group.
+#' @param psi_f (optional) a matrix of latent factor variance-covariances for
+#'            the focal group; if no input, set equal to psi_r.
 #' @param lambda_r a matrix of factor loadings for the reference group.
 #' @param lambda_f (optional) a matrix of factor loadings for the focal group; 
 #'             if no input, set equal to lambda_r.
@@ -35,7 +36,8 @@ NULL
 #' @param plot_contour logical; whether the contour of the two populations 
 #'            should be plotted; default to TRUE.
 #' @param kappa_r, kappa_f deprecated; included only for backward compatibility.
-#' @return The output will be  a list of four elements and a plot if plot_contour == TRUE:
+#' @return The output will be a list of four elements and a plot if 
+#'         \code{plot_contour == TRUE}:
 #'     - propsel: echo the same argument as input.
 #'     - cutpt_xi: cut point on the latent scale (xi).
 #'     - cutpt_z: cut point on the observed scale (Z).
@@ -74,37 +76,54 @@ NULL
 PartInvMulti_we <- function(propsel, cut_z = NULL,
                             weights_item = NULL, 
                             weights_latent = NULL,
-                            kappa_r, kappa_f = kappa_r,
-                            alpha_r = kappa_r, alpha_f = kappa_f,
-                            phi_r, phi_f = phi_r, 
-                            psi_r = phi_r, psi_f = phi_f,
+                            kappa_r = NULL, kappa_f = kappa_r,
+                            alpha_r, alpha_f = alpha_r,
+                            phi_r = NULL, phi_f = phi_r, 
+                            psi_r, psi_f = psi_r,
                             lambda_r, lambda_f = lambda_r,
-                            tau_r, tau_f = tau_r,
-                            nu_r = tau_r, nu_f = tau_f,
+                            tau_r = NULL, tau_f = tau_r,
+                            nu_r, nu_f = nu_r,
                             Theta_r, Theta_f = Theta_r, 
                             pmix_ref = 0.5, plot_contour = TRUE, ...) {
-  # Error handling
-  # stopifnot(length(alpha_r) != 1, length(alpha_f) != 1, length(psi_r) != 1, 
-  #           length(psi_f) != 1)
+  # For backward compatibility with different input names
+  if (missing(nu_r) && !is.null(tau_r)) {
+    nu_r <- tau_r
+    nu_f <- tau_f
+  }
+  if (missing(alpha_r) && !is.null(kappa_r)) {
+    alpha_r <- kappa_r
+    alpha_f <- kappa_f
+  }
+  if (missing(psi_r) && !is.null(phi_r)) {
+    psi_r <- phi_r
+    psi_f <- phi_f
+  }
+  if (is.vector(Theta_r)) Theta_r <- diag(Theta_r)
+  if (is.vector(Theta_f)) Theta_f <- diag(Theta_f)
+  if (is.null(weights_item)) weights_item <- rep(1, length(nu_r))
+  if (is.null(weights_latent)) weights_latent <- rep(1, length(alpha_r))
+  # convert scalars/vectors to matrices
+  alpha_r <- as.matrix(alpha_r)
+  alpha_f <- as.matrix(alpha_f)
+  psi_r <- as.matrix(psi_r)
+  psi_f <- as.matrix(psi_f)
   # check the dimensions of input parameters
-  if (length(Theta_r) <= length(lambda_r)) Theta_r <- diag(Theta_r)
-  if (length(Theta_f) <= length(lambda_f)) Theta_f <- diag(Theta_f)
-  if (is.matrix(alpha_r) == FALSE) alpha_r <- as.matrix(alpha_r)
-  if (is.matrix(alpha_f) == FALSE) alpha_f <- as.matrix(alpha_f)
-  if (is.null(weights_item)) weights_item = rep(1, length(nu_r))
-  if (is.matrix(weights_item) == FALSE)  weights_item <- t(weights_item)
-  if (is.null(weights_latent)) weights_latent = rep(1, length(alpha_r))
-  if (is.matrix(weights_latent) == FALSE) weights_latent <- t(weights_latent)
-  mean_zr <- c(weights_item %*% nu_r + weights_item %*% lambda_r %*% alpha_r)
-  mean_zf <- c(weights_item %*% nu_f + weights_item %*% lambda_f %*% alpha_f)
-  sd_zr <- c(sqrt(weights_item %*% lambda_r %*% psi_r %*% t(weights_item %*% lambda_r)+ weights_item %*% Theta_r %*% t(weights_item)))
-  sd_zf <- c(sqrt(weights_item %*% lambda_f %*% psi_f %*% t(weights_item %*% lambda_f)+ weights_item %*% Theta_f %*% t(weights_item)))
-  cov_z_xir <- c(weights_item %*% lambda_r %*% psi_r %*% t(weights_latent))
-  cov_z_xif <- c(weights_item %*% lambda_f %*% psi_f %*% t(weights_latent))
-  sd_xir <- c(sqrt(weights_latent %*% psi_r %*% t(weights_latent)))
-  sd_xif <- c(sqrt(weights_latent %*% psi_f %*% t(weights_latent)))
-  zeta_r <- c(weights_latent%*%alpha_r)
-  zeta_f <- c(weights_latent%*%alpha_f)
+  stopifnot(nrow(alpha_r) == ncol(as.matrix(lambda_r)),
+            nrow(psi_r) == ncol(as.matrix(lambda_r)))
+  mean_zr <- c(crossprod(weights_item, nu_r + lambda_r %*% alpha_r))
+  mean_zf <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_f))
+  sd_zr <- c(sqrt(crossprod(weights_item, 
+                            lambda_r %*% psi_r %*% t(lambda_r) + Theta_r) %*% 
+                    weights_item))
+  sd_zf <- c(sqrt(crossprod(weights_item,
+                            lambda_f %*% psi_f %*% t(lambda_f) + Theta_f) %*%
+                    weights_item))
+  cov_z_xir <- c(crossprod(weights_item, lambda_r %*% psi_r) %*% weights_latent)
+  cov_z_xif <- c(crossprod(weights_item, lambda_f %*% psi_f) %*% weights_latent)
+  sd_xir <- c(sqrt(crossprod(weights_latent, psi_r) %*% weights_latent))
+  sd_xif <- c(sqrt(crossprod(weights_latent, psi_f) %*% weights_latent))
+  zeta_r <- c(crossprod(weights_latent, alpha_r))
+  zeta_f <- c(crossprod(weights_latent, alpha_f))
   # if there is an input for selection proportion
   if (!missing(propsel)) {
     # and if there is an input for cut score
@@ -120,11 +139,11 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     propsel <- pnormmix(cut_z, mean_zr, sd_zr, mean_zf, sd_zf, 
                         pmix_ref, lower.tail = FALSE)
   }
-  cut_xi <- qnormmix(propsel, zeta_r, sd_xir,zeta_f, sd_xif,
+  cut_xi <- qnormmix(propsel, zeta_r, sd_xir, zeta_f, sd_xif,
                      pmix_ref, lower.tail = FALSE)
   # print warning message if propsel is too small
-  if (propsel <= 0.01){
-   warning("Proportion selected is too small. Check cut_z and weights_item.") 
+  if (propsel <= 0.01) {
+   warning("Proportion selected is 1% or less. Check cut_z and weights_item.") 
   }
   # computing summary statistics using helper function .partit_bvnorm
   partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr, 
@@ -132,9 +151,12 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
   partit_2 <- .partit_bvnorm(cut_xi, cut_z, zeta_f, sd_xif, mean_zf, sd_zf, 
                              cov12 = cov_z_xif)
   # selection indices for the focal group if latent dist matches the reference
-  mean_zref <- as.numeric(weights_item %*% nu_f + weights_item %*% lambda_f %*% alpha_r)
-  sd_zref <- as.numeric(sqrt(weights_item %*% lambda_f %*% psi_r %*% t(weights_item %*% lambda_f)+ weights_item %*% Theta_f %*% t(weights_item)))
-  cov_z_xiref <- as.numeric(weights_item %*% lambda_f %*% psi_r %*% t(weights_latent))
+  mean_zref <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_r))
+  sd_zref <- c(sqrt(crossprod(weights_item,
+                              lambda_f %*% psi_r %*% t(lambda_f) + Theta_f) %*%
+                      weights_item))
+  cov_z_xiref <- c(crossprod(weights_item, lambda_f %*% psi_r) %*% 
+                     weights_latent)
   partit_1e2 <- .partit_bvnorm(cut_xi, cut_z, 
                                zeta_r, sd_xir, mean_zref, 
                                sd_zref, 
@@ -152,7 +174,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     x_lim <- range(c(zeta_r + c(-3, 3) * sd_xir, 
                      zeta_f + c(-3, 3) * sd_xif))
     y_lim <- range(c(mean_zr + c(-3, 3) * sd_zr, 
-                     mean_zf + c(-3, 3) *sd_zf))
+                     mean_zf + c(-3, 3) * sd_zf))
     contour_bvnorm(zeta_r, sd_xir, mean_zr, sd_zr, cov12 = cov_z_xir, 
                    xlab = bquote("Latent Composite" ~ (zeta)), 
                    ylab = bquote("Observed Composite" ~ (italic(Z))), 
