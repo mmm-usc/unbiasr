@@ -160,7 +160,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                      pmix_ref, lower.tail = FALSE)
   # print warning message if propsel is too small
   if (propsel <= 0.01) {
-   warning("Proportion selected is 1% or less. Check cut_z and weights_item.") 
+   warning("Proportion selected is 1% or less.") 
   }
   # computing summary statistics using helper function .partit_bvnorm
   partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr, 

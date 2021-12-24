@@ -211,6 +211,7 @@ pimout <- PartInvMulti_we(
 )
 
 ## test weights_latent is null
+
 test_that("PartInvMulti_we() runs with no latent weight input", {
   pimout_latwei_null <- PartInvMulti_we(
     propsel = .25,
@@ -229,10 +230,30 @@ test_that("PartInvMulti_we() runs with no latent weight input", {
     Theta_r = result[[2]]$theta,
     Theta_f = result[[1]]$theta
   )
-  expect_equal(pimout[1:4], pimout_latwei_null[1:4])
+  pimout_latwei_ba <- PartInvMulti_we(
+    propsel = .25,
+    weights_item = c(0.008125, 0.008125, 0.008125, 0.008125,
+                     0.044875, 0.044875, 0.044875, 0.044875,
+                     0.117325, 0.117325, 0.117325, 0.117325,
+                     -0.048775, -0.048775, -0.048775, -0.048775,
+                     0.0309, 0.0309, 0.0309, 0.0309),
+    weights_latent = c(rep(1, 5)),
+    alpha_r = result[[2]]$alpha,
+    alpha_f = result[[1]]$alpha,
+    psi_r = result[[2]]$psi,
+    psi_f = result[[1]]$psi,
+    lambda_r = result[[2]]$lambda,
+    nu_r = result[[2]]$nu,
+    nu_f = result[[1]]$nu,
+    Theta_r = result[[2]]$theta,
+    Theta_f = result[[1]]$theta
+  )
+  
+  expect_equal(pimout_latwei_ba[1:4], pimout_latwei_null[1:4])
 })
 
 ## test weights_item is null
+
 test_that("PartInvMulti_we() runs with no item weight input", {
   pimout_itwei_null <- PartInvMulti_we(
     propsel = .25,
@@ -248,7 +269,22 @@ test_that("PartInvMulti_we() runs with no item weight input", {
     Theta_r = result[[2]]$theta,
     Theta_f = result[[1]]$theta
   )
-  expect_equal(pimout[1:4], pimout_itwei_null[1:4])
+  pimout_itwei_ba <- PartInvMulti_we(
+    propsel = .25,
+    weights_item = c(rep(1, 20)),
+    weights_latent = c(0.0325, 0.1795, 
+                       0.4693, -0.1951, 0.1236),
+    alpha_r = result[[2]]$alpha,
+    alpha_f = result[[1]]$alpha,
+    psi_r = result[[2]]$psi,
+    psi_f = result[[1]]$psi,
+    lambda_r = result[[2]]$lambda,
+    nu_r = result[[2]]$nu,
+    nu_f = result[[1]]$nu,
+    Theta_r = result[[2]]$theta,
+    Theta_f = result[[1]]$theta
+  )
+  expect_equal(pimout_itwei_ba[1:4], pimout_itwei_null[1:4])
 })
 
 ## test weights_item is fraction 
@@ -268,5 +304,58 @@ test_that("PartInvMulti_we() runs with no latent weight input", {
       Theta_r = result[[2]]$theta,
       Theta_f = result[[1]]$theta
     ), 
-    "Proportion selected is 1% or less. Check cut_z and weights_item.")
+    "Proportion selected is 1% or less")
 })
+
+## test equivalence of two functions
+
+test_that("PartInvMulti_we() runs with no item weight input", {
+  pi_res_eq <- PartInv(
+    propsel = .25,
+    weights_item = c(0.008125, 0.008125, 0.008125, 0.008125,
+                     0.044875, 0.044875, 0.044875, 0.044875,
+                     0.117325, 0.117325, 0.117325, 0.117325,
+                     -0.048775, -0.048775, -0.048775, -0.048775,
+                     0.0309, 0.0309, 0.0309, 0.0309),
+    weights_latent = c(0.0325, 0.1795, 
+                       0.4693, -0.1951, 0.1236),
+    alpha_r = result[[2]]$alpha,
+    alpha_f = result[[1]]$alpha,
+    psi_r = result[[2]]$psi,
+    psi_f = result[[1]]$psi,
+    lambda_r = result[[2]]$lambda,
+    nu_r = result[[2]]$nu,
+    nu_f = result[[1]]$nu,
+    Theta_r = result[[2]]$theta,
+    Theta_f = result[[1]]$theta
+  )
+  expect_equal(pi_res_eq[1:4], pimout[1:4])
+})
+
+# test labels changed
+
+test_that("PartInvMulti_we with customized label", {
+  pimout_label <- PartInv(
+    propsel = .25,
+    weights_item = c(0.008125, 0.008125, 0.008125, 0.008125,
+                     0.044875, 0.044875, 0.044875, 0.044875,
+                     0.117325, 0.117325, 0.117325, 0.117325,
+                     -0.048775, -0.048775, -0.048775, -0.048775,
+                     0.0309, 0.0309, 0.0309, 0.0309),
+    weights_latent = c(0.0325, 0.1795, 
+                       0.4693, -0.1951, 0.1236),
+    alpha_r = result[[2]]$alpha,
+    alpha_f = result[[1]]$alpha,
+    psi_r = result[[2]]$psi,
+    psi_f = result[[1]]$psi,
+    lambda_r = result[[2]]$lambda,
+    nu_r = result[[2]]$nu,
+    nu_f = result[[1]]$nu,
+    Theta_r = result[[2]]$theta,
+    Theta_f = result[[1]]$theta,
+    labels = c("Female", "Male")
+  )
+  expect_identical(colnames(pimout_label[[4]]), c("Female", "Male", "E_R(Male)"))
+})
+
+
