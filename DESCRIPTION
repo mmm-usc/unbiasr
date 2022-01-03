@@ -26,4 +26,7 @@ Imports:
     testthat,
     shinyWidgets,
     roxygen2
-
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
