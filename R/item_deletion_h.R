@@ -1,85 +1,94 @@
 #' Effect size of item deletion on selection accuracy
 #' 
-#' \code{item_deletion_h} computes the effect size of the impact of item bias on  
-#' selection accuracy indices under strict vs. partial invariance.
+#' \code{item_deletion_h} computes Cohen's h effect size for the impact of
+#' deleting an item on selection accuracy indices (TP, FP, TN, FN, PS, SR, SE, 
+#' SP) under a number of combinations of conditions such as partial vs. strict 
+#' invariance, for the reference group vs. the focal group if it followed the 
+#' same distribution as the reference group under partial invariance, and for 
+#' the weighted average of reference and focal groups under partial invariance.
 #' 
-#' @param propsel: proportion of selection. If missing, computed using `cut_z`.
-#' @param cut_z: pre-specified cutoff score on the observed composite. This 
+#' @param propsel proportion of selection. If missing, computed using `cut_z`.
+#' @param cut_z pre-specified cutoff score on the observed composite. This 
 #'        argument is ignored when `propsel` has input.
-#' @param weights_item: a vector of item weights
+#' @param weights_item a vector of item weights
 #' @param n_dim: number of dimensions, 1 by default. If the user does not supply 
 #'        a different value, proceeds with the assumption that the scale is 
 #'        unidimensional.
-#' @param n_i_per_dim: a vector containing the number of items in each 
+#' @param n_i_per_dim a vector containing the number of items in each 
 #'        dimension; NULL by default. If the user provides a value for n_dim 
 #'        that is > 1 but leaves n_i_per_dim = NULL, assumes that the subscales 
 #'        have an equal number of items. 
-#' @param weights_latent: a  vector of latent factor weights.
-#' @param alpha_r: a vector of latent factor mean for the reference group.
-#' @param alpha_f: (optional) a vector of latent factor mean for the focal  
+#' @param weights_latent a  vector of latent factor weights.
+#' @param alpha_r a vector of latent factor mean for the reference group.
+#' @param alpha_f (optional) a vector of latent factor mean for the focal  
 #'        group;if no input, set equal to alpha_r.
-#' @param psi_r: a matrix of latent factor variance for the reference group.
-#' @param psi_f: (optional) a matrix of latent factor variance for the focal  
+#' @param psi_r a matrix of latent factor variance for the reference group.
+#' @param psi_f (optional) a matrix of latent factor variance for the focal  
 #'        group; if no input, set equal to psi_r.
-#' @param lambda_r_p: a matrix of factor loadings for the reference group under
+#' @param lambda_r_p a matrix of factor loadings for the reference group under
 #'        the partial invariance condition.
-#' @param lambda_f_p: (optional) a matrix of factor loadings for the focal group 
+#' @param lambda_f_p (optional) a matrix of factor loadings for the focal group 
 #'        under the partial invariance condition; if no input, set equal to 
 #'        lambda_r.
-#' @param nu_r_p: a matrix of measurement intercepts for the reference group 
+#' @param nu_r_p a matrix of measurement intercepts for the reference group 
 #'        under the partial invariance condition.
-#' @param nu_f_p: (optional) a matrix of measurement intercepts for the focal 
+#' @param nu_f_p (optional) a matrix of measurement intercepts for the focal 
 #'        group under the partial invariance condition; if no input, set equal 
 #'        to nu_r.
-#' @param theta_r_p: a matrix of the unique factor variances and covariances 
+#' @param theta_r_p a matrix of the unique factor variances and covariances 
 #'        for the reference group under the partial invariance condition.
-#' @param theta_f_p: (optional) a matrix of the unique factor variances and 
+#' @param theta_f_p (optional) a matrix of the unique factor variances and 
 #'        covariances for the focal group under the partial invariance
 #'        condition; if no input, set equal to theta_r.
-#' @param pmix_ref: Proportion of the reference group; 
+#' @param pmix_ref Proportion of the reference group; 
 #'        default to 0.5 (i.e., two populations have equal size)
-#' @param plot_contour: logical; whether the contour of the two populations 
+#' @param plot_contour logical; whether the contour of the two populations 
 #'        should be plotted; default to TRUE.
-#' @param return_all_outputs: logical; whether the outputs from each call 
+#' @param return_all_outputs logical; whether the outputs from each call 
 #'        of \code{PartInv_Multi_we} should also be returned as part of the
-#'        returned object; default to FALSE.
-#' @return a list of the following elements:
-#'        - h_overall_SR_SE_SP_par: a (3 x number of items) data frame that 
-#'          stores Cohen's h values comparing overall SR, SE, SP  under partial
-#'          invariance when item i is deleted (after the accuracy indices were 
-#'          weighted by the focal and reference group proportions). 
+#'        returned object; default to FALSE. If return_all_outputs == FALSE, 
+#'        returns a list of the following elements: h_overall_SR_SE_SP_par,
+#'        delta_h_R_vs_Ef_par, delta_h_str_vs_par_ref, h_str_vs_par_ref.
+#' @return  - h_overall_SR_SE_SP_par: a (3 x number of items) data frame that 
+#'          stores Cohen's h values for the comparison between overall SR, SE, 
+#'          SP under partial invariance for the full item set vs. overall SR, 
+#'          SE, SP under partial invariance when item i is deleted. 'Overall'
+#'          refers to the weighting of the accuracy indices for focal and 
+#'          reference group proportions.
+#'        - delta_h_R_vs_Ef_par: a (8 x number of items) data frame that stores 
+#'          the Cohen's h effect size for the change in h_R_vs_Ef_par when the
+#'          full item set is included vs. h_R_vs_Ef_par when item i is deleted. 
 #'        - delta_h_str_vs_par_ref: a (8 x number of items) data frame that 
-#'          stores the change in Cohen's h comparing accuracy indices for the 
-#'          reference group under strict vs. partial invariance when item i is 
-#'          deleted i.e. the change in h_str_vs_par_ref.
-#'        - h_str_vs_par_ref: a list of length (number of items + 1). Each item 
-#'          in the list is a data frame containing Cohen's h comparing the 
-#'          selection accuracy indices for the reference group under the strict
-#'          vs. partial invariance conditions, for a given set of items. The
-#'          first element in the list, 'full', corresponds to the comparison
-#'          when all items are included. The remaining elements correspond to
-#'          the comparison when item i is deleted, and these can be accessed by
-#'          specifying i in '...$h_str_vs_par_ref$deleteitem_i'
-#'  
-#'         The following lists are also returned if return_all_outputs == TRUE)
-#'          The following two lists of length (number of items + 1) are also 
-#'          returned if the user indicates return_all_outputs == TRUE:
-#'        
-#'       - overall_SR_SE_SP_par: a (3 x number of items + 1) data frame 
-#'         containing overall SR, SE, SP (after the 
-#'         accuracy indices were weighted by the focal and reference group 
-#'         proportions) under partial invariance. The first column refers to the
-#'         case with the full item set, remaining columns refer to the scenario
-#'         when item i is deleted.
-#'       - strict_results: a list of length (number of items + 1) containing
-#'         outputs from \code{PartInvMulti_we} under strict invariance.
-#'       - partial_results: a list of length (number of items + 1) containing
-#'         outputs from \code{PartInvMulti_we} under partial invariance. 
-#'         The first item in either list can be accessed through 
-#'         '...$(partial/strict)_results$full' and contains the 
-#'         \code{PartInvMulti_we} output when all items are included. Remaining 
-#'         items in the list are of the 'deleteitem_i' form, and contain the 
-#'         \code{PartInvMulti_we} output when item i is deleted.
+#'          stores the Cohen's h effect size for the change in h_str_vs_par_ref
+#'          when the full item set is included vs. h_str_vs_par_ref when item i 
+#'          is deleted.
+#'        - h_str_vs_par_ref: a (8 x (number of items + 1)) data frame that 
+#'          stores Cohen's h values for the comparison between accuracy indices 
+#'          for the reference group under strict vs. partial invariance, for a
+#'          given set of items.
+#'        - h_R_vs_Ef_par: a (8 x (number of items + 1)) data frame that stores
+#'          Cohen's h values for the comparison between accuracy indices for the
+#'          reference group vs. the expected accuracy indices for the focal 
+#'          group if it followed the same distribution as the reference group, 
+#'          under partial invariance, for a given set of items.
+#'        - overall_SR_SE_SP_par: a (3 x number of items + 1) data frame 
+#'          containing overall SR, SE, SP values under partial invariance. 
+#'          'Overall' refers to the weighting of the accuracy indices for focal 
+#'          and reference group proportions.
+#'        - h_str_vs_par_ref_list: a list of length (number of items + 1). Each 
+#'          item in the list is a (8 x 3) data frame with rows for accuracy 
+#'          indices and columns 'strict_invariance', 'partial_invariance', and 
+#'          'h'. Here, h is the Cohen's h effect size for the comparison between 
+#'          the accuracy indices under strict vs. partial invariance for a given
+#'          set of items.
+#'        - strict_results: a list of length (number of items + 1) containing
+#'          outputs from \code{PartInvMulti_we} under strict invariance.
+#'        - partial_results: a list of length (number of items + 1) containing
+#'          outputs from \code{PartInvMulti_we} under partial invariance. 
+#'          
+#'          To access the accuracy indices/Cohen's h values for a specific set
+#'          of items, specify '...$`h(full)`' for the full set of items or 
+#'          '...$`h(-i)`' for the set of items without item i. 
 #'
 #' @examples
 #' # Multidimensional example 
@@ -97,39 +106,17 @@
 #'                              nu_f_p = c(.225, -.05, .240, -.025, .125),
 #'                              theta_r_p = diag(1, 5),
 #'                              theta_f_p = c(1, .95, .80, .75, 1),
-#'                              plot_contour = FALSE,
+#'                              plot_contour = TRUE,
 #'                              return_all_outputs = TRUE)
+#' multi_dim$h_overall_SR_SE_SP_par
+#' multi_dim$delta_h_R_vs_Ef_par
 #' multi_dim$delta_h_str_vs_par_ref
-#' multi_dim$h_str_vs_par_ref$full
-#' multi_dim$h_str_vs_par_ref$deleteitem_1
-#' multi_dim$strict_results$full
-#' multi_dim$strict_results$deleteitem_1
-#' multi_dim$partial_results$full
-#' multi_dim$strict_results$deleteitem_1
+#' multi_dim$h_str_vs_par_ref$`h(full)`
+#' multi_dim$h_str_vs_par_ref$`h(-1)`
+#' multi_dim$partial_results$`h(full)`
 #' 
 #' # Single dimension examples
 #' single_dim <- item_deletion_h(propsel = .10,
-#'                               weights_item = c(1, 0.9, 0.8, 1),
-#'                               weights_latent = 0.9,
-#'                               alpha_r = 0.5,
-#'                               alpha_f = 0,
-#'                               psi_r = 1,
-#'                               lambda_r_p = c(.3, .5, .9, .7),
-#'                               nu_r_p = c(.225, .025, .010, .240),
-#'                               nu_f_p = c(.225, -.05, .240, -.025),
-#'                               theta_r_p = diag(.96, 4),
-#'                               n_dim = 1, plot_contour = FALSE,
-#'                               return_all_outputs = TRUE)
-#' single_dim$delta_h_str_vs_par_ref
-#' single_dim$h_str_vs_par_ref$full
-#' single_dim$h_str_vs_par_ref$deleteitem_1
-#' single_dim$strict_results$full
-#' single_dim$strict_results$deleteitem_1
-#' single_dim$partial_results$full
-#' single_dim$strict_results$deleteitem_1
-#' 
-#' # If we specify return_all_outputs = FALSE
-#' single_dim2 <- item_deletion_h(propsel = .10,
 #'                                weights_item = c(1, 0.9, 0.8, 1),
 #'                                weights_latent = 0.9,
 #'                                alpha_r = 0.5,
@@ -139,12 +126,15 @@
 #'                                nu_r_p = c(.225, .025, .010, .240),
 #'                                nu_f_p = c(.225, -.05, .240, -.025),
 #'                                theta_r_p = diag(.96, 4),
-#'                                n_dim = 1, plot_contour = FALSE,
-#'                                return_all_outputs = FALSE)
-#' single_dim2$delta_h_str_vs_par_ref
-#' single_dim2$h_str_vs_par_ref$full
-#' single_dim2$h_str_vs_par_ref$deleteitem_1                                      
-
+#'                                n_dim = 1, plot_contour = TRUE,
+#'                                return_all_outputs = TRUE)
+#' single_dim$h_overall_SR_SE_SP_par
+#' single_dim$delta_h_R_vs_Ef_par
+#' single_dim$delta_h_str_vs_par_ref
+#' single_dim$h_str_vs_par_ref$`h(full)`
+#' single_dim$h_str_vs_par_ref$`h(-1)`
+#' single_dim$partial_results$`h(full)`
+#' @export
 item_deletion_h <- function(propsel, cut_z = NULL, 
                             weights_item, 
                             n_dim = 1,
@@ -299,7 +289,6 @@ item_deletion_h <- function(propsel, cut_z = NULL,
                                           round(overall3_par_del1, 3)))
   h_overall_SR_SE_SP_par <- as.data.frame(round(h_overall_SR_SE_SP_par, 3))
   
-  #colnames <- paste0(c("h(full)", rep("deleteitem_", n_items)), c("", 1:n_items))
   colnames <- c("h(full)", paste0(rep(paste0("h(-")), c(1:n_items), c(rep(")"))))
   names(store_str) <- names(store_par) <- names(h_str_vs_par_ref_list) <-
     names(h_R_Ef) <- names(h_str_vs_par_ref) <- names(overall_SR_SE_SP_par) <-

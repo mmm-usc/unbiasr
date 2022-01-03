@@ -7,14 +7,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, warning=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-```{r setup}
+```{r setup, warning=FALSE, message=FALSE}
 library(PartInvShinyUI)
 library(lavaan)
 ```
@@ -46,13 +46,13 @@ ex1_output <- item_deletion_h(weights_item = c(1, 1, 1,  1),
 **h_overall_SR_SE_SP_par** is the effect size of the comparison between the 
 overall accuracy indices under partial invariance for the full item set vs. the
 overall accuracy indices when one item is deleted, under partial invariance. 
-'Overall' refers to the weighing of accuracy indices for the focal and reference 
+'Overall' refers to the weighting of accuracy indices for the focal and reference 
 groups by the group proportions to arrive at a weighted average for each index.
 
 
 $$\text{h}_{{\text{SR}}^{(-i)}} = 2\text{arcsin}(\sqrt{\text{SR}^\text{full}})-2\text{arcsin}(\sqrt{\text{SR}^{(-i)}})$$
 ```{r}
-ex1_output$h_overall_SR_SE_SP_par
+ex1_output$h_overall_SR_SE_SP_par$`h(-1)`
 ```
 For the 4-item CES-D scale, the negative $\text{h}_{{\text{SR}}^{(-1)}}$,
 $\text{h}_{{\text{SE}}^{(-1)}}$, and $\text{h}_{{\text{SP}}^{(-1)}}$ values 
