@@ -2,6 +2,7 @@
 
 export(PartInv)
 export(myApp)
+import(matrixcalc)
 import(shiny)
 import(shinydashboard)
 importFrom(grDevices,recordPlot)
