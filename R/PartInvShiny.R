@@ -1,6 +1,7 @@
 #' Launch the 'PartInv' app
 #'
 #' @import shiny
+#' @import matrixcalc
 #' @import shinydashboard
 #' @importFrom shinyjs useShinyjs inlineCSS reset
 #' @importFrom shinyWidgets materialSwitch
@@ -532,6 +533,10 @@ myApp <- function(...) {
         if (input$useMatrix == TRUE) {
           need(isSymmetric(input$theta_rMatrixInput) == TRUE,
                "reference matrix not symmetrical")
+        },
+        if (input$useMatrix == TRUE) {
+          need(is.positive.definite(input$theta_rMatrixInput) == TRUE,
+               "reference matrix not positive definite")
         },
         if (input$useMatrix == TRUE && input$usetheta_f == TRUE) {
           need(isSymmetric(input$theta_fMatrixInput) == TRUE,
