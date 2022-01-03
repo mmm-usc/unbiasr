@@ -89,6 +89,7 @@
 #'          containing outputs from [PartInvMulti_we()] under strict invariance.}
 #'        \item{partial_results}{A list of length (number of items + 1) 
 #'          containing outputs from [PartInvMulti_we()] under partial invariance. 
+#'          containing outputs from [PartInvMulti_we()] under partial invariance.} 
 #'         } 
 #'        To access the accuracy indices or Cohen's h values for a specific set
 #'        of items, specify '...$`h(full)`' for the full set of items or 
