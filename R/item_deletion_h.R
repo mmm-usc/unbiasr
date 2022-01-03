@@ -40,8 +40,8 @@
 #' @param theta_f_p (optional) a matrix of the unique factor variances and 
 #'        covariances for the focal group under the partial invariance
 #'        condition; if no input, set equal to theta_r.
-#' @param pmix_ref Proportion of the reference group; 
-#'        default to 0.5 (i.e., two populations have equal size)
+#' @param pmix_ref Proportion of the reference group; default to 0.5 (i.e., two 
+#'        populations have equal size)
 #' @param plot_contour logical; whether the contour of the two populations 
 #'        should be plotted; default to TRUE.
 #' @param return_all_outputs logical; whether the outputs from each call 
