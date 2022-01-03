@@ -35,7 +35,12 @@ NULL
 #'            default to 0.5 (i.e., two populations have equal size).
 #' @param plot_contour logical; whether the contour of the two populations 
 #'            should be plotted; default to TRUE.
-#' @param kappa_r,kappa_f deprecated; included only for backward compatibility.
+#' @param labels a character vector with two elements to label the reference
+#'            and the focal group on the graph.
+#' @param ... other arguments passed to the \code{\link[graphics]{contour}} 
+#'            function.
+#' @param phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f deprecated; included
+#'            only for backward compatibility.
 #' @return The output will be a list of four elements and a plot if 
 #'         \code{plot_contour == TRUE}:
 #'         \enumerate{

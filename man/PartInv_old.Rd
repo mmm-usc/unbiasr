@@ -63,6 +63,9 @@ if no input, set equal to \code{tau_r}.}
 \item{plot_contour}{logical; whether the contour of the two populations
 should be plotted; default to \code{TRUE}.}
 
+\item{labels}{a character vector with two elements to label the reference
+and the focal group on the graph.}
+
 \item{...}{other arguments passed to the \code{\link[graphics]{contour}}
 function.}
 }

@@ -25,6 +25,8 @@
 #'                 (i.e., two populations have equal size).
 #' @param plot_contour logical; whether the contour of the two populations 
 #'                     should be plotted; default to `TRUE`.
+#' @param labels a character vector with two elements to label the reference
+#'            and the focal group on the graph.
 #' @param ... other arguments passed to the \code{\link[graphics]{contour}} 
 #'            function.
 #' @return a list of four elements and a plot if \code{plot_contour == TRUE}.

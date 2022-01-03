@@ -2,8 +2,7 @@
 % Please edit documentation in R/helper.R
 \name{.partit_bvnorm}
 \alias{.partit_bvnorm}
-\title{Computing summary statistics from a selection approach
-\code{.partit_bvnorm} returns a table of selection accuracy indices}
+\title{Computing summary statistics from a selection approach}
 \usage{
 .partit_bvnorm(
   cut1,
@@ -17,31 +16,32 @@
 )
 }
 \arguments{
-\item{cut1:}{Cut score based on the latent score}
+\item{cut1}{Cut score based on the latent score}
 
-\item{cut2:}{Cut score based on the observed score}
+\item{cut2}{Cut score based on the observed score}
 
-\item{mean1:}{Mean of first normal distribution (on x-axis).}
+\item{mean1}{Mean of first normal distribution (on x-axis).}
 
-\item{sd1:}{Standard deviation of first normal distribution.}
+\item{sd1}{Standard deviation of first normal distribution.}
 
-\item{mean2:}{Mean of second normal distribution (on y-axis).}
+\item{mean2}{Mean of second normal distribution (on y-axis).}
 
-\item{sd2:}{Standard deviation of second normal distribution.}
+\item{sd2}{Standard deviation of second normal distribution.}
 
-\item{cor12:}{Correlation in the bivariate normal.}
+\item{cor12}{Correlation in the bivariate normal.}
 
-\item{cov12:}{Covariance in the bivariate normal. If not input, compute the
+\item{cov12}{Covariance in the bivariate normal. If not input, compute the
 covariance using the correlation and the standard deviations.}
 }
 \value{
 A table of selection accuracy indices
 }
 \description{
-Computing summary statistics from a selection approach
 \code{.partit_bvnorm} returns a table of selection accuracy indices
 }
 \examples{
-
- 
+\dontrun{
+.partit_bvnorm(cut1 = 2, cut2 = 2, mean1 = 0, sd1 = 1, 
+               mean2 = 1.53, sd2 = 0.89, cov12 = 0.80)
+}
 }

@@ -9,25 +9,26 @@ PartInvMulti_we(
   propsel,
   cut_z = NULL,
   weights_item = NULL,
-  weights_latent = 1,
-  kappa_r,
+  weights_latent = NULL,
+  kappa_r = NULL,
   kappa_f = kappa_r,
-  alpha_r = kappa_r,
-  alpha_f = kappa_f,
-  phi_r,
+  alpha_r,
+  alpha_f = alpha_r,
+  phi_r = NULL,
   phi_f = phi_r,
-  psi_r = phi_r,
-  psi_f = phi_f,
+  psi_r,
+  psi_f = psi_r,
   lambda_r,
   lambda_f = lambda_r,
-  tau_r,
+  tau_r = NULL,
   tau_f = tau_r,
-  nu_r = tau_r,
-  nu_f = tau_f,
+  nu_r,
+  nu_f = nu_r,
   Theta_r,
   Theta_f = Theta_r,
   pmix_ref = 0.5,
   plot_contour = TRUE,
+  labels = c("Reference", "Focal"),
   ...
 )
 
@@ -35,25 +36,26 @@ PartInv(
   propsel,
   cut_z = NULL,
   weights_item = NULL,
-  weights_latent = 1,
-  kappa_r,
+  weights_latent = NULL,
+  kappa_r = NULL,
   kappa_f = kappa_r,
-  alpha_r = kappa_r,
-  alpha_f = kappa_f,
-  phi_r,
+  alpha_r,
+  alpha_f = alpha_r,
+  phi_r = NULL,
   phi_f = phi_r,
-  psi_r = phi_r,
-  psi_f = phi_f,
+  psi_r,
+  psi_f = psi_r,
   lambda_r,
   lambda_f = lambda_r,
-  tau_r,
+  tau_r = NULL,
   tau_f = tau_r,
-  nu_r = tau_r,
-  nu_f = tau_f,
+  nu_r,
+  nu_f = nu_r,
   Theta_r,
   Theta_f = Theta_r,
   pmix_ref = 0.5,
   plot_contour = TRUE,
+  labels = c("Reference", "Focal"),
   ...
 )
 }
@@ -65,19 +67,21 @@ argument is ignored when \code{propsel} has input.}
 
 \item{weights_item}{a vector of item weights}
 
-\item{weights_latent}{a  vector of latent factor weights}
+\item{weights_latent}{a vector of latent factor weights}
 
-\item{kappa_r, }{kappa_f deprecated; included only for backward compatibility.}
+\item{alpha_r}{a vector of latent factor means for the reference group.}
 
-\item{alpha_r}{a vector of latent factor mean for the reference group.}
-
-\item{alpha_f}{(optional) a vector of latent factor mean for the focal group;
+\item{alpha_f}{(optional) a vector of latent factor means for the focal group;
 if no input, set equal to alpha_r.}
 
-\item{psi_r}{a matrix of latent factor variance for the reference group.}
+\item{phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f}{deprecated; included
+only for backward compatibility.}
 
-\item{psi_f}{(optional) a matrix of latent factor variance for the focal group;
-if no input, set equal to psi_r.}
+\item{psi_r}{a matrix of latent factor variance-covariances for the
+reference group.}
+
+\item{psi_f}{(optional) a matrix of latent factor variance-covariances for
+the focal group; if no input, set equal to psi_r.}
 
 \item{lambda_r}{a matrix of factor loadings for the reference group.}
 
@@ -100,20 +104,30 @@ default to 0.5 (i.e., two populations have equal size).}
 
 \item{plot_contour}{logical; whether the contour of the two populations
 should be plotted; default to TRUE.}
+
+\item{labels}{a character vector with two elements to label the reference
+and the focal group on the graph.}
+
+\item{...}{other arguments passed to the \code{\link[graphics]{contour}}
+function.}
 }
 \value{
-The output will be  a list of four elements and a plot if plot_contour == TRUE:
-- propsel: echo the same argument as input.
-- cutpt_xi: cut point on the latent scale (xi).
-- cutpt_z: cut point on the observed scale (Z).
-- summary: A 8 x 2 table, with columns representing the reference
-and the focal groups, and the rows represent
+The output will be a list of four elements and a plot if
+\code{plot_contour == TRUE}:
+\enumerate{
+\item propsel: echo the same argument as input.
+\item cutpt_xi: cut point on the latent scale (xi).
+\item cutpt_z: cut point on the observed scale (Z).
+\item summary: A 8 x 3 table, with columns representing the reference,
+the focal, and the expected results if the latent distribution of
+focal group matches the reference group. The rows represent
 probabilities of true positive (A), false positive (B),
 true negative (C), false negative (D); proportion selected,
 success ratio, sensitivity, and specificity.
 }
+}
 \description{
-\code{PartInv} evaluates partial measurement invariance using
+\code{PartInv, PartInvMulti_we} evaluate partial measurement invariance using
 an extension of Millsap & Kwok's (2004) approach
 }
 \examples{
@@ -127,7 +141,8 @@ PartInv(propsel = .10,
         lambda_r = c(.3, .5, .9, .7),
         nu_r = c(.225, .025, .010, .240),
         nu_f = c(.225, -.05, .240, -.025),
-        Theta_r = diag(.96, 4))
+        Theta_r = diag(.96, 4),
+        labels = c("Female", "Male"))
 # multiple dimensions
 lambda_matrix <- matrix(0,nrow = 5, ncol = 2)
 lambda_matrix[1:2, 1] <- c(.322, .655)
@@ -142,4 +157,15 @@ PartInv(propsel = .05,
         nu_f = c(.225, -.05, .240, -.025, .125),
         Theta_r = diag(1, 5),
         Theta_f = c(1, .95, .80, .75, 1))
+PartInvMulti_we(propsel = .10,
+                weights_item = c(1/3, 1/3, 1/3, 1/3),
+                weights_latent = 1,
+                alpha_r = 0.5,
+                alpha_f = 0,
+                psi_r = 1,
+                lambda_r = c(.3, .5, .9, .7),
+                nu_r = c(.225, .025, .010, .240),
+                nu_f = c(.225, -.05, .240, -.025),
+                Theta_r = diag(.96, 4),
+                labels = c("female", "male"))
 }
