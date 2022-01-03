@@ -7,89 +7,93 @@
 #' same distribution as the reference group under partial invariance, and for 
 #' the weighted average of reference and focal groups under partial invariance.
 #' 
-#' @param propsel proportion of selection. If missing, computed using `cut_z`.
-#' @param cut_z pre-specified cutoff score on the observed composite. This 
+#' @param propsel Proportion of selection. If missing, computed using `cut_z`.
+#' @param cut_z Pre-specified cutoff score on the observed composite. This 
 #'        argument is ignored when `propsel` has input.
-#' @param weights_item a vector of item weights
-#' @param n_dim: number of dimensions, 1 by default. If the user does not supply 
+#' @param weights_item A vector of item weights
+#' @param n_dim Number of dimensions, 1 by default. If the user does not supply 
 #'        a different value, proceeds with the assumption that the scale is 
 #'        unidimensional.
-#' @param n_i_per_dim a vector containing the number of items in each 
+#' @param n_i_per_dim A vector containing the number of items in each 
 #'        dimension; NULL by default. If the user provides a value for n_dim 
 #'        that is > 1 but leaves n_i_per_dim = NULL, assumes that the subscales 
 #'        have an equal number of items. 
-#' @param weights_latent a  vector of latent factor weights.
-#' @param alpha_r a vector of latent factor mean for the reference group.
-#' @param alpha_f (optional) a vector of latent factor mean for the focal  
+#' @param weights_latent A  vector of latent factor weights.
+#' @param alpha_r A vector of latent factor mean for the reference group.
+#' @param alpha_f (optional) A vector of latent factor mean for the focal  
 #'        group;if no input, set equal to alpha_r.
 #' @param psi_r a matrix of latent factor variance for the reference group.
-#' @param psi_f (optional) a matrix of latent factor variance for the focal  
+#' @param psi_f (optional) A matrix of latent factor variance for the focal  
 #'        group; if no input, set equal to psi_r.
-#' @param lambda_r_p a matrix of factor loadings for the reference group under
+#' @param lambda_r_p A matrix of factor loadings for the reference group under
 #'        the partial invariance condition.
-#' @param lambda_f_p (optional) a matrix of factor loadings for the focal group 
+#' @param lambda_f_p (optional) A matrix of factor loadings for the focal group 
 #'        under the partial invariance condition; if no input, set equal to 
 #'        lambda_r.
-#' @param nu_r_p a matrix of measurement intercepts for the reference group 
+#' @param nu_r_p A matrix of measurement intercepts for the reference group 
 #'        under the partial invariance condition.
-#' @param nu_f_p (optional) a matrix of measurement intercepts for the focal 
+#' @param nu_f_p (optional) A matrix of measurement intercepts for the focal 
 #'        group under the partial invariance condition; if no input, set equal 
 #'        to nu_r.
-#' @param theta_r_p a matrix of the unique factor variances and covariances 
+#' @param theta_r_p A matrix of the unique factor variances and covariances 
 #'        for the reference group under the partial invariance condition.
-#' @param theta_f_p (optional) a matrix of the unique factor variances and 
+#' @param theta_f_p (optional) A matrix of the unique factor variances and 
 #'        covariances for the focal group under the partial invariance
 #'        condition; if no input, set equal to theta_r.
-#' @param pmix_ref Proportion of the reference group; 
-#'        default to 0.5 (i.e., two populations have equal size)
-#' @param plot_contour logical; whether the contour of the two populations 
+#' @param pmix_ref Proportion of the reference group; default to 0.5 (i.e., two 
+#'        populations have equal size)
+#' @param plot_contour Logical; whether the contour of the two populations 
 #'        should be plotted; default to TRUE.
-#' @param return_all_outputs logical; whether the outputs from each call 
-#'        of \code{PartInv_Multi_we} should also be returned as part of the
+#' @param return_all_outputs Logical; whether the outputs from each call 
+#'        of [PartInv_Multi_we()] should also be returned as part of the
 #'        returned object; default to FALSE. If return_all_outputs == FALSE, 
 #'        returns a list of the following elements: h_overall_SR_SE_SP_par,
 #'        delta_h_R_vs_Ef_par, delta_h_str_vs_par_ref, h_str_vs_par_ref.
-#' @return  - h_overall_SR_SE_SP_par: a (3 x number of items) data frame that 
+#' @return A list with 4 elements if return_all_outputs==FALSE, a list with 
+#'         9 elements if return_all_outputs==TRUE.
+#'        \itemize{
+#'        \item{h_overall_SR_SE_SP_par}{A (3 x number of items) data frame that 
 #'          stores Cohen's h values for the comparison between overall SR, SE, 
 #'          SP under partial invariance for the full item set vs. overall SR, 
 #'          SE, SP under partial invariance when item i is deleted. 'Overall'
 #'          refers to the weighting of the accuracy indices for focal and 
-#'          reference group proportions.
-#'        - delta_h_R_vs_Ef_par: a (8 x number of items) data frame that stores 
-#'          the Cohen's h effect size for the change in h_R_vs_Ef_par when the
-#'          full item set is included vs. h_R_vs_Ef_par when item i is deleted. 
-#'        - delta_h_str_vs_par_ref: a (8 x number of items) data frame that 
+#'          reference group proportions.}
+#'        \item{delta_h_R_vs_Ef_par}{A (8 x number of items) data frame that 
+#'          stores the Cohen's h effect size for the change in h_R_vs_Ef_par 
+#'          when the full item set is included vs. h_R_vs_Ef_par when item i 
+#'          is deleted.} 
+#'        \item{delta_h_str_vs_par_ref}{A (8 x number of items) data frame that 
 #'          stores the Cohen's h effect size for the change in h_str_vs_par_ref
 #'          when the full item set is included vs. h_str_vs_par_ref when item i 
-#'          is deleted.
-#'        - h_str_vs_par_ref: a (8 x (number of items + 1)) data frame that 
+#'          is deleted.}
+#'        \item{h_str_vs_par_ref}{A (8 x (number of items + 1)) data frame that 
 #'          stores Cohen's h values for the comparison between accuracy indices 
 #'          for the reference group under strict vs. partial invariance, for a
-#'          given set of items.
-#'        - h_R_vs_Ef_par: a (8 x (number of items + 1)) data frame that stores
-#'          Cohen's h values for the comparison between accuracy indices for the
-#'          reference group vs. the expected accuracy indices for the focal 
-#'          group if it followed the same distribution as the reference group, 
-#'          under partial invariance, for a given set of items.
-#'        - overall_SR_SE_SP_par: a (3 x number of items + 1) data frame 
+#'          given set of items.}
+#'        \item{h_R_vs_Ef_par}{A (8 x (number of items + 1)) data frame that 
+#'          stores Cohen's h values for the comparison between accuracy indices 
+#'          for the reference group vs. the expected accuracy indices for the 
+#'          focal group if it followed the same distribution as the reference 
+#'          group, under partial invariance, for a given set of items.}
+#'        \item{overall_SR_SE_SP_par}{A (3 x number of items + 1) data frame 
 #'          containing overall SR, SE, SP values under partial invariance. 
 #'          'Overall' refers to the weighting of the accuracy indices for focal 
-#'          and reference group proportions.
-#'        - h_str_vs_par_ref_list: a list of length (number of items + 1). Each 
-#'          item in the list is a (8 x 3) data frame with rows for accuracy 
-#'          indices and columns 'strict_invariance', 'partial_invariance', and 
-#'          'h'. Here, h is the Cohen's h effect size for the comparison between 
+#'          and reference group proportions.}
+#'        \item{h_str_vs_par_ref_list}{A list of length (number of items + 1). 
+#'          Each item in the list is a (8 x 3) data frame with rows for accuracy 
+#'          indices and columns `strict_invariance`, `partial_invariance`, and 
+#'          `h`. Here, h is the Cohen's h effect size for the comparison between 
 #'          the accuracy indices under strict vs. partial invariance for a given
-#'          set of items.
-#'        - strict_results: a list of length (number of items + 1) containing
-#'          outputs from \code{PartInvMulti_we} under strict invariance.
-#'        - partial_results: a list of length (number of items + 1) containing
-#'          outputs from \code{PartInvMulti_we} under partial invariance. 
-#'          
-#'          To access the accuracy indices/Cohen's h values for a specific set
-#'          of items, specify '...$`h(full)`' for the full set of items or 
-#'          '...$`h(-i)`' for the set of items without item i. 
-#'
+#'          set of items.}
+#'        \item{strict_results}{A list of length (number of items + 1)  
+#'          containing outputs from [PartInvMulti_we()] under strict invariance.}
+#'        \item{partial_results}{A list of length (number of items + 1) 
+#'          containing outputs from [PartInvMulti_we()] under partial invariance. 
+#'         } 
+#'        To access the accuracy indices or Cohen's h values for a specific set
+#'        of items, specify '...$`h(full)`' for the full set of items or 
+#'        '...$`h(-i)`' for the set of items without item i. 
+#'         
 #' @examples
 #' # Multidimensional example 
 #' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
