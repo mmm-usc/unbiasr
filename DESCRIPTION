@@ -11,6 +11,9 @@ Authors@R: c(
     person("Yichi", "Zhang", "yzhang97@usc.edu",
            role = c("aut"),
            comment = c(ORCID = "0000-0002-4112-2106"))
+     person("Meltem", "Ozcan", "ozcan@usc.edu",
+           role = c("aut"),
+           comment = c(ORCID = "0000-0002-5054-8264"))       
     )
 Description: What the package does (one paragraph).
 License: GPL (>= 3)
