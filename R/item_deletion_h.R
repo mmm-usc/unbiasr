@@ -139,6 +139,7 @@
 #' single_dim$h_str_vs_par_ref$`h(full)`
 #' single_dim$h_str_vs_par_ref$`h(-1)`
 #' single_dim$partial_results$`h(full)`
+#' single_dim$partial_results$`h(full)` 
 #' @export
 item_deletion_h <- function(propsel, cut_z = NULL, 
                             weights_item, 

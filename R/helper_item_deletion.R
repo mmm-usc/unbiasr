@@ -76,6 +76,7 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
     i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), n_dim, 
                                      labels = FALSE))
     for(k in 1:n_dim) { # Loop through the number of dimensions
+    for(k in 1:n_dim) {
       if(del_i %in% i_by_dim[[k]]) { # If del_i is in dimension k
         # Create temporary vector to store the remaining indices in dimension k
         temp_i <- i_by_dim[[k]][i_by_dim[[k]] != del_i] 
