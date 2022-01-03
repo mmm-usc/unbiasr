@@ -2,9 +2,7 @@
 % Please edit documentation in R/helper.R
 \name{qnormmix}
 \alias{qnormmix}
-\title{Quantile function of a mixture of two normal distributions.
-\code{qnormmix} returns the quantile corresponding to p or \eqn{1 - q} on
-the mixture normal distribution.}
+\title{Quantile function of a mixture of two normal distributions.}
 \usage{
 qnormmix(
   p,
@@ -19,18 +17,18 @@ qnormmix(
 \arguments{
 \item{p}{A vector of probabilities.}
 
-\item{mean1:}{Mean of the first normal distribution.}
+\item{mean1}{Mean of the first normal distribution.}
 
-\item{sd1:}{Standard deviation of the first normal distribution.}
+\item{sd1}{Standard deviation of the first normal distribution.}
 
-\item{mean2:}{Mean of the second normal distribution.}
+\item{mean2}{Mean of the second normal distribution.}
 
-\item{sd2:}{Standard deviation of the second normal distribution.}
+\item{sd2}{Standard deviation of the second normal distribution.}
 
-\item{pmix1:}{Mixing proportion for the first distribution. Should be a
+\item{pmix1}{Mixing proportion for the first distribution. Should be a
 number in the range (0, 1).}
 
-\item{lower.tail:}{A logical scalar; if TRUE(default), probabilities are
+\item{lower.tail}{A logical scalar; if TRUE (default), probabilities are
 \eqn{P[X <= x]}; otherwise, \eqn{P[X > x]}.}
 }
 \value{
@@ -38,11 +36,11 @@ The output will be the quantile corresponding to p or \eqn{1 - q} on
 the mixture normal distribution.
 }
 \description{
-Quantile function of a mixture of two normal distributions.
-\code{qnormmix} returns the quantile corresponding to p or \eqn{1 - q} on
+\code{qnormmix} returns the quantile corresponding to \eqn{p} or \eqn{1 - q} on
 the mixture normal distribution.
 }
 \examples{
+\dontrun{
 qnormmix(0.8, 0, 3.1, 1.7, 0.5, lower.tail = FALSE)
-
+}
 }

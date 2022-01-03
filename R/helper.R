@@ -1,21 +1,23 @@
 #' Distribution function (pdf) of a mixture of two normal distributions. 
+#' 
 #' \code{pnormmix} returns the cumulative probability of q or \eqn{1 - q} on the
 #'  mixture normal distribution.
 #' 
 #' @param q A vector of quantiles.
-#' @param mean1: Mean of the first normal distribution.
-#' @param sd1: Standard deviation of the first normal distribution.
-#' @param mean2: Mean of the second normal distribution.
-#' @param sd2: Standard deviation of the second normal distribution.
-#' @param pmix1: Mixing proportion for the first distribution. Should be a 
+#' @param mean1 Mean of the first normal distribution.
+#' @param sd1 Standard deviation of the first normal distribution.
+#' @param mean2 Mean of the second normal distribution.
+#' @param sd2 Standard deviation of the second normal distribution.
+#' @param pmix1 Mixing proportion for the first distribution. Should be a 
 #'   number in the range (0, 1).
-#' @param lower.tail: A logical scalar; if TRUE(default), probabilities are 
+#' @param lower.tail A logical scalar; if TRUE (default), probabilities are 
 #' \eqn{P[X <= x]}; otherwise, \eqn{P[X > x]}. 
 #' @return The output will be the cumulative probability of q or \eqn{1 - q} on 
 #' the mixture normal distribution.
 #' @examples
+#' \dontrun{
 #' pnormmix(1, 0, 3.1, 1.7, 3.1, lower.tail = FALSE)
-#' 
+#' }
 
 pnormmix <- function(q, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5, 
                      lower.tail = TRUE) {
@@ -28,23 +30,25 @@ pnormmix <- function(q, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5,
 # pnormmix(, mean1 = 1.53, sd1 = 0.89, mean2 = 1.32, sd2 = 0.88, pmix1 = 0.5, lower.tail = FALSE)
 
 #' Quantile function of a mixture of two normal distributions. 
-#' \code{qnormmix} returns the quantile corresponding to p or \eqn{1 - q} on 
+#' 
+#' \code{qnormmix} returns the quantile corresponding to \eqn{p} or \eqn{1 - q} on 
 #' the mixture normal distribution.
 #' 
 #' @param p A vector of probabilities.
-#' @param mean1: Mean of the first normal distribution.
-#' @param sd1: Standard deviation of the first normal distribution.
-#' @param mean2: Mean of the second normal distribution.
-#' @param sd2: Standard deviation of the second normal distribution.
-#' @param pmix1: Mixing proportion for the first distribution. Should be a 
+#' @param mean1 Mean of the first normal distribution.
+#' @param sd1 Standard deviation of the first normal distribution.
+#' @param mean2 Mean of the second normal distribution.
+#' @param sd2 Standard deviation of the second normal distribution.
+#' @param pmix1 Mixing proportion for the first distribution. Should be a 
 #'   number in the range (0, 1).
-#' @param lower.tail: A logical scalar; if TRUE(default), probabilities are 
+#' @param lower.tail A logical scalar; if TRUE (default), probabilities are 
 #' \eqn{P[X <= x]}; otherwise, \eqn{P[X > x]}. 
 #' @return The output will be the quantile corresponding to p or \eqn{1 - q} on 
 #' the mixture normal distribution.
 #' @examples
+#' \dontrun{
 #' qnormmix(0.8, 0, 3.1, 1.7, 0.5, lower.tail = FALSE)
-#' 
+#' }
 
 qnormmix <- function(p, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5, 
                      lower.tail = TRUE) {
@@ -59,20 +63,24 @@ qnormmix <- function(p, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5,
 }
 
 #' Helper function for computing the kernel for bivariate normal density. 
+#' 
 #' \code{.bvnorm_kernel} returns the kernel for bivariate normal density
 #' 
 #' @param x A normal distribution
-#' @param mu_x: Mean of the normal distribution x.
+#' @param mu_x Mean of the normal distribution x.
 #' @param y A normal distribution
-#' @param sd_x: Standard deviation of the normal distribution x.
-#' @param mu_y: Mean of the normal distribution y.
-#' @param sd_y: Standard deviation of the normal distribution y.
-#' @param cov_xy: covariance between x and y
+#' @param sd_x Standard deviation of the normal distribution x.
+#' @param mu_y Mean of the normal distribution y.
+#' @param sd_y Standard deviation of the normal distribution y.
+#' @param cov_xy covariance between x and y
 #' 
 #' @return The output will be the quantile corresponding to p or \eqn{1 - q} on 
 #' the mixture normal distribution.
 #' @examples
-#' 
+#' \dontrun{
+#' .bvnorm_kernel(x = -2.50, y = -2.52, mu_x = 1, mu_y = 0.57, sd_x = 1,
+#' sd_y = 1.03, cov_xy = 0.8)
+#' }
 
 .bvnorm_kernel <- function(x, y, mu_x = 0, mu_y = 0, sd_x = 1, sd_y = 1, 
                            cov_xy = 0) {
@@ -84,25 +92,34 @@ qnormmix <- function(p, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5,
 }
 
 #' Plot contour for a bivariate normal distribution
+#' 
 #' \code{.bvnorm_kernel} returns the kernel for bivariate normal density
 #' 
-#' @param mean1: Mean of first normal distribution (on x-axis).
-#' @param sd1: Standard deviation of first normal distribution.
-#' @param mean2: Mean of second normal distribution (on y-axis).
-#' @param sd2: Standard deviation of second normal distribution.
-#' @param cor12: Correlation in the bivariate normal.
-#' @param cov12: Covariance in the bivariate normal. If not input, compute the
+#' @param mean1 Mean of the first normal distribution (on x-axis).
+#' @param sd1 Standard deviation of thefirst normal distribution.
+#' @param mean2 Mean of the second normal distribution (on y-axis).
+#' @param sd2 Standard deviation of the second normal distribution.
+#' @param cor12 Correlation in the bivariate normal distribution.
+#' @param cov12 Covariance in the bivariate normal distribution. If not input, compute the
 #'          covariance using the correlation and the standard deviations.
-#' @param density: Density level, i.e., probability enclosed by the ellipse.
-#' @param length_out: Number of values on the x-axis and on the y-axis to be
+#' @param density Density level, i.e., probability enclosed by the ellipse.
+#' @param length_out Number of values on the x-axis and on the y-axis to be
 #'               evaluated; default to 101.
-#' @param bty: Argument passed to the `contour` function.
+#' @param bty Argument passed to the `contour` function.
+#' @param ... Additional arguments passed to \code{\link[graphics]{contour}}
 #' 
 #' @return A plot showing the contour of the bivariate normal distribution on 
 #'   a two-dimensional space.
 #' @examples 
-#' 
-#'  
+#' \dontrun{
+#' contour_bvnorm(
+#'   0.5, 1, 0.57, 1.03, cov12 = 0.8,
+#'   xlab = bquote("Latent Composite" ~ (zeta)),
+#'   ylab = bquote("Observed Composite" ~ (italic(Z))),
+#'   lwd = 2, col = "red", xlim = c(-3.0, 3.5),
+#'   ylim = c(-2.97, 3.67)
+#' )
+#' }
 
 contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, 
                            cor12 = 0, cov12 = NULL, 
@@ -121,22 +138,25 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
 }
 
 #' Computing summary statistics from a selection approach
+#' 
 #' \code{.partit_bvnorm} returns a table of selection accuracy indices
 #' 
-#' @param cut1: Cut score based on the latent score
-#' @param cut2: Cut score based on the observed score
-#' @param mean1: Mean of first normal distribution (on x-axis).
-#' @param sd1: Standard deviation of first normal distribution.
-#' @param mean2: Mean of second normal distribution (on y-axis).
-#' @param sd2: Standard deviation of second normal distribution.
-#' @param cor12: Correlation in the bivariate normal.
-#' @param cov12: Covariance in the bivariate normal. If not input, compute the
+#' @param cut1 Cut score based on the latent score
+#' @param cut2 Cut score based on the observed score
+#' @param mean1 Mean of first normal distribution (on x-axis).
+#' @param sd1 Standard deviation of first normal distribution.
+#' @param mean2 Mean of second normal distribution (on y-axis).
+#' @param sd2 Standard deviation of second normal distribution.
+#' @param cor12 Correlation in the bivariate normal.
+#' @param cov12 Covariance in the bivariate normal. If not input, compute the
 #'          covariance using the correlation and the standard deviations.
 #' 
 #' @return A table of selection accuracy indices
 #' @examples 
-#' 
-#'  
+#' \dontrun{
+#' .partit_bvnorm(cut1 = 2, cut2 = 2, mean1 = 0, sd1 = 1, 
+#'                mean2 = 1.53, sd2 = 0.89, cov12 = 0.80)
+#' }
 
 .partit_bvnorm <- function(cut1, cut2, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, 
                            cor12 = 0, cov12 = cor12 * sd1 * sd2) {
@@ -152,5 +172,4 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
   c(A, B, C, D, propsel, success_ratio, sensitivity, specificity)
 }
 
-# .partit_bvnorm(cut1 = 8.45, cut2 = 9, mean1 = 0, sd1 = 1, mean2 = 1.53, sd2 = 0.89,
-#                cov12 = 0.80)
+

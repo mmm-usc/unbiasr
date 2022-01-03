@@ -2,16 +2,16 @@ Package: PartInvShinyUI
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: c(
-    person("Clay", "Cantrell", "clay.cantrell@me.com",
-            role = c("aut"), 
+    person("Clay", "Cantrell", , "clay.cantrell@me.com",
+            role = c("aut", "cre"), 
            comment = c(ORCID = "0000-0002-2969-7089")),
     person("Hok Chio (Mark)", "Lai", , "marklhc@gmail.com", 
            role = c("aut"),
            comment = c(ORCID = "0000-0002-9196-7406")),
-    person("Yichi", "Zhang", "yzhang97@usc.edu",
+    person("Yichi", "Zhang", , "yzhang97@usc.edu",
            role = c("aut"),
-           comment = c(ORCID = "0000-0002-4112-2106"))
-     person("Meltem", "Ozcan", "ozcan@usc.edu",
+           comment = c(ORCID = "0000-0002-4112-2106")),
+     person("Meltem", "Ozcan", , "ozcan@usc.edu",
            role = c("aut"),
            comment = c(ORCID = "0000-0002-5054-8264"))       
     )
