@@ -1,12 +1,16 @@
 Package: PartInvShinyUI
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R: c(
     person(given = "First",
            family = "Last",
            role = c("aut", "cre"),
            email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Hok Chio (Mark)", "Lai", , "marklhc@gmail.com", 
+           role = c("aut"),
+           comment = c(ORCID = "0000-0002-9196-7406"))
+    )
 Description: What the package does (one paragraph).
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
