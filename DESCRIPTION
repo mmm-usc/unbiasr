@@ -2,10 +2,7 @@ Package: PartInvShinyUI
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: c(
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
+    person("Clay", "Cantrell", role = c("aut"), "clay.cantrell@me.com",
            comment = c(ORCID = "YOUR-ORCID-ID")),
     person("Hok Chio (Mark)", "Lai", , "marklhc@gmail.com", 
            role = c("aut"),
