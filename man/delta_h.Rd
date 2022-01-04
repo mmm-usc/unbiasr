@@ -2,12 +2,7 @@
 % Please edit documentation in R/helper_item_deletion.R
 \name{delta_h}
 \alias{delta_h}
-\title{Compute effect size for the impact of item deletion
-\code{delta_h} Uses the formula below to compute the effect size for impact
-of item bias by comparing Cohen's h values for a given selection accuracy
-index when an item is deleted vs. included, e.g. for the improvement in SE:
-\eqn{\Delta h_{SE^{(-i)}}=\text{sign}(h_{SE^{(R)}}-h_{SE^{(-i)}})
-          \left|\left|h_{SE^{(-i)}}\right|\left|h_{SE^{(-i)}}\right|\right|}}
+\title{Compute effect size for the impact of item deletion}
 \usage{
 delta_h(h_R, h_i_del)
 }
@@ -21,12 +16,14 @@ Cohen's h for the difference in the selection accuracy index when the
 item is deleted.
 }
 \description{
-Compute effect size for the impact of item deletion
 \code{delta_h} Uses the formula below to compute the effect size for impact
 of item bias by comparing Cohen's h values for a given selection accuracy
-index when an item is deleted vs. included, e.g. for the improvement in SE:
+index when an item is deleted vs. included.
+
+e.g. for the improvement in SE:
+
 \eqn{\Delta h_{SE^{(-i)}}=\text{sign}(h_{SE^{(R)}}-h_{SE^{(-i)}})
-          \left|\left|h_{SE^{(-i)}}\right|\left|h_{SE^{(-i)}}\right|\right|}
+          ||h_{SE^{(-i)}}||h_{SE^{(-i)}}||}
 }
 \examples{
 delta_h(0.04, 0.01)

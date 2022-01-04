@@ -9,7 +9,7 @@ cohens_h(p1, p2)
 \arguments{
 \item{p1}{The first proportion.}
 
-\item{y}{The second proportion.}
+\item{p2}{The second proportion.}
 }
 \value{
 \code{h} The computed Cohen's h value.

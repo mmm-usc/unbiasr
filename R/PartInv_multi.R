@@ -1,34 +1,41 @@
 
+#' @title
 #' Evaluate selection accuracy based on the MCAA Framework
-#' \code{PartInvMulti_we} valuates partial measurement invariance using 
-#'  an extension of Millsap & Kwok's (2004) approach
 #' 
-#' @param propsel: proportion of selection. If missing, computed using `cut_z`.
-#' @param cut_z: pre-specified cutoff score on the observed composite. This 
+#' @name 
+#' PartInvMulti_we
+#' 
+#' @description 
+#' \code{PartInvMulti_we} valuates partial measurement invariance using 
+#'  an extension of Millsap & Kwok's (2004) approach.
+#' 
+#' @param propsel proportion of selection. If missing, computed using `cut_z`.
+#' @param cut_z pre-specified cutoff score on the observed composite. This 
 #' argument is ignored when `propsel` has input.
-#' @param weights_item: a vector of item weights
-#' @param weights_latent: a  vector of latent factor weights
-#' @param alpha_r: a vector of latent factor mean for the reference group.
-#' @param alpha_f: (optional) a vector of latent factor mean for the focal group; 
-#'            if no input, set equal to alpha_r.
-#' @param psi_r: a matrix of latent factor variance for the reference group.
-#' @param psi_f: (optional) a matrix of latent factor variance for the focal group; 
-#'          if no input, set equal to psi_r.
-#' @param lambda_r: a matrix of factor loadings for the reference group.
-#' @param lambda_f: (optional) a matrix of factor loadings for the focal group; 
-#'             if no input, set equal to lambda_r.
-#' @param nu_r: a matrix of measurement intercepts for the reference group.
-#' @param nu_f: (optional) a matrix of measurement intercepts for the focal group; 
-#'          if no input, set equal to nu_r.
-#' @param Theta_r: a matrix of the unique factor variances and covariances 
+#' @param weights_item a vector of item weights.
+#' @param weights_latent a  vector of latent factor weights.
+#' @param alpha_r a vector of latent factor mean for the reference group.
+#' @param alpha_f (optional) a vector of latent factor mean for the focal group; 
+#'            if no input, set equal to `alpha_r`.
+#' @param psi_r a matrix of latent factor variance for the reference group.
+#' @param psi_f (optional) a matrix of latent factor variance for the focal group; 
+#'          if no input, set equal to `psi_r`.
+#' @param lambda_r a matrix of factor loadings for the reference group.
+#' @param lambda_f (optional) a matrix of factor loadings for the focal group; 
+#'             if no input, set equal to `lambda_r`.
+#' @param nu_r a matrix of measurement intercepts for the reference group.
+#' @param nu_f (optional) a matrix of measurement intercepts for the focal group; 
+#'          if no input, set equal to `nu_r`.
+#' @param Theta_r a matrix of the unique factor variances and covariances 
 #'            for the reference group.
-#' @param Theta_f: (optional) a matrix of the unique factor variances and 
-#'            covariances for the focal group; if no input, set equal to Theta_r.
-#' @param pmix_ref: Proportion of the reference group; 
+#' @param Theta_f (optional) a matrix of the unique factor variances and 
+#'            covariances for the focal group; if no input, set equal to `Theta_r`.
+#' @param pmix_ref Proportion of the reference group; 
 #'            default to 0.5 (i.e., two populations have equal size).
-#' @param plot_contour: logical; whether the contour of the two populations 
-#'            should be plotted; default to TRUE.
-#' @return The output will be  a list of four elements and a plot if plot_contour == TRUE:
+#' @param plot_contour logical; whether the contour of the two populations 
+#'            should be plotted; default to `TRUE`.
+#' @return The output will be  a list of four elements and a plot if 
+#'      \code{plot_contour == TRUE}:
 #'     - propsel: echo the same argument as input.
 #'     - cutpt_xi: cut point on the latent scale (xi).
 #'     - cutpt_z: cut point on the observed scale (Z).
@@ -36,7 +43,7 @@
 #'                and the focal groups, and the rows represent
 #'                probabilities of true positive (A), false positive (B), 
 #'                true negative (C), false negative (D); proportion selected, 
-#'                success ratio, sensitivity, and specificity. 
+#'                success ratio, sensitivity, and specificity. }
 #' @examples
 #' # single dimension
 #' PartInvMulti_we(propsel = .10,

@@ -2,29 +2,23 @@
 % Please edit documentation in R/helper_item_deletion.R
 \name{get_perf}
 \alias{get_perf}
-\title{Compute SR, SE, SP weighted by group proportions
-\code{get_perf} computes overall SR, SE, SP under partial invariance by
-weighting the TP, TF, TN, FP values for the reference and focal groups with
-the group proportions.}
+\title{Compute SR, SE, SP weighted by group proportions}
 \usage{
 get_perf(pmixr, store_par_summary)
 }
 \arguments{
 \item{pmixr}{Proportion of the reference group.}
 
-\item{store_par_summary}{The summary table from \code{\link[=PartInv_Multi_we]{PartInv_Multi_we()}}
+\item{store_par_summary}{The summary table from \code{\link[=PartInvMulti_we]{PartInvMulti_we()}}
 under partial invariance.}
 }
 \value{
 A vector of length 3.
-\itemize{
 \item{SR}{Success ratio, computed as \eqn{TP/(TP + FP)}.}
 \item{SE}{Sensitivity, computed as \eqn{TP/(TP + FN)}.}
 \item{SP}{Specificity, computed as \eqn{TN/(TN + FP)}.}
 }
-}
 \description{
-Compute SR, SE, SP weighted by group proportions
 \code{get_perf} computes overall SR, SE, SP under partial invariance by
 weighting the TP, TF, TN, FP values for the reference and focal groups with
 the group proportions.

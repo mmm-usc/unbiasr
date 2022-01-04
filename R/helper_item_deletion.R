@@ -1,19 +1,23 @@
+#' @title
 #' Compute SR, SE, SP weighted by group proportions
-
+#' 
+#' @name 
+#' get_perf
+#' 
+#' @description
 #' \code{get_perf} computes overall SR, SE, SP under partial invariance by 
 #' weighting the TP, TF, TN, FP values for the reference and focal groups with 
 #' the group proportions.
 #' 
 #' @param pmixr Proportion of the reference group.
-#' @param store_par_summary The summary table from [PartInv_Multi_we()] 
+#' @param store_par_summary The summary table from [PartInvMulti_we()] 
 #' under partial invariance.
 #' 
 #' @return A vector of length 3. 
-#'         \itemize{
 #'          \item{SR}{Success ratio, computed as \eqn{TP/(TP + FP)}.}
 #'          \item{SE}{Sensitivity, computed as \eqn{TP/(TP + FN)}.}
 #'          \item{SP}{Specificity, computed as \eqn{TN/(TN + FP)}.}
-#'         }
+#'        
 
 get_perf <- function(pmixr, store_par_summary) {
   r <- store_par_summary$Reference; f <- store_par_summary$Focal
@@ -28,8 +32,13 @@ get_perf <- function(pmixr, store_par_summary) {
   return(c(SR, SE, SP))
 }
 
+#' @title
 #' Delete item i and redistribute its weight within subscale
-
+#' 
+#' @name 
+#' redistribute_weights
+#' 
+#' @description 
 #' \code{redistribute_weights} replaces the item weight with 0 for the item to 
 #' be deleted, and redistributes this item's weight across the remaining items.
 
@@ -37,13 +46,13 @@ get_perf <- function(pmixr, store_par_summary) {
 #' @param n_dim Number of dimensions, 1 by default. If the user does not supply 
 #'        a value, assumes that the scale is unidimensional.
 #' @param n_i_per_dim A vector containing the number of items in each 
-#'        dimension; NULL by default. If the user provides a value for n_dim 
-#'        that is > 1 but leaves n_i_per_dim = NULL, assumes that the subscales 
-#'        have an equal number of items. 
+#'        dimension; `NULL` by default. If the user provides a value for n_dim 
+#'        that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that 
+#'        the subscales have an equal number of items. 
 #' @param del_i Index of the item to be deleted.
 #' 
 #' @return `take_one_out` Weights vector with redistributed weights.
-#' @example
+#' @examples
 #' one_dim_weights <- c(1:7)
 #' redistribute_weights(one_dim_weights, del_i = 2)
 #' one_dim_weights2 <- c(1:7)
@@ -107,13 +116,18 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
 }
 
 
+#' @title 
 #' Compute Cohen's h effect size for the difference in two proportions
 #' 
+#' @name 
+#' cohens_h
+#' 
+#' @description 
 #' \code{cohens_h} Computes Cohen's h (Cohen, 1988) for the difference in two 
 #' proportions using \eqn{h = 2arcsin(\sqrt{p1}) - 2arcsin(\sqrt{p2})}. 
 #' 
 #' @param p1 The first proportion.
-#' @param y The second proportion.
+#' @param p2 The second proportion.
 #' @return `h` The computed Cohen's h value.
 #' @examples
 #' cohens_h(0.7, 0.75)
@@ -124,13 +138,21 @@ cohens_h <- function(p1, p2) {
   return(h)
 }
 
+#' @title
 #' Compute effect size for the impact of item deletion
-
+#' 
+#' @name 
+#' delta_h
+#' 
+#' @description 
 #' \code{delta_h} Uses the formula below to compute the effect size for impact 
 #' of item bias by comparing Cohen's h values for a given selection accuracy 
-#' index when an item is deleted vs. included, e.g. for the improvement in SE:
+#' index when an item is deleted vs. included.
+#' 
+#' e.g. for the improvement in SE:
+#' 
 #' \eqn{\Delta h_{SE^{(-i)}}=\text{sign}(h_{SE^{(R)}}-h_{SE^{(-i)}})
-#'           \left|\left|h_{SE^{(-i)}}\right|\left|h_{SE^{(-i)}}\right|\right|}
+#'           ||h_{SE^{(-i)}}||h_{SE^{(-i)}}||}
 
 #' @param h_R h effect sizes for when the item is included.
 #' @param h_i_del h effect sizes for when the item is deleted.
@@ -145,19 +167,23 @@ delta_h <- function(h_R, h_i_del) {
 }
 
 
+#' @title 
 #' Selection accuracy indices for the reference group, and Cohen's h for their
 #' difference under strict vs. partial invariance.
 #' 
-#' \code{ref_acc_indices_h} Takes in the outputs from the [PartInv_Multi_we()] 
-#' function for the strict invariance and partial invariance conditions, and 
-#' returns a restructured data frame with the selection accuracy indices  
-#' for the reference group under the strict invariance, partial invariance 
+#' @name 
+#' ref_acc_indices_h
+#' 
+#' @description 
+#' \code{ref_acc_indices_h} Takes in outputs from [PartInvMulti_we()] 
+#' and returns a restructured data frame with the selection accuracy indices  
+#' for the reference group under the strict invariance and partial invariance 
 #' conditions, and the corresponding h for the difference in the selection
 #' accuracy indices between these two conditions.
 
-#' @param strict_output [PartInv_Multi_we()]  output (a list) under strict 
+#' @param strict_output [PartInvMulti_we()]  output (a list) under strict 
 #'        invariance. 
-#' @param partial_output [PartInv_Multi_we()] output (a list) under partial
+#' @param partial_output [PartInvMulti_we()] output (a list) under partial
 #'        invariance.
 #' @return A 8 x 3 dataframe with columns `strict invariance`, 
 #'        `partial invariance`, and `h`.

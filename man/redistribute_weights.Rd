@@ -2,9 +2,7 @@
 % Please edit documentation in R/helper_item_deletion.R
 \name{redistribute_weights}
 \alias{redistribute_weights}
-\title{Delete item i and redistribute its weight within subscale
-\code{redistribute_weights} replaces the item weight with 0 for the item to
-be deleted, and redistributes this item's weight across the remaining items.}
+\title{Delete item i and redistribute its weight within subscale}
 \usage{
 redistribute_weights(weights_item, n_dim = 1, n_i_per_dim = NULL, del_i)
 }
@@ -15,9 +13,9 @@ redistribute_weights(weights_item, n_dim = 1, n_i_per_dim = NULL, del_i)
 a value, assumes that the scale is unidimensional.}
 
 \item{n_i_per_dim}{A vector containing the number of items in each
-dimension; NULL by default. If the user provides a value for n_dim
-that is > 1 but leaves n_i_per_dim = NULL, assumes that the subscales
-have an equal number of items.}
+dimension; \code{NULL} by default. If the user provides a value for n_dim
+that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that
+the subscales have an equal number of items.}
 
 \item{del_i}{Index of the item to be deleted.}
 }
@@ -25,7 +23,23 @@ have an equal number of items.}
 \code{take_one_out} Weights vector with redistributed weights.
 }
 \description{
-Delete item i and redistribute its weight within subscale
 \code{redistribute_weights} replaces the item weight with 0 for the item to
 be deleted, and redistributes this item's weight across the remaining items.
+}
+\examples{
+one_dim_weights <- c(1:7)
+redistribute_weights(one_dim_weights, del_i = 2)
+one_dim_weights2 <- c(1:7)
+redistribute_weights(one_dim_weights2, n_dim = 1, n_i_per_dim = 7, del_i = 2)
+multi_equal_len_weights <- c(1:9)
+redistribute_weights(multi_equal_len_weights, n_dim = 3, del_i = 2)
+multi_equal_len_weights2 <- c(1:9)
+redistribute_weights(multi_equal_len_weights2, n_dim = 3, 
+                   n_i_per_dim = c(3, 3, 3), del_i = 2)
+multi_unequal_len_weights <- c(1:12)
+redistribute_weights(multi_unequal_len_weights, n_dim = 3, 
+                   n_i_per_dim = c(3, 6, 3), del_i = 2)
+error_ex <- c(1:12)
+redistribute_weights(error_ex, n_dim = -3, 
+                   n_i_per_dim = c(3, 6, 3), del_i = 2)
 }

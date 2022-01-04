@@ -2,9 +2,7 @@
 % Please edit documentation in R/PartInv_multi.R
 \name{PartInvMulti_we}
 \alias{PartInvMulti_we}
-\title{Evaluate selection accuracy based on the MCAA Framework
-\code{PartInvMulti_we} valuates partial measurement invariance using
-an extension of Millsap & Kwok's (2004) approach}
+\title{Evaluate selection accuracy based on the MCAA Framework}
 \usage{
 PartInvMulti_we(
   propsel,
@@ -27,49 +25,50 @@ PartInvMulti_we(
 )
 }
 \arguments{
-\item{propsel:}{proportion of selection. If missing, computed using \code{cut_z}.}
+\item{propsel}{proportion of selection. If missing, computed using \code{cut_z}.}
 
-\item{cut_z:}{pre-specified cutoff score on the observed composite. This
+\item{cut_z}{pre-specified cutoff score on the observed composite. This
 argument is ignored when \code{propsel} has input.}
 
-\item{weights_item:}{a vector of item weights}
+\item{weights_item}{a vector of item weights.}
 
-\item{weights_latent:}{a  vector of latent factor weights}
+\item{weights_latent}{a  vector of latent factor weights.}
 
-\item{alpha_r:}{a vector of latent factor mean for the reference group.}
+\item{alpha_r}{a vector of latent factor mean for the reference group.}
 
-\item{alpha_f:}{(optional) a vector of latent factor mean for the focal group;
-if no input, set equal to alpha_r.}
+\item{alpha_f}{(optional) a vector of latent factor mean for the focal group;
+if no input, set equal to \code{alpha_r}.}
 
-\item{psi_r:}{a matrix of latent factor variance for the reference group.}
+\item{psi_r}{a matrix of latent factor variance for the reference group.}
 
-\item{psi_f:}{(optional) a matrix of latent factor variance for the focal group;
-if no input, set equal to psi_r.}
+\item{psi_f}{(optional) a matrix of latent factor variance for the focal group;
+if no input, set equal to \code{psi_r}.}
 
-\item{lambda_r:}{a matrix of factor loadings for the reference group.}
+\item{lambda_r}{a matrix of factor loadings for the reference group.}
 
-\item{lambda_f:}{(optional) a matrix of factor loadings for the focal group;
-if no input, set equal to lambda_r.}
+\item{lambda_f}{(optional) a matrix of factor loadings for the focal group;
+if no input, set equal to \code{lambda_r}.}
 
-\item{nu_r:}{a matrix of measurement intercepts for the reference group.}
+\item{nu_r}{a matrix of measurement intercepts for the reference group.}
 
-\item{nu_f:}{(optional) a matrix of measurement intercepts for the focal group;
-if no input, set equal to nu_r.}
+\item{nu_f}{(optional) a matrix of measurement intercepts for the focal group;
+if no input, set equal to \code{nu_r}.}
 
-\item{Theta_r:}{a matrix of the unique factor variances and covariances
+\item{Theta_r}{a matrix of the unique factor variances and covariances
 for the reference group.}
 
-\item{Theta_f:}{(optional) a matrix of the unique factor variances and
-covariances for the focal group; if no input, set equal to Theta_r.}
+\item{Theta_f}{(optional) a matrix of the unique factor variances and
+covariances for the focal group; if no input, set equal to \code{Theta_r}.}
 
-\item{pmix_ref:}{Proportion of the reference group;
+\item{pmix_ref}{Proportion of the reference group;
 default to 0.5 (i.e., two populations have equal size).}
 
-\item{plot_contour:}{logical; whether the contour of the two populations
-should be plotted; default to TRUE.}
+\item{plot_contour}{logical; whether the contour of the two populations
+should be plotted; default to \code{TRUE}.}
 }
 \value{
-The output will be  a list of four elements and a plot if plot_contour == TRUE:
+The output will be  a list of four elements and a plot if
+\code{plot_contour == TRUE}:
 - propsel: echo the same argument as input.
 - cutpt_xi: cut point on the latent scale (xi).
 - cutpt_z: cut point on the observed scale (Z).
@@ -77,12 +76,11 @@ The output will be  a list of four elements and a plot if plot_contour == TRUE:
 and the focal groups, and the rows represent
 probabilities of true positive (A), false positive (B),
 true negative (C), false negative (D); proportion selected,
-success ratio, sensitivity, and specificity.
+success ratio, sensitivity, and specificity. }
 }
 \description{
-Evaluate selection accuracy based on the MCAA Framework
 \code{PartInvMulti_we} valuates partial measurement invariance using
-an extension of Millsap & Kwok's (2004) approach
+an extension of Millsap & Kwok's (2004) approach.
 }
 \examples{
 # single dimension

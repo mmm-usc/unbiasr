@@ -8,10 +8,10 @@ difference under strict vs. partial invariance.}
 ref_acc_indices_h(strict_output, partial_output)
 }
 \arguments{
-\item{strict_output}{\code{\link[=PartInv_Multi_we]{PartInv_Multi_we()}}  output (a list) under strict
+\item{strict_output}{\code{\link[=PartInvMulti_we]{PartInvMulti_we()}}  output (a list) under strict
 invariance.}
 
-\item{partial_output}{\code{\link[=PartInv_Multi_we]{PartInv_Multi_we()}} output (a list) under partial
+\item{partial_output}{\code{\link[=PartInvMulti_we]{PartInvMulti_we()}} output (a list) under partial
 invariance.}
 }
 \value{
@@ -19,10 +19,9 @@ A 8 x 3 dataframe with columns \verb{strict invariance},
 \verb{partial invariance}, and \code{h}.
 }
 \description{
-\code{ref_acc_indices_h} Takes in the outputs from the \code{\link[=PartInv_Multi_we]{PartInv_Multi_we()}}
-function for the strict invariance and partial invariance conditions, and
-returns a restructured data frame with the selection accuracy indices
-for the reference group under the strict invariance, partial invariance
+\code{ref_acc_indices_h} Takes in outputs from \code{\link[=PartInvMulti_we]{PartInvMulti_we()}}
+and returns a restructured data frame with the selection accuracy indices
+for the reference group under the strict invariance and partial invariance
 conditions, and the corresponding h for the difference in the selection
 accuracy indices between these two conditions.
 }
