@@ -2,8 +2,7 @@
 % Please edit documentation in R/helper.R
 \name{.bvnorm_kernel}
 \alias{.bvnorm_kernel}
-\title{Helper function for computing the kernel for bivariate normal density.
-\code{.bvnorm_kernel} returns the kernel for bivariate normal density}
+\title{Helper function for computing the kernel for bivariate normal density.}
 \usage{
 .bvnorm_kernel(x, y, mu_x = 0, mu_y = 0, sd_x = 1, sd_y = 1, cov_xy = 0)
 }
@@ -12,24 +11,26 @@
 
 \item{y}{A normal distribution}
 
-\item{mu_x:}{Mean of the normal distribution x.}
+\item{mu_x}{Mean of the normal distribution x.}
 
-\item{sd_x:}{Standard deviation of the normal distribution x.}
+\item{mu_y}{Mean of the normal distribution y.}
 
-\item{mu_y:}{Mean of the normal distribution y.}
+\item{sd_x}{Standard deviation of the normal distribution x.}
 
-\item{sd_y:}{Standard deviation of the normal distribution y.}
+\item{sd_y}{Standard deviation of the normal distribution y.}
 
-\item{cov_xy:}{covariance between x and y}
+\item{cov_xy}{covariance between x and y}
 }
 \value{
 The output will be the quantile corresponding to p or \eqn{1 - q} on
 the mixture normal distribution.
 }
 \description{
-Helper function for computing the kernel for bivariate normal density.
 \code{.bvnorm_kernel} returns the kernel for bivariate normal density
 }
 \examples{
-
+\dontrun{
+.bvnorm_kernel(x = -2.50, y = -2.52, mu_x = 1, mu_y = 0.57, sd_x = 1,
+sd_y = 1.03, cov_xy = 0.8)
+}
 }

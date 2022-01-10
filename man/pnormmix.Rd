@@ -2,9 +2,7 @@
 % Please edit documentation in R/helper.R
 \name{pnormmix}
 \alias{pnormmix}
-\title{Distribution function (pdf) of a mixture of two normal distributions.
-\code{pnormmix} returns the cumulative probability of q or \eqn{1 - q} on the
-mixture normal distribution.}
+\title{Distribution function (pdf) of a mixture of two normal distributions.}
 \usage{
 pnormmix(
   q,
@@ -19,18 +17,18 @@ pnormmix(
 \arguments{
 \item{q}{A vector of quantiles.}
 
-\item{mean1:}{Mean of the first normal distribution.}
+\item{mean1}{Mean of the first normal distribution.}
 
-\item{sd1:}{Standard deviation of the first normal distribution.}
+\item{sd1}{Standard deviation of the first normal distribution.}
 
-\item{mean2:}{Mean of the second normal distribution.}
+\item{mean2}{Mean of the second normal distribution.}
 
-\item{sd2:}{Standard deviation of the second normal distribution.}
+\item{sd2}{Standard deviation of the second normal distribution.}
 
-\item{pmix1:}{Mixing proportion for the first distribution. Should be a
+\item{pmix1}{Mixing proportion for the first distribution. Should be a
 number in the range (0, 1).}
 
-\item{lower.tail:}{A logical scalar; if TRUE(default), probabilities are
+\item{lower.tail}{A logical scalar; if TRUE (default), probabilities are
 \eqn{P[X <= x]}; otherwise, \eqn{P[X > x]}.}
 }
 \value{
@@ -38,11 +36,11 @@ The output will be the cumulative probability of q or \eqn{1 - q} on
 the mixture normal distribution.
 }
 \description{
-Distribution function (pdf) of a mixture of two normal distributions.
 \code{pnormmix} returns the cumulative probability of q or \eqn{1 - q} on the
 mixture normal distribution.
 }
 \examples{
+\dontrun{
 pnormmix(1, 0, 3.1, 1.7, 3.1, lower.tail = FALSE)
-
+}
 }

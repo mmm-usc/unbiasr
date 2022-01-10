@@ -21,7 +21,6 @@ PartInv_old(
   pmix_ref = 0.5,
   plot_contour = TRUE,
   labels = c("Reference group", "Focal group"),
-  show_mi_result = FALSE,
   ...
 )
 }
@@ -64,14 +63,8 @@ if no input, set equal to \code{tau_r}.}
 \item{plot_contour}{logical; whether the contour of the two populations
 should be plotted; default to \code{TRUE}.}
 
-\item{labels}{Legend labels for the two groups in the graph. Must be a
-character vector of length 2.}
-
-\item{show_mi_result}{If \code{TRUE}, perform selection accuracy analysis
-for both the input parameters and the implied
-parameters based on a strict invariance model, with
-common parameter values as weighted averages of
-the input values using \code{pmix_ref}.}
+\item{labels}{a character vector with two elements to label the reference
+and the focal group on the graph.}
 
 \item{...}{other arguments passed to the \code{\link[graphics]{contour}}
 function.}

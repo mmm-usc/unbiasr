@@ -2,8 +2,7 @@
 % Please edit documentation in R/helper.R
 \name{contour_bvnorm}
 \alias{contour_bvnorm}
-\title{Plot contour for a bivariate normal distribution
-\code{.bvnorm_kernel} returns the kernel for bivariate normal density}
+\title{Plot contour for a bivariate normal distribution}
 \usage{
 contour_bvnorm(
   mean1 = 0,
@@ -19,35 +18,43 @@ contour_bvnorm(
 )
 }
 \arguments{
-\item{mean1:}{Mean of first normal distribution (on x-axis).}
+\item{mean1}{Mean of the first normal distribution (on x-axis).}
 
-\item{sd1:}{Standard deviation of first normal distribution.}
+\item{sd1}{Standard deviation of thefirst normal distribution.}
 
-\item{mean2:}{Mean of second normal distribution (on y-axis).}
+\item{mean2}{Mean of the second normal distribution (on y-axis).}
 
-\item{sd2:}{Standard deviation of second normal distribution.}
+\item{sd2}{Standard deviation of the second normal distribution.}
 
-\item{cor12:}{Correlation in the bivariate normal.}
+\item{cor12}{Correlation in the bivariate normal distribution.}
 
-\item{cov12:}{Covariance in the bivariate normal. If not input, compute the
+\item{cov12}{Covariance in the bivariate normal distribution. If not input, compute the
 covariance using the correlation and the standard deviations.}
 
-\item{density:}{Density level, i.e., probability enclosed by the ellipse.}
+\item{density}{Density level, i.e., probability enclosed by the ellipse.}
 
-\item{length_out:}{Number of values on the x-axis and on the y-axis to be
+\item{length_out}{Number of values on the x-axis and on the y-axis to be
 evaluated; default to 101.}
 
-\item{bty:}{Argument passed to the \code{contour} function.}
+\item{bty}{Argument passed to the \code{contour} function.}
+
+\item{...}{Additional arguments passed to \code{\link[graphics]{contour}}}
 }
 \value{
 A plot showing the contour of the bivariate normal distribution on
 a two-dimensional space.
 }
 \description{
-Plot contour for a bivariate normal distribution
 \code{.bvnorm_kernel} returns the kernel for bivariate normal density
 }
 \examples{
-
- 
+\dontrun{
+contour_bvnorm(
+  0.5, 1, 0.57, 1.03, cov12 = 0.8,
+  xlab = bquote("Latent Composite" ~ (zeta)),
+  ylab = bquote("Observed Composite" ~ (italic(Z))),
+  lwd = 2, col = "red", xlim = c(-3.0, 3.5),
+  ylim = c(-2.97, 3.67)
+)
+}
 }
