@@ -46,7 +46,7 @@ test_that("Duplicated results with `show_mi_result = TRUE` when inputting invari
     labels = c("female", "male"),
     show_mi_result = TRUE
   )
-  expect_equal(piout_eq2$summary, piout_eq2$summary_mi)
+  expect_equal(piout_eq2$summary[, 1:2], piout_eq2$summary_mi)
 })
 
 test_that("PartInv() handles matrix input", {
@@ -157,5 +157,5 @@ test_that("`show_mi_result = TRUE` works properly", {
     pmix_ref = .2,
     labels = c("reference", "focal")
   )
-  expect_equal(piout1_pstrict$summary_mi, piout1_strict$summary)
+  expect_equal(piout1_pstrict$summary_mi, piout1_strict$summary[, 1:2])
 })

@@ -107,7 +107,7 @@ default to 0.5 (i.e., two populations have equal size).}
 \item{plot_contour}{logical; whether the contour of the two populations
 should be plotted; default to TRUE.}
 
-\item{show_mi_result}{(Not in use) If \code{TRUE}, perform selection accuracy analysis
+\item{show_mi_result}{If \code{TRUE}, perform selection accuracy analysis
 for both the input parameters and the implied
 parameters based on a strict invariance model, with
 common parameter values as weighted averages of

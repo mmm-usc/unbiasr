@@ -35,7 +35,7 @@ NULL
 #'            default to 0.5 (i.e., two populations have equal size).
 #' @param plot_contour logical; whether the contour of the two populations 
 #'            should be plotted; default to TRUE.
-#' @param show_mi_result (Not in use) If \code{TRUE}, perform selection accuracy analysis
+#' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
 #'                       for both the input parameters and the implied
 #'                       parameters based on a strict invariance model, with
 #'                       common parameter values as weighted averages of
@@ -224,40 +224,45 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
               summary = round(dat, 3), 
               ai_ratio = dat["Proportion selected", 3] / 
                 dat["Proportion selected", 1], plot = p)
-  if (FALSE) {  # Need to be updated
+  if (show_mi_result) {  # Need to be updated
     # Strict
     pop_weights <- c(pmix_ref, 1 - pmix_ref)
     lambda_r <- lambda_f <- 
       .weighted_average_list(list(lambda_r, lambda_f),
-                                     weights = pop_weights)
-    tau_r <- tau_f <- 
-      .weighted_average_list(list(tau_r, tau_f),
-                                  weights = pop_weights)
+                             weights = pop_weights)
+    nu_r <- nu_f <- 
+      .weighted_average_list(list(nu_r, nu_f),
+                             weights = pop_weights)
     Theta_r <- Theta_f <- 
       .weighted_average_list(list(Theta_r, Theta_f),
                              weights = pop_weights)
-    mean_zr <- sum(tau_r) + sum(lambda_r) * kappa_r
-    mean_zf <- sum(tau_f) + sum(lambda_f) * kappa_f
-    sd_zr <- sqrt(sum(lambda_r)^2 * phi_r + sum(Theta_r))
-    sd_zf <- sqrt(sum(lambda_f)^2 * phi_f + sum(Theta_f))
-    cov_z_xir <- sum(lambda_r) * phi_r
-    cov_z_xif <- sum(lambda_f) * phi_f
-    sd_xir <- sqrt(phi_r)
-    sd_xif <- sqrt(phi_f)
+    mean_zr <- c(crossprod(weights_item, nu_r + lambda_r %*% alpha_r))
+    mean_zf <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_f))
+    sd_zr <- c(sqrt(crossprod(weights_item, 
+                              lambda_r %*% psi_r %*% t(lambda_r) + Theta_r) %*% 
+                      weights_item))
+    sd_zf <- c(sqrt(crossprod(weights_item,
+                              lambda_f %*% psi_f %*% t(lambda_f) + Theta_f) %*%
+                      weights_item))
+    cov_z_xir <- c(crossprod(weights_item, lambda_r %*% psi_r) %*% weights_latent)
+    cov_z_xif <- c(crossprod(weights_item, lambda_f %*% psi_f) %*% weights_latent)
+    sd_xir <- c(sqrt(crossprod(weights_latent, psi_r) %*% weights_latent))
+    sd_xif <- c(sqrt(crossprod(weights_latent, psi_f) %*% weights_latent))
+    zeta_r <- c(crossprod(weights_latent, alpha_r))
+    zeta_f <- c(crossprod(weights_latent, alpha_f))
     cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf, 
-                        pmix_ref, lower.tail = FALSE)
-    cut_xi <- qnormmix(propsel, kappa_r, sd_xir, kappa_f, sd_xif, 
+                      pmix_ref, lower.tail = FALSE)
+    cut_xi <- qnormmix(propsel, zeta_r, sd_xir, zeta_f, sd_xif,
                        pmix_ref, lower.tail = FALSE)
-    partit_1 <- .partit_bvnorm(cut_xi, cut_z, kappa_r, sd_xir, mean_zr, sd_zr, 
+    partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr, 
                                cov12 = cov_z_xir)
-    partit_2 <- .partit_bvnorm(cut_xi, cut_z, kappa_f, sd_xif, mean_zf, sd_zf, 
+    partit_2 <- .partit_bvnorm(cut_xi, cut_z, zeta_f, sd_xif, mean_zf, sd_zf, 
                                cov12 = cov_z_xif)
-    dat <- data.frame("Reference" = partit_1, "Focal" = partit_2, 
+    dat <- data.frame("Reference" = partit_1, "Focal" = partit_2,
                       row.names = c("A (true positive)", "B (false positive)", 
                                     "C (true negative)", "D (false negative)", 
                                     "Proportion selected", "Success ratio", 
-                                    "Sensitivity", "Specificity")
-    )
+                                    "Sensitivity", "Specificity"))
     colnames(dat) <- labels
     p <- NULL
     if (plot_contour) {
