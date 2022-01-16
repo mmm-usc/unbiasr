@@ -27,53 +27,61 @@ Items: good (biased), hopeful, happy, enjoyed
 
 ```{r}
 ex1_output <- item_deletion_h(weights_item = c(1, 1, 1,  1), 
-                             propsel =.14, n_dim = 1,  
-                             alpha_r = 0,
-                             alpha_f =-0.125,
-                             psi_r = 0.354^2,
-                             psi_f = 0.329^2,
-                             lambda_r_p = c(1.00, 1.66, 2.30, 2.29),
-                             lambda_f_p = c(1.00, 1.66, 2.30, 2.29),
-                             nu_r_p = c(1.54, 1.36, 1.16, 1.08),
-                             nu_f_p = c(0.68, 1.36, 1.16, 1.08),
-                             theta_r_p = diag(c(1.20, 0.81, 0.32, 0.32)), 
-                             theta_f_p = diag(c(0.72, 0.81, 0.32, 0.32)),
-                             weights_latent = 1,
-                             plot_contour = FALSE,
-                             return_all_outputs = TRUE, pmix_ref = 5/7)
+                              propsel =.14, n_dim = 1,  
+                              alpha_r = 0,
+                              alpha_f =-0.125,
+                              psi_r = 0.354^2,
+                              psi_f = 0.329^2,
+                              lambda_r_p = c(1.00, 1.66, 2.30, 2.29),
+                              lambda_f_p = c(1.00, 1.66, 2.30, 2.29),
+                              nu_r_p = c(1.54, 1.36, 1.16, 1.08),
+                              nu_f_p = c(0.68, 1.36, 1.16, 1.08),
+                              theta_r_p = diag(c(1.20, 0.81, 0.32, 0.32)), 
+                              theta_f_p = diag(c(0.72, 0.81, 0.32, 0.32)),
+                              weights_latent = 1,
+                              plot_contour = FALSE,
+                              return_all_outputs = TRUE, pmix_ref = 5/7)
 ```
 
-**h_overall_SR_SE_SP_par** is the effect size of the comparison between the 
-overall accuracy indices under partial invariance for the full item set vs. the
-overall accuracy indices when one item is deleted, under partial invariance. 
+[HL]: # (I used `` instead of **** for R objects.)
+[HL]: # (Also, the `SR_SE_SP` seems too long. Can we call it `sai` for selection accuracy indices? I used that in some papers.)
+[HL]: # (I think we can directly use the italic h instead of text h. For indices that you're going to use repeatedly, maybe define a LaTeX macro.)
+
+`h_overall_SR_SE_SP_par` is a list containing effect sizes showing the change in
+an accuracy index under partial invariance for the full item set vs. when one 
+item is deleted, under partial invariance. 
 'Overall' refers to the weighting of accuracy indices for the focal and reference 
 groups by the group proportions to arrive at a weighted average for each index.
 
 
-$$\text{h}_{{\text{SR}}^{(-i)}} = 2\text{arcsin}(\sqrt{\text{SR}^\text{full}})-2\text{arcsin}(\sqrt{\text{SR}^{(-i)}})$$
+$$\text{h}_{\text{SR}}^{(-i)} = 2\arcsin(\sqrt{\text{SR}^\text{full}})-2\arcsin(\sqrt{\text{SR}^{(-i)}})$$
 ```{r}
-ex1_output$h_overall_SR_SE_SP_par$`h(-1)`
+# HL: Maybe show all four as all of them are discussed below?
+knitr::kable(ex1_output$h_overall_SR_SE_SP_par)
 ```
-For the 4-item CES-D scale, the negative $\text{h}_{{\text{SR}}^{(-1)}}$,
-$\text{h}_{{\text{SE}}^{(-1)}}$, and $\text{h}_{{\text{SP}}^{(-1)}}$ values 
+For the 4-item CES-D scale, the negative $\text{h}_{\text{SR}}^{(-1)}$,
+$\text{h}_{\text{SE}}^{(-1)}$, and $\text{h}_{\text{SP}}^{(-1)}$ values 
 indicate that removing the first item would lead to an improvement in success ratio, 
 sensitivity, and specificity as the reduced set of items led to a larger
 SR, SE, SP. Removing any of the other items would harm SR, SE, SP (indicated by the
 positive h values). For instance, SR when item 2 is removed must be lower than
-SR for the full item set for a positive $\text{h}_{{\text{SR}}^{(-2)}}$ to be 
+SR for the full item set for a positive $\text{h}_{\text{SR}}^{(-2)}$ to be 
 computed. Then, a negative **h_overall_SR_SE_SP_par** indicates an improvement 
 in performance whereas a positive **h_overall_SR_SE_SP_par** indicates a deterioration
 in performance.
 
+[HL]: # (We can call the following 'bias'. It'd be helpful to discuss the 'full' column first.)
 
 **h_R_vs_Ef_par** is the effect size of the comparison between accuracy indices 
 for the reference group vs. the expected indices for the focal group if it 
 followed the same distribution as the reference group under partial invariance.
 
+[HL]: # (Maybe we just call it $h_{\Delta\text{PS}, F}$)
+
 $$\text{h}_{{\text{PS}}^{(\text{full})}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(\text{full})}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(\text{full})}})$$
 $$\text{h}_{{\text{PS}}^{(-i)}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(-i)}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(-i)}})$$
 ```{r }
-ex1_output$h_R_vs_Ef_par
+knitr::kable(ex1_output$h_R_vs_Ef_par)
 ```
 
 The 0 values for $\text{h}_{{\text{PS}}^{(-1)}_{\text{ref_Ef}}}$,$\text{h}_{{\text{SR}}^{(-1)}_\text{ref_Ef}}$,
@@ -98,6 +106,8 @@ and is not advisable despite leading to an increase in SE.
 
 Here, the comparison is between h values for the full item set vs. h when item i is deleted. These h values correspond to the comparison between accuracy indices for the reference group vs. the expected indices for the focal group if it followed the same distribution as the reference group, under partial invariance, i.e., looking at the change in h_R_vs_Ef_par when an item is deleted.
 
+[HL]: # (I would suggest separating out PS from SR, SE, and SP here, as PS is more a fairness index whereas SR, SE, SP are more about accuracy. We may only need delta h for PS. )
+
  $$\Delta h_{\text{PS}_\text{ref_Ef}^{(-i)}=} \text{sign}(h_{\text{PS}^{\text{full}}_\text{ref_Ef}} - h_{\text{PS}^{(-i)}_\text{ref_Ef}})||h_{\text{PS}^{(-i)}_\text{ref_Ef}}|-|h_{\text{PS}^{\text{full}}_\text{ref_Ef}}||$$
 ```{r }
 ex1_output$delta_h_R_vs_Ef_par
@@ -110,6 +120,7 @@ indicates that seeing a positive delta h in PS is an indication that that item
 should be removed. We see the opposite patterns for item 1 vs. items 2-4 where 
 removing any of item 2, 3, or 4 would harm the accuracy indices.
 
+[HL]: # (For the following, should we also do the values for the focal group as well?)
 
 **h_str_vs_par_ref** compares accuracy indices for the reference group under 
 strict vs. partial invariance for a given set of items (full, one item deleted).
