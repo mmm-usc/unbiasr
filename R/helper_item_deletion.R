@@ -189,8 +189,8 @@ delta_h <- function(h_R, h_i_del) {
 #'        `partial invariance`, and `h`.
 
 ref_acc_indices_h <- function(strict_output, partial_output) {
-  ref_par_strict <- partial_output[4]$summary[1][, 1]
-  ref_strict <- strict_output[4]$summary[1][, 1]
+  ref_par_strict <- partial_output$summary[1][, 1]
+  ref_strict <- strict_output$summary[1][, 1]
   r_names <- c("A (true positive)", "B (false positive)", "C (true negative)", 
                "D (false negative)", "Proportion selected", "Success ratio", 
                "Sensitivity", "Specificity")
@@ -199,4 +199,43 @@ ref_acc_indices_h <- function(strict_output, partial_output) {
   df["h"] <- round(cohens_h(df$strict_invariance, df$partial_invariance), 3)
   
   return(df)
+}
+
+#' @title 
+#' Selection accuracy indices for the reference group, and Cohen's h for their
+#' difference under strict vs. partial invariance.
+#' 
+#' @name 
+#' ref_acc_indices_h
+#' 
+#' @description 
+#' \code{acc_indices_h} Takes in outputs from [PartInvMulti_we()] 
+#' and returns two restructured data frames with the selection accuracy indices  
+#' for the reference and focal groups under the strict invariance and partial
+#' invariance conditions, and the corresponding h for the difference in the 
+#' selection accuracy indices between these two conditions for each group.
+
+#' @param strict_output [PartInvMulti_we()]  output (a list) under strict 
+#'        invariance. 
+#' @param partial_output [PartInvMulti_we()] output (a list) under partial
+#'        invariance.
+#' @return A 8 x 3 dataframe with columns `strict invariance`, 
+#'        `partial invariance`, and `h`.
+
+acc_indices_h <- function(strict_output, partial_output) {
+  r_names <- c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
+  
+  ref_par_strict <- partial_output$summary[1][, 1]
+  ref_strict <- strict_output$summary[1][, 1]
+  
+  df_ref <- data.frame(strict_invariance =  ref_strict, 
+                   partial_invariance = ref_par_strict, row.names = r_names)
+  df_ref["h"] <- round(cohens_h(df_ref$strict_invariance, df_ref$partial_invariance), 3)
+  
+  f_par_strict <- partial_output$summary[2][, 1]
+  f_strict <- strict_output$summary[2][, 1]
+  df_f <- data.frame(strict_invariance =  f_strict, 
+                       partial_invariance = f_par_strict, row.names = r_names)
+  df_f["h"] <- round(cohens_h(df_f$strict_invariance, df_f$partial_invariance), 3)
+  return(list("Reference accuracy" = df_ref, "Focal accuracy" = df_f))
 }

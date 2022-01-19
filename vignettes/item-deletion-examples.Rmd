@@ -43,31 +43,32 @@ ex1_output <- item_deletion_h(weights_item = c(1, 1, 1,  1),
                               return_all_outputs = TRUE, pmix_ref = 5/7)
 ```
 
-[HL]: # (I used `` instead of **** for R objects.)
-[HL]: # (Also, the `SR_SE_SP` seems too long. Can we call it `sai` for selection accuracy indices? I used that in some papers.)
-[HL]: # (I think we can directly use the italic h instead of text h. For indices that you're going to use repeatedly, maybe define a LaTeX macro.)
+[HL]: # (I used `` instead of **** for R objects.) [?]
+[HL]: # (Also, the `SR_SE_SP` seems too long. Can we call it `sai` for selection accuracy indices? I used that in some papers.) [DONE]
+[HL]: # (I think we can directly use the italic h instead of text h. [DONE] 
+For indices that you're going to use repeatedly, maybe define a LaTeX macro.) [to-do]
 
-`h_overall_SR_SE_SP_par` is a list containing effect sizes showing the change in
+`h_overall_sai_par` is a list containing effect sizes showing the change in
 an accuracy index under partial invariance for the full item set vs. when one 
 item is deleted, under partial invariance. 
 'Overall' refers to the weighting of accuracy indices for the focal and reference 
 groups by the group proportions to arrive at a weighted average for each index.
 
 
-$$\text{h}_{\text{SR}}^{(-i)} = 2\arcsin(\sqrt{\text{SR}^\text{full}})-2\arcsin(\sqrt{\text{SR}^{(-i)}})$$
+$$h_{\text{SR}}^{(-i)} = 2\arcsin(\sqrt{\text{SR}^\text{full}})-2\arcsin(\sqrt{\text{SR}^{(-i)}})$$
 ```{r}
 # HL: Maybe show all four as all of them are discussed below?
-knitr::kable(ex1_output$h_overall_SR_SE_SP_par)
+knitr::kable(ex1_output$h_overall_sai_par)
 ```
-For the 4-item CES-D scale, the negative $\text{h}_{\text{SR}}^{(-1)}$,
-$\text{h}_{\text{SE}}^{(-1)}$, and $\text{h}_{\text{SP}}^{(-1)}$ values 
+For the 4-item CES-D scale, the negative $h_{\text{SR}}^{(-1)}$,
+$h_{\text{SE}}^{(-1)}$, and $h_{\text{SP}}^{(-1)}$ values 
 indicate that removing the first item would lead to an improvement in success ratio, 
 sensitivity, and specificity as the reduced set of items led to a larger
 SR, SE, SP. Removing any of the other items would harm SR, SE, SP (indicated by the
 positive h values). For instance, SR when item 2 is removed must be lower than
-SR for the full item set for a positive $\text{h}_{\text{SR}}^{(-2)}$ to be 
-computed. Then, a negative **h_overall_SR_SE_SP_par** indicates an improvement 
-in performance whereas a positive **h_overall_SR_SE_SP_par** indicates a deterioration
+SR for the full item set for a positive $h_{\text{SR}}^{(-2)}$ to be 
+computed. Then, a negative **h_overall_sai_par** indicates an improvement 
+in performance whereas a positive **h_overall_sai_par** indicates a deterioration
 in performance.
 
 [HL]: # (We can call the following 'bias'. It'd be helpful to discuss the 'full' column first.)
@@ -78,19 +79,19 @@ followed the same distribution as the reference group under partial invariance.
 
 [HL]: # (Maybe we just call it $h_{\Delta\text{PS}, F}$)
 
-$$\text{h}_{{\text{PS}}^{(\text{full})}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(\text{full})}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(\text{full})}})$$
-$$\text{h}_{{\text{PS}}^{(-i)}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(-i)}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(-i)}})$$
+$$h_{{\text{PS}}^{(\text{full})}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(\text{full})}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(\text{full})}})$$
+$$h_{{\text{PS}}^{(-i)}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(-i)}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(-i)}})$$
 ```{r }
 knitr::kable(ex1_output$h_R_vs_Ef_par)
 ```
 
-The 0 values for $\text{h}_{{\text{PS}}^{(-1)}_{\text{ref_Ef}}}$,$\text{h}_{{\text{SR}}^{(-1)}_\text{ref_Ef}}$,
-$\text{h}_{{\text{SE}}^{(-1)}_\text{ref_Ef}}$, $\text{h}_{{\text{SP}}^{(-1)}_\text{ref_Ef}}$ indicate that 
+The 0 values for $h_{{\text{PS}}^{(-1)}_{\text{ref_Ef}}}$,$h_{{\text{SR}}^{(-1)}_\text{ref_Ef}}$,
+$h_{{\text{SE}}^{(-1)}_\text{ref_Ef}}$, $h_{{\text{SP}}^{(-1)}_\text{ref_Ef}}$ indicate that 
 if we delete the first item, the accuracy indices for the Efocal group under
 partial invariance will be equal to that of the reference group under partial 
 invariance, *thus removing bias*. 
 
-For the full set of items, we see that $\text{h}_{{\text{PS}}^{(\text{full})}_\text{Efocal}}=0.203$, suggesting that if 
+For the full set of items, we see that $h_{{\text{PS}}^{(\text{full})}_\text{Efocal}}=0.203$, suggesting that if 
 the focal group followed the same distribution as the reference group, the effect
 size of the difference between the proportion selected the accuracy indices for
 Efocal and the reference group would be 0.203. This means that the proportion
@@ -120,25 +121,27 @@ indicates that seeing a positive delta h in PS is an indication that that item
 should be removed. We see the opposite patterns for item 1 vs. items 2-4 where 
 removing any of item 2, 3, or 4 would harm the accuracy indices.
 
-[HL]: # (For the following, should we also do the values for the focal group as well?)
+[HL]: # (For the following, should we also do the values for the focal group as well?) [DONE]
 
-**h_str_vs_par_ref** compares accuracy indices for the reference group under 
-strict vs. partial invariance for a given set of items (full, one item deleted).
+**h_str_vs_par_ref** and **h_str_vs_par_focal** compare accuracy indices for the
+reference and focal groups under strict vs. partial invariance for a given set 
+of items (full, one item deleted).
 
-$$\text{h}_{{\text{PS}}^{(\text{full})}_\text{str_par}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{str}}^{(\text{full})}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{par}}^{(\text{full})}})$$
-$$\text{h}_{{\text{PS}}^{(-i)}_\text{str_par}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{str}}^{(-i)}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{par}}^{(-i)}})$$
+$$h_{{\text{PS}}^{(\text{full})}_\text{str_par}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{str}}^{(\text{full})}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{par}}^{(\text{full})}})$$
+$$h_{{\text{PS}}^{(-i)}_\text{str_par}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{str}}^{(-i)}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{par}}^{(-i)}})$$
 
 ```{r }
 ex1_output$h_str_vs_par_ref
+ex1_output$h_str_vs_par_focal
 ```
-$\text{h}_{{\text{PS}}^{(\text{full})}_\text{str_par}}=-0.040$ indicates that 
+$h_{{\text{PS}}^{(\text{full})}_\text{str_par}}=-0.040$ indicates that 
 PS was slightly higher under partial invariance compared to under strict 
 invariance for the full item set and when any of items 2-4 was deleted. Deleting
 item 1 brought the effect size of the difference between strict and partial invariance conditions to 0 for all accuracy indices.
 
-**delta_h_str_vs_par_ref**
+**delta_h_str_vs_par_ref**, **delta_h_str_vs_par_focal**
 
-Here, the comparison is between h values for the full item set vs. h when item i is deleted. These h values correspond to the comparison between accuracy indices under strict vs. partial invariance, for the reference group. 
+Here, the comparison is between h values for the full item set vs. h when item i is deleted. These h values correspond to the comparison between accuracy indices under strict vs. partial invariance, for the reference and focal groups. 
 
 $$\Delta h_{\text{PS}_\text{str_par}^{(-i)}=} \text{sign}(h_{\text{PS}^{\text{full}}_\text{str_par}} - h_{\text{PS}^{(-i)}_\text{str_par}})||h_{\text{PS}^{(-i)}_\text{str_par}}|-|h_{\text{PS}^{\text{full}}_\text{str_par}}||$$
 ```{r }
@@ -181,20 +184,20 @@ ex2_output <- item_deletion_h(weights_item = c(1, 1, 1, 1, 1, 1, 1, 1),
                              return_all_outputs = TRUE, pmix_ref = 0.5)
 ```
 
-**h_overall_SR_SE_SP_par**
-$$\text{h}_{{\text{SR}}^{(-i)}} = 2\text{arcsin}(\sqrt{\text{SR}^\text{full}})-2\text{arcsin}(\sqrt{\text{SR}^{(-i)}})$$
+**h_overall_sai_par**
+$$h_{{\text{SR}}^{(-i)}} = 2\text{arcsin}(\sqrt{\text{SR}^\text{full}})-2\text{arcsin}(\sqrt{\text{SR}^{(-i)}})$$
 
 ```{r}
-ex2_output$h_overall_SR_SE_SP_par
+ex2_output$h_overall_sai_par
 ```
 
-The positive h values in h_overall_SR_SE_SP_par suggest that no item should be 
+The positive h values in h_overall_sai_par suggest that no item should be 
 dropped, as dropping any of the items would lead to a lower success ratio, lower
 sensitivity, and lower specificity.
 
 **h_R_vs_Ef_par**
-$$\text{h}_{{\text{PS}}^{(\text{full})}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(\text{full})}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(\text{full})}})$$
-$$\text{h}_{{\text{PS}}^{(-i)}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(-i)}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(-i)}})$$
+$$h_{{\text{PS}}^{(\text{full})}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(\text{full})}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(\text{full})}})$$
+$$h_{{\text{PS}}^{(-i)}_\text{ref_Ef}} = 2\text{arcsin}(\sqrt{\text{PS}_{\text{ref}}^{(-i)}})-2\text{arcsin}(\sqrt{\text{PS}_{\text{Efocal}}^{(-i)}})$$
 ```{r }
 ex2_output$h_R_vs_Ef_par
 ```
@@ -202,7 +205,7 @@ ex2_output$h_R_vs_Ef_par
 If the focal group followed the same distribution as the reference group, a larger
 proportion would be selected for the focal group compared to the reference group 
 (indicated by the negative PS) when all items are used. If any one item is dropped
-there would be an increase in PS for the reference group, leading to a positive $\text{h}_{{\text{PS}}^{(-i)}_\text{ref_Ef}}$.
+there would be an increase in PS for the reference group, leading to a positive $h_{{\text{PS}}^{(-i)}_\text{ref_Ef}}$.
 
 ```{r }
 ex2_output$delta_h_R_vs_Ef_par
@@ -211,6 +214,7 @@ ex2_output$delta_h_R_vs_Ef_par
 
 ```{r }
 ex2_output$h_str_vs_par_ref
+ex2_output$h_str_vs_par_focal
 ```
 
 A greater proportion is selected under strict invariance compared to partial 
@@ -283,10 +287,10 @@ ex3_output <- item_deletion_h(cut_z=2.509731,
 ```
 
 ```{r}
-ex3_output$h_overall_SR_SE_SP_par
+ex3_output$h_overall_sai_par
 ```
 
-Looking at **h_overall_SR_SE_SP_par**, we see that dropping item 1 would lead to
+Looking at **h_overall_sai_par**, we see that dropping item 1 would lead to
 a marginal improvement in SR and SP, while SE would be unaffected. We see a similar
 pattern with item 18. 
 
@@ -307,10 +311,12 @@ PS is positive.
 
 ```{r}
 ex3_output$h_str_vs_par_ref
+ex3_output$h_str_vs_par_focal
 ```
 
 ```{r}
 ex3_output$delta_h_str_vs_par_ref
+ex3_output$delta_h_str_vs_par_focal
 ```
 
 
