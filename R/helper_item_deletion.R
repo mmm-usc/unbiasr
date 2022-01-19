@@ -202,11 +202,11 @@ ref_acc_indices_h <- function(strict_output, partial_output) {
 }
 
 #' @title 
-#' Selection accuracy indices for the reference group, and Cohen's h for their
-#' difference under strict vs. partial invariance.
+#' Selection accuracy indices for the reference and focal groups, and Cohen's h
+#' for the difference under strict vs. partial invariance for each group.
 #' 
 #' @name 
-#' ref_acc_indices_h
+#' acc_indices_h
 #' 
 #' @description 
 #' \code{acc_indices_h} Takes in outputs from [PartInvMulti_we()] 
