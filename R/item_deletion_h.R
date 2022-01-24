@@ -49,69 +49,76 @@
 #'        populations have equal size)
 #' @param plot_contour Logical; whether the contour of the two populations 
 #'        should be plotted; default to `TRUE`.
-#' @param return_all_outputs Logical; whether the outputs from each call 
-#'        of [PartInv_Multi_we()] should also be returned as part of the
+#' @param return_detailed Logical; whether additional data frames should be r
 #'        returned object; default to `FALSE`. If 
-#'        \code{return_all_outputs == FALSE}, returns a list of the following 
-#'        elements: `h_overall_sai_par`, `delta_h_R_vs_Ef_par`, 
-#'        `delta_h_str_vs_par_ref`,  `delta_h_str_vs_par_focal`, `h_str_vs_par_ref`.
-#' @return A list with 4 elements if \code{return_all_outputs==FALSE}, a list 
-#'         with 12 elements if \code{return_all_outputs==TRUE}.  To access the 
-#'         accuracy indices or Cohen's h values for a specific set
-#'        of items, specify `'...$h(full)'` for the full set of items or 
-#'        `'...$h(-i)'` for the set of items without item i. 
-#'        \item{h_overall_sai_par}{A (3 x number of items) data frame that 
+#'        \code{return_detailed == FALSE}, returns a list of length 3 with the 
+#'        elements: `h_overall_sai.par` (a data frame), `delta_h` (a list), `h`
+#'        (a list). If set to `TRUE`, returns `raw` as an additional element.
+#' @param also_return_PartInvMulti Logical; whether the outputs from each call 
+#'        of [PartInv_Multi_we()] should also be returned; default to `FALSE`.
+#'        If \code{return_detailed == FALSE} but
+#'        \code{also_return_PartInvMulti == TRUE}, proceeds as if 
+#'        \code{return_detailed == TRUE}.
+#' @return A list with 3 elements if \code{return_detailed == FALSE}, 4 elements
+#'         if \code{return_detailed == TRUE}.
+#'        \item{h_overall_sai.par}{A (3 x number of items) data frame that 
 #'          stores Cohen's h values for the comparison between overall SR, SE, 
 #'          SP under partial invariance for the full item set vs. overall SR, 
 #'          SE, SP under partial invariance when item i is deleted. 'Overall'
 #'          refers to the weighting of the accuracy indices for focal and 
 #'          reference group proportions.}
-#'        \item{delta_h_R_vs_Ef_par}{A (8 x number of items) data frame that 
-#'          stores the Cohen's h effect size for the change in `h_R_vs_Ef_par` 
-#'          when the full item set is included vs. `h_R_vs_Ef_par` when item i 
+#'        \item{delta_h}{A list of length 2 with elements `h_R_vs_Ef.par` and 
+#'        `h_str_vs_par`, which stores `ref` and `foc`. }
+#'        \item{delta_h$h_R_vs_Ef.par}{A (8 x number of items) data frame that 
+#'          stores the Cohen's h effect size for the change in `h$R_vs_Ef_par` 
+#'          when the full item set is included vs. `h$R_vs_Ef_par` when item i 
 #'          is deleted.} 
-#'        \item{delta_h_str_vs_par_ref}{A (8 x number of items) data frame that 
-#'          stores the Cohen's h effect size for the change in `h_str_vs_par_ref`
-#'          when the full item set is included vs. `h_str_vs_par_ref` when item i 
-#'          is deleted.}
-#'        \item{delta_h_str_vs_par_focal}{A (8 x number of items) data frame that 
-#'          stores the Cohen's h effect size for the change in `h_str_vs_par_focal`
-#'          when the full item set is included vs. `h_str_vs_par_focal` when item i 
-#'          is deleted.}
-#'        \item{h_str_vs_par_ref}{A (8 x (number of items + 1)) data frame that 
-#'          stores Cohen's h values for the comparison between accuracy indices 
-#'          for the reference group under strict vs. partial invariance, for a
-#'          given set of items.}
-#'        \item{h_str_vs_par_f}{A (8 x (number of items + 1)) data frame that 
-#'          stores Cohen's h values for the comparison between accuracy indices 
-#'          for the focal group under strict vs. partial invariance, for a
-#'          given set of items.}
-#'        \item{h_R_vs_Ef_par}{A (8 x (number of items + 1)) data frame that 
+#'        \item{delta_h$h_str_vs_par$ref}{A (8 x number of items) data frame that 
+#'          stores the Cohen's h effect size for the change in `h$str_vs_par$ref`
+#'          when the full item set is included vs. `h$str_vs_par$ref` when item i 
+#'          is deleted, i.e., the impact of deleting an item on the h values 
+#'          comparing performance under strict invariance vs. under partial
+#'          invariance, for the reference group.}
+#'        \item{delta_h$h_str_vs_par$foc}{A (8 x number of items) data frame that 
+#'          stores the Cohen's h effect size for the change in `h$str_vs_par$foc`
+#'          when the full item set is included vs. `raw$h_str_vs_par_list$foc` 
+#'          when item i is deleted.}
+#'        \item{h}{A list of length 2 storing `R_vs_ef.par` and `str_vs_par`, 
+#'          which stores `ref` and `foc`.}
+#'        \item{h$R_vs_Ef.par}{A (8 x (number of items + 1)) data frame that 
 #'          stores Cohen's h values for the comparison between accuracy indices 
 #'          for the reference group vs. the expected accuracy indices for the 
 #'          focal group if it followed the same distribution as the reference 
 #'          group, under partial invariance, for a given set of items.}
-#'        \item{overall_sai_par}{A (3 x number of items + 1) data frame 
+#'        \item{h$str_vs_par$ref}{A (8 x (number of items + 1)) data frame that 
+#'          stores Cohen's h values for the comparison between accuracy indices 
+#'          for the reference group under strict vs. partial invariance, for a
+#'          given set of items.}
+#'        \item{h$str_vs_par$foc}{A (8 x (number of items + 1)) data frame that 
+#'          stores Cohen's h values for the comparison between accuracy indices 
+#'          for the focal group under strict vs. partial invariance, for a
+#'          given set of items.}
+#'        \item{raw}{A list of length 3 containing `overall_sai.par`, 
+#'        `h_str_vs_par_list`, and `PartInvMulti`.}
+#'        \item{raw$overall_sai.par}{A (3 x number of items + 1) data frame 
 #'          containing overall SR, SE, SP values under partial invariance. 
 #'          'Overall' refers to the weighting of the accuracy indices for focal 
 #'          and reference group proportions.}
-#'        \item{h_str_vs_par_ref_list}{A list of length (number of items + 1). 
+#'        \item{raw$h_str_vs_par_list$ref}{A list of length (number of items + 1). 
 #'          Each item in the list is a (8 x 3) data frame with rows for accuracy 
 #'          indices and columns `strict_invariance`, `partial_invariance`, and 
 #'          `h`. Here, h is the Cohen's h effect size for the comparison between 
 #'          the accuracy indices under strict vs. partial invariance for a given
-#'          set of items for thereference group.}
-#'        \item{h_str_vs_par_focal_list}{A list of length (number of items + 1). 
+#'          set of items for the reference group.}
+#'        \item{raw$h_str_vs_par_list$focal}{A list of length (number of items + 1). 
 #'          Each item in the list is a (8 x 3) data frame with rows for accuracy 
 #'          indices and columns `strict_invariance`, `partial_invariance`, and 
 #'          `h`. Here, h is the Cohen's h effect size for the comparison between 
 #'          the accuracy indices under strict vs. partial invariance for a given
 #'          set of items for the focal group.}
-#'        \item{strict_results}{A list of length (number of items + 1)  
-#'          containing outputs from [PartInvMulti_we()] under strict invariance.}
-#'        \item{partial_results}{A list of length (number of items + 1) 
-#'          containing outputs from [PartInvMulti_we()] under partial invariance. 
-#'          containing outputs from [PartInvMulti_we()] under partial invariance.} 
+#'        \item{raw$PartInvMulti}{A list containing `strict` and `partial`, the
+#'         function outputs for each call to [PartInvMulti_we()] under strict 
+#'         invariance and partial invariance respectively.}
 #'         
 #' @examples
 #' # Multidimensional example 
@@ -130,13 +137,15 @@
 #'                              theta_r_p = diag(1, 5),
 #'                              theta_f_p = c(1, .95, .80, .75, 1),
 #'                              plot_contour = TRUE,
-#'                              return_all_outputs = TRUE)
-#' multi_dim$h_overall_sai_par
-#' multi_dim$delta_h_R_vs_Ef_par
-#' multi_dim$delta_h_str_vs_par_ref
-#' multi_dim$h_str_vs_par_ref$`h(full)`
-#' multi_dim$h_str_vs_par_ref$`h(-1)`
-#' multi_dim$partial_results$`h(full)`
+#'                              return_detailed = TRUE,
+#'                              also_return_PartInvMulti = TRUE)
+#' multi_dim$h_overall_sai.par
+#' multi_dim$delta_h$R_vs_Ef.par
+#' multi_dim$delta_h$str_vs_par$ref
+#' multi_dim$h$str_vs_par$ref$`h(s, p; I)`
+#' multi_dim$h$str_vs_par$ref$`h(s, p; I-i1)`
+#' multi_dim$raw$PartInvMulti$strict$`I`
+#' multi_dim$raw$PartInvMulti$strict$`I-i2`
 #' 
 #' # Single dimension examples
 #' single_dim <- item_deletion_h(propsel = .10,
@@ -150,13 +159,15 @@
 #'                                nu_f_p = c(.225, -.05, .240, -.025),
 #'                                theta_r_p = diag(.96, 4),
 #'                                n_dim = 1, plot_contour = TRUE,
-#'                                return_all_outputs = TRUE)
-#' single_dim$h_overall_sai_par
-#' single_dim$delta_h_R_vs_Ef_par
-#' single_dim$delta_h_str_vs_par_ref
-#' single_dim$h_str_vs_par_ref$`h(full)`
-#' single_dim$h_str_vs_par_ref$`h(-1)`
-#' single_dim$partial_results$`h(full)` 
+#'                                return_detailed = TRUE,
+#'                                also_return_PartInvMulti = TRUE)
+#' single_dim$h_overall_sai.par
+#' single_dim$delta_h$R_vs_Ef.par
+#' single_dim$delta_h$str_vs_par$ref
+#' single_dim$h$str_vs_par$ref$`h(s, p; I)`
+#' single_dim$h$str_vs_par$ref$`h(s, p; I-i1)`
+#' single_dim$raw$PartInvMulti$strict$`I`
+#' single_dim$raw$PartInvMulti$strict$`I-i2`
 #' @export
 item_deletion_h <- function(propsel, cut_z = NULL, 
                             weights_item, 
@@ -170,18 +181,18 @@ item_deletion_h <- function(propsel, cut_z = NULL,
                             theta_r_p, theta_f_p = theta_r_p,
                             pmix_ref = 0.5, 
                             plot_contour = TRUE,
-                            return_all_outputs = FALSE,
+                            return_detailed = FALSE,
+                            also_return_PartInvMulti_outputs = FALSE,
                             ...) {
   
   # Start with pre-allocating space:
   n_items <- length(weights_item)
-  store_str <- store_par <- h_str_vs_par_ref_list <- 
-    h_str_vs_par_f_list <- vector(mode = "list", n_items + 1)
-  delta_h_str_vs_par_ref <- delta_h_str_vs_par_f <- 
+  store_str <- store_par <- h_str_vs_par_ref_list <- h_str_vs_par_f_list <- 
+    vector(mode = "list", n_items + 1)
+  delta_h_str_vs_par_ref <- delta_h_str_vs_par_f <- h_R_Ef_del <- 
+    h_str_vs_par_ref_del <-  h_str_vs_par_f_del <- delta_h_R_vs_Ef_par <- 
     as.data.frame(matrix(nrow = 8, ncol = n_items))
   h_R_Ef_full <- h_str_vs_par_ref_full <- h_str_vs_par_f_full <- c()
-  h_R_Ef_del <- h_str_vs_par_ref_del <-  h_str_vs_par_f_del <- 
-    delta_h_R_vs_Ef_par <- as.data.frame(matrix(nrow = 8, ncol = n_items))
   h_overall_sai_par <- overall3_par_del1 <- 
     as.data.frame(matrix(nrow = 3, ncol = n_items)) 
   
@@ -286,7 +297,6 @@ item_deletion_h <- function(propsel, cut_z = NULL,
     h_str_vs_par_ref_del[i - 1] <- h_str_vs_par_ref_list[[i]]$h
     h_str_vs_par_f_del[i - 1] <- h_str_vs_par_f_list[[i]]$h
     
-    
     # Compute the change in Cohen's h comparing accuracy indices for the 
     # reference and focal groups under strict vs. partial invariance when item i
     # is deleted i.e. the change in h_str_vs_par_ref and h_str_vs_par_f
@@ -319,48 +329,72 @@ item_deletion_h <- function(propsel, cut_z = NULL,
   
   # Format stored variables
   h_R_Ef <- as.data.frame(cbind(round(h_R_Ef_full, 3), h_R_Ef_del))
+  names(h_R_Ef) <- c("h(r, Ef; I)", paste0(paste0("h(r, Ef; I-i"),
+                                             c(1:n_items), c(")")))
+    
   h_str_vs_par_ref <- as.data.frame(cbind(round(h_str_vs_par_ref_full, 3), 
                                           h_str_vs_par_ref_del))
   h_str_vs_par_f <- as.data.frame(cbind(round(h_str_vs_par_f_full, 3), 
-                                          h_str_vs_par_f_del))
-  overall_sai_par <- as.data.frame(cbind(round(overall3_par_full, 3),
-                                          round(overall3_par_del1, 3)))
-  h_overall_sai_par <- as.data.frame(round(h_overall_sai_par, 3))
+                                        h_str_vs_par_f_del))
   
-  colnames <- c("h(full)", paste0(rep(paste0("h(-")), c(1:n_items), c(rep(")"))))
-  names(store_str) <- names(store_par) <- names(h_str_vs_par_ref_list) <-
-    names(h_str_vs_par_f_list) <- names(h_R_Ef) <- names(h_str_vs_par_ref) <-
-    names(h_str_vs_par_f) <- names(overall_sai_par) <- colnames
+  overall_sai_par <- as.data.frame(round(cbind(overall3_par_full, 
+                                               overall3_par_del1), 3))
+   
+  h_overall_sai_par <- as.data.frame(round(h_overall_sai_par, 3))
+  names(h_overall_sai_par) <- paste0(paste0("h(I, I-i"), c(1:n_items), c(")"))
+  rownames(h_overall_sai_par) <- rownames(overall_sai_par) <- c("SR", "SE", "SP")
+  
+  names(h_str_vs_par_ref) <- names(h_str_vs_par_f) <- c("h(s, p; I)", 
+      paste0(paste0("h(s, p; I-i"), c(1:n_items), c(")")))
+  
+  names(overall_sai_par) <- names(store_str) <- names(store_par) <- 
+    names(h_str_vs_par_ref_list) <- names(h_str_vs_par_f_list) <- 
+    c("I", paste0(paste0("I-i"), c(1:n_items)))
+    
   names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_f) <- 
     names(delta_h_R_vs_Ef_par) <- 
-    paste0(rep(paste0('\u0394', "h(-")), c(1:n_items), c(rep(")")))
-  names(h_overall_sai_par) <- 
-    paste0(rep(paste0("h(-")), c(1:n_items), c(rep(")")))
+    paste0(paste0('\u0394', "h(I, I-i"), c(1:n_items), c(")"))
+  
   rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_f) <-
     rownames(h_R_Ef) <- rownames(delta_h_R_vs_Ef_par) <- 
     rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_f) <-
-    c("TP","FP","TN","FN", "PS", "SR", "SE", "SP")
-  rownames(h_overall_sai_par) <- rownames(overall_sai_par) <- 
-    c("SR", "SE", "SP")
+    c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
   
-  if (return_all_outputs == TRUE) {
-    return(list("h_overall_sai_par" = h_overall_sai_par,
-                "delta_h_R_vs_Ef_par" = delta_h_R_vs_Ef_par,
-                "delta_h_str_vs_par_ref" = delta_h_str_vs_par_ref, 
-                "delta_h_str_vs_par_focal" = delta_h_str_vs_par_f, 
-                "h_str_vs_par_ref" = h_str_vs_par_ref,
-                "h_str_vs_par_focal" = h_str_vs_par_f,
-                "overall_sai_par" = overall_sai_par,
-                "h_R_vs_Ef_par" = h_R_Ef,
-                "h_str_vs_par_ref_list" = h_str_vs_par_ref_list,
-                "h_str_vs_par_focal_list" = h_str_vs_par_f_list,
-                "strict_results" = store_str, 
-                "partial_results" = store_par))
+  delta_h_str_vs_par <- list("ref" = delta_h_str_vs_par_ref, 
+                             "foc" = delta_h_str_vs_par_f)
+  
+  h_str_vs_par <- list("ref"= h_str_vs_par_ref, "foc" = h_str_vs_par_f)
+  h_str_vs_par_list <- list("ref" = h_str_vs_par_ref_list,
+                            "foc" = h_str_vs_par_f_list)
+
+  if (return_detailed == TRUE | 
+      (also_return_PartInvMulti_outputs == TRUE & return_detailed == FALSE)) {
+    # The condition above is to catch any function calls where the user asks
+    # the PartInvMulti outputs but leaves return_detailed as FALSE. PartInvMulti
+    # outputs will only be printed in conjunction with other elements of `raw`.
+    if(also_return_PartInvMulti_outputs == TRUE) {
+      return(list("h_overall_sai.par" = h_overall_sai_par,
+                  "delta_h" = list("h_R_vs_Ef.par" = delta_h_R_vs_Ef_par,
+                                   "h_str_vs_par" = delta_h_str_vs_par), 
+                  "h" = list("R_vs_Ef.par" = h_R_Ef,
+                             "str_vs_par"= h_str_vs_par),
+                  "raw" = list("overall_sai.par" = overall_sai_par,
+                               "h_str_vs_par_list" = h_str_vs_par_list,
+                               "PartInvMulti" = list("strict" = store_str, 
+                                                     "partial" = store_par))))
+    }
+    return(list("h_overall_sai.par" = h_overall_sai_par,
+                "delta_h" = list("h_R_vs_Ef.par" = delta_h_R_vs_Ef_par,
+                                 "h_str_vs_par" = delta_h_str_vs_par), 
+                "h" = list("R_vs_Ef.par" = h_R_Ef,
+                           "str_vs_par"= h_str_vs_par),
+                "raw" = list("overall_sai.par" = overall_sai_par,
+                             "h_str_vs_par_list" = h_str_vs_par_list)))
   } else {
-    return(list("h_overall_sai_par" = h_overall_sai_par,
-                "delta_h_R_vs_Ef_par" = delta_h_R_vs_Ef_par,
-                "delta_h_str_vs_par_ref" = delta_h_str_vs_par_ref, 
-                "delta_h_str_vs_par_focal" = delta_h_str_vs_par_f, 
-                "h_str_vs_par_ref" = h_str_vs_par_ref))
+    return(list("h_overall_sai.par" = h_overall_sai_par,
+                "delta_h" = list("h_R_vs_Ef.par" = delta_h_R_vs_Ef_par,
+                                 "h_str_vs_par" = delta_h_str_vs_par), 
+                "h" = list("R_vs_Ef.par" = h_R_Ef, 
+                           "str_vs_par"= h_str_vs_par)))
   }
 }

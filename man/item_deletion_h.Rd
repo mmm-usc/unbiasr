@@ -23,7 +23,8 @@ item_deletion_h(
   theta_f_p = theta_r_p,
   pmix_ref = 0.5,
   plot_contour = TRUE,
-  return_all_outputs = FALSE,
+  return_detailed = FALSE,
+  also_return_PartInvMulti_outputs = FALSE,
   ...
 )
 }
@@ -83,56 +84,79 @@ populations have equal size)}
 \item{plot_contour}{Logical; whether the contour of the two populations
 should be plotted; default to \code{TRUE}.}
 
-\item{return_all_outputs}{Logical; whether the outputs from each call
-of \code{\link[=PartInv_Multi_we]{PartInv_Multi_we()}} should also be returned as part of the
+\item{return_detailed}{Logical; whether additional data frames should be r
 returned object; default to \code{FALSE}. If
-\code{return_all_outputs == FALSE}, returns a list of the following
-elements: \code{h_overall_SR_SE_SP_par}, \code{delta_h_R_vs_Ef_par},
-\code{delta_h_str_vs_par_ref}, \code{h_str_vs_par_ref}.}
+\code{return_detailed == FALSE}, returns a list of length 3 with the
+elements: \code{h_overall_sai.par} (a data frame), \code{delta_h} (a list), \code{h}
+(a list). If set to \code{TRUE}, returns \code{raw} as an additional element.}
+
+\item{also_return_PartInvMulti}{Logical; whether the outputs from each call
+of \code{\link[=PartInv_Multi_we]{PartInv_Multi_we()}} should also be returned; default to \code{FALSE}.
+If \code{return_detailed == FALSE} but
+\code{also_return_PartInvMulti == TRUE}, proceeds as if
+\code{return_detailed == TRUE}.}
 }
 \value{
-A list with 4 elements if \code{return_all_outputs==FALSE}, a list
-with 9 elements if \code{return_all_outputs==TRUE}.  To access the accuracy indices or Cohen's h values for a specific set
-of items, specify \code{'...$h(full)'} for the full set of items or
-\code{'...$h(-i)'} for the set of items without item i.
-\item{h_overall_SR_SE_SP_par}{A (3 x number of items) data frame that
+A list with 3 elements if \code{return_detailed == FALSE}, 4 elements
+if \code{return_detailed == TRUE}.
+\item{h_overall_sai.par}{A (3 x number of items) data frame that
 stores Cohen's h values for the comparison between overall SR, SE,
 SP under partial invariance for the full item set vs. overall SR,
 SE, SP under partial invariance when item i is deleted. 'Overall'
 refers to the weighting of the accuracy indices for focal and
 reference group proportions.}
-\item{delta_h_R_vs_Ef_par}{A (8 x number of items) data frame that
-stores the Cohen's h effect size for the change in \code{h_R_vs_Ef_par}
-when the full item set is included vs. \code{h_R_vs_Ef_par} when item i
+\item{delta_h}{A list of length 2 with elements \code{h_R_vs_Ef.par} and
+\code{h_str_vs_par}, which stores \code{ref} and \code{foc}. }
+\item{delta_h$h_R_vs_Ef.par}{A (8 x number of items) data frame that
+stores the Cohen's h effect size for the change in \code{h$R_vs_Ef_par}
+when the full item set is included vs. \code{h$R_vs_Ef_par} when item i
 is deleted.}
-\item{delta_h_str_vs_par_ref}{A (8 x number of items) data frame that
-stores the Cohen's h effect size for the change in \code{h_str_vs_par_ref}
-when the full item set is included vs. \code{h_str_vs_par_ref} when item i
-is deleted.}
-\item{h_str_vs_par_ref}{A (8 x (number of items + 1)) data frame that
-stores Cohen's h values for the comparison between accuracy indices
-for the reference group under strict vs. partial invariance, for a
-given set of items.}
-\item{h_R_vs_Ef_par}{A (8 x (number of items + 1)) data frame that
+\item{delta_h$h_str_vs_par$ref}{A (8 x number of items) data frame that
+stores the Cohen's h effect size for the change in \code{h$str_vs_par$ref}
+when the full item set is included vs. \code{h$str_vs_par$ref} when item i
+is deleted, i.e., the impact of deleting an item on the h values
+comparing performance under strict invariance vs. under partial
+invariance, for the reference group.}
+\item{delta_h$h_str_vs_par$foc}{A (8 x number of items) data frame that
+stores the Cohen's h effect size for the change in \code{h$str_vs_par$foc}
+when the full item set is included vs. \code{raw$h_str_vs_par_list$foc}
+when item i is deleted.}
+\item{h}{A list of length 2 storing \code{R_vs_ef.par} and \code{str_vs_par},
+which stores \code{ref} and \code{foc}.}
+\item{h$R_vs_Ef.par}{A (8 x (number of items + 1)) data frame that
 stores Cohen's h values for the comparison between accuracy indices
 for the reference group vs. the expected accuracy indices for the
 focal group if it followed the same distribution as the reference
 group, under partial invariance, for a given set of items.}
-\item{overall_SR_SE_SP_par}{A (3 x number of items + 1) data frame
+\item{h$str_vs_par$ref}{A (8 x (number of items + 1)) data frame that
+stores Cohen's h values for the comparison between accuracy indices
+for the reference group under strict vs. partial invariance, for a
+given set of items.}
+\item{h$str_vs_par$foc}{A (8 x (number of items + 1)) data frame that
+stores Cohen's h values for the comparison between accuracy indices
+for the focal group under strict vs. partial invariance, for a
+given set of items.}
+\item{raw}{A list of length 3 containing \code{overall_sai.par},
+\code{h_str_vs_par_list}, and \code{PartInvMulti}.}
+\item{raw$overall_sai.par}{A (3 x number of items + 1) data frame
 containing overall SR, SE, SP values under partial invariance.
 'Overall' refers to the weighting of the accuracy indices for focal
 and reference group proportions.}
-\item{h_str_vs_par_ref_list}{A list of length (number of items + 1).
+\item{raw$h_str_vs_par_list$ref}{A list of length (number of items + 1).
 Each item in the list is a (8 x 3) data frame with rows for accuracy
 indices and columns \code{strict_invariance}, \code{partial_invariance}, and
 \code{h}. Here, h is the Cohen's h effect size for the comparison between
 the accuracy indices under strict vs. partial invariance for a given
-set of items.}
-\item{strict_results}{A list of length (number of items + 1)
-containing outputs from \code{\link[=PartInvMulti_we]{PartInvMulti_we()}} under strict invariance.}
-\item{partial_results}{A list of length (number of items + 1)
-containing outputs from \code{\link[=PartInvMulti_we]{PartInvMulti_we()}} under partial invariance.
-containing outputs from \code{\link[=PartInvMulti_we]{PartInvMulti_we()}} under partial invariance.}
+set of items for the reference group.}
+\item{raw$h_str_vs_par_list$focal}{A list of length (number of items + 1).
+Each item in the list is a (8 x 3) data frame with rows for accuracy
+indices and columns \code{strict_invariance}, \code{partial_invariance}, and
+\code{h}. Here, h is the Cohen's h effect size for the comparison between
+the accuracy indices under strict vs. partial invariance for a given
+set of items for the focal group.}
+\item{raw$PartInvMulti}{A list containing \code{strict} and \code{partial}, the
+function outputs for each call to \code{\link[=PartInvMulti_we]{PartInvMulti_we()}} under strict
+invariance and partial invariance respectively.}
 }
 \description{
 \code{item_deletion_h} computes Cohen's h effect size for the impact of
@@ -159,13 +183,15 @@ multi_dim <- item_deletion_h(propsel = .05, n_dim = 5,
                              theta_r_p = diag(1, 5),
                              theta_f_p = c(1, .95, .80, .75, 1),
                              plot_contour = TRUE,
-                             return_all_outputs = TRUE)
-multi_dim$h_overall_SR_SE_SP_par
-multi_dim$delta_h_R_vs_Ef_par
-multi_dim$delta_h_str_vs_par_ref
-multi_dim$h_str_vs_par_ref$`h(full)`
-multi_dim$h_str_vs_par_ref$`h(-1)`
-multi_dim$partial_results$`h(full)`
+                             return_detailed = TRUE,
+                             also_return_PartInvMulti = TRUE)
+multi_dim$h_overall_sai.par
+multi_dim$delta_h$R_vs_Ef.par
+multi_dim$delta_h$str_vs_par$ref
+multi_dim$h$str_vs_par$ref$`h(s, p; I)`
+multi_dim$h$str_vs_par$ref$`h(s, p; I-i1)`
+multi_dim$raw$PartInvMulti$strict$`I`
+multi_dim$raw$PartInvMulti$strict$`I-i2`
 
 # Single dimension examples
 single_dim <- item_deletion_h(propsel = .10,
@@ -179,11 +205,13 @@ single_dim <- item_deletion_h(propsel = .10,
                                nu_f_p = c(.225, -.05, .240, -.025),
                                theta_r_p = diag(.96, 4),
                                n_dim = 1, plot_contour = TRUE,
-                               return_all_outputs = TRUE)
-single_dim$h_overall_SR_SE_SP_par
-single_dim$delta_h_R_vs_Ef_par
-single_dim$delta_h_str_vs_par_ref
-single_dim$h_str_vs_par_ref$`h(full)`
-single_dim$h_str_vs_par_ref$`h(-1)`
-single_dim$partial_results$`h(full)` 
+                               return_detailed = TRUE,
+                               also_return_PartInvMulti = TRUE)
+single_dim$h_overall_sai.par
+single_dim$delta_h$R_vs_Ef.par
+single_dim$delta_h$str_vs_par$ref
+single_dim$h$str_vs_par$ref$`h(s, p; I)`
+single_dim$h$str_vs_par$ref$`h(s, p; I-i1)`
+single_dim$raw$PartInvMulti$strict$`I`
+single_dim$raw$PartInvMulti$strict$`I-i2`
 }
