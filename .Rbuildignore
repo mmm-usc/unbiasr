@@ -3,3 +3,4 @@
 app.R
 ^doc$
 ^Meta$
+^LICENSE\.md$

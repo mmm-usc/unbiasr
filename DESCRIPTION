@@ -1,32 +1,37 @@
 Package: PartInvShinyUI
 Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+Version: 0.0.1
+Authors@R: c(
+    person("Clay", "Cantrell", , "clay.cantrell@me.com",
+            role = c("aut", "cre"), 
+           comment = c(ORCID = "0000-0002-2969-7089")),
+    person("Hok Chio (Mark)", "Lai", , "marklhc@gmail.com", 
+           role = c("aut"),
+           comment = c(ORCID = "0000-0002-9196-7406")),
+    person("Yichi", "Zhang", , "yzhang97@usc.edu",
+           role = c("aut"),
+           comment = c(ORCID = "0000-0002-4112-2106")),
+     person("Meltem", "Ozcan", , "ozcan@usc.edu",
+           role = c("aut"),
+           comment = c(ORCID = "0000-0002-5054-8264"))       
+    )
 Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Suggests: 
+    testthat,
+    shinytest,
+    rmarkdown,
+    knitr
 Imports: 
     mnormt,
-    pkgload,
-    rsconnect,
     shiny,
     shinydashboard,
     shinyjs,
     shinyMatrix,
-    shinytest,
-    testthat,
     shinyWidgets,
     roxygen2
-Suggests: 
-    rmarkdown,
-    knitr
 VignetteBuilder: knitr
