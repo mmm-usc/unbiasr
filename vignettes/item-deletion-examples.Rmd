@@ -30,38 +30,40 @@ library(lavaan)
 ### Proposed Notation
 
 Let $I$ denote the set of items in a k-element scale, $I = \{i_1, i_2,\ldots,i_k\}$.
-We can denote the set of items excluding a specific item 'k' as 
-$I-i_k$, e.g., if the third item $i_3$ is excluded, the remaining set of items 
-will be denoted by $I-i_3$. If referring to the $h$ or $\Delta h$ associated with
+We will denote the set of items excluding a specific item $i_k$ as 
+$(-k)$, e.g., if the third item $i_3$ is excluded, the remaining set of items 
+will be denoted by $(-3)$. If referring to the $h$ or $\Delta h$ associated with
 the removal of an item $i_k$, the operation $h(I,I-i_k)$ can be referred to as 
-$h^{-i_k}$ and $\Delta h(I,I-i_k)$ as $\Delta h^{-i_k}$. Accuracy indices will be
+$h^{(-k)}$ and $\Delta h(I,I-i_k))$ as $\Delta h^{(-k)}$. Accuracy indices will be
 referred to by the two letter acronym e.g., $\SE$, and 'overall' accuracy indices 
 will be denoted with a tilde over the two letter acronym, e.g., $\td{\SE}$, 
-$\td{\SR}$ etc. We can reserve the superscript for non-comparison attributes, e.g.,
-SE under partial invariance: $\SE^{\par}$, SE for item set $I-i_k$ for the reference 
-group: $\SE^{I-i_k;r}$, and reserve the subscript of the acronym to indicate that 
-the current operation (e.g., $\Delta h$) is being performed on h values. For instance,
-on Cohen's h values associated with the comparison between SAI under strict vs. partial invariance, for the reference group: $\SE_{\str,\par}^{r}$. We can use commas in 
-subscripts of acronyms to indicate the pair of groups/conditions compared, and semicolons
+$\td{\SR}$ etc. We can reserve the superscript for non-comparison attributes, 
+e.g., SE under partial invariance: $\SE^{\par}$, SE for item set $I-i_k$ for the 
+reference group: $\SE^{(-k);r}$, and reserve the subscript of the acronym to 
+indicate that the current operation (e.g., $\Delta h$) is being performed on h 
+values. For instance, on Cohen's h values associated with the comparison between
+SAI under strict vs. partial invariance, for the reference group: 
+$\SE_{\str,\par}^{r}$. We can use commas in subscripts of acronyms to indicate 
+the pair of groups/conditions compared, and semicolons
 in superscripts to conditions constant across the group/conditions being compared.
 The superscript of h or $\Delta h$ on the other hand refers to the current comparison.
 
 - `h_overall_sai.par`: Cohen's h effect size for the improvement/drop in overall
 SAI when item $i_k$ is removed (under partial invariance): e.g.,
-$h^{-i_k}(\td{\SE}^{\par})$ for performing the operation on SE under partial 
-invariance. The resulting h values: $h^{-i_k}_{\td{\SE}^{\par}}$.
+$h^{(-k)}(\td{\SE}^{\par})$ for performing the operation on SE under partial 
+invariance. The resulting h values: $h^{(-k)}_{\td{\SE}^{\par}}$.
 
 - `delta_h$h_R_vs_Ef.par`: Effect size of the change in `h$R_vs_Ef.par` when item
 `i_k` is dropped. `h$R_vs_Ef.par` is the Cohen's effect size for the comparison 
 in selection accuracy indices for the reference group vs. the focal group if it
 followed the same distribution as the reference group, for a given set of items 
-under partial invariance. We can denote this as, for SE, $\Delta h^{-i_k}(h_{\SE^{\par}_{r,Ef}})$.
+under partial invariance. We can denote this as, for SE, $\Delta h^{(-k)}(h_{\SE^{\par}_{r,Ef}})$.
 
 - `delta_h$h_str_vs_par.ref`: Effect size of the change in `h$str_vs_par$ref` 
 when item `i_k` is dropped. `h$str_vs_par$ref` refers to the Cohen's effect size
 for the comparison in selection accuracy indices under strict invariance vs. 
 partial invariance, for a given set of items for the reference group. We can 
-denote this as: $\Delta h^{-i_k}(h_{\SE^{r}_{\str,\par}})$.
+denote this as: $\Delta h^{(-k)}(h_{\SE^{r}_{\str,\par}})$.
 
 
 ## Example from Lai, Kwok, Yoon and Hsiao (2017) 
@@ -86,7 +88,7 @@ ex1 <- item_deletion_h(weights_item = c(1, 1, 1,  1),
                               weights_latent = 1,
                               plot_contour = FALSE,
                               return_detailed = FALSE,
-                              also_return_PartInvMulti_outputs = TRUE,
+                              also_return_PartInvMulti_outputs = FALSE,
                               pmix_ref = 5/7)
 ```
 
@@ -99,21 +101,21 @@ groups by the group proportions to arrive at a weighted average for each index.
 
 \[
 \begin{align*}
-h^{-i_k}(\td{\SR}^{\par}) &= 2\arcsin(\sqrt{\td{\SR}_{I}^{\par}})-2\arcsin(\sqrt{\td{\SR}^{\par}_{I-i_k}})\\
-&=h^{-i_k}_{\td{\SR}^{\par}}
+h^{(-k)}(\td{\SR}^{\par}) &= 2\arcsin(\sqrt{\td{\SR}^{\par}})-2\arcsin(\sqrt{\td{\SR}^{(-k);\par}})\\
+&=h^{(-k)}_{\td{\SR}^{\par}}
 \end{align*}
 \]
 ```{r}
 # HL: Maybe show all four as all of them are discussed below?
 knitr::kable(ex1$h_overall_sai.par)
 ```
-For the 4-item CES-D scale, the negative $h^{-i_1}_{\td{\SR}^{\par}}$,
-$h^{-i_1}_{\td{\SE}^{\par}}$, and $h^{-i_1}_{\td{\SP}^{\par}}$ values 
+For the 4-item CES-D scale, the negative $h^{(-i)}_{\td{\SR}^{\par}}$,
+$h^{(-1)}_{\td{\SE}^{\par}}$, and $h^{(-1)}_{\td{\SP}^{\par}}$ values 
 indicate that removing the first item would lead to an improvement in success ratio, 
 sensitivity, and specificity as the reduced set of items led to a larger
 SR, SE, SP. Removing any of the other items would harm SR, SE, SP (indicated by the
 positive h values). For instance, SR when item 2 is removed must be lower than
-SR for the full item set for a positive $h^{-i_2}_{\td{\SR}^{\par}}$ to be 
+SR for the full item set for a positive $h^{(-2)}_{\td{\SR}^{\par}}$ to be 
 computed. Then, a negative `h_overall_sai_par` indicates an improvement 
 in performance whereas a positive `h_overall_sai_par` indicates a deterioration
 in performance.
@@ -128,27 +130,27 @@ followed the same distribution as the reference group under partial invariance.
 
 \[
 \begin{align*}
-h^{r,Ef}(\PS^{\par;I}) &= 2\text{arcsin}(\sqrt{\PS^{\par;I}_r})-2\text{arcsin}(\sqrt{\PS^{\par;I}_{Ef}})\\
-&=h_{\PS^{\par;I}_{r,Ef}}
+h^{r,Ef}(\PS^{\par}) &= 2\text{arcsin}(\sqrt{\PS^{\par}_r})-2\text{arcsin}(\sqrt{\PS^{\par}_{Ef}})\\
+&=h_{\PS^{\par}_{r,Ef}}
 \end{align*}
 \]
 \[
 \begin{align*}
-h^{r,Ef}(\PS^{\par;I-i_k}) &= 2\text{arcsin}(\sqrt{\PS^{\par;I-i_k}_r})-2\text{arcsin}(\sqrt{\PS^{\par;I-i_k}_{Ef}})\\
-&=h_{\PS^{\par;I-i_k}_{r,Ef}}
+h^{r,Ef}(\PS^{(-k);\par}) &= 2\text{arcsin}(\sqrt{\PS^{(-k);\par}_r})-2\text{arcsin}(\sqrt{\PS^{(-k);\par}_{Ef}})\\
+&=h_{\PS^{(-k);\par}_{r,Ef}}
 \end{align*}
 \]
 ```{r }
 knitr::kable(ex1$h$R_vs_Ef.par)
 ```
 
-The 0 values for $h_{\PS^{\par;I-i_1}_{r,Ef}}$,$h_{\SR^{\par;I-i_1}_{r,Ef}}$,
-$h_{\SE^{\par;I-i_1}_{r,Ef}}$, $h_{\SP^{\par;I-i_1}_{r,Ef}}$ indicate that 
+The 0 values for $h_{\PS^{(-1);\par}_{r,Ef}}$,$h_{\SR^{(-1);\par}_{r,Ef}}$,
+$h_{\SE^{(-1);\par}_{r,Ef}}$, $h_{\SP^{(-1);\par}_{r,Ef}}$ indicate that 
 if we delete the first item, the accuracy indices for the Efocal group under
 partial invariance will be equal to that of the reference group under partial 
 invariance, *thus removing bias*. 
 
-For the full set of items, we see that $h_{\PS^{\par;I}_{r,Ef}}=0.203$, suggesting that if 
+For the full set of items, we see that $h_{\PS^{\par}_{r,Ef}}=0.203$, suggesting that if 
 the focal group followed the same distribution as the reference group, the effect
 size of the difference between the proportion selected the accuracy indices for
 Efocal and the reference group would be 0.203. This means that the proportion
@@ -168,8 +170,8 @@ Here, the comparison is between h values for the full item set vs. h when item i
 
 \[
 \begin{align*}
-\Delta h^{-i_k}(h_{\SE^{\par}_{r,Ef}}) &= \text{sign}\left(h_{\SE^{I}_{r,Ef}} - h_{\SE^{I-i_k}_{r,Ef}}\right)||h_{\SE^{(I-i_k)}_{r,Ef}}|-|h_{\PS^{I}_{r,Ef}}||\\
-&=\Delta h^{-i_k}(h_{\SE^{\par}_{r,Ef})})
+\Delta h^{(-k)}(h_{\SE^{\par}_{r,Ef}}) &= \text{sign}\left(h_{\SE_{r,Ef}} - h_{\SE^{(-k)}_{r,Ef}}\right)||h_{\SE^{(-k)}_{r,Ef}}|-|h_{\PS_{r,Ef}}||\\
+&=\Delta h^{(-k)}(h_{\SE^{\par}_{r,Ef})})
 \end{align*}
 \]
 ```{r }
@@ -189,14 +191,14 @@ of items (full, one item deleted).
 
 \[
 \begin{align*}
-h^{\str,\par}(\PS^{r;I}) &= 2\text{arcsin}(\sqrt{\PS^{r;I}_{\str}})-2\text{arcsin}(\sqrt{\PS^{r;I}_{\par}})\\
-&=h_{\PS^{r;I}_{\str,\par}}
+h^{\str,\par}(\PS^{r}) &= 2\text{arcsin}(\sqrt{\PS^{r}_{\str}})-2\text{arcsin}(\sqrt{\PS^{r}_{\par}})\\
+&=h_{\PS^{r}_{\str,\par}}
 \end{align*}
 \]
 \[
 \begin{align*}
-h^{\str,\par}(\PS^{r;I-i_k}) &= 2\text{arcsin}(\sqrt{\PS^{r;I-i_k}_{\str}})-2\text{arcsin}(\sqrt{\PS^{r;I-i_k}_{\par}})\\
-&=h_{\PS^{r;I-i_k}_{\str,\par}}
+h^{\str,\par}(\PS^{(-k);r}) &= 2\text{arcsin}(\sqrt{\PS^{(-k);r}_{\str}})-2\text{arcsin}(\sqrt{\PS^{(-k);r}_{\par}})\\
+&=h_{\PS^{(-k);r}_{\str,\par}}
 \end{align*}
 \]
 
@@ -208,7 +210,7 @@ knitr::kable(ex1$h$str_vs_par$ref)
 knitr::kable(ex1$h$str_vs_par$foc)
 ```
 
-$h_{\PS^{r;I}_{\str,\par}}=-0.040$ indicates that 
+$h_{\PS^{r}_{\str,\par}}=-0.040$ indicates that 
 PS was slightly higher under partial invariance compared to under strict 
 invariance for the full item set and when any of items 2-4 was deleted. Deleting
 item 1 brought the effect size of the difference between strict and partial invariance conditions to 0 for all accuracy indices.
@@ -219,7 +221,7 @@ Here, the comparison is between h values for the full item set vs. h when item i
 
 \[
 \begin{align*}
-\Delta h^{-i_k}(\PS^{r}_{\str,\par})&= \text{sign}\left(h_{\PS^{r;I}_{r;I}} - h_{\PS^{r;I-i_k}_{\str,\par}} \right)||h_{\PS^{r;I-i_k}_{\str,\par}} |-|h_{\PS^{r;I}_{\str,\par}}||\\
+\Delta h^{(-k)}(\PS^{r}_{\str,\par})&= \text{sign}\left(h_{\PS^{r}_{r}} - h_{\PS^{(-k);r}_{\str,\par}} \right)||h_{\PS^{(-k);r}_{\str,\par}} |-|h_{\PS^{r}_{\str,\par}}||\\
 \end{align*}
 \]
 ```{r }
