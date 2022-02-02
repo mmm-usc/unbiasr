@@ -34,36 +34,35 @@ We will denote the set of items excluding a specific item $i_k$ as
 $(-k)$, e.g., if the third item $i_3$ is excluded, the remaining set of items 
 will be denoted by $(-3)$. If referring to the $h$ or $\Delta h$ associated with
 the removal of an item $i_k$, the operation $h(I,I-i_k)$ can be referred to as 
-$h^{(-k)}$ and $\Delta h(I,I-i_k))$ as $\Delta h^{(-k)}$. Accuracy indices will be
+$h^{(-k)}$ and $\Delta h(I,I-i_k)$ as $\Delta h^{(-k)}$. Accuracy indices will be
 referred to by the two letter acronym e.g., $\SE$, and 'overall' accuracy indices 
 will be denoted with a tilde over the two letter acronym, e.g., $\td{\SE}$, 
 $\td{\SR}$ etc. We can reserve the superscript for non-comparison attributes, 
-e.g., SE under partial invariance: $\SE^{\par}$, SE for item set $I-i_k$ for the 
-reference group: $\SE^{(-k);r}$, and reserve the subscript of the acronym to 
-indicate that the current operation (e.g., $\Delta h$) is being performed on h 
+e.g., SE under partial (factorial) invariance (PFI): $\SE^{\par}$, SE for item 
+set $I-i_k$ for the reference group: $\SE^{(-k); r}$, and reserve the subscript
+of the acronym to indicate that the current operation (e.g., $\Delta h$) is being performed on h 
 values. For instance, on Cohen's h values associated with the comparison between
-SAI under strict vs. partial invariance, for the reference group: 
+SAI under SFI vs. PFI, for the reference group: 
 $\SE_{\str,\par}^{r}$. We can use commas in subscripts of acronyms to indicate 
 the pair of groups/conditions compared, and semicolons
 in superscripts to conditions constant across the group/conditions being compared.
 The superscript of h or $\Delta h$ on the other hand refers to the current comparison.
 
 - `h_overall_sai.par`: Cohen's h effect size for the improvement/drop in overall
-SAI when item $i_k$ is removed (under partial invariance): e.g.,
-$h^{(-k)}(\td{\SE}^{\par})$ for performing the operation on SE under partial 
-invariance. The resulting h values: $h^{(-k)}_{\td{\SE}^{\par}}$.
+SAI when item $i_k$ is removed (under PFI): e.g.,
+$h^{(-k)}(\td{\SE}^{\par})$ for performing the operation on SE under PFI. The resulting h values: $h^{(-k)}_{\td{\SE}^{\par}}$.
 
 - `delta_h$h_R_vs_Ef.par`: Effect size of the change in `h$R_vs_Ef.par` when item
 `i_k` is dropped. `h$R_vs_Ef.par` is the Cohen's effect size for the comparison 
 in selection accuracy indices for the reference group vs. the focal group if it
 followed the same distribution as the reference group, for a given set of items 
-under partial invariance. We can denote this as, for SE, $\Delta h^{(-k)}(h_{\SE^{\par}_{r,Ef}})$.
+under PFI. We can denote this as, for SE, $\Delta h^{(-k)}({\SE^{\par}_{r,Ef}})$.
 
 - `delta_h$h_str_vs_par.ref`: Effect size of the change in `h$str_vs_par$ref` 
 when item `i_k` is dropped. `h$str_vs_par$ref` refers to the Cohen's effect size
-for the comparison in selection accuracy indices under strict invariance vs. 
-partial invariance, for a given set of items for the reference group. We can 
-denote this as: $\Delta h^{(-k)}(h_{\SE^{r}_{\str,\par}})$.
+for the comparison in selection accuracy indices under SFI vs. 
+PFI, for a given set of items for the reference group. We can 
+denote this as: $\Delta h^{(-k)}(\SE^{r}_{\str,\par})$.
 
 
 ## Example from Lai, Kwok, Yoon and Hsiao (2017) 
@@ -92,21 +91,48 @@ ex1 <- item_deletion_h(weights_item = c(1, 1, 1,  1),
                               pmix_ref = 5/7)
 ```
 
-The first element of the results, `h_overall_sai.par`, is a list containing effect sizes showing the change in
-a selection accuracy index (SAI) under for the full item set vs. when one 
-item is deleted, using parameter estimates from the partial invariance model. 
-'Overall' refers to the weighting of accuracy indices for the focal and reference 
-groups by the group proportions to arrive at a weighted average for each index.
+The first element of the results, `h_overall_sai.par`, is a list containing effect 
+sizes showing the change in a selection accuracy index (SAI) under for the full 
+item set vs. when one item is deleted, using parameter estimates from the PFI model. 'Overall' refers to the weighting of accuracy indices for the 
+focal and reference groups by the group proportions to arrive at a weighted
+average for each index. For instance, the overall SR is computed as
+\begin{align*}
+\td{\SR} &= \dfrac{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r)}{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r) + \text{FP}_{r}\times p_r + \text{FP}_{f}\times (1-p_r)}
+\end{align*}
 
-[HL]: # (For the last sentence above, could you define the overall index in formula? Are they the weighted averages of true positive/false positive?)
+where $p_r$ denotes the weight for the reference group. 
 
-[HL]: # (Also note: I would use 'PI' or 'PFI' as an abbreviation for partial (factorial) invariance)
+The overall SE is computed as
+\begin{align*}
+\td{\SE} &= \dfrac{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r)}{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r) + \text{FN}_{r}\times p_r + \text{FN}_{f}\times (1-p_r)}
+\end{align*}
+and overall SP is computed as 
+\begin{align*}
+\td{\SP} &= \dfrac{\text{TN}_{r}\times p_r + \text{TN}_{f}\times (1-p_r)}{\text{TN}_{r}\times p_r + \text{TN}_{f}\times (1-p_r) + \text{FP}_{r}\times p_r + \text{FP}_{f}\times (1-p_r)}
+\end{align*}
+
+
+[HL]: # (For the last sentence above, could you define the overall index in formula? Are they the weighted averages of true positive/false positive?) - DONE
+
+[HL]: # (Also note: I would use 'PI' or 'PFI' as an abbreviation for partial (factorial) invariance) - DONE
 
 
 \[
 \begin{align*}
 h^{(-k)}(\td{\SR}^{\par}) &= 2\arcsin(\sqrt{\td{\SR}^{\par}})-2\arcsin(\sqrt{\td{\SR}^{(-k);\par}})\\
 &=h^{(-k)}_{\td{\SR}^{\par}}
+\end{align*}
+\]
+\[
+\begin{align*}
+h^{(-k)}(\td{\SE}^{\par}) &= 2\arcsin(\sqrt{\td{\SE}^{\par}})-2\arcsin(\sqrt{\td{\SE}^{(-k);\par}})\\
+&=h^{(-k)}_{\td{\SE}^{\par}}
+\end{align*}
+\]
+\[
+\begin{align*}
+h^{(-k)}(\td{\SP}^{\par}) &= 2\arcsin(\sqrt{\td{\SP}^{\par}})-2\arcsin(\sqrt{\td{\SP}^{(-k);\par}})\\
+&=h^{(-k)}_{\td{\SP}^{\par}}
 \end{align*}
 \]
 ```{r}
@@ -128,7 +154,7 @@ in performance.
 
 `h$R_vs_Ef.par` is the effect size of the comparison between accuracy indices 
 for the reference group vs. the expected indices for the focal group if it 
-followed the same distribution as the reference group under partial invariance. When strict invariance holds, the $h_{R - EF}(\PS)$ values are zero.
+followed the same distribution as the reference group under PFI. When SFI holds, the $h_{R - EF}(\PS)$ values are zero.
 
 [HL]: # (Maybe we just call it $h_{\Delta\PS, F}$)
 
@@ -151,8 +177,7 @@ knitr::kable(ex1$h$R_vs_Ef.par)
 The 0 values for $h_{\PS^{(-1);\par}_{r,Ef}}$,$h_{\SR^{(-1);\par}_{r,Ef}}$,
 $h_{\SE^{(-1);\par}_{r,Ef}}$, $h_{\SP^{(-1);\par}_{r,Ef}}$ indicate that 
 if we delete the first item, the accuracy indices for the Efocal group under
-partial invariance will be equal to that of the reference group under partial 
-invariance, *thus removing bias*. 
+PFI will be equal to that of the reference group under PFI, *thus removing bias*. 
 
 For the full set of items, we see that $h_{\PS^{\par}_{r,Ef}}=0.203$, suggesting that if 
 the focal group followed the same distribution as the reference group, the effect
@@ -168,16 +193,16 @@ and is not advisable despite leading to an increase in SE.
 
 `delta_h$h_R_vs_Ef.par`
 
-Here, the comparison is between h values for the full item set vs. h when item i is deleted. These h values correspond to the comparison between accuracy indices for the reference group vs. the expected indices for the focal group if it followed the same distribution as the reference group, under partial invariance, i.e., looking at the change in `h$R_vs_Ef.par` when an item is deleted.
+Here, the comparison is between h values for the full item set vs. h when item i is deleted. These h values correspond to the comparison between accuracy indices for the reference group vs. the expected indices for the focal group if it followed the same distribution as the reference group, under PFI, i.e., looking at the change in `h$R_vs_Ef.par` when an item is deleted.
 
 [HL]: # (I would suggest separating out PS from SR, SE, and SP here, as PS is more a fairness index whereas SR, SE, SP are more about accuracy. We may only need delta h for PS. )
 
-[HL]: # (Should it be SE instead of PS towards the end of the first line of the equation?)
+[HL]: # (Should it be SE instead of PS towards the end of the first line of the equation?) - DONE
 
 \[
 \begin{align*}
-\Delta h^{(-k)}(h_{\SE^{\par}_{r,Ef}}) &= \text{sign}\left(h_{\SE_{r,Ef}} - h_{\SE^{(-k)}_{r,Ef}}\right)||h_{\SE^{(-k)}_{r,Ef}}|-|h_{\PS_{r,Ef}}||\\
-&=\Delta h^{(-k)}(h_{\SE^{\par}_{r,Ef})})
+\Delta h^{(-k)}({\SE^{\par}_{r,Ef}}) &= \text{sign}\left(h_{\SE_{r,Ef}} - h_{\SE^{(-k)}_{r,Ef}}\right)||h_{\SE^{(-k)}_{r,Ef}}|-|h_{\SE_{r,Ef}}||\\
+&=\Delta h^{(-k)}({\SE^{\par}_{r,Ef})}
 \end{align*}
 \]
 
@@ -195,7 +220,7 @@ should be removed. We see the opposite patterns for item 1 vs. items 2-4 where
 removing any of item 2, 3, or 4 would harm the accuracy indices.
 
 `h$str_vs_par$ref` and `h$str_vs_par$foc` compare accuracy indices for the
-reference and focal groups under strict vs. partial invariance for a given set 
+reference and focal groups under SFI vs. PFI for a given set 
 of items (full, one item deleted).
 
 \[
@@ -220,13 +245,12 @@ knitr::kable(ex1$h$str_vs_par$foc)
 ```
 
 $h_{\PS^{r}_{\str,\par}}=-0.040$ indicates that 
-PS was slightly higher under partial invariance compared to under strict 
-invariance for the full item set and when any of items 2-4 was deleted. Deleting
-item 1 brought the effect size of the difference between strict and partial invariance conditions to 0 for all accuracy indices.
+PS was slightly higher under PFI compared to under SFI for the full item set and when any of items 2-4 was deleted. Deleting
+item 1 brought the effect size of the difference between SFI and PFIe conditions to 0 for all accuracy indices.
 
 `delta_h$h_str_vs_par$ref`, `delta_h$h_str_vs_par$foc`
 
-Here, the comparison is between h values for the full item set vs. h when item i is deleted. These h values correspond to the comparison between accuracy indices under strict vs. partial invariance, for the reference and focal groups. 
+Here, the comparison is between h values for the full item set vs. h when item i is deleted. These h values correspond to the comparison between accuracy indices under SFI vs. PFIe, for the reference and focal groups. 
 
 \[
 \begin{align*}
@@ -307,11 +331,10 @@ knitr::kable(ex2$h$str_vs_par$ref)
 knitr::kable(ex2$h$str_vs_par$foc)
 ```
 
-A greater proportion is selected under strict invariance compared to partial 
-invariance when all items are used, but when any of the 8 items are dropped, a 
-greater proportion is selected under partial invariance. SR, SE, SP are always
+A greater proportion is selected under SFI compared to PFI when all items are used, but when any of the 8 items are dropped, a 
+greater proportion is selected under PFI. SR, SE, SP are always
 positive, indicating that regardless of item drop condition, 
-SR, SE, SP under strict invariance is always larger than SR, SE, SP under partial invariance. 
+SR, SE, SP under SFI is always larger than SR, SE, SP under PFI. 
 
 
 ```{r }
