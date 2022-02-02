@@ -92,11 +92,15 @@ ex1 <- item_deletion_h(weights_item = c(1, 1, 1,  1),
                               pmix_ref = 5/7)
 ```
 
-`h_overall_sai.par` is a list containing effect sizes showing the change in
-an accuracy index under partial invariance for the full item set vs. when one 
-item is deleted, under partial invariance. 
+The first element of the results, `h_overall_sai.par`, is a list containing effect sizes showing the change in
+a selection accuracy index (SAI) under for the full item set vs. when one 
+item is deleted, using parameter estimates from the partial invariance model. 
 'Overall' refers to the weighting of accuracy indices for the focal and reference 
 groups by the group proportions to arrive at a weighted average for each index.
+
+[HL]: # (For the last sentence above, could you define the overall index in formula? Are they the weighted averages of true positive/false positive?)
+
+[HL]: # (Also note: I would use 'PI' or 'PFI' as an abbreviation for partial (factorial) invariance)
 
 
 \[
@@ -124,7 +128,7 @@ in performance.
 
 `h$R_vs_Ef.par` is the effect size of the comparison between accuracy indices 
 for the reference group vs. the expected indices for the focal group if it 
-followed the same distribution as the reference group under partial invariance.
+followed the same distribution as the reference group under partial invariance. When strict invariance holds, the $h_{R - EF}(\PS)$ values are zero.
 
 [HL]: # (Maybe we just call it $h_{\Delta\PS, F}$)
 
@@ -168,12 +172,17 @@ Here, the comparison is between h values for the full item set vs. h when item i
 
 [HL]: # (I would suggest separating out PS from SR, SE, and SP here, as PS is more a fairness index whereas SR, SE, SP are more about accuracy. We may only need delta h for PS. )
 
+[HL]: # (Should it be SE instead of PS towards the end of the first line of the equation?)
+
 \[
 \begin{align*}
 \Delta h^{(-k)}(h_{\SE^{\par}_{r,Ef}}) &= \text{sign}\left(h_{\SE_{r,Ef}} - h_{\SE^{(-k)}_{r,Ef}}\right)||h_{\SE^{(-k)}_{r,Ef}}|-|h_{\PS_{r,Ef}}||\\
 &=\Delta h^{(-k)}(h_{\SE^{\par}_{r,Ef})})
 \end{align*}
 \]
+
+[HL]: # (I think we should modify the definition of delta h. Basically, if the -i value is closer to zero than the full item value, the sign should be positive. So let's use sign(|h-full| - |h-minu i|) instead.)
+
 ```{r }
 knitr::kable(ex1$delta_h$h_R_vs_Ef.par)
 ```
