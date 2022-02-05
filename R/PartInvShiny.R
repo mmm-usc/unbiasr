@@ -14,6 +14,11 @@ myApp <- function(...) {
     dashboardSidebar(width = 105,
                      sidebarMenu(
                        menuItem(
+                         "Instruction",
+                         tabName = "Reference",
+                         icon = icon("dashboard")
+                       ),
+                       menuItem(
                          "FirstPage",
                          tabName = "firstpage",
                          icon = icon("dashboard")
@@ -35,6 +40,84 @@ myApp <- function(...) {
       #pages
       tabItems(
         #page one
+        tabItem(tabName = "Reference",
+                fluidPage(fluidRow(
+                  box(
+                    title = "Summary of the framework",
+                    status = "primary",
+                    width = 12,
+                    solidHeader = FALSE,
+                    p(
+                      "The multidimensional classification accuracy analysis framework (MCAA) is an extension of the selection accuracy
+                    framework proposed by Millsap & Kwok (2004). Since real-world selection usually involves multiple tests or subtests, 
+                    with different weights assigned to each dimension, the MCAA framework is proposed to quantify
+                    the impact of item bias on selection accuracy by examining the changes in 
+                    selection accuracy indices (proportion selected, success ratio, 
+                    sensitivity, specificity) for each subgroup. The adverse impact (AI) ratio 
+                    (i.e., the ratio of the proportions selected between a minority and a majority group with matching latent trait levels) 
+                    is also provided in results. Further details are provided in Lai & Zhang (in revision)."
+                    )),
+                  box(
+                    title = "Example",
+                    status = "primary",
+                    width = 12,
+                    solidHeader = FALSE,
+                    p(
+                      "Here is an example for how to use the app."),
+                    p("The first step is to input group labels for the graph."
+                    ),
+                    
+                    img(src="step1.png", align = "center",height='300px',width='270px'),
+                    p("Next, input factor loadings and intercepts
+                       for each group."
+                    ),
+                    img(src="step2.png", align = "center",height='400px',width='270px'),
+                    p("Third, input unique factor variance-covariance matrix. You can choose to enter the diagonal 
+                      of the covariance matrix, or upload the covariance matrix. Note the header should not be included. "
+                    ),
+                    img(src="step3.png", align = "center",height='400px',width='280px'),
+                    p("Then, input latent factor
+                      means and variances. Last, set selection parameters such as mixing proportion and selection proportion."
+                    ),
+                    img(src="step4.png", align = "center",height='400px',width='200px'),
+                    p("Lastly, set selection parameters such as mixing proportion and selection proportion."
+                    ),
+                    img(src="step5.png", align = "center",height='300px',width='270px'),
+                    p("Here are the graph and the selection accuracy table"
+                    ),
+                    img(src="graph.png", align = "left",height='300px',width='330px'),
+                    img(src="table.png", align = "right",height='280px',width='350px'),
+                  ),
+                  
+                  box(
+                    title = "Reference",
+                    status = "primary",
+                    width = 12,
+                    solidHeader = FALSE,
+                    p("Lai, M. H. C., Kwok, O., Yoon, M., & Hsiao, Y. (2017). 
+                        Understanding the impact of partial factorial invariance on selection 
+                        accuracy: An R script. Structural Equation Modeling: A Multidisciplinary 
+                        Journal, 24, 783-799. https://doi.org/10.1080/10705511.2017.1318703"), 
+                    p(
+                      "Lai, M. H. C., & Zhang, Y (2021). Classification accuracy of multidimensional tests: 
+                      Quantifying the impact of noninvariance. Structural Equation Modeling: 
+                      A Multidisciplinary Journal. https://doi.org/10 .1080/10705511.2021.1977936"),
+                    p("Millsap, R. E., & Kwok, O.-M. (2004). Evaluating the impact of 
+                        partial factorial invariance on selection in two populations. 
+                        Psychological Methods, 9, 93–115. https://doi.org/10.1037/1082-989X.9.1.93."
+                    )),
+                  
+                  box(
+                    title = "Note",
+                    status = "primary",
+                    width = 12,
+                    solidHeader = FALSE,
+                    p(
+                      "If you have any questions, please email us at mmm.lab.usc@zohomail.com ."
+                    )
+                  )
+                ))),
+        #second page
         tabItem(tabName = "firstpage", fluidPage(
           #wrap all UI code in list command so it can be accessed from main app.R file
           list(
