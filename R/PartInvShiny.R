@@ -49,13 +49,13 @@ myApp <- function(...) {
                     solidHeader = FALSE,
                     p(
                       "The multidimensional classification accuracy analysis framework (MCAA) is an extension of the selection accuracy
-                    framework proposed by Millsap & Kwok (2004). Since real-world selection usually involves multiple tests or subtests, 
+                    framework proposed by Millsap & Kwok (2004). Since real-world selection usually involves multiple tests or subtests
                     with different weights assigned to each dimension, the MCAA framework is proposed to quantify
                     the impact of item bias on selection accuracy by examining the changes in 
                     selection accuracy indices (proportion selected, success ratio, 
                     sensitivity, specificity) for each subgroup. The adverse impact (AI) ratio 
                     (i.e., the ratio of the proportions selected between a minority and a majority group with matching latent trait levels) 
-                    is also provided in results. Further details are provided in Lai & Zhang (in revision)."
+                    is also provided in results. Further details are provided in Lai & Zhang (2022)."
                     )),
                   box(
                     title = "Example",
@@ -99,7 +99,7 @@ myApp <- function(...) {
                         accuracy: An R script. Structural Equation Modeling: A Multidisciplinary 
                         Journal, 24, 783-799. https://doi.org/10.1080/10705511.2017.1318703"), 
                     p(
-                      "Lai, M. H. C., & Zhang, Y (2021). Classification accuracy of multidimensional tests: 
+                      "Lai, M. H. C., & Zhang, Y (2022). Classification accuracy of multidimensional tests: 
                       Quantifying the impact of noninvariance. Structural Equation Modeling: 
                       A Multidisciplinary Journal. https://doi.org/10 .1080/10705511.2021.1977936"),
                     p("Millsap, R. E., & Kwok, O.-M. (2004). Evaluating the impact of 
