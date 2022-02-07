@@ -1,7 +1,6 @@
 #' Launch the 'PartInv' app
 #'
 #' @import shiny
-#' @import matrixcalc
 #' @import shinydashboard
 #' @importFrom shinyjs useShinyjs inlineCSS reset
 #' @importFrom shinyWidgets materialSwitch
@@ -614,16 +613,14 @@ myApp <- function(...) {
                "focal matrix empty")
         },
         if (input$useMatrix == TRUE) {
-          need(isSymmetric(input$theta_rMatrixInput) == TRUE,
-               "reference matrix not symmetrical")
-        },
-        if (input$useMatrix == TRUE) {
-          need(is.positive.definite(input$theta_rMatrixInput) == TRUE,
-               "reference matrix not positive definite")
+          need(isSymmetric(input$theta_rMatrixInput) &&
+                 is_symmetric_posdef(input$theta_rMatrixInput),
+               "reference Theta matrix not positive definite")
         },
         if (input$useMatrix == TRUE && input$usetheta_f == TRUE) {
-          need(isSymmetric(input$theta_fMatrixInput) == TRUE,
-               "focal matrix not symmetrical")
+          need(isSymmetric(input$theta_fMatrixInput) &&
+                 is_symmetric_posdef(input$theta_fMatrixInput),
+               "focal Theta matrix not positive definite")
         }
         
       )})
