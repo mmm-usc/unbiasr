@@ -20,50 +20,84 @@ library(PartInvShinyUI)
 library(lavaan)
 ```
 \newcommand{\SR}{\text{SR}}
+\newcommand{\SAI}{\text{SAI}}
 \newcommand{\SE}{\text{SE}}
 \newcommand{\SP}{\text{SP}}
 \newcommand{\PS}{\text{PS}}
+\newcommand{\TP}{\text{\TP}}
+\newcommand{\FN}{\text{\FN}}
+\newcommand{\FP}{\text{\FP}}
+\newcommand{\TN}{\text{\TN}}
 \newcommand{\str}{\text{str}}
 \newcommand{\par}{\text{par}}
 \newcommand{\td}{\tilde}
+\newcommand{\rr}{\text{r-Ef}}
 
-### Proposed Notation
+## Some notes on notation and examples of notation use
+Selection accuracy indices (SAI) will be referred to by a two letter acronym 
+e.g., $\SE$, and 'overall' accuracy indices will be denoted with a tilde over
+the acronym, (e.g., $\td{\SE}$, $\td{\SR}$). Unless otherwise indicated, we will 
+assume that the full item set is used and that partial factorial invariance (PFI) 
+holds.
 
-Let $I$ denote the set of items in a k-element scale, $I = \{i_1, i_2,\ldots,i_k\}$.
-We will denote the set of items excluding a specific item $i_k$ as 
-$(-k)$, e.g., if the third item $i_3$ is excluded, the remaining set of items 
-will be denoted by $(-3)$. If referring to the $h$ or $\Delta h$ associated with
-the removal of an item $i_k$, the operation $h(I,I-i_k)$ can be referred to as 
-$h^{(-k)}$ and $\Delta h(I,I-i_k)$ as $\Delta h^{(-k)}$. Accuracy indices will be
-referred to by the two letter acronym e.g., $\SE$, and 'overall' accuracy indices 
-will be denoted with a tilde over the two letter acronym, e.g., $\td{\SE}$, 
-$\td{\SR}$ etc. We can reserve the superscript for non-comparison attributes, 
-e.g., SE under partial (factorial) invariance (PFI): $\SE^{\par}$, SE for item 
-set $I-i_k$ for the reference group: $\SE^{(-k); r}$, and reserve the subscript
-of the acronym to indicate that the current operation (e.g., $\Delta h$) is being performed on h 
-values. For instance, on Cohen's h values associated with the comparison between
-SAI under SFI vs. PFI, for the reference group: 
-$\SE_{\str,\par}^{r}$. We can use commas in subscripts of acronyms to indicate 
-the pair of groups/conditions compared, and semicolons
-in superscripts to conditions constant across the group/conditions being compared.
-The superscript of h or $\Delta h$ on the other hand refers to the current comparison.
+If multiple operations are performed and multiple properties need to be indicated 
+the outermost superscript indicates the current operation, and innermost 
+superscript refers to constant properties. In other words, the superscript of
+$h$ or $\Delta h$ indicates the current comparison (e.g., full vs. modified item set, 
+strict vs. partial invariance, reference vs. focal groups). The superscript of an 
+SAI refers to properties that are constant in in both groups being compared, 
+and the subscript (if any) indicates that $h$ was computed on this SAI to compare
+the conditions indicated in the subscript.
 
-- `h_overall_sai.par`: Cohen's h effect size for the improvement/drop in overall
-SAI when item $i_k$ is removed (under PFI): e.g.,
-$h^{(-k)}(\td{\SE}^{\par})$ for performing the operation on SE under PFI. The resulting h values: $h^{(-k)}_{\td{\SE}^{\par}}$.
+#### Indicating the set of items
+- Let $I$ denote a set of items in a p-element scale, $I = \{i_1, i_2,\ldots,i_p\}$.
+Then, we can denote the modified set of items after removing the k-th item as
+$I^{|k}=\{i_1, i_2, ..., i_{k-1},i_{k+1}, ..., i_p\}$. Using this notation, we 
+can refer to a selection accuracy index (SAI) computed using the full set of items
+as 'SAI' (e.g., SE), and the SAI computed using the modified set of items 
+excluding item k as $\SAI^{|k}$ (e.g., $\SE^{|2}$ if the modified item set
+excludes the second item).
 
-- `delta_h$h_R_vs_Ef.par`: Effect size of the change in `h$R_vs_Ef.par` when item
-`i_k` is dropped. `h$R_vs_Ef.par` is the Cohen's effect size for the comparison 
-in selection accuracy indices for the reference group vs. the focal group if it
-followed the same distribution as the reference group, for a given set of items 
-under PFI. We can denote this as, for SE, $\Delta h^{(-k)}({\SE^{\par}_{r,Ef}})$.
+#### Operations comparing the full vs. modified item sets
+- $h(\SAI,\SAI^{|k})$ is denoted as $h^{|k}(\SAI)$, and the resulting 
+h values are indicated as $\SAI_{|k}$.
+- $\Delta h(\SAI,\SAI^{|k})$ is denoted as $\Delta h^{|k}(\SAI)$, and the 
+resulting $\Delta h$ values as $\Delta h^{|k}\SAI$. 
 
-- `delta_h$h_str_vs_par.ref`: Effect size of the change in `h$str_vs_par$ref` 
-when item `i_k` is dropped. `h$str_vs_par$ref` refers to the Cohen's effect size
-for the comparison in selection accuracy indices under SFI vs. 
-PFI, for a given set of items for the reference group. We can 
-denote this as: $\Delta h^{(-k)}(\SE^{r}_{\str,\par})$.
+- Note: $\Delta h$ is computed only for the comparison between the full and
+modified item sets (not for group or invariance
+condition comparisons).
 
+- e.g., $\Delta h^{\text{|2}}(\SAI_{\rr})$ for quantifying the impact of dropping
+the second item on the comparison between SAI for the r and Ef groups under 
+PFI: $\Delta h^{|2}\SAI_{\rr}$.
+
+- e.g., for the reference group, $h$ comparing SAI under SFI vs. PFI followed by
+$\Delta h$ comparing these h values computed for the full item set and for the
+modified item set excluding the 4th item: $\Delta h^{|4}\SAI^{r}_{\text{str, par}}$.
+
+- e.g. $h^{|3}(\td{\SAI})$ for comparing the overall SAI under PFI: $\td{\SAI}_{|3}$.
+
+#### h comparing the SAI of groups
+- Reference group (r) can be compared with the focal group (f) or Efocal (Ef).
+
+- $h^{\rr}(\SAI) = \SAI_{\rr}$ for h comparing the SAI of r and Ef groups under PFI,
+for the full item set.
+- $h^{\rr}(\SAI^{|2})=\SE_{\rr}^{|2}$ for h comparing the SAI of r and Ef groups
+for modified item set excluding the second item.
+- $h^{\text{r-f}}(\SAI^{\str}) = \SE_{\text{r-f}}^{\str}$ for h comparing the SAI 
+of r and f groups under SFI, for the full item set.
+- $h^{\text{r-f}}(\SAI^{|2;\str}) = \SE_{\text{r-f}}^{|2; \str}$ for  h comparing
+the SAI of r and f groups under SFI, for the modified item set excluding the
+second item.
+
+#### h comparing the SAI under SFI vs. PFI
+
+- $h^{\text{str, par}}(\SAI^r)=\SE_{\text{str, par}}^r$ for h comparing the SAI 
+under SFI vs. PFI (for the reference group).
+- $h^{\text{str, par}}(\SAI^{|2; r})=\SE_{\text{str, par}}^{|2; r}$ for h 
+comparing the SAI of r and Ef groups for modified item set excluding the second
+item.
 
 ## Example from Lai, Kwok, Yoon and Hsiao (2017) 
 Center for Epidemiological Studies Depression  (CES-D) Scale 
@@ -72,8 +106,8 @@ Positive Affect Factor
 Items: good (biased), hopeful, happy, enjoyed
 
 ```{r}
-ex1 <- item_deletion_h(weights_item = c(1, 1, 1,  1), 
-                              propsel =.14, n_dim = 1,  
+ex1 <- item_deletion_h(weights_item = c(1, 1, 1, 1), 
+                              propsel = .14, n_dim = 1,  
                               alpha_r = 0,
                               alpha_f =-0.125,
                               psi_r = 0.354^2,
@@ -91,123 +125,70 @@ ex1 <- item_deletion_h(weights_item = c(1, 1, 1,  1),
                               pmix_ref = 5/7)
 ```
 
-The first element of the results, `h_overall_sai.par`, is a list containing effect 
-sizes showing the change in a selection accuracy index (SAI) under for the full 
-item set vs. when one item is deleted, using parameter estimates from the PFI model. 'Overall' refers to the weighting of accuracy indices for the 
-focal and reference groups by the group proportions to arrive at a weighted
-average for each index. For instance, the overall SR is computed as
+The returned object `ex1` contains three elements: `h_overall_sai_par`, `delta_h`,
+and `h` (note that `return_detailed = FALSE` and 
+`also_return_PartInvMulti_outputs = FALSE`, which are the default settings).
+
+###### `h_overall_sai.par`
+$h^{|k}(\td{\SAI})$: Cohen's h effect size for the improvement/drop in overall
+SAI under PFI when the k-th item is removed. 'Overall' 
+refers to the averaging of accuracy indices across focal and reference groups
+by group proportions to arrive at a weighted average for each SAI (regularly
+computed as $\SR=\frac{\TP}{\TP+\FP}$, $\SE=\frac{\TP}{\TP+\FN}$, 
+$\SR=\frac{\TN}{\TN+\FP}$). 
+Letting $p_r$ denote the weight for the reference group,
 \begin{align*}
-\td{\SR} &= \dfrac{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r)}{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r) + \text{FP}_{r}\times p_r + \text{FP}_{f}\times (1-p_r)}
+\td{\SR} &= \frac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)}\\
+\td{\SE} &= \frac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FN_{r}\times p_r + \FN_{f}\times (1-p_r)}\\
+\td{\SP} &= \frac{\TN_{r}\times p_r + \TN_{f}\times (1-p_r)}{\TN_{r}\times p_r + \TN_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)}
 \end{align*}
 
-where $p_r$ denotes the weight for the reference group. 
-
-The overall SE is computed as
-\begin{align*}
-\td{\SE} &= \dfrac{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r)}{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r) + \text{FN}_{r}\times p_r + \text{FN}_{f}\times (1-p_r)}
-\end{align*}
-and overall SP is computed as 
-\begin{align*}
-\td{\SP} &= \dfrac{\text{TN}_{r}\times p_r + \text{TN}_{f}\times (1-p_r)}{\text{TN}_{r}\times p_r + \text{TN}_{f}\times (1-p_r) + \text{FP}_{r}\times p_r + \text{FP}_{f}\times (1-p_r)}
-\end{align*}
-
-
-[HL]: # (For the last sentence above, could you define the overall index in formula? Are they the weighted averages of true positive/false positive?) - DONE
-
-[HL]: # (Also note: I would use 'PI' or 'PFI' as an abbreviation for partial (factorial) invariance) - DONE
-
-
+Then, the change in overall SAI after dropping the k-th item can be computed as
 \[
 \begin{align*}
-h^{(-k)}(\td{\SR}^{\par}) &= 2\arcsin(\sqrt{\td{\SR}^{\par}})-2\arcsin(\sqrt{\td{\SR}^{(-k);\par}})\\
-&=h^{(-k)}_{\td{\SR}^{\par}}
+h^{|k}\td{\SAI} &= 2\arcsin\left(\sqrt{\td{\SAI}}\right)-2\arcsin\left(\sqrt{\td{\SAI}^{|k}}\right)
 \end{align*}
 \]
-\[
-\begin{align*}
-h^{(-k)}(\td{\SE}^{\par}) &= 2\arcsin(\sqrt{\td{\SE}^{\par}})-2\arcsin(\sqrt{\td{\SE}^{(-k);\par}})\\
-&=h^{(-k)}_{\td{\SE}^{\par}}
-\end{align*}
-\]
-\[
-\begin{align*}
-h^{(-k)}(\td{\SP}^{\par}) &= 2\arcsin(\sqrt{\td{\SP}^{\par}})-2\arcsin(\sqrt{\td{\SP}^{(-k);\par}})\\
-&=h^{(-k)}_{\td{\SP}^{\par}}
-\end{align*}
-\]
+
+A negative `h_overall_sai_par` indicates an improvement 
+(as $h^{|k}\td{\SAI}<0 \iff \td{\SAI}<\td{\SAI}^{|k}$)
+whereas a positive
+`h_overall_sai_par` indicates a deterioration in performance.
+
 ```{r}
-# HL: Maybe show all four as all of them are discussed below?
 knitr::kable(ex1$h_overall_sai.par)
 ```
-For the 4-item CES-D scale, the negative $h^{(-i)}_{\td{\SR}^{\par}}$,
-$h^{(-1)}_{\td{\SE}^{\par}}$, and $h^{(-1)}_{\td{\SP}^{\par}}$ values 
-indicate that removing the first item would lead to an improvement in success ratio, 
-sensitivity, and specificity as the reduced set of items led to a larger
-SR, SE, SP. Removing any of the other items would harm SR, SE, SP (indicated by the
-positive h values). For instance, SR when item 2 is removed must be lower than
-SR for the full item set for a positive $h^{(-2)}_{\td{\SR}^{\par}}$ to be 
-computed. Then, a negative `h_overall_sai_par` indicates an improvement 
-in performance whereas a positive `h_overall_sai_par` indicates a deterioration
-in performance.
+For the 4-item CES-D scale, the negative $h^{|1}{\td{\SR}}$,
+$h^{|1}{\td{\SE}}$, and $h^{|1}{\td{\SP}}$ values 
+indicate that removing the first item would lead to an improvement in SR, 
+SE, and SP. On the other hand, the positive $h$ values for modified item sets 
+excluding items 2, 3, or 4 suggest that SR, SE, and SP decreases if any of these 
+items are dropped.
 
-[HL]: # (We can call the following 'bias'. It'd be helpful to discuss the 'full' column first.)
+##### `delta_h`
 
-`h$R_vs_Ef.par` is the effect size of the comparison between accuracy indices 
-for the reference group vs. the expected indices for the focal group if it 
-followed the same distribution as the reference group under PFI. When SFI holds, the $h_{R - EF}(\PS)$ values are zero.
+$\Delta h$ is computed using the following formula to compare the effect size of 
+the change in an SAI when the k=th item is dropped:
+$$\Delta h^{|k}(\SAI)=\text{sign}\left(| h^{(.)}({\SAI)}|-|h^{(.)}(\SAI^{|k})|\right)\left||h^{(.)}(\SAI^{|k})|-|h^{(.)}(\SAI)|\right|$$
+'(.)' in the superscript of h is a placeholder for the comparison performed in 
+the previous step.
 
-[HL]: # (Maybe we just call it $h_{\Delta\PS, F}$)
+`delta_h` contains two elements: `delta_h$h_R_vs_Ef.par` and 
+`delta_h$h_str_vs_par`, with the latter containing two tables (one for reference
+and the second for focal group comparisons).
 
-\[
-\begin{align*}
-h^{r,Ef}(\PS^{\par}) &= 2\text{arcsin}(\sqrt{\PS^{\par}_r})-2\text{arcsin}(\sqrt{\PS^{\par}_{Ef}})\\
-&=h_{\PS^{\par}_{r,Ef}}
-\end{align*}
-\]
-\[
-\begin{align*}
-h^{r,Ef}(\PS^{(-k);\par}) &= 2\text{arcsin}(\sqrt{\PS^{(-k);\par}_r})-2\text{arcsin}(\sqrt{\PS^{(-k);\par}_{Ef}})\\
-&=h_{\PS^{(-k);\par}_{r,Ef}}
-\end{align*}
-\]
-```{r }
-knitr::kable(ex1$h$R_vs_Ef.par)
-```
+#### `delta_h$h_R_vs_Ef.par`
+$\Delta h^{|k}({\SAI_{\rr}})$: Effect size of the change in $\SAI_{\rr}$ 
+(stored in `h$R_vs_Ef.par`) when the k-th item is dropped, under PFI. $\SAI_{\rr}$ refers to the Cohen's effect size 
+for the comparison in SAI for the reference group vs. the focal group if it 
+followed the same distribution as the reference group. 
 
-The 0 values for $h_{\PS^{(-1);\par}_{r,Ef}}$,$h_{\SR^{(-1);\par}_{r,Ef}}$,
-$h_{\SE^{(-1);\par}_{r,Ef}}$, $h_{\SP^{(-1);\par}_{r,Ef}}$ indicate that 
-if we delete the first item, the accuracy indices for the Efocal group under
-PFI will be equal to that of the reference group under PFI, *thus removing bias*. 
+HL: # (I would suggest separating out PS from SR, SE, and SP here, as PS is more a fairness index whereas SR, SE, SP are more about accuracy. We may only need delta h for PS. )
 
-For the full set of items, we see that $h_{\PS^{\par}_{r,Ef}}=0.203$, suggesting that if 
-the focal group followed the same distribution as the reference group, the effect
-size of the difference between the proportion selected the accuracy indices for
-Efocal and the reference group would be 0.203. This means that the proportion
-selected in the reference group is larger than the proportion selected in Efocal, indicating that *the reference group is favored when the full set of items are used*. Under the expected distribution for the reference group, the Efocal group would 
-have a higher success ratio and a higher specificity than the reference group 
-(full item set, and when one of items 2-4 is deleted), but would have a lower proportion selected and a lower sensitivity.
-Dropping any item other than the first item would lead to a similar situation where
-a greater proportion is selected from the reference group than the focal group
-and is not advisable despite leading to an increase in SE.
+$$\Delta h^{|k}(\SAI_{\rr})=\text{sign}\left(| h^{\rr}({\SAI)}|-|h^{\rr}(\SAI^{|k})|\right)\left||h^{\rr}(\SAI^{|k})|-|h^{\rr}(\SAI)|\right|$$
+Equivalently, substituting $\SAI_{\rr}$ for $h^{\rr}({\SAI)}$, 
 
-
-`delta_h$h_R_vs_Ef.par`
-
-Here, the comparison is between h values for the full item set vs. h when item i is deleted. These h values correspond to the comparison between accuracy indices for the reference group vs. the expected indices for the focal group if it followed the same distribution as the reference group, under PFI, i.e., looking at the change in `h$R_vs_Ef.par` when an item is deleted.
-
-[HL]: # (I would suggest separating out PS from SR, SE, and SP here, as PS is more a fairness index whereas SR, SE, SP are more about accuracy. We may only need delta h for PS. )
-
-[HL]: # (Should it be SE instead of PS towards the end of the first line of the equation?) - DONE
-
-\[
-\begin{align*}
-\Delta h^{(-k)}({\SE^{\par}_{r,Ef}}) &= \text{sign}\left(h_{\SE_{r,Ef}} - h_{\SE^{(-k)}_{r,Ef}}\right)||h_{\SE^{(-k)}_{r,Ef}}|-|h_{\SE_{r,Ef}}||\\
-&=\Delta h^{(-k)}({\SE^{\par}_{r,Ef})}
-\end{align*}
-\]
-
-[HL]: # (I think we should modify the definition of delta h. Basically, if the -i value is closer to zero than the full item value, the sign should be positive. So let's use sign(|h-full| - |h-minu i|) instead.)
-
+$$\Delta h^{|k}(\SAI_{\rr})=\text{sign}\left(| \SAI_{\rr}|-|\SAI^{|k}_{\rr}|\right)\left||\SAI^{|k}_{\rr}|-|\SAI_{\rr}|\right|$$
 ```{r }
 knitr::kable(ex1$delta_h$h_R_vs_Ef.par)
 ```
@@ -219,48 +200,107 @@ indicates that seeing a positive delta h in PS is an indication that that item
 should be removed. We see the opposite patterns for item 1 vs. items 2-4 where 
 removing any of item 2, 3, or 4 would harm the accuracy indices.
 
-`h$str_vs_par$ref` and `h$str_vs_par$foc` compare accuracy indices for the
-reference and focal groups under SFI vs. PFI for a given set 
-of items (full, one item deleted).
+#### `delta_h$h_str_vs_par`: `ref` and `foc`
+
+- $\Delta h^{|k}(\SAI^{r}_{\str,\par})$, stored in `delta_h$h_str_vs_par.ref`, 
+refers to the effect size of the change in $\SAI^{r}_{\str,\par}$
+when the k-th item is dropped. $\SAI^{r}_{\str,\par}$ (stored in 
+`h$str_vs_par$ref`) refers to the Cohen's effect size
+for the comparison in selection accuracy indices under SFI vs. 
+PFI, for a given set of items for the reference group.
 
 \[
 \begin{align*}
-h^{\str,\par}(\PS^{r}) &= 2\text{arcsin}(\sqrt{\PS^{r}_{\str}})-2\text{arcsin}(\sqrt{\PS^{r}_{\par}})\\
-&=h_{\PS^{r}_{\str,\par}}
-\end{align*}
-\]
-\[
-\begin{align*}
-h^{\str,\par}(\PS^{(-k);r}) &= 2\text{arcsin}(\sqrt{\PS^{(-k);r}_{\str}})-2\text{arcsin}(\sqrt{\PS^{(-k);r}_{\par}})\\
-&=h_{\PS^{(-k);r}_{\str,\par}}
-\end{align*}
-\]
-
-```{r }
-knitr::kable(ex1$h$str_vs_par$ref)
-```
-
-```{r}
-knitr::kable(ex1$h$str_vs_par$foc)
-```
-
-$h_{\PS^{r}_{\str,\par}}=-0.040$ indicates that 
-PS was slightly higher under PFI compared to under SFI for the full item set and when any of items 2-4 was deleted. Deleting
-item 1 brought the effect size of the difference between SFI and PFIe conditions to 0 for all accuracy indices.
-
-`delta_h$h_str_vs_par$ref`, `delta_h$h_str_vs_par$foc`
-
-Here, the comparison is between h values for the full item set vs. h when item i is deleted. These h values correspond to the comparison between accuracy indices under SFI vs. PFIe, for the reference and focal groups. 
-
-\[
-\begin{align*}
-\Delta h^{(-k)}(\PS^{r}_{\str,\par})&= \text{sign}\left(h_{\PS^{r}_{r}} - h_{\PS^{(-k);r}_{\str,\par}} \right)||h_{\PS^{(-k);r}_{\str,\par}} |-|h_{\PS^{r}_{\str,\par}}||\\
+\Delta h^{|k}(\SAI^{r}_{\str,\par})&= \text{sign}\left(|\SAI^{r}_{\str,\par}| - |\SAI^{|k,r}_{\str,\par}| \right)\left||\SAI^{|k,r}_{\str,\par} |-|\SAI^{r}_{\str,\par}|\right|
 \end{align*}
 \]
 ```{r }
 knitr::kable(ex1$delta_h$h_str_vs_par$ref)
 ```
+- $\Delta h^{|k}(\SAI^{f}_{\str,\par})$, stored in `delta_h$h_str_vs_par.foc`, 
+refers to the effect size of the change in $\SAI^{f}_{\str,\par}$
+when the k-th item is dropped. $\SAI^{f}_{\str,\par}$ (stored in 
+`h$str_vs_par$foc`) refers to the Cohen's effect size
+for the comparison in selection accuracy indices under SFI vs. 
+PFI, for a given set of items for the focal group.
+\[
+\begin{align*}
+\Delta h^{|k}(\SAI^{f}_{\str,\par})&= \text{sign}\left(|\SAI^{f}_{\str,\par}| - |\SAI^{|k,f}_{\str,\par}| \right)\left||\SAI^{|k,f}_{\str,\par} |-|\SAI^{f}_{\str,\par}|\right|\\
+\end{align*}
+\]
+```{r }
+knitr::kable(ex1$delta_h$h_str_vs_par$foc)
+```
 
+
+
+##### `h`
+#### `h$R_vs_Ef.par`
+[HL]: # (We can call the following 'bias'. It'd be helpful to discuss the 'full' column first.)
+
+$h^{\text{r- Ef}}(\SAI)$: is the effect size of the comparison between SAI 
+of the reference group vs. the expected SAI for the focal group if it 
+followed the same distribution as the reference group under PFI. Note that
+$h^{\text{r- Ef}}(\SAI)=0$ under SFI.
+
+\[
+\begin{align*}
+h^{\rr}(\SAI) &= 2\text{arcsin}\left(\sqrt{\SAI^r}\right)-2\text{arcsin}\left(\sqrt{\SAI^{Ef}}\right)=\SAI_{\rr}\\
+h^{\rr}(\SAI^{|k}) &= 2\text{arcsin}\left(\sqrt{\SAI^{|k,r}}\right)-2\text{arcsin}\left(\sqrt{\SAI^{|k,Ef}}\right)=\SAI^{|k}_{\rr}
+\end{align*}
+\]
+```{r }
+knitr::kable(ex1$h$R_vs_Ef.par)
+```
+
+
+$\PS^{|1}_{\rr}=0$,$\SR^{|1}_{\rr}=0$,
+$\SE^{|1}_{\rr=0}$, $\SP^{|1}_{\rr}=0$ suggest that 
+if we delete the first item, the accuracy indices for the Efocal group under
+PFI will be equal to that of the reference group under PFI, *thus removing bias*. 
+
+$\PS_{\rr}=0.203$ indicates the proportion selected in the reference group is
+larger than the proportion selected in Efocal. In other words, *the reference group is favored when the full set of items are used*. Under the expected distribution for the 
+reference group, the focal group would have a higher success ratio and a higher
+specificity than the reference group when for item sets $\{I, I^{|2}, I^{|3}, I^{|4}\}$ but would have a lower proportion selected and a lower sensitivity.
+Dropping any item other than the first item would lead to a similar situation where
+a greater proportion is selected from the reference group than the focal group
+and is not advisable despite leading to an increase in SE.
+
+
+
+#### `h$str_vs_par`: `ref` and `foc`
+`h$str_vs_par$ref` and `h$str_vs_par$foc` compare SAI under SFI vs. PFI for a given
+set of items
+for the reference and focal groups respectively.
+
+`h$str_vs_par$ref`:
+\[
+\begin{align*}
+h^{\str,\par}(\SAI^{r}) &= 2\text{arcsin}\left(\sqrt{\SAI^{r, \str}}\right)-2\text{arcsin}\left(\sqrt{\SAI^{r,\par}}\right)\\
+h^{\str,\par}(\SAI^{|k,r}) &= 2\text{arcsin}\left(\sqrt{\SAI^{|k,r,\str}}\right)-2\text{arcsin}\left(\sqrt{\SAI^{|k,r,\par}}\right)
+\end{align*}
+\]
+```{r }
+knitr::kable(ex1$h$str_vs_par$ref)
+```
+
+`h$str_vs_par$foc`:
+
+\[
+\begin{align*}
+h^{\str,\par}(\SAI^{f}) &= 2\text{arcsin}\left(\sqrt{\SAI^{f, \str}}\right)-2\text{arcsin}\left(\sqrt{\SAI^{f,\par}}\right)\\
+h^{\str,\par}(\SAI^{|k,f}) &= 2\text{arcsin}\left(\sqrt{\SAI^{|k,f,\str}}\right)-2\text{arcsin}\left(\sqrt{\SAI^{|k,f,\par}}\right)
+\end{align*}
+\]
+
+```{r}
+knitr::kable(ex1$h$str_vs_par$foc)
+```
+
+$\PS^{r}_{\str,\par}=-0.040$ indicates that 
+PS was slightly higher under PFI compared to under SFI for the full item set and when any of items 2-4 was deleted. Deleting
+item 1 brought the effect size of the difference between SFI and PFI conditions to 0 for all accuracy indices.
 
 
 

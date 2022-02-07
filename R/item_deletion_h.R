@@ -238,7 +238,7 @@ item_deletion_h <- function(propsel, cut_z = NULL,
   h_str_vs_par_f_full <- h_str_vs_par_f_list[[1]]$h
   
   h_R_Ef_full <- cohens_h(store_par[[1]]$summary$Reference, 
-                                     store_par[[1]]$summary$E_R.Focal.)
+                                     store_par[[1]]$summary$`E_R(Focal)`)
   # Re-weight the accuracy indices by focal and group proportions to compute 
   # overall accuracy indices under partial invariance for the full item set
   overall3_par_full <- get_perf(pmix_ref, store_par[[1]]$summary)
@@ -308,9 +308,9 @@ item_deletion_h <- function(propsel, cut_z = NULL,
     # Compute h for the difference in accuracy indices under partial invariance
     # for the reference group vs. for the expected accuracy indices for the 
     # focal group if it followed the same distribution as the reference group 
-    # (E_R.Focal.)
+    # (`E_R(Focal)`)
     h_R_Ef_del[i - 1] <- round(cohens_h(store_par[[i]]$summary$Reference, 
-                                        store_par[[i]]$summary$E_R.Focal.), 3)
+                                        store_par[[i]]$summary$`E_R(Focal)`), 3)
     # Compute the change in Cohen's h comparing accuracy indices under partial
     # invariance for the reference group vs. for the expected accuracy indices
     # for the focal group if it followed the same distribution as the reference
@@ -329,7 +329,7 @@ item_deletion_h <- function(propsel, cut_z = NULL,
   
   # Format stored variables
   h_R_Ef <- as.data.frame(cbind(round(h_R_Ef_full, 3), h_R_Ef_del))
-  names(h_R_Ef) <- c("h(r, Ef; I)", paste0(paste0("h(r, Ef; I-i"),
+  names(h_R_Ef) <- c("h(r-Ef)", paste0(paste0("h(r-Ef; |"),
                                              c(1:n_items), c(")")))
     
   h_str_vs_par_ref <- as.data.frame(cbind(round(h_str_vs_par_ref_full, 3), 
@@ -341,19 +341,19 @@ item_deletion_h <- function(propsel, cut_z = NULL,
                                                overall3_par_del1), 3))
    
   h_overall_sai_par <- as.data.frame(round(h_overall_sai_par, 3))
-  names(h_overall_sai_par) <- paste0(paste0("h(I, I-i"), c(1:n_items), c(")"))
-  rownames(h_overall_sai_par) <- rownames(overall_sai_par) <- c("SR", "SE", "SP")
+  names(h_overall_sai_par) <- paste0(paste0("h(|"), c(1:n_items), c(")"))
+  rownames(h_overall_sai_par) <- rownames(overall_sai_par) <- c("SR*", "SE*", "SP*")
   
-  names(h_str_vs_par_ref) <- names(h_str_vs_par_f) <- c("h(s, p; I)", 
-      paste0(paste0("h(s, p; I-i"), c(1:n_items), c(")")))
+  names(h_str_vs_par_ref) <- names(h_str_vs_par_f) <- c("h(s, p)", 
+      paste0(paste0("h(s, p; |"), c(1:n_items), c(")")))
   
   names(overall_sai_par) <- names(store_str) <- names(store_par) <- 
     names(h_str_vs_par_ref_list) <- names(h_str_vs_par_f_list) <- 
-    c("I", paste0(paste0("I-i"), c(1:n_items)))
+    c("I", paste0(paste0("I-k"), c(1:n_items)))
     
   names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_f) <- 
     names(delta_h_R_vs_Ef_par) <- 
-    paste0(paste0('\u0394', "h(I, I-i"), c(1:n_items), c(")"))
+    paste0(paste0('\u0394', "h(|"), c(1:n_items), c(")"))
   
   rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_f) <-
     rownames(h_R_Ef) <- rownames(delta_h_R_vs_Ef_par) <- 

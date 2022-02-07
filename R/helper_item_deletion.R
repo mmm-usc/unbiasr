@@ -151,9 +151,7 @@ cohens_h <- function(p1, p2) {
 #' 
 #' e.g. for the improvement in SE:
 #' 
-#' \eqn{\Delta h_{SE^{(-i)}}=\text{sign}(h_{SE^{(R)}}-h_{SE^{(-i)}})
-#'           ||h_{SE^{(-i)}}||h_{SE^{(-i)}}||}
-
+#' \eqn{\Delta h^{|k}(SE)=\text{sign}\left(|h({SE)}|-|h^{|k}(SE)|\right)||h^{|k}(SE)|-|h(SE)||}
 #' @param h_R h effect sizes for when the item is included.
 #' @param h_i_del h effect sizes for when the item is deleted.
 #' @return Cohen's h for the difference in the selection accuracy index when the
@@ -163,7 +161,7 @@ cohens_h <- function(p1, p2) {
 #' delta_h(-0.002, 0.011)
 
 delta_h <- function(h_R, h_i_del) {
-  sign(h_R - h_i_del) * abs(abs(h_i_del) - abs(h_R))
+  sign(abs(h_R) - abs(h_i_del)) * abs(abs(h_i_del) - abs(h_R))
 }
 
 
