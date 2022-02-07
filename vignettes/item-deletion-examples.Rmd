@@ -4,8 +4,7 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Applied examples}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}`
-  
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE, warning=FALSE}
@@ -24,10 +23,10 @@ library(lavaan)
 \newcommand{\SE}{\text{SE}}
 \newcommand{\SP}{\text{SP}}
 \newcommand{\PS}{\text{PS}}
-\newcommand{\TP}{\text{\TP}}
-\newcommand{\FN}{\text{\FN}}
-\newcommand{\FP}{\text{\FP}}
-\newcommand{\TN}{\text{\TN}}
+\newcommand{\TP}{\text{TP}}
+\newcommand{\FN}{\text{FN}}
+\newcommand{\FP}{\text{FP}}
+\newcommand{\TN}{\text{TN}}
 \newcommand{\str}{\text{str}}
 \newcommand{\par}{\text{par}}
 \newcommand{\td}{\tilde}
@@ -83,11 +82,11 @@ modified item set excluding the 4th item: $\Delta h^{|4}\SAI^{r}_{\text{str, par
 
 - $h^{\rr}(\SAI) = \SAI_{\rr}$ for h comparing the SAI of r and Ef groups under PFI,
 for the full item set.
-- $h^{\rr}(\SAI^{|2})=\SE_{\rr}^{|2}$ for h comparing the SAI of r and Ef groups
+- $h^{\rr}(\SAI^{|2})=\SAI_{\rr}^{|2}$ for h comparing the SAI of r and Ef groups
 for modified item set excluding the second item.
-- $h^{\text{r-f}}(\SAI^{\str}) = \SE_{\text{r-f}}^{\str}$ for h comparing the SAI 
+- $h^{\text{r-f}}(\SAI^{\str}) = \SAI_{\text{r-f}}^{\str}$ for h comparing the SAI 
 of r and f groups under SFI, for the full item set.
-- $h^{\text{r-f}}(\SAI^{|2;\str}) = \SE_{\text{r-f}}^{|2; \str}$ for  h comparing
+- $h^{\text{r-f}}(\SAI^{|2;\str}) = \SAI_{\text{r-f}}^{|2; \str}$ for  h comparing
 the SAI of r and f groups under SFI, for the modified item set excluding the
 second item.
 
@@ -137,18 +136,13 @@ by group proportions to arrive at a weighted average for each SAI (regularly
 computed as $\SR=\frac{\TP}{\TP+\FP}$, $\SE=\frac{\TP}{\TP+\FN}$, 
 $\SR=\frac{\TN}{\TN+\FP}$). 
 Letting $p_r$ denote the weight for the reference group,
-\begin{align*}
-\td{\SR} &= \frac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)}\\
-\td{\SE} &= \frac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FN_{r}\times p_r + \FN_{f}\times (1-p_r)}\\
-\td{\SP} &= \frac{\TN_{r}\times p_r + \TN_{f}\times (1-p_r)}{\TN_{r}\times p_r + \TN_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)}
-\end{align*}
+
+$$\td{\SR} = \frac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)}$$
+$$\td{\SE} = \frac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FN_{r}\times p_r + \FN_{f}\times (1-p_r)}$$
+$$\td{\SP} = \frac{\TN_{r}\times p_r + \TN_{f}\times (1-p_r)}{\TN_{r}\times p_r + \TN_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)}$$
 
 Then, the change in overall SAI after dropping the k-th item can be computed as
-\[
-\begin{align*}
-h^{|k}\td{\SAI} &= 2\arcsin\left(\sqrt{\td{\SAI}}\right)-2\arcsin\left(\sqrt{\td{\SAI}^{|k}}\right)
-\end{align*}
-\]
+$$h^{|k}\td{\SAI} = 2\arcsin\left(\sqrt{\td{\SAI}}\right)-2\arcsin\left(\sqrt{\td{\SAI}^{|k}}\right)$$
 
 A negative `h_overall_sai_par` indicates an improvement 
 (as $h^{|k}\td{\SAI}<0 \iff \td{\SAI}<\td{\SAI}^{|k}$)
@@ -158,8 +152,8 @@ whereas a positive
 ```{r}
 knitr::kable(ex1$h_overall_sai.par)
 ```
-For the 4-item CES-D scale, the negative $h^{|1}{\td{\SR}}$,
-$h^{|1}{\td{\SE}}$, and $h^{|1}{\td{\SP}}$ values 
+For the 4-item CES-D scale, the negative $h^{|1}(\td{\SR})$,
+$h^{|1}(\td{\SE})$, and $h^{|1}(\td{\SP})$ values 
 indicate that removing the first item would lead to an improvement in SR, 
 SE, and SP. On the other hand, the positive $h$ values for modified item sets 
 excluding items 2, 3, or 4 suggest that SR, SE, and SP decreases if any of these 
