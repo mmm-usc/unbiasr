@@ -229,6 +229,27 @@ knitr::kable(ex1$delta_h$h_str_vs_par$foc)
 
 
 ##### `h`
+(the same function call as above, with return_detailed=TRUE) so that h tables
+are also returned)
+```{r}
+ex1 <- item_deletion_h(weights_item = c(1, 1, 1, 1), 
+                              propsel = .14, n_dim = 1,  
+                              alpha_r = 0,
+                              alpha_f =-0.125,
+                              psi_r = 0.354^2,
+                              psi_f = 0.329^2,
+                              lambda_r_p = c(1.00, 1.66, 2.30, 2.29),
+                              lambda_f_p = c(1.00, 1.66, 2.30, 2.29),
+                              nu_r_p = c(1.54, 1.36, 1.16, 1.08),
+                              nu_f_p = c(0.68, 1.36, 1.16, 1.08),
+                              theta_r_p = diag(c(1.20, 0.81, 0.32, 0.32)), 
+                              theta_f_p = diag(c(0.72, 0.81, 0.32, 0.32)),
+                              weights_latent = 1,
+                              plot_contour = FALSE,
+                              return_detailed = TRUE,
+                              also_return_PartInvMulti_outputs = FALSE,
+                              pmix_ref = 5/7)
+```
 #### `h$R_vs_Ef.par`
 [HL]: # (We can call the following 'bias'. It'd be helpful to discuss the 'full' column first.)
 
@@ -328,7 +349,7 @@ ex2 <- item_deletion_h(weights_item = c(1, 1, 1, 1, 1, 1, 1, 1),
                                                 .335,.454,.457)),
                              weights_latent = 1,
                              plot_contour = FALSE,
-                             return_detailed = FALSE, pmix_ref = 0.5)
+                             return_detailed = TRUE, pmix_ref = 0.5)
 ```
 
 
@@ -430,7 +451,7 @@ ex3 <- item_deletion_h(cut_z=2.509731,
               theta_f_p = result[[1]]$theta,
               weights_latent = c(0.0325, 0.1795, 0.4693, -0.1951, 0.1236),
               plot_contour = FALSE, 
-              return_detailed = FALSE)
+              return_detailed = TRUE)
 ```
 
 ```{r}
@@ -450,6 +471,7 @@ and retaining item 11.
 
 
 ```{r}
+ex3$delta_h$h_R_vs_Ef.par
 knitr::kable(ex3$h$R_vs_Ef.par)
 ```
 When item 11 is dropped, h for PS is negative (a higher proportion is selected 

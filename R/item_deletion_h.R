@@ -51,9 +51,9 @@
 #'        should be plotted; default to `TRUE`.
 #' @param return_detailed Logical; whether additional data frames should be r
 #'        returned object; default to `FALSE`. If 
-#'        \code{return_detailed == FALSE}, returns a list of length 3 with the 
-#'        elements: `h_overall_sai.par` (a data frame), `delta_h` (a list), `h`
-#'        (a list). If set to `TRUE`, returns `raw` as an additional element.
+#'        \code{return_detailed == FALSE}, returns a list of length 2 with the 
+#'        elements: `h_overall_sai.par` (a data frame) and`delta_h` (a list). 
+#'        If set to `TRUE`, returns `h` and `raw` as an additional elements.
 #' @param also_return_PartInvMulti Logical; whether the outputs from each call 
 #'        of [PartInv_Multi_we()] should also be returned; default to `FALSE`.
 #'        If \code{return_detailed == FALSE} but
@@ -367,12 +367,7 @@ item_deletion_h <- function(propsel, cut_z = NULL,
   h_str_vs_par_list <- list("ref" = h_str_vs_par_ref_list,
                             "foc" = h_str_vs_par_f_list)
 
-  if (return_detailed == TRUE | 
-      (also_return_PartInvMulti_outputs == TRUE & return_detailed == FALSE)) {
-    # The condition above is to catch any function calls where the user asks
-    # the PartInvMulti outputs but leaves return_detailed as FALSE. PartInvMulti
-    # outputs will only be printed in conjunction with other elements of `raw`.
-    if(also_return_PartInvMulti_outputs == TRUE) {
+ if(also_return_PartInvMulti_outputs == TRUE) {
       return(list("h_overall_sai.par" = h_overall_sai_par,
                   "delta_h" = list("h_R_vs_Ef.par" = delta_h_R_vs_Ef_par,
                                    "h_str_vs_par" = delta_h_str_vs_par), 
@@ -381,8 +376,8 @@ item_deletion_h <- function(propsel, cut_z = NULL,
                   "raw" = list("overall_sai.par" = overall_sai_par,
                                "h_str_vs_par_list" = h_str_vs_par_list,
                                "PartInvMulti" = list("strict" = store_str, 
-                                                     "partial" = store_par))))
-    }
+                                                     "partial" = store_par))))} 
+ if (return_detailed == TRUE) {
     return(list("h_overall_sai.par" = h_overall_sai_par,
                 "delta_h" = list("h_R_vs_Ef.par" = delta_h_R_vs_Ef_par,
                                  "h_str_vs_par" = delta_h_str_vs_par), 
@@ -390,11 +385,9 @@ item_deletion_h <- function(propsel, cut_z = NULL,
                            "str_vs_par"= h_str_vs_par),
                 "raw" = list("overall_sai.par" = overall_sai_par,
                              "h_str_vs_par_list" = h_str_vs_par_list)))
-  } else {
-    return(list("h_overall_sai.par" = h_overall_sai_par,
-                "delta_h" = list("h_R_vs_Ef.par" = delta_h_R_vs_Ef_par,
-                                 "h_str_vs_par" = delta_h_str_vs_par), 
-                "h" = list("R_vs_Ef.par" = h_R_Ef, 
-                           "str_vs_par"= h_str_vs_par)))
   }
+  # default case
+  return(list("h_overall_sai.par" = h_overall_sai_par,
+                "delta_h" = list("h_R_vs_Ef.par" = delta_h_R_vs_Ef_par,
+                                 "h_str_vs_par" = delta_h_str_vs_par)))
 }
