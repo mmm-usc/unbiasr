@@ -1,0 +1,44 @@
+Package: PartInvShinyUI
+Title: Multidimensional Classification Accuracy Analysis Framework
+Version: 0.0.1
+Authors@R: c(
+    person("Clay", "Cantrell", , "clay.cantrell@me.com",
+            role = c("aut", "cre"), 
+           comment = c(ORCID = "0000-0002-2969-7089")),
+    person("Hok Chio (Mark)", "Lai", , "marklhc@gmail.com", 
+           role = c("aut"),
+           comment = c(ORCID = "0000-0002-9196-7406")),
+    person("Yichi", "Zhang", , "yzhang97@usc.edu",
+           role = c("aut"),
+           comment = c(ORCID = "0000-0002-4112-2106")),
+     person("Meltem", "Ozcan", , "ozcan@usc.edu",
+           role = c("aut"),
+           comment = c(ORCID = "0000-0002-5054-8264"))       
+    )
+Description: The multidimensional classification accuracy analysis 
+    framework (MCAA) is an extension of the selection accuracy 
+    framework proposed by Millsap & Kwok (2004). Since real-world 
+    selection usually involves multiple tests or subtests with 
+    different weights assigned to each dimension, the MCAA framework 
+    is proposed to quantify the impact of item bias on selection 
+    accuracy by examining the changes in selection accuracy indices 
+    (proportion selected, success ratio, sensitivity, specificity) 
+    for each subgroup. The adverse impact (AI) ratio (i.e., the ratio 
+    of the proportions selected between a minority and a majority group 
+    with matching latent trait levels) is also provided in results. 
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Suggests: 
+    testthat,
+    shinytest
+Imports: 
+    mnormt,
+    shiny,
+    shinydashboard,
+    shinyjs,
+    shinyMatrix,
+    shinyWidgets,
+    roxygen2
