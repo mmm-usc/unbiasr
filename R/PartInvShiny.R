@@ -103,7 +103,7 @@ myApp <- function(...) {
                       A Multidisciplinary Journal. https://doi.org/10 .1080/10705511.2021.1977936"),
                     p("Millsap, R. E., & Kwok, O.-M. (2004). Evaluating the impact of 
                         partial factorial invariance on selection in two populations. 
-                        Psychological Methods, 9, 93–115. https://doi.org/10.1037/1082-989X.9.1.93."
+                        Psychological Methods, 9, 93--115. https://doi.org/10.1037/1082-989X.9.1.93."
                     )),
                   
                   box(
