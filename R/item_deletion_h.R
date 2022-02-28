@@ -360,34 +360,34 @@ item_deletion_h <- function(propsel, cut_z = NULL,
     rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_f) <-
     c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
   
-  delta_h_str_vs_par <- list("ref" = delta_h_str_vs_par_ref, 
-                             "foc" = delta_h_str_vs_par_f)
+  delta_h_str_vs_par <- list("ref" = t(delta_h_str_vs_par_ref), 
+                             "foc" = t(delta_h_str_vs_par_f))
   
-  h_str_vs_par <- list("ref"= h_str_vs_par_ref, "foc" = h_str_vs_par_f)
+  h_str_vs_par <- list("ref"= t(h_str_vs_par_ref), "foc" = t(h_str_vs_par_f))
   h_str_vs_par_list <- list("ref" = h_str_vs_par_ref_list,
                             "foc" = h_str_vs_par_f_list)
 
  if(also_return_PartInvMulti_outputs == TRUE) {
-      return(list("h_overall_sai.par" = h_overall_sai_par,
-                  "delta_h" = list("h_R_vs_Ef.par" = delta_h_R_vs_Ef_par,
+      return(list("h_overall_sai.par" = t(h_overall_sai_par),
+                  "delta_h" = list("h_R_vs_Ef.par" = t(delta_h_R_vs_Ef_par),
                                    "h_str_vs_par" = delta_h_str_vs_par), 
-                  "h" = list("R_vs_Ef.par" = h_R_Ef,
+                  "h" = list("R_vs_Ef.par" = t(h_R_Ef),
                              "str_vs_par"= h_str_vs_par),
-                  "raw" = list("overall_sai.par" = overall_sai_par,
+                  "raw" = list("overall_sai.par" = t(overall_sai_par),
                                "h_str_vs_par_list" = h_str_vs_par_list,
                                "PartInvMulti" = list("strict" = store_str, 
                                                      "partial" = store_par))))} 
  if (return_detailed == TRUE) {
-    return(list("h_overall_sai.par" = h_overall_sai_par,
-                "delta_h" = list("h_R_vs_Ef.par" = delta_h_R_vs_Ef_par,
+    return(list("h_overall_sai.par" = t(h_overall_sai_par),
+                "delta_h" = list("h_R_vs_Ef.par" = t(delta_h_R_vs_Ef_par),
                                  "h_str_vs_par" = delta_h_str_vs_par), 
-                "h" = list("R_vs_Ef.par" = h_R_Ef,
+                "h" = list("R_vs_Ef.par" = t(h_R_Ef),
                            "str_vs_par"= h_str_vs_par),
-                "raw" = list("overall_sai.par" = overall_sai_par,
+                "raw" = list("overall_sai.par" = t(overall_sai_par),
                              "h_str_vs_par_list" = h_str_vs_par_list)))
   }
   # default case
-  return(list("h_overall_sai.par" = h_overall_sai_par,
-                "delta_h" = list("h_R_vs_Ef.par" = delta_h_R_vs_Ef_par,
+  return(list("h_overall_sai.par" = t(h_overall_sai_par),
+                "delta_h" = list("h_R_vs_Ef.par" = t(delta_h_R_vs_Ef_par),
                                  "h_str_vs_par" = delta_h_str_vs_par)))
 }

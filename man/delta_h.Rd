@@ -22,8 +22,7 @@ index when an item is deleted vs. included.
 
 e.g. for the improvement in SE:
 
-\eqn{\Delta h_{SE^{(-i)}}=\text{sign}(h_{SE^{(R)}}-h_{SE^{(-i)}})
-          ||h_{SE^{(-i)}}||h_{SE^{(-i)}}||}
+\eqn{\Delta h^{|k}(SE)=\text{sign}\left(|h({SE)}|-|h^{|k}(SE)|\right)||h^{|k}(SE)|-|h(SE)||}
 }
 \examples{
 delta_h(0.04, 0.01)
