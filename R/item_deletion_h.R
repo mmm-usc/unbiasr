@@ -54,11 +54,6 @@
 #'        \code{return_detailed == FALSE}, returns a list of length 2 with the 
 #'        elements: `h_overall_sai.par` (a data frame) and`delta_h` (a list). 
 #'        If set to `TRUE`, returns `h` and `raw` as an additional elements.
-#' @param also_return_PartInvMulti Logical; whether the outputs from each call 
-#'        of [PartInv_Multi_we()] should also be returned; default to `FALSE`.
-#'        If \code{return_detailed == FALSE} but
-#'        \code{also_return_PartInvMulti == TRUE}, proceeds as if 
-#'        \code{return_detailed == TRUE}.
 #' @return A list with 3 elements if \code{return_detailed == FALSE}, 4 elements
 #'         if \code{return_detailed == TRUE}.
 #'        \item{h_overall_sai.par}{A (3 x number of items) data frame that 
@@ -99,7 +94,7 @@
 #'          for the focal group under strict vs. partial invariance, for a
 #'          given set of items.}
 #'        \item{raw}{A list of length 3 containing `overall_sai.par`, 
-#'        `h_str_vs_par_list`, and `PartInvMulti`.}
+#'        `h_str_vs_par_list`, and `PartInv`.}
 #'        \item{raw$overall_sai.par}{A (3 x number of items + 1) data frame 
 #'          containing overall SR, SE, SP values under partial invariance. 
 #'          'Overall' refers to the weighting of the accuracy indices for focal 
@@ -116,8 +111,8 @@
 #'          `h`. Here, h is the Cohen's h effect size for the comparison between 
 #'          the accuracy indices under strict vs. partial invariance for a given
 #'          set of items for the focal group.}
-#'        \item{raw$PartInvMulti}{A list containing `strict` and `partial`, the
-#'         function outputs for each call to [PartInvMulti_we()] under strict 
+#'        \item{raw$PartInv}{A list containing `strict` and `partial`, the
+#'         function outputs for each call to [PartInv()] under strict 
 #'         invariance and partial invariance respectively.}
 #'         
 #' @examples
@@ -137,15 +132,14 @@
 #'                              theta_r_p = diag(1, 5),
 #'                              theta_f_p = c(1, .95, .80, .75, 1),
 #'                              plot_contour = TRUE,
-#'                              return_detailed = TRUE,
-#'                              also_return_PartInvMulti = TRUE)
+#'                              return_detailed = TRUE)
 #' multi_dim$h_overall_sai.par
 #' multi_dim$delta_h$R_vs_Ef.par
 #' multi_dim$delta_h$str_vs_par$ref
 #' multi_dim$h$str_vs_par$ref$`h(s, p; I)`
 #' multi_dim$h$str_vs_par$ref$`h(s, p; I-i1)`
-#' multi_dim$raw$PartInvMulti$strict$`I`
-#' multi_dim$raw$PartInvMulti$strict$`I-i2`
+#' multi_dim$raw$PartInv$strict$`I`
+#' multi_dim$raw$PartInv$strict$`I-i2`
 #' 
 #' # Single dimension examples
 #' single_dim <- item_deletion_h(propsel = .10,
@@ -159,235 +153,243 @@
 #'                                nu_f_p = c(.225, -.05, .240, -.025),
 #'                                theta_r_p = diag(.96, 4),
 #'                                n_dim = 1, plot_contour = TRUE,
-#'                                return_detailed = TRUE,
-#'                                also_return_PartInvMulti = TRUE)
+#'                                return_detailed = TRUE)
+#'                          
 #' single_dim$h_overall_sai.par
 #' single_dim$delta_h$R_vs_Ef.par
 #' single_dim$delta_h$str_vs_par$ref
 #' single_dim$h$str_vs_par$ref$`h(s, p; I)`
 #' single_dim$h$str_vs_par$ref$`h(s, p; I-i1)`
-#' single_dim$raw$PartInvMulti$strict$`I`
-#' single_dim$raw$PartInvMulti$strict$`I-i2`
+#' single_dim$raw$PartInv$strict$`I`
+#' single_dim$raw$PartInv$strict$`I-i2`
 #' @export
-item_deletion_h <- function(propsel, cut_z = NULL, 
+item_deletion_h <- function(propsel, 
+                            cut_z = NULL, 
                             weights_item, 
                             n_dim = 1,
                             n_i_per_dim = NULL, 
                             weights_latent,
-                            alpha_r, alpha_f = alpha_r,
-                            psi_r, psi_f = psi_r,
-                            lambda_r_p, lambda_f_p = lambda_r_p, 
-                            nu_r_p, nu_f_p = nu_r_p,
-                            theta_r_p, theta_f_p = theta_r_p,
+                            alpha_r, 
+                            alpha_f = alpha_r,
+                            psi_r, 
+                            psi_f = psi_r,
+                            lambda_r_p, 
+                            lambda_f_p = lambda_r_p, 
+                            nu_r_p, 
+                            nu_f_p = nu_r_p,
+                            theta_r_p, 
+                            theta_f_p = theta_r_p,
                             pmix_ref = 0.5, 
                             plot_contour = TRUE,
                             return_detailed = FALSE,
-                            also_return_PartInvMulti_outputs = FALSE,
                             ...) {
   
   # Start with pre-allocating space:
-  n_items <- length(weights_item)
-  store_str <- store_par <- h_str_vs_par_ref_list <- h_str_vs_par_f_list <- 
-    vector(mode = "list", n_items + 1)
-  delta_h_str_vs_par_ref <- delta_h_str_vs_par_f <- h_R_Ef_del <- 
-    h_str_vs_par_ref_del <-  h_str_vs_par_f_del <- delta_h_R_vs_Ef_par <- 
-    as.data.frame(matrix(nrow = 8, ncol = n_items))
-  h_R_Ef_full <- h_str_vs_par_ref_full <- h_str_vs_par_f_full <- c()
-  h_overall_sai_par <- overall3_par_del1 <- 
-    as.data.frame(matrix(nrow = 3, ncol = n_items)) 
-  
- # Call PartInvMulti_we with the full item set under strict invariance
-  store_str[[1]] <- PartInvMulti_we(propsel, cut_z = cut_z, 
-                                    weights_item, weights_latent,
-                                    alpha_r = alpha_r,
-                                    alpha_f = alpha_f,
-                                    psi_r = psi_r,
-                                    psi_f = psi_f,
-                                    lambda_r = lambda_f_p * (1 - pmix_ref) + 
-                                               lambda_r_p * pmix_ref,
-                                    nu_r = nu_f_p * (1 - pmix_ref) + 
-                                           nu_r_p * pmix_ref,
-                                    Theta_r = theta_f_p * (1 - pmix_ref) + 
-                                              theta_r_p * pmix_ref,
-                                    pmix_ref = pmix_ref, 
-                                    plot_contour = plot_contour)
-  # Call PartInvMulti_we with the full item set under partial invariance
-  store_par[[1]] <- PartInvMulti_we(propsel, cut_z = cut_z, 
-                                    weights_item, weights_latent,
-                                    alpha_r = alpha_r,
-                                    alpha_f = alpha_f,
-                                    psi_r = psi_r,
-                                    psi_f = psi_f,
-                                    lambda_r = lambda_r_p,
-                                    lambda_f = lambda_f_p,
-                                    nu_r = nu_r_p,
-                                    nu_f = nu_f_p,
-                                    Theta_r = theta_r_p,
-                                    Theta_f = theta_f_p,
-                                    pmix_ref = pmix_ref, 
-                                    plot_contour = plot_contour) 
+  N <- length(weights_item)
+  store_str <- store_par <- str_par_tables_ref <- str_par_tables_foc <- 
+    vector(mode = "list", N + 1)
+  delta_h_str_vs_par_ref <- delta_h_str_vs_par_foc <- delta_h_R_vs_Ef_par <-
+    as.data.frame(matrix(nrow = 8, ncol = N))
+  h_R_Ef <- h_str_vs_par_ref <- h_str_vs_par_foc <- as.data.frame(matrix(nrow = 8, ncol = N+1))
+  h_overall_sai_par <- overall_par_del1 <- overall_str_del1 <- 
+    delta_h_str_par_overall <- h_overall_str_par_del<-as.data.frame(matrix(nrow = 3, ncol = N)) 
+ # Call PartInv with the full item set under strict invariance
+  store_str[[1]] <- PartInv(propsel, 
+                            cut_z = cut_z, 
+                            weights_item, weights_latent,
+                            alpha_r = alpha_r,
+                            alpha_f = alpha_f,
+                            psi_r = psi_r,
+                            psi_f = psi_f,
+                            lambda_r = lambda_f_p * (1 - pmix_ref) +
+                              lambda_r_p * pmix_ref,
+                            nu_r = nu_f_p * (1 - pmix_ref) + nu_r_p * pmix_ref,
+                            Theta_r = theta_f_p * (1 - pmix_ref) + 
+                              theta_r_p * pmix_ref,
+                            pmix_ref = pmix_ref, 
+                            plot_contour = plot_contour)
+  # Call PartInv with the full item set under partial invariance
+  store_par[[1]] <- PartInv(propsel, 
+                            cut_z = cut_z, 
+                            weights_item, 
+                            weights_latent,
+                            alpha_r = alpha_r,
+                            alpha_f = alpha_f,
+                            psi_r = psi_r,
+                            psi_f = psi_f,
+                            lambda_r = lambda_r_p,
+                            lambda_f = lambda_f_p,
+                            nu_r = nu_r_p,
+                            nu_f = nu_f_p,
+                            Theta_r = theta_r_p,
+                            Theta_f = theta_f_p,
+                            pmix_ref = pmix_ref, 
+                            plot_contour = plot_contour) 
+  partial <- store_par[[1]]$summary
+  strict  <- store_str[[1]]$summary
   
   # Compare accuracy indices for reference and focal groups under strict vs. 
   # partial invariance conditions and compute h for full item set
-  h_str_vs_par_ref_list[[1]] <- 
-    acc_indices_h(store_str[[1]], store_par[[1]])$`Reference accuracy`
-  h_str_vs_par_f_list[[1]] <- 
-    acc_indices_h(store_str[[1]], store_par[[1]])$`Focal accuracy`
-  
-  h_str_vs_par_ref_full <- h_str_vs_par_ref_list[[1]]$h
-  h_str_vs_par_f_full <- h_str_vs_par_f_list[[1]]$h
-  
-  h_R_Ef_full <- cohens_h(store_par[[1]]$summary$Reference, 
-                                     store_par[[1]]$summary$`E_R(Focal)`)
-  # Re-weight the accuracy indices by focal and group proportions to compute 
-  # overall accuracy indices under partial invariance for the full item set
-  overall3_par_full <- get_perf(pmix_ref, store_par[[1]]$summary)
-  
-  # (Re)set the proportion selected based on the PartInvMulti_we output when all
+  acc <- acc_indices_h(store_str[[1]], store_par[[1]])
+  str_par_tables_ref[[1]] <- acc$Reference
+  str_par_tables_foc[[1]] <- acc$Focal
+  h_str_vs_par_ref[1] <-acc$Reference$h 
+  h_str_vs_par_foc[1] <-acc$Focal$h 
+  h_R_Ef[1] <- cohens_h(partial$Reference, partial$`E_R(Focal)`)
+
+  # Re-weight SE, SR, SP by focal and group proportions to compute 
+  # overall indices under partial invariance for the full item set
+  overall_par_full <- get_overall(pmix_ref, partial)
+  # Repeat for strict invariance
+  overall_str_full <- get_overall(pmix_ref, strict)
+  # Compute h for the difference between strict and partial invariance for 
+  # overall SE, SR, SP
+  h_overall_str_par_full <- cohens_h(overall_str_full, overall_par_full)
+
+  # (Re)set the proportion selected based on the PartInv output when all
   # items are included in the strict invariance condition
   propsel <- store_str[[1]]$propsel
   cut_z <- NULL
   
-  # Delete one item at a time by assigning 0 to index i and redistributing
-  # weights for the subscale; populate store_str and store_par
+  # Item deletion scenarios
   for (i in seq_len(length(weights_item) + 1)[-1]) {
     
     # Assign a weight of 0 to the item to be deleted (indexed at i - 1), and 
     # redistribute the weight from this item across the non-deleted items
     take_one_out <- redistribute_weights(weights_item, n_dim = n_dim,
-                                       n_i_per_dim = n_i_per_dim, del_i = i - 1)
+                                         n_i_per_dim = n_i_per_dim, 
+                                         del_i = i - 1)
     
-    # Call PartInvMulti_we with the new weights under strict invariance
-    store_str[[i]] <- PartInvMulti_we(propsel, cut_z = cut_z, 
-                                      take_one_out, weights_latent,
-                                      alpha_r = alpha_r,
-                                      alpha_f = alpha_f,
-                                      psi_r = psi_r,
-                                      psi_f = psi_f,
-                                      lambda_r = lambda_f_p * (1 - pmix_ref) + 
-                                                 lambda_r_p * pmix_ref,
-                                      nu_r = nu_f_p * (1 - pmix_ref) +
-                                             nu_r_p * pmix_ref,
-                                      Theta_r = theta_f_p * (1 - pmix_ref) + 
-                                                theta_r_p * pmix_ref,
-                                      pmix_ref = pmix_ref, 
-                                      plot_contour = plot_contour)
-    # Call PartInvMulti_we with the new weights under partial invariance
-    store_par[[i]] <- PartInvMulti_we(propsel, cut_z = cut_z,
-                                      take_one_out, weights_latent,
-                                      alpha_r = alpha_r,
-                                      alpha_f = alpha_f,
-                                      psi_r = psi_r,
-                                      psi_f = psi_f,
-                                      lambda_r = lambda_r_p,
-                                      nu_r = nu_r_p,
-                                      nu_f = nu_f_p,
-                                      Theta_r = theta_r_p,
-                                      Theta_f = theta_f_p,
-                                      pmix_ref = pmix_ref, 
-                                      plot_contour = plot_contour)
-                    
+    # Call PartInv with the new weights under strict invariance
+    store_str[[i]] <- PartInv(propsel, 
+                              cut_z = cut_z,
+                              take_one_out, 
+                              weights_latent,
+                              alpha_r = alpha_r,
+                              alpha_f = alpha_f,
+                              psi_r = psi_r,
+                              psi_f = psi_f,
+                              lambda_r = lambda_f_p * (1 - pmix_ref) + 
+                                lambda_r_p * pmix_ref,
+                              nu_r = nu_f_p * (1 - pmix_ref) + 
+                                nu_r_p * pmix_ref,
+                              Theta_r = theta_f_p * (1 - pmix_ref) + 
+                                theta_r_p * pmix_ref,
+                              pmix_ref = pmix_ref, 
+                              plot_contour = plot_contour)
+    # Call PartInv with the new weights under partial invariance
+    store_par[[i]] <- PartInv(propsel, 
+                              cut_z = cut_z,
+                              take_one_out, 
+                              weights_latent,
+                              alpha_r = alpha_r,
+                              alpha_f = alpha_f,
+                              psi_r = psi_r,
+                              psi_f = psi_f,
+                              lambda_r = lambda_r_p,
+                              nu_r = nu_r_p,
+                              nu_f = nu_f_p,
+                              Theta_r = theta_r_p,
+                              Theta_f = theta_f_p,
+                              pmix_ref = pmix_ref, 
+                              plot_contour = plot_contour)
+    partial <- store_par[[i]]$summary
+    strict <- store_str[[i]]$summary
     # Compute h for the difference in accuracy indices for reference and focal 
     # groups under strict vs. partial invariance conditions 
-    h_str_vs_par_ref_list[[i]] <- 
-      acc_indices_h(store_str[[i]], store_par[[i]])$`Reference accuracy`
-    h_str_vs_par_f_list[[i]] <- 
-      acc_indices_h(store_str[[i]], store_par[[i]])$`Focal accuracy`
+    acc_del_i <- acc_indices_h(store_str[[i]], store_par[[i]])
     
-    h_str_vs_par_ref_del[i - 1] <- h_str_vs_par_ref_list[[i]]$h
-    h_str_vs_par_f_del[i - 1] <- h_str_vs_par_f_list[[i]]$h
+    str_par_tables_ref[[i]] <- acc_del_i$Reference
+    str_par_tables_foc[[i]] <- acc_del_i$Focal
+    
+    h_str_vs_par_ref[i] <- str_par_tables_ref[[i]]$h
+    h_str_vs_par_foc[i] <- str_par_tables_foc[[i]]$h
     
     # Compute the change in Cohen's h comparing accuracy indices for the 
     # reference and focal groups under strict vs. partial invariance when item i
-    # is deleted i.e. the change in h_str_vs_par_ref and h_str_vs_par_f
-    delta_h_str_vs_par_ref[i - 1] <- delta_h(h_str_vs_par_ref_list[[1]]$h, 
-                                  h_str_vs_par_ref_list[[i]]$h)
-    delta_h_str_vs_par_f[i - 1] <- delta_h(h_str_vs_par_f_list[[1]]$h, 
-                                             h_str_vs_par_f_list[[i]]$h)
-    
+    # is deleted i.e. the change in h_str_vs_par_ref and h_str_vs_par_foc
+    delta_h_str_vs_par_ref[i - 1] <- delta_h(h_str_vs_par_ref[1], 
+                                             h_str_vs_par_ref[i])
+    delta_h_str_vs_par_foc[i - 1] <- delta_h(h_str_vs_par_foc[1], 
+                                             h_str_vs_par_foc[i])
     # Compute h for the difference in accuracy indices under partial invariance
     # for the reference group vs. for the expected accuracy indices for the 
     # focal group if it followed the same distribution as the reference group 
     # (`E_R(Focal)`)
-    h_R_Ef_del[i - 1] <- round(cohens_h(store_par[[i]]$summary$Reference, 
-                                        store_par[[i]]$summary$`E_R(Focal)`), 3)
+    h_R_Ef[i] <- round(cohens_h(partial$Reference, partial$`E_R(Focal)`), 3)
     # Compute the change in Cohen's h comparing accuracy indices under partial
     # invariance for the reference group vs. for the expected accuracy indices
     # for the focal group if it followed the same distribution as the reference
     # group when item i is deleted, i.e. the change in h_R_Ef_del
-    delta_h_R_vs_Ef_par[i - 1] <- round(delta_h(h_R_Ef_full,
-                                                h_R_Ef_del[i - 1]), 3)
-    
+    delta_h_R_vs_Ef_par[i-1] <- round(delta_h(h_R_Ef[1], h_R_Ef[i]),3)
     # Compute overall SR, SE, SP indices under partial invariance by weighting 
     # accuracy indices for the reference and focal groups by their group
     # proportions
-    overall3_par_del1[i - 1] <- get_perf(pmix_ref, store_par[[i]]$summary)
+    overall_par_del1[i - 1] <- get_overall(pmix_ref, partial)
+    # Repeat for strict invariance
+    overall_str_del1[i - 1] <- get_overall(pmix_ref, strict)
+    # Compute Cohen's h for the difference between overall SE, SR, SP under 
+    # strict vs. partial invariance
+    h_overall_str_par_del[i - 1] <- cohens_h(overall_str_del1[i - 1],
+                                             overall_par_del1[i - 1])
+
     # Compute how the overall SR, SE, SP indices change when an item is deleted
-    h_overall_sai_par[i - 1] <- cohens_h(overall3_par_full, 
-                                              overall3_par_del1[i - 1])
-  }
-  
-  # Format stored variables
-  h_R_Ef <- as.data.frame(cbind(round(h_R_Ef_full, 3), h_R_Ef_del))
-  names(h_R_Ef) <- c("h(r-Ef)", paste0(paste0("h(r-Ef; |"),
-                                             c(1:n_items), c(")")))
+    # under partial invariance
+    h_overall_sai_par[i - 1] <- cohens_h(overall_par_full, 
+                                         overall_par_del1[i - 1])
     
-  h_str_vs_par_ref <- as.data.frame(cbind(round(h_str_vs_par_ref_full, 3), 
-                                          h_str_vs_par_ref_del))
-  h_str_vs_par_f <- as.data.frame(cbind(round(h_str_vs_par_f_full, 3), 
-                                        h_str_vs_par_f_del))
+    delta_h_str_par_overall[i - 1] <- round(delta_h(h_overall_str_par_full, 
+                                                    h_overall_str_par_del[i - 1]), 3)
+    
+  }
+  # Format stored variables
+  names(h_R_Ef) <- c("h(r-Ef)", paste0(paste0("h(r-Ef; |"), c(1:N), c(")")))
   
-  overall_sai_par <- as.data.frame(round(cbind(overall3_par_full, 
-                                               overall3_par_del1), 3))
+  overall_sai_par <- as.data.frame(round(cbind(overall_par_full, 
+                                               overall_par_del1), 3))
    
   h_overall_sai_par <- as.data.frame(round(h_overall_sai_par, 3))
-  names(h_overall_sai_par) <- paste0(paste0("h(|"), c(1:n_items), c(")"))
-  rownames(h_overall_sai_par) <- rownames(overall_sai_par) <- c("SR*", "SE*", "SP*")
+  names(h_overall_sai_par) <- paste0(paste0("h(|"), c(1:N), c(")"))
+  rownames(h_overall_sai_par) <- rownames(delta_h_str_par_overall) <-
+    rownames(overall_sai_par) <- c("SR*", "SE*", "SP*")
   
-  names(h_str_vs_par_ref) <- names(h_str_vs_par_f) <- c("h(s, p)", 
-      paste0(paste0("h(s, p; |"), c(1:n_items), c(")")))
+  names(h_str_vs_par_ref) <- names(h_str_vs_par_foc) <- c("h(s, p)", 
+      paste0(paste0("h(s, p; |"), c(1:N), c(")")))
   
   names(overall_sai_par) <- names(store_str) <- names(store_par) <- 
-    names(h_str_vs_par_ref_list) <- names(h_str_vs_par_f_list) <- 
-    c("I", paste0(paste0("I-k"), c(1:n_items)))
+    names(str_par_tables_ref) <- names(str_par_tables_foc) <- 
+    c("I", paste0(paste0("I-k"), c(1:N)))
     
-  names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_f) <- 
+  names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_foc) <- 
     names(delta_h_R_vs_Ef_par) <- 
-    paste0(paste0('\u0394', "h(|"), c(1:n_items), c(")"))
+    paste0(paste0('\u0394', "h(|"), c(1:N), c(")"))
   
-  rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_f) <-
+  rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
     rownames(h_R_Ef) <- rownames(delta_h_R_vs_Ef_par) <- 
-    rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_f) <-
+    rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_foc) <-
     c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
   
   delta_h_str_vs_par <- list("ref" = t(delta_h_str_vs_par_ref), 
-                             "foc" = t(delta_h_str_vs_par_f))
+                             "foc" = t(delta_h_str_vs_par_foc))
   
-  h_str_vs_par <- list("ref"= t(h_str_vs_par_ref), "foc" = t(h_str_vs_par_f))
-  h_str_vs_par_list <- list("ref" = h_str_vs_par_ref_list,
-                            "foc" = h_str_vs_par_f_list)
+  h_str_vs_par <- list("ref"= t(h_str_vs_par_ref), "foc" = t(h_str_vs_par_foc))
+  h_str_vs_par_list <- list("ref" = str_par_tables_ref,
+                            "foc" = str_par_tables_foc)
 
- if(also_return_PartInvMulti_outputs == TRUE) {
-      return(list("h_overall_sai.par" = t(h_overall_sai_par),
-                  "delta_h" = list("h_R_vs_Ef.par" = t(delta_h_R_vs_Ef_par),
-                                   "h_str_vs_par" = delta_h_str_vs_par), 
-                  "h" = list("R_vs_Ef.par" = t(h_R_Ef),
-                             "str_vs_par"= h_str_vs_par),
-                  "raw" = list("overall_sai.par" = t(overall_sai_par),
-                               "h_str_vs_par_list" = h_str_vs_par_list,
-                               "PartInvMulti" = list("strict" = store_str, 
-                                                     "partial" = store_par))))} 
  if (return_detailed == TRUE) {
     return(list("h_overall_sai.par" = t(h_overall_sai_par),
                 "delta_h" = list("h_R_vs_Ef.par" = t(delta_h_R_vs_Ef_par),
-                                 "h_str_vs_par" = delta_h_str_vs_par), 
+                                 "h_str_vs_par" = delta_h_str_vs_par,
+                                 "h_str_par_overall" = delta_h_str_par_overall), 
                 "h" = list("R_vs_Ef.par" = t(h_R_Ef),
                            "str_vs_par"= h_str_vs_par),
                 "raw" = list("overall_sai.par" = t(overall_sai_par),
-                             "h_str_vs_par_list" = h_str_vs_par_list)))
-  }
+                             "h_str_vs_par_list" = h_str_vs_par_list,
+                             "PartInv" = list("strict" = store_str, 
+                                              "partial" = store_par))))}
   # default case
   return(list("h_overall_sai.par" = t(h_overall_sai_par),
                 "delta_h" = list("h_R_vs_Ef.par" = t(delta_h_R_vs_Ef_par),
-                                 "h_str_vs_par" = delta_h_str_vs_par)))
+                                 "h_str_vs_par" = delta_h_str_vs_par,
+                                 "h_str_par_overall" = delta_h_str_par_overall)))
 }

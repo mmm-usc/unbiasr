@@ -2,16 +2,16 @@
 #' Compute SR, SE, SP weighted by group proportions
 #' 
 #' @name 
-#' get_perf
+#' get_overall
 #' 
 #' @description
-#' \code{get_perf} computes overall SR, SE, SP under partial invariance by 
-#' weighting the TP, TF, TN, FP values for the reference and focal groups with 
-#' the group proportions.
+#' \code{get_overall} computes overall SR, SE, SP under partial or strict 
+#' invariance by weighting the TP, TF, TN, FP values for the reference and focal 
+#' groups with the group proportions.
 #' 
 #' @param pmixr Proportion of the reference group.
-#' @param store_par_summary The summary table from [PartInvMulti_we()] 
-#' under partial invariance.
+#' @param store_summary The summary table from [PartInv()] 
+#' under partial or strict invariance.
 #' 
 #' @return A vector of length 3. 
 #'          \item{SR}{Success ratio, computed as \eqn{TP/(TP + FP)}.}
@@ -19,8 +19,8 @@
 #'          \item{SP}{Specificity, computed as \eqn{TN/(TN + FP)}.}
 #'        
 
-get_perf <- function(pmixr, store_par_summary) {
-  r <- store_par_summary$Reference; f <- store_par_summary$Focal
+get_overall <- function(pmixr, store_summary) {
+  r <- store_summary$Reference; f <- store_summary$Focal
   
   SR <- (pmixr*r[1] + (1 - pmixr)*f[1]) /
     (pmixr*r[1] + (1-pmixr)*f[1] + pmixr*r[2] + (1 - pmixr)*f[2]) 
@@ -173,15 +173,15 @@ delta_h <- function(h_R, h_i_del) {
 #' ref_acc_indices_h
 #' 
 #' @description 
-#' \code{ref_acc_indices_h} Takes in outputs from [PartInvMulti_we()] 
+#' \code{ref_acc_indices_h} Takes in outputs from [PartInv()] 
 #' and returns a restructured data frame with the selection accuracy indices  
 #' for the reference group under the strict invariance and partial invariance 
 #' conditions, and the corresponding h for the difference in the selection
 #' accuracy indices between these two conditions.
 
-#' @param strict_output [PartInvMulti_we()]  output (a list) under strict 
+#' @param strict_output [PartInv()]  output (a list) under strict 
 #'        invariance. 
-#' @param partial_output [PartInvMulti_we()] output (a list) under partial
+#' @param partial_output [PartInv()] output (a list) under partial
 #'        invariance.
 #' @return A 8 x 3 dataframe with columns `strict invariance`, 
 #'        `partial invariance`, and `h`.
@@ -207,15 +207,15 @@ ref_acc_indices_h <- function(strict_output, partial_output) {
 #' acc_indices_h
 #' 
 #' @description 
-#' \code{acc_indices_h} Takes in outputs from [PartInvMulti_we()] 
+#' \code{acc_indices_h} Takes in outputs from [PartInv()] 
 #' and returns two restructured data frames with the selection accuracy indices  
 #' for the reference and focal groups under the strict invariance and partial
 #' invariance conditions, and the corresponding h for the difference in the 
 #' selection accuracy indices between these two conditions for each group.
 
-#' @param strict_output [PartInvMulti_we()]  output (a list) under strict 
+#' @param strict_output [PartInv()]  output (a list) under strict 
 #'        invariance. 
-#' @param partial_output [PartInvMulti_we()] output (a list) under partial
+#' @param partial_output [PartInv()] output (a list) under partial
 #'        invariance.
 #' @return A 8 x 3 dataframe with columns `strict invariance`, 
 #'        `partial invariance`, and `h`.
@@ -235,5 +235,5 @@ acc_indices_h <- function(strict_output, partial_output) {
   df_f <- data.frame(strict_invariance =  f_strict, 
                        partial_invariance = f_par_strict, row.names = r_names)
   df_f["h"] <- round(cohens_h(df_f$strict_invariance, df_f$partial_invariance), 3)
-  return(list("Reference accuracy" = df_ref, "Focal accuracy" = df_f))
+  return(list("Reference" = df_ref, "Focal" = df_f))
 }
