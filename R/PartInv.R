@@ -213,6 +213,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     y_cord <- rep(cut_z + c(.25, -.25) * sd_zr, each = 2)
     text(x_cord, y_cord, c("A", "B", "D", "C"))
     p <- recordPlot()
+    dev.off()
   }
   # return a list of results and the plot
   list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
