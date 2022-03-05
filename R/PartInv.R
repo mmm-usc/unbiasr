@@ -192,6 +192,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                                   "Sensitivity", "Specificity"))
   colnames(dat) <- c(labels, paste0("E_R(",labels[2],")"))
   # result plot
+
   p <- NULL
   if (plot_contour) {
     x_lim <- range(c(zeta_r + c(-3, 3) * sd_xir, 
@@ -213,12 +214,15 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     y_cord <- rep(cut_z + c(.25, -.25) * sd_zr, each = 2)
     text(x_cord, y_cord, c("A", "B", "D", "C"))
     p <- recordPlot()
+    dev.off()
   }
   # return a list of results and the plot
-  list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
+  result <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
        summary = round(dat, 3), 
        ai_ratio = dat["Proportion selected", 3] / 
          dat["Proportion selected", 1], plot = p)
+#  class(result) <- "PartInv"
+  return(result)
 }
 
 #' @rdname PartInvMulti_we

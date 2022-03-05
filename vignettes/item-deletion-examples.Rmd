@@ -120,15 +120,18 @@ ex1 <- item_deletion_h(weights_item = c(1, 1, 1, 1),
                               weights_latent = 1,
                               plot_contour = FALSE,
                               return_detailed = FALSE,
-                              also_return_PartInvMulti_outputs = FALSE,
                               pmix_ref = 5/7)
 ```
 
-The returned object `ex1` contains three elements: `h_overall_sai_par`, `delta_h`,
-and `h` (note that `return_detailed = FALSE` and 
-`also_return_PartInvMulti_outputs = FALSE`, which are the default settings).
+```{r}
+ex1$raw$PartInv$partial$outputlist$I
+```
 
-###### `h_overall_sai.par`
+
+The returned object `ex1` contains three elements: `h_overall_sai_par`, `delta_h`,
+and `h` (note that `return_detailed = FALSE`, which is the default setting).
+
+###### `h_overall_par`
 $h^{|k}(\td{\SAI})$: Cohen's h effect size for the improvement/drop in overall
 SAI under PFI when the k-th item is removed. 'Overall' 
 refers to the averaging of accuracy indices across focal and reference groups
@@ -150,7 +153,7 @@ whereas a positive
 `h_overall_sai_par` indicates a deterioration in performance.
 
 ```{r}
-knitr::kable(ex1$h_overall_sai.par)
+knitr::kable(ex1$h_overall_par)
 ```
 For the 4-item CES-D scale, the negative $h^{|1}(\td{\SR})$,
 $h^{|1}(\td{\SE})$, and $h^{|1}(\td{\SP})$ values 
@@ -247,9 +250,12 @@ ex1 <- item_deletion_h(weights_item = c(1, 1, 1, 1),
                               weights_latent = 1,
                               plot_contour = FALSE,
                               return_detailed = TRUE,
-                              also_return_PartInvMulti_outputs = FALSE,
                               pmix_ref = 5/7)
 ```
+
+
+
+
 #### `h$R_vs_Ef.par`
 [HL]: # (We can call the following 'bias'. It'd be helpful to discuss the 'full' column first.)
 
@@ -355,7 +361,7 @@ ex2 <- item_deletion_h(weights_item = c(1, 1, 1, 1, 1, 1, 1, 1),
 
 
 ```{r}
-knitr::kable(ex2$h_overall_sai.par)
+knitr::kable(ex2$h_overall_par)
 ```
 
 The positive h values in h_overall_sai_par suggest that no item should be 
@@ -455,10 +461,10 @@ ex3 <- item_deletion_h(cut_z=2.509731,
 ```
 
 ```{r}
-knitr::kable(ex3$h_overall_sai.par)
+knitr::kable(ex3$h_overall_par)
 ```
 
-Looking at `h_overall_sai.par`, we see that dropping item 1 would lead to
+Looking at `h_overall_par`, we see that dropping item 1 would lead to
 a marginal improvement in SR and SP, while SE would be unaffected. We see a similar
 pattern with item 18. 
 

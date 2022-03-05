@@ -226,14 +226,18 @@ acc_indices_h <- function(strict_output, partial_output) {
   ref_par_strict <- partial_output$summary[1][, 1]
   ref_strict <- strict_output$summary[1][, 1]
   
-  df_ref <- data.frame(strict_invariance =  ref_strict, 
-                   partial_invariance = ref_par_strict, row.names = r_names)
-  df_ref["h"] <- round(cohens_h(df_ref$strict_invariance, df_ref$partial_invariance), 3)
+  df_ref <- data.frame(SFI =  ref_strict, 
+                   PFI = ref_par_strict, row.names = r_names)
+  df_ref["h"] <- round(cohens_h(df_ref$SFI, df_ref$PFI), 3)
   
   f_par_strict <- partial_output$summary[2][, 1]
   f_strict <- strict_output$summary[2][, 1]
-  df_f <- data.frame(strict_invariance =  f_strict, 
-                       partial_invariance = f_par_strict, row.names = r_names)
-  df_f["h"] <- round(cohens_h(df_f$strict_invariance, df_f$partial_invariance), 3)
+  df_f <- data.frame(SFI =  f_strict, 
+                       PFI = f_par_strict, row.names = r_names)
+  df_f["h"] <- round(cohens_h(df_f$SFI, df_f$PFI), 3)
   return(list("Reference" = df_ref, "Focal" = df_f))
 }
+    
+
+
+
