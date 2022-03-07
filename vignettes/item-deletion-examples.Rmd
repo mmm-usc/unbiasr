@@ -115,8 +115,7 @@ ex1 <- item_deletion_h(weights_item = c(1, 1, 1, 1),
                               lambda_f_p = c(1.00, 1.66, 2.30, 2.29),
                               nu_r_p = c(1.54, 1.36, 1.16, 1.08),
                               nu_f_p = c(0.68, 1.36, 1.16, 1.08),
-                              theta_r_p = diag(c(1.20, 0.81, 0.32, 0.32)), 
-                              theta_f_p = diag(c(0.72, 0.81, 0.32, 0.32)),
+                              theta_r_p = diag(c(1.20, 0.81, 0.32, 0.32)),                               theta_f_p = diag(c(0.72, 0.81, 0.32, 0.32)),
                               weights_latent = 1,
                               plot_contour = FALSE,
                               return_detailed = FALSE,
@@ -249,7 +248,7 @@ ex1 <- item_deletion_h(weights_item = c(1, 1, 1, 1),
                               theta_f_p = diag(c(0.72, 0.81, 0.32, 0.32)),
                               weights_latent = 1,
                               plot_contour = FALSE,
-                              return_detailed = TRUE,
+                              return_detailed = FALSE,
                               pmix_ref = 5/7)
 ```
 
@@ -355,7 +354,7 @@ ex2 <- item_deletion_h(weights_item = c(1, 1, 1, 1, 1, 1, 1, 1),
                                                 .335,.454,.457)),
                              weights_latent = 1,
                              plot_contour = FALSE,
-                             return_detailed = TRUE, pmix_ref = 0.5)
+                             return_detailed = FALSE, pmix_ref = 0.5)
 ```
 
 
@@ -457,7 +456,7 @@ ex3 <- item_deletion_h(cut_z=2.509731,
               theta_f_p = result[[1]]$theta,
               weights_latent = c(0.0325, 0.1795, 0.4693, -0.1951, 0.1236),
               plot_contour = FALSE, 
-              return_detailed = TRUE)
+              return_detailed = FALSE)
 ```
 
 ```{r}

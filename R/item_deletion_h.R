@@ -136,8 +136,8 @@
 #' multi_dim$h_overall_par
 #' multi_dim$delta_h$R_vs_Ef.par
 #' multi_dim$delta_h$str_vs_par$ref
-#' multi_dim$h$str_vs_par$ref$`h(s, p; I)`
-#' multi_dim$h$str_vs_par$ref$`h(s, p; I-i1)`
+#' multi_dim$h$str_vs_par$ref$`h(SFI, PFI; I)`
+#' multi_dim$h$str_vs_par$ref$`h(SFI, PFI; I-i1)`
 #' multi_dim$raw$PartInv$strict$`I`
 #' multi_dim$raw$PartInv$strict$`I-i2`
 #' 
@@ -158,8 +158,8 @@
 #' single_dim$h_overall_sai.par
 #' single_dim$delta_h$R_vs_Ef.par
 #' single_dim$delta_h$str_vs_par$ref
-#' single_dim$h$str_vs_par$ref$`h(s, p; I)`
-#' single_dim$h$str_vs_par$ref$`h(s, p; I-i1)`
+#' single_dim$h$str_vs_par$ref$`h(SFI, PFI; I)`
+#' single_dim$h$str_vs_par$ref$`h(SFI, PFI; I-i1)`
 #' single_dim$raw$PartInv$strict$`I`
 #' single_dim$raw$PartInv$strict$`I-i2`
 #' @export
@@ -363,70 +363,93 @@ item_deletion_h <- function(propsel,
     
     AI_ratios[,i] <- c(store_str[[i]]$ai_ratio, store_par[[i]]$ai_ratio) 
   }
-  names(overall_par) <- names(store_str) <- names(store_par) <- 
-    names(str_par_ref_list) <- names(str_par_foc_list) <- names(AI_ratios) <-
-    c("I", paste0("I|", c(1:N)))
-  rownames(AI_ratios) <- c("SFI", "PFI")
-  store_par <- list(outputlist=store_par, condition="partial")
-  store_str <- list(outputlist=store_str, condition="strict")
-  class(store_par) <- c("PartInvList", "PartInv")
-  class(store_str) <- c("PartInvList", "PartInv")
   # Format stored variables
-  names(h_R_Ef) <- c("h(r-Ef)", paste0("h(r-Ef; |", c(1:N), c(")")))
   
-  overall_par <- as.data.frame(round(cbind(overall_par), 3))
+  # AI ratio
+  names(AI_ratios) <- c("AI", paste0("AI|", c(1:N)))
+  rownames(AI_ratios) <- c("SFI", "PFI")
+  # h_R_Ef
+  names(h_R_Ef) <- c("h(r-Ef)", paste0("h(r-Ef|", c(1:N), c(")")))
+  # delta_h_str_vs_par
+  names(delta_h_str_vs_par_ref) <- paste0('\u0394', "h(SFI|", c(1:N), c(")"))
+  names(delta_h_str_vs_par_foc) <- paste0('\u0394', "h(PFI|", c(1:N), c(")"))
   
-  h_overall_par <- as.data.frame(round(h_overall_par, 3))
-  names(h_overall_par) <- paste0("h(|", c(1:N), c(")"))
-  rownames(h_overall_par) <- rownames(delta_h_str_par_overall) <- 
-    rownames(h_overall_str_par) <- c("SR*", "SE*", "SP*")
+names(store_str) <- names(store_par) <- 
+    names(str_par_ref_list) <- names(str_par_foc_list) <- 
+    c(" ", paste0(" |", c(1:N)))
+  names(overall_par) <- c("PFI", paste0("PFI|", c(1:N)))
   
-  names(h_str_vs_par_ref) <- names(h_str_vs_par_foc) <- c("h(s, p)", 
-      paste0("h(s, p; |", c(1:N), c(")")))
+  names(h_overall_par) <- paste0("h(PFI|", c(1:N), c(")"))
   
-  names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_foc) <- 
-    names(delta_h_R_vs_Ef) <- names(delta_h_str_par_overall) <-
-    paste0('\u0394', "h(|", c(1:N), c(")"))
-  names(h_overall_str_par) <- c("Full", paste0("h(|", c(1:N), c(")")))
+  rownames(h_overall_par) <- rownames(overall_par) <- 
+    rownames(delta_h_str_par_overall) <- rownames(h_overall_str_par) <- 
+    c("SR*", "SE*", "SP*")
+  
   
   rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
     rownames(h_R_Ef) <- rownames(delta_h_R_vs_Ef) <- 
     rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_foc) <-
     c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
+  h_str_vs_par_list_ref <- list(outputlist= str_par_ref_list, condition="reference")
+  h_str_vs_par_list_foc <- list(outputlist= str_par_foc_list, condition="focal")
+  # Declare classes
+  store_par <- list(outputlist = store_par, condition = "partial")
+  store_str <- list(outputlist = store_str, condition = "strict")
+  class(store_par) <- c("PartInvList", "PartInv")
+  class(store_str) <- c("PartInvList", "PartInv")
+  class(h_str_vs_par_list_ref) <- "PartInvList"
+  class(h_str_vs_par_list_foc) <- "PartInvList"
   
- 
+
+  names(h_str_vs_par_ref) <- names(h_str_vs_par_foc) <- c("h(SFI, PFI)", 
+      paste0("h(SFI, PFI|", c(1:N), c(")")))
+  
+  names(delta_h_R_vs_Ef) <- paste0('\u0394', "h(r-Ef|", c(1:N), c(")"))
+  names(delta_h_str_par_overall) <- paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
+  names(h_overall_str_par) <- c("Full", paste0("h(|", c(1:N), c(")")))
+  
+
+  
+
+  
+  overall_par <- as.data.frame(round(cbind(overall_par), 3))
+  h_overall_par <- as.data.frame(round(h_overall_par, 3))
+  
   delta_h_str_vs_par <- list("ref" = t(delta_h_str_vs_par_ref), 
                              "foc" = t(delta_h_str_vs_par_foc))
   
   h_str_vs_par <- list("ref"= t(h_str_vs_par_ref), "foc" = t(h_str_vs_par_foc))
-  h_str_vs_par_list <- list("ref" = str_par_ref_list, "foc" = str_par_foc_list)
-
-  h_overall_str_par <- round(h_overall_str_par, 3)
-  overall <- list("h_overall_par"=t(h_overall_par),
-                "delta_h_str_par_overall" = t(delta_h_str_par_overall))
-  class(overall) <- "overall"
-  default <- list("overall" = overall,
-                  "AI Ratio" = t(round(AI_ratios,3)),
-                  "h_R_vs_Ef.par" = t(round(delta_h_R_vs_Ef,3)))
-  class(default) <- "itemdeletion"
   
- if (return_detailed == TRUE) {
-    return(list("overall" = overall,
-                "AI Ratio" = t(round(AI_ratios,3)),
-                "delta_h" = list("h_R_vs_Ef.par" = t(round(delta_h_R_vs_Ef,3)),
-                                 "h_str_vs_par" = delta_h_str_vs_par), 
-                "h" = list("R_vs_Ef.par" = t(round(h_R_Ef,3)),
-                           "str_vs_par"= h_str_vs_par),
-                "raw" = list("overall_par" = t(overall_par),
-                             "h_overall_str_par" = t(h_overall_str_par),
-                             "h_str_vs_par_list" = h_str_vs_par_list,
-                             "PartInv" = list("strict" = store_str, 
-                                              "partial" = store_par))))
-  }
-  # default case
-  #list("overall" = overall,
-  #"AI Ratio" = t(round(AI_ratios,3)),
-  #"delta_h" = list("h_R_vs_Ef.par" = t(round(delta_h_R_vs_Ef,3)),
-                #   "h_str_vs_par" = delta_h_str_vs_par))
-  return(default)
+  h_overall_str_par <- round(h_overall_str_par, 3)
+
+  #class(overall_l) <- "overrall"
+  
+  returned <- list("h_overall_par" = t(h_overall_par),
+                   "delta_h_str_par_overall" = t(delta_h_str_par_overall),
+                   "AI Ratio" = t(round(AI_ratios, 3)),
+                   "h_R_Ef" = t(round(h_R_Ef, 3)),
+                   "h_R_vs_Ef.par" = t(round(delta_h_R_vs_Ef, 3)),
+                   "delta_h_str_vs_par" = delta_h_str_vs_par, 
+                   "str_vs_par" = h_str_vs_par,
+                   "overall_par" = t(overall_par),
+                   "h_overall_str_par" = t(h_overall_str_par),
+                   "Ref_foc" = list("reference" = h_str_vs_par_list_ref, "focal" = h_str_vs_par_list_ref),
+                   "PartInv" = list("strict" = store_str,"partial" = store_par),
+                   "detail" = return_detailed)
+  class(returned) <- "itemdeletion"
+  
+ # if (return_detailed == TRUE) {
+ #    return(list("overall" = overall_l,
+ #                "AI Ratio" = t(round(AI_ratios,3)),
+ #                "delta_h" = list("h_R_vs_Ef.par" = t(round(delta_h_R_vs_Ef,3)),
+ #                                 "h_str_vs_par" = delta_h_str_vs_par), 
+ #                "h" = list("R_vs_Ef.par" = t(round(h_R_Ef,3)),
+ #                           "str_vs_par"= h_str_vs_par),
+ #                "raw" = list("overall_par" = t(overall_par),
+ #                             "h_overall_str_par" = t(h_overall_str_par),
+ #                             "h_str_vs_par_list" = h_str_vs_par_list,
+ #                             "PartInv" = list("strict" = store_str, 
+ #                                              "partial" = store_par))))
+ #  }
+  return(returned)
 }
