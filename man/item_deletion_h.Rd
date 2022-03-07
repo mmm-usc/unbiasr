@@ -24,7 +24,6 @@ item_deletion_h(
   pmix_ref = 0.5,
   plot_contour = TRUE,
   return_detailed = FALSE,
-  also_return_PartInvMulti_outputs = FALSE,
   ...
 )
 }
@@ -86,15 +85,9 @@ should be plotted; default to \code{TRUE}.}
 
 \item{return_detailed}{Logical; whether additional data frames should be r
 returned object; default to \code{FALSE}. If
-\code{return_detailed == FALSE}, returns a list of length 3 with the
-elements: \code{h_overall_sai.par} (a data frame), \code{delta_h} (a list), \code{h}
-(a list). If set to \code{TRUE}, returns \code{raw} as an additional element.}
-
-\item{also_return_PartInvMulti}{Logical; whether the outputs from each call
-of \code{\link[=PartInv_Multi_we]{PartInv_Multi_we()}} should also be returned; default to \code{FALSE}.
-If \code{return_detailed == FALSE} but
-\code{also_return_PartInvMulti == TRUE}, proceeds as if
-\code{return_detailed == TRUE}.}
+\code{return_detailed == FALSE}, returns a list of length 2 with the
+elements: \code{h_overall_sai.par} (a data frame) and\code{delta_h} (a list).
+If set to \code{TRUE}, returns \code{h} and \code{raw} as an additional elements.}
 }
 \value{
 A list with 3 elements if \code{return_detailed == FALSE}, 4 elements
@@ -137,7 +130,7 @@ stores Cohen's h values for the comparison between accuracy indices
 for the focal group under strict vs. partial invariance, for a
 given set of items.}
 \item{raw}{A list of length 3 containing \code{overall_sai.par},
-\code{h_str_vs_par_list}, and \code{PartInvMulti}.}
+\code{h_str_vs_par_list}, and \code{PartInv}.}
 \item{raw$overall_sai.par}{A (3 x number of items + 1) data frame
 containing overall SR, SE, SP values under partial invariance.
 'Overall' refers to the weighting of the accuracy indices for focal
@@ -154,8 +147,8 @@ indices and columns \code{strict_invariance}, \code{partial_invariance}, and
 \code{h}. Here, h is the Cohen's h effect size for the comparison between
 the accuracy indices under strict vs. partial invariance for a given
 set of items for the focal group.}
-\item{raw$PartInvMulti}{A list containing \code{strict} and \code{partial}, the
-function outputs for each call to \code{\link[=PartInvMulti_we]{PartInvMulti_we()}} under strict
+\item{raw$PartInv}{A list containing \code{strict} and \code{partial}, the
+function outputs for each call to \code{\link[=PartInv]{PartInv()}} under strict
 invariance and partial invariance respectively.}
 }
 \description{
@@ -183,15 +176,14 @@ multi_dim <- item_deletion_h(propsel = .05, n_dim = 5,
                              theta_r_p = diag(1, 5),
                              theta_f_p = c(1, .95, .80, .75, 1),
                              plot_contour = TRUE,
-                             return_detailed = TRUE,
-                             also_return_PartInvMulti = TRUE)
-multi_dim$h_overall_sai.par
+                             return_detailed = TRUE)
+multi_dim$h_overall_par
 multi_dim$delta_h$R_vs_Ef.par
 multi_dim$delta_h$str_vs_par$ref
-multi_dim$h$str_vs_par$ref$`h(s, p; I)`
-multi_dim$h$str_vs_par$ref$`h(s, p; I-i1)`
-multi_dim$raw$PartInvMulti$strict$`I`
-multi_dim$raw$PartInvMulti$strict$`I-i2`
+multi_dim$h$str_vs_par$ref$`h(SFI, PFI; I)`
+multi_dim$h$str_vs_par$ref$`h(SFI, PFI; I-i1)`
+multi_dim$raw$PartInv$strict$`I`
+multi_dim$raw$PartInv$strict$`I-i2`
 
 # Single dimension examples
 single_dim <- item_deletion_h(propsel = .10,
@@ -205,13 +197,13 @@ single_dim <- item_deletion_h(propsel = .10,
                                nu_f_p = c(.225, -.05, .240, -.025),
                                theta_r_p = diag(.96, 4),
                                n_dim = 1, plot_contour = TRUE,
-                               return_detailed = TRUE,
-                               also_return_PartInvMulti = TRUE)
+                               return_detailed = TRUE)
+                         
 single_dim$h_overall_sai.par
 single_dim$delta_h$R_vs_Ef.par
 single_dim$delta_h$str_vs_par$ref
-single_dim$h$str_vs_par$ref$`h(s, p; I)`
-single_dim$h$str_vs_par$ref$`h(s, p; I-i1)`
-single_dim$raw$PartInvMulti$strict$`I`
-single_dim$raw$PartInvMulti$strict$`I-i2`
+single_dim$h$str_vs_par$ref$`h(SFI, PFI; I)`
+single_dim$h$str_vs_par$ref$`h(SFI, PFI; I-i1)`
+single_dim$raw$PartInv$strict$`I`
+single_dim$raw$PartInv$strict$`I-i2`
 }

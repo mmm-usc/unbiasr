@@ -115,15 +115,17 @@ ex1 <- item_deletion_h(weights_item = c(1, 1, 1, 1),
                               lambda_f_p = c(1.00, 1.66, 2.30, 2.29),
                               nu_r_p = c(1.54, 1.36, 1.16, 1.08),
                               nu_f_p = c(0.68, 1.36, 1.16, 1.08),
-                              theta_r_p = diag(c(1.20, 0.81, 0.32, 0.32)),                               theta_f_p = diag(c(0.72, 0.81, 0.32, 0.32)),
+                              theta_r_p = diag(c(1.20, 0.81, 0.32, 0.32)), 
+                              theta_f_p = diag(c(0.72, 0.81, 0.32, 0.32)),
                               weights_latent = 1,
                               plot_contour = FALSE,
                               return_detailed = FALSE,
                               pmix_ref = 5/7)
+ex1
 ```
 
 ```{r}
-ex1$raw$PartInv$partial$outputlist$I
+#ex1$raw$PartInv$partial$outputlist$I
 ```
 
 
@@ -186,7 +188,7 @@ Equivalently, substituting $\SAI_{\rr}$ for $h^{\rr}({\SAI)}$,
 
 $$\Delta h^{|k}(\SAI_{\rr})=\text{sign}\left(| \SAI_{\rr}|-|\SAI^{|k}_{\rr}|\right)\left||\SAI^{|k}_{\rr}|-|\SAI_{\rr}|\right|$$
 ```{r }
-knitr::kable(ex1$delta_h$h_R_vs_Ef.par)
+#knitr::kable(ex1$delta_h$h_R_vs_Ef.par)
 ```
 
 
@@ -211,7 +213,7 @@ PFI, for a given set of items for the reference group.
 \end{align*}
 \]
 ```{r }
-knitr::kable(ex1$delta_h$h_str_vs_par$ref)
+#knitr::kable(ex1$delta_h$h_str_vs_par$ref)
 ```
 - $\Delta h^{|k}(\SAI^{f}_{\str,\par})$, stored in `delta_h$h_str_vs_par.foc`, 
 refers to the effect size of the change in $\SAI^{f}_{\str,\par}$
@@ -225,7 +227,7 @@ PFI, for a given set of items for the focal group.
 \end{align*}
 \]
 ```{r }
-knitr::kable(ex1$delta_h$h_str_vs_par$foc)
+#knitr::kable(ex1$delta_h$h_str_vs_par$foc)
 ```
 
 
@@ -248,8 +250,9 @@ ex1 <- item_deletion_h(weights_item = c(1, 1, 1, 1),
                               theta_f_p = diag(c(0.72, 0.81, 0.32, 0.32)),
                               weights_latent = 1,
                               plot_contour = FALSE,
-                              return_detailed = FALSE,
+                              return_detailed = TRUE,
                               pmix_ref = 5/7)
+ex1
 ```
 
 
@@ -270,7 +273,7 @@ h^{\rr}(\SAI^{|k}) &= 2\text{arcsin}\left(\sqrt{\SAI^{|k,r}}\right)-2\text{arcsi
 \end{align*}
 \]
 ```{r }
-knitr::kable(ex1$h$R_vs_Ef.par)
+#knitr::kable(ex1$h$R_vs_Ef.par)
 ```
 
 
@@ -302,7 +305,7 @@ h^{\str,\par}(\SAI^{|k,r}) &= 2\text{arcsin}\left(\sqrt{\SAI^{|k,r,\str}}\right)
 \end{align*}
 \]
 ```{r }
-knitr::kable(ex1$h$str_vs_par$ref)
+#knitr::kable(ex1$h$str_vs_par$ref)
 ```
 
 `h$str_vs_par$foc`:
@@ -315,7 +318,7 @@ h^{\str,\par}(\SAI^{|k,f}) &= 2\text{arcsin}\left(\sqrt{\SAI^{|k,f,\str}}\right)
 \]
 
 ```{r}
-knitr::kable(ex1$h$str_vs_par$foc)
+#knitr::kable(ex1$h$str_vs_par$foc)
 ```
 
 $\PS^{r}_{\str,\par}=-0.040$ indicates that 
@@ -360,7 +363,8 @@ ex2 <- item_deletion_h(weights_item = c(1, 1, 1, 1, 1, 1, 1, 1),
 
 
 ```{r}
-knitr::kable(ex2$h_overall_par)
+ex2
+#knitr::kable(ex2$h_overall_par)
 ```
 
 The positive h values in h_overall_sai_par suggest that no item should be 
@@ -370,7 +374,7 @@ sensitivity, and lower specificity.
 `h$R_vs_Ef.par`
 
 ```{r }
-knitr::kable(ex2$h$R_vs_Ef.par)
+#knitr::kable(ex2$h$R_vs_Ef.par)
 ```
 
 If the focal group followed the same distribution as the reference group, a larger
@@ -379,16 +383,16 @@ proportion would be selected for the focal group compared to the reference group
 there would be an increase in PS for the reference group, leading to a positive h.
 
 ```{r }
-knitr::kable(ex2$delta_h$h_R_vs_Ef.par)
+#knitr::kable(ex2$delta_h$h_R_vs_Ef.par)
 ```
 
 
 ```{r }
-knitr::kable(ex2$h$str_vs_par$ref)
+#knitr::kable(ex2$h$str_vs_par$ref)
 ```
 
 ```{r}
-knitr::kable(ex2$h$str_vs_par$foc)
+#knitr::kable(ex2$h$str_vs_par$foc)
 ```
 
 A greater proportion is selected under SFI compared to PFI when all items are used, but when any of the 8 items are dropped, a 
@@ -398,7 +402,7 @@ SR, SE, SP under SFI is always larger than SR, SE, SP under PFI.
 
 
 ```{r }
-knitr::kable(ex2$delta_h$h_str_vs_par$ref)
+#knitr::kable(ex2$delta_h$h_str_vs_par$ref)
 ```
 
 
@@ -460,7 +464,8 @@ ex3 <- item_deletion_h(cut_z=2.509731,
 ```
 
 ```{r}
-knitr::kable(ex3$h_overall_par)
+ex3
+#knitr::kable(ex3$h_overall_par)
 ```
 
 Looking at `h_overall_par`, we see that dropping item 1 would lead to
@@ -476,27 +481,27 @@ and retaining item 11.
 
 
 ```{r}
-ex3$delta_h$h_R_vs_Ef.par
-knitr::kable(ex3$h$R_vs_Ef.par)
+#ex3$delta_h$h_R_vs_Ef.par
+#knitr::kable(ex3$h$R_vs_Ef.par)
 ```
 When item 11 is dropped, h for PS is negative (a higher proportion is selected 
 under Efocal than the reference group). For all other item drop conditions, h for 
 PS is positive. 
 
 ```{r}
-knitr::kable(ex3$h$str_vs_par$ref)
+#knitr::kable(ex3$h$str_vs_par$ref)
 ```
 
 ```{r}
-knitr::kable(ex3$h$str_vs_par$foc)
+#knitr::kable(ex3$h$str_vs_par$foc)
 ```
 
 
 ```{r}
-knitr::kable(ex3$delta_h$h_str_vs_par$ref)
+#knitr::kable(ex3$delta_h$h_str_vs_par$ref)
 ```
 
 ```{r}
-knitr::kable(ex3$delta_h$h_str_vs_par$foc)
+#knitr::kable(ex3$delta_h$h_str_vs_par$foc)
 ```
 
