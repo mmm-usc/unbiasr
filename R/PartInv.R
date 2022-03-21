@@ -4,7 +4,7 @@
 #' @importFrom grDevices recordPlot
 NULL
 
-#' Evaluate selection accuracy based on the MCAA Framework
+#' Evaluating selection accuracy based on the MCAA Framework
 #' 
 #' \code{PartInv, PartInvMulti_we} evaluate partial measurement invariance using 
 #'  an extension of Millsap & Kwok's (2004) approach
@@ -12,8 +12,8 @@ NULL
 #' @param propsel proportion of selection. If missing, computed using `cut_z`.
 #' @param cut_z pre-specified cutoff score on the observed composite. This 
 #' argument is ignored when `propsel` has input.
-#' @param weights_item a vector of item weights
-#' @param weights_latent a vector of latent factor weights
+#' @param weights_item a vector of item weights.
+#' @param weights_latent a vector of latent factor weights.
 #' @param alpha_r a vector of latent factor means for the reference group.
 #' @param alpha_f (optional) a vector of latent factor means for the focal group; 
 #'            if no input, set equal to alpha_r.
