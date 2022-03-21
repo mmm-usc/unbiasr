@@ -35,6 +35,11 @@ NULL
 #'            default to 0.5 (i.e., two populations have equal size).
 #' @param plot_contour logical; whether the contour of the two populations 
 #'            should be plotted; default to TRUE.
+#' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
+#'                       for both the input parameters and the implied
+#'                       parameters based on a strict invariance model, with
+#'                       common parameter values as weighted averages of
+#'                       the input values using `pmix_ref`.
 #' @param labels a character vector with two elements to label the reference
 #'            and the focal group on the graph.
 #' @param ... other arguments passed to the \code{\link[graphics]{contour}} 
@@ -95,7 +100,7 @@ NULL
 #'                 labels = c("female", "male"))
 #' @export
 PartInvMulti_we <- function(propsel, cut_z = NULL,
-                            weights_item = NULL, 
+                            weights_item = NULL,
                             weights_latent = NULL,
                             kappa_r = NULL, kappa_f = kappa_r,
                             alpha_r, alpha_f = alpha_r,
@@ -105,8 +110,9 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                             tau_r = NULL, tau_f = tau_r,
                             nu_r, nu_f = nu_r,
                             Theta_r, Theta_f = Theta_r, 
-                            pmix_ref = 0.5, plot_contour = TRUE, 
-                            labels = c("Reference", "Focal"),...) {
+                            pmix_ref = 0.5, plot_contour = TRUE,
+                            show_mi_result = FALSE,
+                            labels = c("Reference", "Focal"), ...) {
   # For backward compatibility with different input names
   if (missing(nu_r) && !is.null(tau_r)) {
     nu_r <- tau_r
@@ -215,11 +221,76 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     p <- recordPlot()
     dev.off()
   }
-  # return a list of results and the plot
-  list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
-       summary = round(dat, 3), 
-       ai_ratio = dat["Proportion selected", 3] / 
-         dat["Proportion selected", 1], plot = p)
+  out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
+              summary = round(dat, 3), 
+              ai_ratio = dat["Proportion selected", 3] / 
+                dat["Proportion selected", 1], plot = p)
+  if (show_mi_result) {  # Need to be updated
+    # Strict
+    pop_weights <- c(pmix_ref, 1 - pmix_ref)
+    lambda_r <- lambda_f <- 
+      .weighted_average_list(list(lambda_r, lambda_f),
+                             weights = pop_weights)
+    nu_r <- nu_f <- 
+      .weighted_average_list(list(nu_r, nu_f),
+                             weights = pop_weights)
+    Theta_r <- Theta_f <- 
+      .weighted_average_list(list(Theta_r, Theta_f),
+                             weights = pop_weights)
+    mean_zr <- c(crossprod(weights_item, nu_r + lambda_r %*% alpha_r))
+    mean_zf <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_f))
+    sd_zr <- c(sqrt(crossprod(weights_item, 
+                              lambda_r %*% psi_r %*% t(lambda_r) + Theta_r) %*% 
+                      weights_item))
+    sd_zf <- c(sqrt(crossprod(weights_item,
+                              lambda_f %*% psi_f %*% t(lambda_f) + Theta_f) %*%
+                      weights_item))
+    cov_z_xir <- c(crossprod(weights_item, lambda_r %*% psi_r) %*% weights_latent)
+    cov_z_xif <- c(crossprod(weights_item, lambda_f %*% psi_f) %*% weights_latent)
+    sd_xir <- c(sqrt(crossprod(weights_latent, psi_r) %*% weights_latent))
+    sd_xif <- c(sqrt(crossprod(weights_latent, psi_f) %*% weights_latent))
+    zeta_r <- c(crossprod(weights_latent, alpha_r))
+    zeta_f <- c(crossprod(weights_latent, alpha_f))
+    cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf, 
+                      pmix_ref, lower.tail = FALSE)
+    cut_xi <- qnormmix(propsel, zeta_r, sd_xir, zeta_f, sd_xif,
+                       pmix_ref, lower.tail = FALSE)
+    partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr, 
+                               cov12 = cov_z_xir)
+    partit_2 <- .partit_bvnorm(cut_xi, cut_z, zeta_f, sd_xif, mean_zf, sd_zf, 
+                               cov12 = cov_z_xif)
+    dat <- data.frame("Reference" = partit_1, "Focal" = partit_2,
+                      row.names = c("A (true positive)", "B (false positive)", 
+                                    "C (true negative)", "D (false negative)", 
+                                    "Proportion selected", "Success ratio", 
+                                    "Sensitivity", "Specificity"))
+    colnames(dat) <- labels
+    p <- NULL
+    if (plot_contour) {
+      x_lim <- range(c(kappa_r + c(-3, 3) * sd_xir, 
+                       kappa_f + c(-3, 3) * sd_xif))
+      y_lim <- range(c(mean_zr + c(-3, 3) * sd_zr, 
+                       mean_zf + c(-3, 3) * sd_zf))
+      contour_bvnorm(kappa_r, sd_xir, mean_zr, sd_zr, cov12 = cov_z_xir, 
+                     xlab = bquote("Latent Score" ~ (xi)), 
+                     ylab = bquote("Observed Composite" ~ (italic(Z))), 
+                     lwd = 2, col = "red", xlim = x_lim, ylim = y_lim, 
+                     ...)
+      contour_bvnorm(kappa_f, sd_xif, mean_zf, sd_zf, cov12 = cov_z_xif, 
+                     add = TRUE, lty = "dashed", lwd = 2, col = "blue", 
+                     ...)
+      legend("topleft", labels,
+             lty = c("solid", "dashed"), col = c("red", "blue"))
+      abline(h = cut_z, v = cut_xi)
+      x_cord <- rep(cut_xi + c(.25, -.25) * sd_xir, 2)
+      y_cord <- rep(cut_z + c(.25, -.25) * sd_zr, each = 2)
+      text(x_cord, y_cord, c("A", "B", "D", "C"))
+      p <- recordPlot()
+    }
+    out$summary_mi <- round(dat, 3)
+    out$p_mi <- p
+  }
+  out
 }
 
 #' @rdname PartInvMulti_we
