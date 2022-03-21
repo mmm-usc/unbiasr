@@ -28,6 +28,7 @@ PartInvMulti_we(
   Theta_f = Theta_r,
   pmix_ref = 0.5,
   plot_contour = TRUE,
+  show_mi_result = FALSE,
   labels = c("Reference", "Focal"),
   ...
 )
@@ -55,6 +56,7 @@ PartInv(
   Theta_f = Theta_r,
   pmix_ref = 0.5,
   plot_contour = TRUE,
+  show_mi_result = FALSE,
   labels = c("Reference", "Focal"),
   ...
 )
@@ -104,6 +106,12 @@ default to 0.5 (i.e., two populations have equal size).}
 
 \item{plot_contour}{logical; whether the contour of the two populations
 should be plotted; default to TRUE.}
+
+\item{show_mi_result}{If \code{TRUE}, perform selection accuracy analysis
+for both the input parameters and the implied
+parameters based on a strict invariance model, with
+common parameter values as weighted averages of
+the input values using \code{pmix_ref}.}
 
 \item{labels}{a character vector with two elements to label the reference
 and the focal group on the graph.}
