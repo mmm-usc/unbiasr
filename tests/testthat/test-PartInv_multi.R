@@ -173,7 +173,7 @@ result <- structure(
         class = c("lavaan.matrix", "matrix")))), 
   class = c("lavaan.list", "list"))                      
 # Create sample output
-pimout_eq <- PartInvMulti_we(
+pimout_eq <- PartInv(
   propsel = .25,
   weights_item = c(0.008125, 0.008125, 0.008125, 0.008125,
                    0.044875, 0.044875, 0.044875, 0.044875,
@@ -190,7 +190,7 @@ pimout_eq <- PartInvMulti_we(
   Theta_r = (result[[2]]$theta + result[[1]]$theta) / 2
 )
 
-pimout <- PartInvMulti_we(
+pimout <- PartInv(
   propsel = .25,
   weights_item = c(0.008125, 0.008125, 0.008125, 0.008125,
                    0.044875, 0.044875, 0.044875, 0.044875,
@@ -212,8 +212,8 @@ pimout <- PartInvMulti_we(
 
 ## test weights_latent is null
 
-test_that("PartInvMulti_we() runs with no latent weight input", {
-  pimout_latwei_null <- PartInvMulti_we(
+test_that("PartInv() runs with no latent weight input", {
+  pimout_latwei_null <- PartInv(
     propsel = .25,
     weights_item = c(0.008125, 0.008125, 0.008125, 0.008125,
                      0.044875, 0.044875, 0.044875, 0.044875,
@@ -230,7 +230,7 @@ test_that("PartInvMulti_we() runs with no latent weight input", {
     Theta_r = result[[2]]$theta,
     Theta_f = result[[1]]$theta
   )
-  pimout_latwei_ba <- PartInvMulti_we(
+  pimout_latwei_ba <- PartInv(
     propsel = .25,
     weights_item = c(0.008125, 0.008125, 0.008125, 0.008125,
                      0.044875, 0.044875, 0.044875, 0.044875,
@@ -254,8 +254,8 @@ test_that("PartInvMulti_we() runs with no latent weight input", {
 
 ## test weights_item is null
 
-test_that("PartInvMulti_we() runs with no item weight input", {
-  pimout_itwei_null <- PartInvMulti_we(
+test_that("PartInv() runs with no item weight input", {
+  pimout_itwei_null <- PartInv(
     propsel = .25,
     weights_latent = c(0.0325, 0.1795, 
                        0.4693, -0.1951, 0.1236),
@@ -269,7 +269,7 @@ test_that("PartInvMulti_we() runs with no item weight input", {
     Theta_r = result[[2]]$theta,
     Theta_f = result[[1]]$theta
   )
-  pimout_itwei_ba <- PartInvMulti_we(
+  pimout_itwei_ba <- PartInv(
     propsel = .25,
     weights_item = c(rep(1, 20)),
     weights_latent = c(0.0325, 0.1795, 
@@ -289,9 +289,9 @@ test_that("PartInvMulti_we() runs with no item weight input", {
 
 ## test weights_item is fraction 
 
-test_that("PartInvMulti_we() runs with no latent weight input", {
+test_that("PartInv() runs with no latent weight input", {
   expect_warning(
-    pimout_latwei_null <- PartInvMulti_we(
+    pimout_latwei_null <- PartInv(
       cut_z = 80,
       weights_item = c(rep(1/3, 20)),
       alpha_r = result[[2]]$alpha,
@@ -309,7 +309,7 @@ test_that("PartInvMulti_we() runs with no latent weight input", {
 
 ## test equivalence of two functions
 
-test_that("PartInvMulti_we() runs with no item weight input", {
+test_that("PartInv() runs with no item weight input", {
   pi_res_eq <- PartInv(
     propsel = .25,
     weights_item = c(0.008125, 0.008125, 0.008125, 0.008125,
