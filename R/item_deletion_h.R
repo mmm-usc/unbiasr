@@ -30,21 +30,21 @@
 #' @param psi_r a matrix of latent factor variance for the reference group.
 #' @param psi_f (optional) A matrix of latent factor variance for the focal  
 #'        group; if no input, set equal to `psi_r`.
-#' @param lambda_r_p A matrix of factor loadings for the reference group under
+#' @param lambda_r A matrix of factor loadings for the reference group under
 #'        the partial invariance condition.
-#' @param lambda_f_p (optional) A matrix of factor loadings for the focal group 
+#' @param lambda_f (optional) A matrix of factor loadings for the focal group 
 #'        under the partial invariance condition; if no input, set equal to 
-#'        `lambda_r_p`.
-#' @param nu_r_p A matrix of measurement intercepts for the reference group 
+#'        `lambda_r`.
+#' @param nu_r A matrix of measurement intercepts for the reference group 
 #'        under the partial invariance condition.
-#' @param nu_f_p (optional) A matrix of measurement intercepts for the focal 
+#' @param nu_f (optional) A matrix of measurement intercepts for the focal 
 #'        group under the partial invariance condition; if no input, set equal 
-#'        to `nu_r_p`.
-#' @param theta_r_p A matrix of the unique factor variances and covariances 
+#'        to `nu_r`.
+#' @param Theta_r A matrix of the unique factor variances and covariances 
 #'        for the reference group under the partial invariance condition.
-#' @param theta_f_p (optional) A matrix of the unique factor variances and 
+#' @param Theta_f (optional) A matrix of the unique factor variances and 
 #'        covariances for the focal group under the partial invariance
-#'        condition; if no input, set equal to `theta_r_p`.
+#'        condition; if no input, set equal to `Theta_r`.
 #' @param pmix_ref Proportion of the reference group; default to 0.5 (i.e., two 
 #'        populations have equal size)
 #' @param plot_contour Logical; whether the contour of the two populations 
@@ -126,11 +126,11 @@
 #'                              alpha_r = c(0, 0),
 #'                              alpha_f = c(-0.3, 0.1),
 #'                              psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
-#'                              lambda_r_p = lambda_matrix,
-#'                              nu_r_p = c(.225, .025, .010, .240, .125),
-#'                              nu_f_p = c(.225, -.05, .240, -.025, .125),
-#'                              theta_r_p = diag(1, 5),
-#'                              theta_f_p = c(1, .95, .80, .75, 1),
+#'                              lambda_r = lambda_matrix,
+#'                              nu_r = c(.225, .025, .010, .240, .125),
+#'                              nu_f = c(.225, -.05, .240, -.025, .125),
+#'                              Theta_r = diag(1, 5),
+#'                              Theta_f = c(1, .95, .80, .75, 1),
 #'                              plot_contour = TRUE,
 #'                              return_detailed = TRUE)
 #' multi_dim$h_overall_par
@@ -148,10 +148,10 @@
 #'                                alpha_r = 0.5,
 #'                                alpha_f = 0,
 #'                                psi_r = 1,
-#'                                lambda_r_p = c(.3, .5, .9, .7),
-#'                                nu_r_p = c(.225, .025, .010, .240),
-#'                                nu_f_p = c(.225, -.05, .240, -.025),
-#'                                theta_r_p = diag(.96, 4),
+#'                                lambda_r = c(.3, .5, .9, .7),
+#'                                nu_r = c(.225, .025, .010, .240),
+#'                                nu_f = c(.225, -.05, .240, -.025),
+#'                                Theta_r = diag(.96, 4),
 #'                                n_dim = 1, plot_contour = TRUE,
 #'                                return_detailed = TRUE)
 #'                          
@@ -173,15 +173,16 @@ item_deletion_h <- function(propsel,
                             alpha_f = alpha_r,
                             psi_r, 
                             psi_f = psi_r,
-                            lambda_r_p, 
-                            lambda_f_p = lambda_r_p, 
-                            nu_r_p, 
-                            nu_f_p = nu_r_p,
-                            theta_r_p, 
-                            theta_f_p = theta_r_p,
+                            lambda_r, 
+                            lambda_f = lambda_r, 
+                            nu_r, 
+                            nu_f = nu_r,
+                            Theta_r, 
+                            Theta_f = Theta_r,
                             pmix_ref = 0.5, 
                             plot_contour = TRUE,
                             return_detailed = FALSE,
+                            specific_items = NULL,
                             ...) {
   
   # Start with pre-allocating space:
@@ -190,17 +191,17 @@ item_deletion_h <- function(propsel,
   store_str <- store_par <- str_par_ref_list <- str_par_foc_list <- 
     vector(mode = "list", N + 1)
   
-  delta_h_str_vs_par_ref <- delta_h_str_vs_par_foc <- delta_h_R_vs_Ef <-
-    as.data.frame(matrix(nrow = 8, ncol = N))
+  delta_h_str_vs_par_ref <- delta_h_str_vs_par_foc <- delta_h_R_vs_Ef <- 
+    delta_h_f_vs_Ef <- as.data.frame(matrix(nrow = 8, ncol = N))
   
-  h_R_Ef <- h_str_vs_par_ref <- h_str_vs_par_foc <- 
+  h_f_Ef <- h_R_Ef <- h_str_vs_par_ref <- h_str_vs_par_foc <- 
     as.data.frame(matrix(nrow = 8, ncol = N + 1))
   
   overall_par <- overall_str <- h_overall_str_par <-
-    as.data.frame(matrix(nrow = 3, ncol = N + 1))
+    as.data.frame(matrix(nrow = 4, ncol = N + 1))
   
   h_overall_par <-  delta_h_str_par_overall <- 
-    as.data.frame(matrix(nrow = 3, ncol = N)) 
+    as.data.frame(matrix(nrow = 4, ncol = N)) 
   
   AI_ratios <- as.data.frame(matrix(nrow = 2, ncol = N + 1))
  # Call PartInv with the full item set under strict invariance
@@ -211,11 +212,11 @@ item_deletion_h <- function(propsel,
                             alpha_f = alpha_f,
                             psi_r = psi_r,
                             psi_f = psi_f,
-                            lambda_r = lambda_f_p * (1 - pmix_ref) +
-                              lambda_r_p * pmix_ref,
-                            nu_r = nu_f_p * (1 - pmix_ref) + nu_r_p * pmix_ref,
-                            Theta_r = theta_f_p * (1 - pmix_ref) + 
-                              theta_r_p * pmix_ref,
+                            lambda_r = lambda_f * (1 - pmix_ref) +
+                              lambda_r * pmix_ref,
+                            nu_r = nu_f * (1 - pmix_ref) + nu_r * pmix_ref,
+                            Theta_r = Theta_f * (1 - pmix_ref) + 
+                              Theta_r * pmix_ref,
                             pmix_ref = pmix_ref, 
                             plot_contour = plot_contour)
   
@@ -230,12 +231,12 @@ item_deletion_h <- function(propsel,
                             alpha_f = alpha_f,
                             psi_r = psi_r,
                             psi_f = psi_f,
-                            lambda_r = lambda_r_p,
-                            lambda_f = lambda_f_p,
-                            nu_r = nu_r_p,
-                            nu_f = nu_f_p,
-                            Theta_r = theta_r_p,
-                            Theta_f = theta_f_p,
+                            lambda_r = lambda_r,
+                            lambda_f = lambda_f,
+                            nu_r = nu_r,
+                            nu_f = nu_f,
+                            Theta_r = Theta_r,
+                            Theta_f = Theta_f,
                             pmix_ref = pmix_ref, 
                             plot_contour = plot_contour) 
   class(store_par[[1]]) <- "PartInv"
@@ -254,7 +255,7 @@ item_deletion_h <- function(propsel,
   h_str_vs_par_foc[1] <-acc$Focal$h 
   
   h_R_Ef[1] <- cohens_h(partial$Reference, partial$`E_R(Focal)`)
-
+  h_f_Ef[1] <- cohens_h(partial$Focal, partial$`E_R(Focal)`)
   # Re-weight SE, SR, SP by focal and group proportions to compute 
   # overall indices under partial invariance for the full item set
   overall_par[1] <- get_overall(pmix_ref, partial) 
@@ -288,12 +289,12 @@ item_deletion_h <- function(propsel,
                               alpha_f = alpha_f,
                               psi_r = psi_r,
                               psi_f = psi_f,
-                              lambda_r = lambda_f_p * (1 - pmix_ref) + 
-                                lambda_r_p * pmix_ref,
-                              nu_r = nu_f_p * (1 - pmix_ref) + 
-                                nu_r_p * pmix_ref,
-                              Theta_r = theta_f_p * (1 - pmix_ref) + 
-                                theta_r_p * pmix_ref,
+                              lambda_r = lambda_f * (1 - pmix_ref) + 
+                                lambda_r * pmix_ref,
+                              nu_r = nu_f * (1 - pmix_ref) + 
+                                nu_r * pmix_ref,
+                              Theta_r = Theta_f * (1 - pmix_ref) + 
+                                Theta_r * pmix_ref,
                               pmix_ref = pmix_ref, 
                               plot_contour = plot_contour)
     class(store_str[[i]]) <- "PartInv"
@@ -306,11 +307,11 @@ item_deletion_h <- function(propsel,
                               alpha_f = alpha_f,
                               psi_r = psi_r,
                               psi_f = psi_f,
-                              lambda_r = lambda_r_p,
-                              nu_r = nu_r_p,
-                              nu_f = nu_f_p,
-                              Theta_r = theta_r_p,
-                              Theta_f = theta_f_p,
+                              lambda_r = lambda_r,
+                              nu_r = nu_r,
+                              nu_f = nu_f,
+                              Theta_r = Theta_r,
+                              Theta_f = Theta_f,
                               pmix_ref = pmix_ref, 
                               plot_contour = plot_contour)
     class(store_par[[i]]) < "PartInv"
@@ -338,13 +339,14 @@ item_deletion_h <- function(propsel,
     # focal group if it followed the same distribution as the reference group 
     # (`E_R(Focal)`)
     h_R_Ef[i] <- round(cohens_h(partial$Reference, partial$`E_R(Focal)`), 3)
+    h_f_Ef[i] <- round(cohens_h(partial$Focal, partial$`E_R(Focal)`), 3)
     
     # Compute the change in Cohen's h comparing accuracy indices under partial
     # invariance for the reference group vs. for the expected accuracy indices
     # for the focal group if it followed the same distribution as the reference
     # group when item i is deleted, i.e. the change in h_R_Ef_del
-    delta_h_R_vs_Ef[i-1] <- round(delta_h(h_R_Ef[1], h_R_Ef[i]),3)
-    
+    delta_h_R_vs_Ef[i-1] <- round(delta_h(h_R_Ef[1], h_R_Ef[i]), 3)
+    delta_h_f_vs_Ef[i-1] <- round(delta_h(h_f_Ef[1], h_f_Ef[i]),3)
     # Compute overall SR, SE, SP indices under partial invariance by weighting 
     # accuracy indices for the reference and focal groups by their group
     # proportions
@@ -369,10 +371,11 @@ item_deletion_h <- function(propsel,
   names(AI_ratios) <- c("AI", paste0("AI|", c(1:N)))
   rownames(AI_ratios) <- c("SFI", "PFI")
   # h_R_Ef
-  names(h_R_Ef) <- c("h(r-Ef)", paste0("h(r-Ef|", c(1:N), c(")")))
+  names(h_R_Ef) <-  c("h(r-Ef)", paste0("h(r-Ef|", c(1:N), c(")")))
+  names(h_f_Ef) <-  c("h(f-Ef)", paste0("h(f-Ef|", c(1:N), c(")")))
   # delta_h_str_vs_par
-  names(delta_h_str_vs_par_ref) <- paste0('\u0394', "h(SFI|", c(1:N), c(")"))
-  names(delta_h_str_vs_par_foc) <- paste0('\u0394', "h(PFI|", c(1:N), c(")"))
+  names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_foc) <- 
+    paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
   
 names(store_str) <- names(store_par) <- 
     names(str_par_ref_list) <- names(str_par_foc_list) <- 
@@ -383,20 +386,21 @@ names(store_str) <- names(store_par) <-
   
   rownames(h_overall_par) <- rownames(overall_par) <- 
     rownames(delta_h_str_par_overall) <- rownames(h_overall_str_par) <- 
-    c("SR*", "SE*", "SP*")
+    c("PS*", "SR*", "SE*", "SP*")
   
   
   rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
-    rownames(h_R_Ef) <- rownames(delta_h_R_vs_Ef) <- 
-    rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_foc) <-
-    c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
-  h_str_vs_par_list_ref <- list(outputlist= str_par_ref_list, condition="reference")
-  h_str_vs_par_list_foc <- list(outputlist= str_par_foc_list, condition="focal")
+    rownames(h_R_Ef) <- rownames(h_f_Ef) <- rownames(delta_h_R_vs_Ef) <- 
+    rownames(delta_h_f_vs_Ef) <- rownames(h_str_vs_par_ref) <- 
+    rownames(h_str_vs_par_foc) <- c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
+  
   # Declare classes
   store_par <- list(outputlist = store_par, condition = "partial")
   store_str <- list(outputlist = store_str, condition = "strict")
   class(store_par) <- c("PartInvList", "PartInv")
   class(store_str) <- c("PartInvList", "PartInv")
+  h_str_vs_par_list_ref <- list(outputlist = str_par_ref_list, condition="ref")
+  h_str_vs_par_list_foc <- list(outputlist = str_par_foc_list, condition="foc")
   class(h_str_vs_par_list_ref) <- "PartInvList"
   class(h_str_vs_par_list_foc) <- "PartInvList"
   
@@ -405,37 +409,36 @@ names(store_str) <- names(store_par) <-
       paste0("h(SFI, PFI|", c(1:N), c(")")))
   
   names(delta_h_R_vs_Ef) <- paste0('\u0394', "h(r-Ef|", c(1:N), c(")"))
+  names(delta_h_f_vs_Ef) <- paste0('\u0394', "h(f-Ef|", c(1:N), c(")"))
   names(delta_h_str_par_overall) <- paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
-  names(h_overall_str_par) <- c("Full", paste0("h(|", c(1:N), c(")")))
-  
-
-  
-
+  names(h_overall_str_par) <- c("h(SFI, PFI)", paste0("h(SFI, PFI|", c(1:N), c(")")))
   
   overall_par <- as.data.frame(round(cbind(overall_par), 3))
   h_overall_par <- as.data.frame(round(h_overall_par, 3))
   
-  delta_h_str_vs_par <- list("ref" = t(delta_h_str_vs_par_ref), 
-                             "foc" = t(delta_h_str_vs_par_foc))
-  
   h_str_vs_par <- list("ref"= t(h_str_vs_par_ref), "foc" = t(h_str_vs_par_foc))
   
   h_overall_str_par <- round(h_overall_str_par, 3)
-
-  #class(overall_l) <- "overrall"
-  
+  print(h_f_Ef)
+  print(delta_h_f_vs_Ef)
   returned <- list("h_overall_par" = t(h_overall_par),
                    "delta_h_str_par_overall" = t(delta_h_str_par_overall),
                    "AI Ratio" = t(round(AI_ratios, 3)),
                    "h_R_Ef" = t(round(h_R_Ef, 3)),
+                 #  "h_f_Ef" = t(round(h_f_Ef, 3)),
                    "h_R_vs_Ef.par" = t(round(delta_h_R_vs_Ef, 3)),
-                   "delta_h_str_vs_par" = delta_h_str_vs_par, 
+                 #  "h_f_vs_Ef.par" = t(round(delta_h_f_vs_Ef, 3)),
+                   "delta_h_str_vs_par" = list("ref" = t(delta_h_str_vs_par_ref), 
+                                               "foc" = t(delta_h_str_vs_par_foc)), 
                    "str_vs_par" = h_str_vs_par,
                    "overall_par" = t(overall_par),
                    "h_overall_str_par" = t(h_overall_str_par),
-                   "Ref_foc" = list("reference" = h_str_vs_par_list_ref, "focal" = h_str_vs_par_list_ref),
-                   "PartInv" = list("strict" = store_str,"partial" = store_par),
-                   "detail" = return_detailed)
+                   "Ref_foc" = list("reference" = h_str_vs_par_list_ref, 
+                                    "focal" = h_str_vs_par_list_foc),
+                   "PartInv" = list("strict" = store_str,
+                                    "partial" = store_par),
+                   "detail" = return_detailed, 
+                   "specific_items" =  specific_items)
   class(returned) <- "itemdeletion"
   
  # if (return_detailed == TRUE) {

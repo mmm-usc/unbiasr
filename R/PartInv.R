@@ -221,7 +221,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
        summary = round(dat, 3), 
        ai_ratio = dat["Proportion selected", 3] / 
          dat["Proportion selected", 1], plot = p)
-#  class(result) <- "PartInv"
+  class(result) <- "PartInv"
   return(result)
 }
 

@@ -5,7 +5,7 @@
 #' get_overall
 #' 
 #' @description
-#' \code{get_overall} computes overall SR, SE, SP under partial or strict 
+#' \code{get_overall} computes overall PS, SR, SE, SP under partial or strict 
 #' invariance by weighting the TP, TF, TN, FP values for the reference and focal 
 #' groups with the group proportions.
 #' 
@@ -13,7 +13,8 @@
 #' @param store_summary The summary table from [PartInv()] 
 #' under partial or strict invariance.
 #' 
-#' @return A vector of length 3. 
+#' @return A vector of length 4. 
+#'          \item{PS}{Proportion selected, computed as \eqn{TP + TN}.}
 #'          \item{SR}{Success ratio, computed as \eqn{TP/(TP + FP)}.}
 #'          \item{SE}{Sensitivity, computed as \eqn{TP/(TP + FN)}.}
 #'          \item{SP}{Specificity, computed as \eqn{TN/(TN + FP)}.}
@@ -21,7 +22,7 @@
 
 get_overall <- function(pmixr, store_summary) {
   r <- store_summary$Reference; f <- store_summary$Focal
-  
+  PS <-  (pmixr*r[1] + (1 - pmixr)*f[1]) + (pmixr*r[3] + (1 - pmixr)*f[3])
   SR <- (pmixr*r[1] + (1 - pmixr)*f[1]) /
     (pmixr*r[1] + (1-pmixr)*f[1] + pmixr*r[2] + (1 - pmixr)*f[2]) 
   SE <- (pmixr*r[1] + (1 - pmixr)*f[1]) / 
@@ -29,7 +30,7 @@ get_overall <- function(pmixr, store_summary) {
   SP <- (pmixr*r[3] + (1 - pmixr)*f[3]) / 
     (pmixr*r[3] + (1 - pmixr)*f[3] + pmixr*r[2] + (1 - pmixr)*f[2]) 
   
-  return(c(SR, SE, SP))
+  return(c(PS, SR, SE, SP))
 }
 
 #' @title
