@@ -269,16 +269,16 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     colnames(dat) <- labels
     p <- NULL
     if (plot_contour) {
-      x_lim <- range(c(kappa_r + c(-3, 3) * sd_xir, 
-                       kappa_f + c(-3, 3) * sd_xif))
+      x_lim <- range(c(zeta_r + c(-3, 3) * sd_xir, 
+                       zeta_f + c(-3, 3) * sd_xif))
       y_lim <- range(c(mean_zr + c(-3, 3) * sd_zr, 
                        mean_zf + c(-3, 3) * sd_zf))
-      contour_bvnorm(kappa_r, sd_xir, mean_zr, sd_zr, cov12 = cov_z_xir, 
+      contour_bvnorm(zeta_r, sd_xir, mean_zr, sd_zr, cov12 = cov_z_xir, 
                      xlab = bquote("Latent Score" ~ (xi)), 
                      ylab = bquote("Observed Composite" ~ (italic(Z))), 
                      lwd = 2, col = "red", xlim = x_lim, ylim = y_lim, 
                      ...)
-      contour_bvnorm(kappa_f, sd_xif, mean_zf, sd_zf, cov12 = cov_z_xif, 
+      contour_bvnorm(zeta_f, sd_xif, mean_zf, sd_zf, cov12 = cov_z_xif, 
                      add = TRUE, lty = "dashed", lwd = 2, col = "blue", 
                      ...)
       legend("topleft", labels,
