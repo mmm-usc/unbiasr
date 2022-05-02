@@ -19,7 +19,7 @@ library(PartInvShinyUI)
 library(lavaan)
 ```
 \newcommand{\SR}{\text{SR}}
-\newcommand{\SAI}{\text{SAI}}
+\newcommand{\CAI}{\text{CAI}}
 \newcommand{\SE}{\text{SE}}
 \newcommand{\SP}{\text{SP}}
 \newcommand{\PS}{\text{PS}}
@@ -31,11 +31,33 @@ library(lavaan)
 \newcommand{\par}{\text{par}}
 \newcommand{\td}{\tilde}
 \newcommand{\rr}{\text{r-Ef}}
+\newcommand{\ov}{\overline}
 
 ## Some notes on notation and examples of notation use
-Selection accuracy indices (SAI) will be referred to by a two letter acronym 
-e.g., $\SE$, and 'overall' accuracy indices will be denoted with a tilde over
-the acronym, (e.g., $\td{\SE}$, $\td{\SR}$). Unless otherwise indicated, we will 
+
+**Legend**
+
+### Classification Accuracy Index (CAI)
+
+- Proportion Selected: $\PS=\text{P(TP)}+\text{P(FP)}$
+
+- Success Ratio: $\SP=\dfrac{\text{P(TP)}}{\text{P(TP)}+\text{P(FP)}}$
+
+- Sensitivity: $\SE=\dfrac{\text{P(TP)}}{\text{P(TP)}+\text{P(FN)}}$
+
+- Specificity: $\SP=\dfrac{\text{P(TN)}}{\text{P(TN)}+\text{P(FP)}}$
+
+### 'Overall' Classification Accuracy Index $\left(\ov{\CAI}\right)$
+
+- Overall PS: $\ov{\PS}  = \TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)$
+
+- Overall SR: $\ov{\SR} = \dfrac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)}$
+ 
+- Overall SE: $\ov{\SE} = \dfrac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FN_{r}\times p_r + \FN_{f}\times (1-p_r)}$
+
+- Overall SP: $\ov{\SP} = \dfrac{\TN_{r}\times p_r + \TN_{f}\times (1-p_r)}{\TN_{r}\times p_r + \TN_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)}$
+
+Unless otherwise indicated, we will 
 assume that the full item set is used and that partial factorial invariance (PFI) 
 holds.
 
@@ -44,58 +66,58 @@ the outermost superscript indicates the current operation, and innermost
 superscript refers to constant properties. In other words, the superscript of
 $h$ or $\Delta h$ indicates the current comparison (e.g., full vs. modified item set, 
 strict vs. partial invariance, reference vs. focal groups). The superscript of an 
-SAI refers to properties that are constant in in both groups being compared, 
-and the subscript (if any) indicates that $h$ was computed on this SAI to compare
+CAI refers to properties that are constant in in both groups being compared, 
+and the subscript (if any) indicates that $h$ was computed on this CAI to compare
 the conditions indicated in the subscript.
 
 #### Indicating the set of items
 - Let $I$ denote a set of items in a p-element scale, $I = \{i_1, i_2,\ldots,i_p\}$.
 Then, we can denote the modified set of items after removing the k-th item as
 $I^{|k}=\{i_1, i_2, ..., i_{k-1},i_{k+1}, ..., i_p\}$. Using this notation, we 
-can refer to a selection accuracy index (SAI) computed using the full set of items
-as 'SAI' (e.g., SE), and the SAI computed using the modified set of items 
-excluding item k as $\SAI^{|k}$ (e.g., $\SE^{|2}$ if the modified item set
+can refer to a Classification Accuracy Index (CAI)computed using the full set of items
+as 'CAI' (e.g., SE), and the CAI computed using the modified set of items 
+excluding item k as $\CAI^{|k}$ (e.g., $\SE^{|2}$ if the modified item set
 excludes the second item).
 
 #### Operations comparing the full vs. modified item sets
-- $h(\SAI,\SAI^{|k})$ is denoted as $h^{|k}(\SAI)$, and the resulting 
-h values are indicated as $\SAI_{|k}$.
-- $\Delta h(\SAI,\SAI^{|k})$ is denoted as $\Delta h^{|k}(\SAI)$, and the 
-resulting $\Delta h$ values as $\Delta h^{|k}\SAI$. 
+- $h(\CAI,\CAI^{|k})$ is denoted as $h^{|k}(\CAI)$, and the resulting 
+h values are indicated as $\CAI_{|k}$.
+- $\Delta h(\CAI,\CAI^{|k})$ is denoted as $\Delta h^{|k}(\CAI)$, and the 
+resulting $\Delta h$ values as $\Delta h^{|k}\CAI$. 
 
 - Note: $\Delta h$ is computed only for the comparison between the full and
 modified item sets (not for group or invariance
 condition comparisons).
 
-- e.g., $\Delta h^{\text{|2}}(\SAI_{\rr})$ for quantifying the impact of dropping
-the second item on the comparison between SAI for the r and Ef groups under 
-PFI: $\Delta h^{|2}\SAI_{\rr}$.
+- e.g., $\Delta h^{\text{|2}}(\CAI_{\rr})$ for quantifying the impact of dropping
+the second item on the comparison between CAI for the r and Ef groups under 
+PFI: $\Delta h^{|2}\CAI_{\rr}$.
 
-- e.g., for the reference group, $h$ comparing SAI under SFI vs. PFI followed by
+- e.g., for the reference group, $h$ comparing CAI under SFI vs. PFI followed by
 $\Delta h$ comparing these h values computed for the full item set and for the
-modified item set excluding the 4th item: $\Delta h^{|4}\SAI^{r}_{\text{str, par}}$.
+modified item set excluding the 4th item: $\Delta h^{|4}\CAI^{r}_{\text{str, par}}$.
 
-- e.g. $h^{|3}(\td{\SAI})$ for comparing the overall SAI under PFI: $\td{\SAI}_{|3}$.
+- e.g. $h^{|3}(\td{\CAI})$ for comparing the overall CAI under PFI: $\td{\CAI}_{|3}$.
 
-#### h comparing the SAI of groups
+#### h comparing the CAI of groups
 - Reference group (r) can be compared with the focal group (f) or Efocal (Ef).
 
-- $h^{\rr}(\SAI) = \SAI_{\rr}$ for h comparing the SAI of r and Ef groups under PFI,
+- $h^{\rr}(\CAI) = \CAI_{\rr}$ for h comparing the CAI of r and Ef groups under PFI,
 for the full item set.
-- $h^{\rr}(\SAI^{|2})=\SAI_{\rr}^{|2}$ for h comparing the SAI of r and Ef groups
+- $h^{\rr}(\CAI^{|2})=\CAI_{\rr}^{|2}$ for h comparing the CAI of r and Ef groups
 for modified item set excluding the second item.
-- $h^{\text{r-f}}(\SAI^{\str}) = \SAI_{\text{r-f}}^{\str}$ for h comparing the SAI 
+- $h^{\text{r-f}}(\CAI^{\str}) = \CAI_{\text{r-f}}^{\str}$ for h comparing the CAI 
 of r and f groups under SFI, for the full item set.
-- $h^{\text{r-f}}(\SAI^{|2;\str}) = \SAI_{\text{r-f}}^{|2; \str}$ for  h comparing
-the SAI of r and f groups under SFI, for the modified item set excluding the
+- $h^{\text{r-f}}(\CAI^{|2;\str}) = \CAI_{\text{r-f}}^{|2; \str}$ for  h comparing
+the CAI of r and f groups under SFI, for the modified item set excluding the
 second item.
 
-#### h comparing the SAI under SFI vs. PFI
+#### h comparing the CAI under SFI vs. PFI
 
-- $h^{\text{str, par}}(\SAI^r)=\SE_{\text{str, par}}^r$ for h comparing the SAI 
+- $h^{\text{str, par}}(\CAI^r)=\SE_{\text{str, par}}^r$ for h comparing the CAI 
 under SFI vs. PFI (for the reference group).
-- $h^{\text{str, par}}(\SAI^{|2; r})=\SE_{\text{str, par}}^{|2; r}$ for h 
-comparing the SAI of r and Ef groups for modified item set excluding the second
+- $h^{\text{str, par}}(\CAI^{|2; r})=\SE_{\text{str, par}}^{|2; r}$ for h 
+comparing the CAI of r and Ef groups for modified item set excluding the second
 item.
 
 ## Example from Lai, Kwok, Yoon and Hsiao (2017) 
@@ -239,8 +261,11 @@ CESD_pos <- item_deletion_h(weights_item = c(rep(1,4)),
                               Theta_f = Theta_POS_f,
                               weights_latent = 1,
                               plot_contour = FALSE,
-                              return_detailed = TRUE,
-                              pmix_ref = pmix_CESD_r)
+                              return_detailed = FALSE,
+                              pmix_ref = pmix_CESD_r, 
+                            biased_items_only=TRUE
+                           # user_specified_items = c(1,2)
+                           )
 CESD_pos 
 
 # Depressive Affect Factor 
@@ -259,8 +284,9 @@ CESD_dep <- item_deletion_h(weights_item = c(rep(1,7)),
                               Theta_f = Theta_DEP_f,
                               weights_latent = 1,
                               plot_contour = FALSE,
-                              return_detailed = TRUE,
-                              pmix_ref = pmix_CESD_r)
+                              return_detailed = FALSE,
+                              pmix_ref = pmix_CESD_r, 
+                            biased_items_only = TRUE)
 CESD_dep # items 2, 3, 4 are biased
 
 # Somatic Complaints 
@@ -305,10 +331,10 @@ CESD_int #item 2 is biased
 ```
 
 ###### `h_overall_par`
-$h^{|k}(\td{\SAI})$: Cohen's h effect size for the improvement/drop in overall
-SAI under PFI when the k-th item is removed. 'Overall' 
+$h^{|k}(\td{\CAI})$: Cohen's h effect size for the improvement/drop in overall
+CAI under PFI when the k-th item is removed. 'Overall' 
 refers to the averaging of accuracy indices across focal and reference groups
-by group proportions to arrive at a weighted average for each SAI (regularly
+by group proportions to arrive at a weighted average for each CAI (regularly
 computed as $\SR=\frac{\TP}{\TP+\FP}$, $\SE=\frac{\TP}{\TP+\FN}$, 
 $\SR=\frac{\TN}{\TN+\FP}$). 
 Letting $p_r$ denote the weight for the reference group,
@@ -317,13 +343,13 @@ $$\td{\SR} = \frac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r 
 $$\td{\SE} = \frac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FN_{r}\times p_r + \FN_{f}\times (1-p_r)}$$
 $$\td{\SP} = \frac{\TN_{r}\times p_r + \TN_{f}\times (1-p_r)}{\TN_{r}\times p_r + \TN_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)}$$
 
-Then, the change in overall SAI after dropping the k-th item can be computed as
-$$h^{|k}\td{\SAI} = 2\arcsin\left(\sqrt{\td{\SAI}}\right)-2\arcsin\left(\sqrt{\td{\SAI}^{|k}}\right)$$
+Then, the change in overall CAI after dropping the k-th item can be computed as
+$$h^{|k}\td{\CAI} = 2\arcsin\left(\sqrt{\td{\CAI}}\right)-2\arcsin\left(\sqrt{\td{\CAI}^{|k}}\right)$$
 
-A negative `h_overall_sai_par` indicates an improvement 
-(as $h^{|k}\td{\SAI}<0 \iff \td{\SAI}<\td{\SAI}^{|k}$)
+A negative `h_overall_CAI_par` indicates an improvement 
+(as $h^{|k}\td{\CAI}<0 \iff \td{\CAI}<\td{\CAI}^{|k}$)
 whereas a positive
-`h_overall_sai_par` indicates a deterioration in performance.
+`h_overall_CAI_par` indicates a deterioration in performance.
 
 
 For the 4-item CES-D scale, the negative $h^{|1}(\td{\SR})$,
@@ -336,8 +362,8 @@ items are dropped.
 ##### `delta_h`
 
 $\Delta h$ is computed using the following formula to compare the effect size of 
-the change in an SAI when the k=th item is dropped:
-$$\Delta h^{|k}(\SAI)=\text{sign}\left(| h^{(.)}({\SAI)}|-|h^{(.)}(\SAI^{|k})|\right)\left||h^{(.)}(\SAI^{|k})|-|h^{(.)}(\SAI)|\right|$$
+the change in an CAI when the k=th item is dropped:
+$$\Delta h^{|k}(\CAI)=\text{sign}\left(| h^{(.)}({\CAI)}|-|h^{(.)}(\CAI^{|k})|\right)\left||h^{(.)}(\CAI^{|k})|-|h^{(.)}(\CAI)|\right|$$
 '(.)' in the superscript of h is a placeholder for the comparison performed in 
 the previous step.
 
@@ -346,17 +372,17 @@ the previous step.
 and the second for focal group comparisons).
 
 #### `delta_h$h_R_vs_Ef.par`
-$\Delta h^{|k}({\SAI_{\rr}})$: Effect size of the change in $\SAI_{\rr}$ 
-(stored in `h$R_vs_Ef.par`) when the k-th item is dropped, under PFI. $\SAI_{\rr}$ refers to the Cohen's effect size 
-for the comparison in SAI for the reference group vs. the focal group if it 
+$\Delta h^{|k}({\CAI_{\rr}})$: Effect size of the change in $\CAI_{\rr}$ 
+(stored in `h$R_vs_Ef.par`) when the k-th item is dropped, under PFI. $\CAI_{\rr}$ refers to the Cohen's effect size 
+for the comparison in CAI for the reference group vs. the focal group if it 
 followed the same distribution as the reference group. 
 
 HL: # (I would suggest separating out PS from SR, SE, and SP here, as PS is more a fairness index whereas SR, SE, SP are more about accuracy. We may only need delta h for PS. )
 
-$$\Delta h^{|k}(\SAI_{\rr})=\text{sign}\left(| h^{\rr}({\SAI)}|-|h^{\rr}(\SAI^{|k})|\right)\left||h^{\rr}(\SAI^{|k})|-|h^{\rr}(\SAI)|\right|$$
-Equivalently, substituting $\SAI_{\rr}$ for $h^{\rr}({\SAI)}$, 
+$$\Delta h^{|k}(\CAI_{\rr})=\text{sign}\left(| h^{\rr}({\CAI)}|-|h^{\rr}(\CAI^{|k})|\right)\left||h^{\rr}(\CAI^{|k})|-|h^{\rr}(\CAI)|\right|$$
+Equivalently, substituting $\CAI_{\rr}$ for $h^{\rr}({\CAI)}$, 
 
-$$\Delta h^{|k}(\SAI_{\rr})=\text{sign}\left(| \SAI_{\rr}|-|\SAI^{|k}_{\rr}|\right)\left||\SAI^{|k}_{\rr}|-|\SAI_{\rr}|\right|$$
+$$\Delta h^{|k}(\CAI_{\rr})=\text{sign}\left(| \CAI_{\rr}|-|\CAI^{|k}_{\rr}|\right)\left||\CAI^{|k}_{\rr}|-|\CAI_{\rr}|\right|$$
 
 Looking at PS, Delta h is only positive for the comparison between the full item
 set and the set where item 1 is deleted. As we know that item 1 is biased, this 
@@ -366,43 +392,43 @@ removing any of item 2, 3, or 4 would harm the accuracy indices.
 
 #### `delta_h$h_str_vs_par`: `ref` and `foc`
 
-- $\Delta h^{|k}(\SAI^{r}_{\str,\par})$, stored in `delta_h$h_str_vs_par.ref`, 
-refers to the effect size of the change in $\SAI^{r}_{\str,\par}$
-when the k-th item is dropped. $\SAI^{r}_{\str,\par}$ (stored in 
+- $\Delta h^{|k}(\CAI^{r}_{\str,\par})$, stored in `delta_h$h_str_vs_par.ref`, 
+refers to the effect size of the change in $\CAI^{r}_{\str,\par}$
+when the k-th item is dropped. $\CAI^{r}_{\str,\par}$ (stored in 
 `h$str_vs_par$ref`) refers to the Cohen's effect size
-for the comparison in selection accuracy indices under SFI vs. 
+for the comparison in CAI under SFI vs. 
 PFI, for a given set of items for the reference group.
 
 \[
 \begin{align*}
-\Delta h^{|k}(\SAI^{r}_{\str,\par})&= \text{sign}\left(|\SAI^{r}_{\str,\par}| - |\SAI^{|k,r}_{\str,\par}| \right)\left||\SAI^{|k,r}_{\str,\par} |-|\SAI^{r}_{\str,\par}|\right|
+\Delta h^{|k}(\CAI^{r}_{\str,\par})&= \text{sign}\left(|\CAI^{r}_{\str,\par}| - |\CAI^{|k,r}_{\str,\par}| \right)\left||\CAI^{|k,r}_{\str,\par} |-|\CAI^{r}_{\str,\par}|\right|
 \end{align*}
 \]
 
-- $\Delta h^{|k}(\SAI^{f}_{\str,\par})$, stored in `delta_h$h_str_vs_par.foc`, 
-refers to the effect size of the change in $\SAI^{f}_{\str,\par}$
-when the k-th item is dropped. $\SAI^{f}_{\str,\par}$ (stored in 
+- $\Delta h^{|k}(\CAI^{f}_{\str,\par})$, stored in `delta_h$h_str_vs_par.foc`, 
+refers to the effect size of the change in $\CAI^{f}_{\str,\par}$
+when the k-th item is dropped. $\CAI^{f}_{\str,\par}$ (stored in 
 `h$str_vs_par$foc`) refers to the Cohen's effect size
-for the comparison in selection accuracy indices under SFI vs. 
+for the comparison in CAI under SFI vs. 
 PFI, for a given set of items for the focal group.
 \[
 \begin{align*}
-\Delta h^{|k}(\SAI^{f}_{\str,\par})&= \text{sign}\left(|\SAI^{f}_{\str,\par}| - |\SAI^{|k,f}_{\str,\par}| \right)\left||\SAI^{|k,f}_{\str,\par} |-|\SAI^{f}_{\str,\par}|\right|\\
+\Delta h^{|k}(\CAI^{f}_{\str,\par})&= \text{sign}\left(|\CAI^{f}_{\str,\par}| - |\CAI^{|k,f}_{\str,\par}| \right)\left||\CAI^{|k,f}_{\str,\par} |-|\CAI^{f}_{\str,\par}|\right|\\
 \end{align*}
 \]
 
 #### `h$R_vs_Ef.par`
 [HL]: # (We can call the following 'bias'. It'd be helpful to discuss the 'full' column first.)
 
-$h^{\text{r- Ef}}(\SAI)$: is the effect size of the comparison between SAI 
-of the reference group vs. the expected SAI for the focal group if it 
+$h^{\text{r- Ef}}(\CAI)$: is the effect size of the comparison between CAI 
+of the reference group vs. the expected CAI for the focal group if it 
 followed the same distribution as the reference group under PFI. Note that
-$h^{\text{r- Ef}}(\SAI)=0$ under SFI.
+$h^{\text{r- Ef}}(\CAI)=0$ under SFI.
 
 \[
 \begin{align*}
-h^{\rr}(\SAI) &= 2\text{arcsin}\left(\sqrt{\SAI^r}\right)-2\text{arcsin}\left(\sqrt{\SAI^{Ef}}\right)=\SAI_{\rr}\\
-h^{\rr}(\SAI^{|k}) &= 2\text{arcsin}\left(\sqrt{\SAI^{|k,r}}\right)-2\text{arcsin}\left(\sqrt{\SAI^{|k,Ef}}\right)=\SAI^{|k}_{\rr}
+h^{\rr}(\CAI) &= 2\text{arcsin}\left(\sqrt{\CAI^r}\right)-2\text{arcsin}\left(\sqrt{\CAI^{Ef}}\right)=\CAI_{\rr}\\
+h^{\rr}(\CAI^{|k}) &= 2\text{arcsin}\left(\sqrt{\CAI^{|k,r}}\right)-2\text{arcsin}\left(\sqrt{\CAI^{|k,Ef}}\right)=\CAI^{|k}_{\rr}
 \end{align*}
 \]
 
@@ -423,15 +449,15 @@ and is not advisable despite leading to an increase in SE.
 
 
 #### `h$str_vs_par`: `ref` and `foc`
-`h$str_vs_par$ref` and `h$str_vs_par$foc` compare SAI under SFI vs. PFI for a given
+`h$str_vs_par$ref` and `h$str_vs_par$foc` compare CAI under SFI vs. PFI for a given
 set of items
 for the reference and focal groups respectively.
 
 `h$str_vs_par$ref`:
 \[
 \begin{align*}
-h^{\str,\par}(\SAI^{r}) &= 2\text{arcsin}\left(\sqrt{\SAI^{r, \str}}\right)-2\text{arcsin}\left(\sqrt{\SAI^{r,\par}}\right)\\
-h^{\str,\par}(\SAI^{|k,r}) &= 2\text{arcsin}\left(\sqrt{\SAI^{|k,r,\str}}\right)-2\text{arcsin}\left(\sqrt{\SAI^{|k,r,\par}}\right)
+h^{\str,\par}(\CAI^{r}) &= 2\text{arcsin}\left(\sqrt{\CAI^{r, \str}}\right)-2\text{arcsin}\left(\sqrt{\CAI^{r,\par}}\right)\\
+h^{\str,\par}(\CAI^{|k,r}) &= 2\text{arcsin}\left(\sqrt{\CAI^{|k,r,\str}}\right)-2\text{arcsin}\left(\sqrt{\CAI^{|k,r,\par}}\right)
 \end{align*}
 \]
 
@@ -439,8 +465,8 @@ h^{\str,\par}(\SAI^{|k,r}) &= 2\text{arcsin}\left(\sqrt{\SAI^{|k,r,\str}}\right)
 
 \[
 \begin{align*}
-h^{\str,\par}(\SAI^{f}) &= 2\text{arcsin}\left(\sqrt{\SAI^{f, \str}}\right)-2\text{arcsin}\left(\sqrt{\SAI^{f,\par}}\right)\\
-h^{\str,\par}(\SAI^{|k,f}) &= 2\text{arcsin}\left(\sqrt{\SAI^{|k,f,\str}}\right)-2\text{arcsin}\left(\sqrt{\SAI^{|k,f,\par}}\right)
+h^{\str,\par}(\CAI^{f}) &= 2\text{arcsin}\left(\sqrt{\CAI^{f, \str}}\right)-2\text{arcsin}\left(\sqrt{\CAI^{f,\par}}\right)\\
+h^{\str,\par}(\CAI^{|k,f}) &= 2\text{arcsin}\left(\sqrt{\CAI^{|k,f,\str}}\right)-2\text{arcsin}\left(\sqrt{\CAI^{|k,f,\par}}\right)
 \end{align*}
 \]
 
@@ -489,7 +515,7 @@ ex2 <- item_deletion_h(weights_item = c(1, 1, 1, 1, 1, 1, 1, 1),
 ex2
 ```
 
-The positive h values in h_overall_sai_par suggest that no item should be 
+The positive h values in h_overall_CAI_par suggest that no item should be 
 dropped, as dropping any of the items would lead to a lower success ratio, lower
 sensitivity, and lower specificity.
 
@@ -564,7 +590,8 @@ ex3 <- item_deletion_h(propsel=0.25,
               weights_latent = c(0.12553907, 0.33281060, 0.20634298, 
                                  -0.26347936, 0.07182799),
               plot_contour = FALSE, 
-              return_detailed = FALSE)
+              return_detailed = FALSE,
+              user_specified_items = c(1,7,11,13,14))
 ```
 
 ```{r}

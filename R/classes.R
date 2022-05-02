@@ -1,3 +1,8 @@
+# dividers
+stars <- 
+  "***********************************************************************"
+dashes <- 
+  "-----------------------------------------------------------------------"
 #'@export 
 setClass("PartInv",
          representation(
@@ -34,49 +39,49 @@ setClass("PartInvList",
 #'@export 
 print.PartInvList <- function(obj) {
   if(obj$condition=="partial"){
-    cat("\n*********************************************************************")
+    cat(stars)
     cat("\nPartInv() outputs under Partial Factorial Invariance (PFI)\n")
-    cat("*********************************************************************")
+    cat(stars)
     cat("\n\nUnder PFI, full item set:\n\n")
     print.PartInv(obj$outputlist[[1]])
     for(i in 2:length(obj$outputlist)){
-      cat("________________________________________________________________")
+      cat(dashes)
       cat("\n\nUnder PFI, if item", i-1,"is dropped:\n\n")
       print.PartInv(obj$outputlist[[i]])
     }
   }
     if(obj$condition=="strict"){
-    cat("\n***************************************************************")
+    cat(stars)
     cat("\nPartInv() outputs under Strict Factorial Invariance (SFI)\n")
-    cat("*********************************************************************")
+    cat(stars)
     cat("\n\nUnder SFI, full item set:\n\n")
     print.PartInv(obj$outputlist[[1]])
     for(i in 2:length(obj$outputlist)){
-      cat("________________________________________________________________")
+      cat(dashes)
       cat("\n\nUnder SFI, if item", i-1,"is dropped:\n\n")
       print.PartInv(obj$outputlist[[i]])
     }
     }
   if(obj$condition=="ref") {
-    cat("\n*********************************************************************")
+    cat(stars)
     cat("\nSAI under SFI vs. PFI for the reference group\n")
-    cat("*********************************************************************")
+    cat(stars)
     cat("\n\nReference group, full item set:\n\n")
     print(obj$outputlist[[1]])
     for(i in 2:length(obj$outputlist)){
-      cat("________________________________________________________________")
+      cat(dashes)
       cat("\n\nReference group, if item", i-1,"is dropped:\n\n")
       print(obj$outputlist[[i]])
     }
   }
   if(obj$condition=="foc") {
-    cat("\n*********************************************************************")
+    cat(stars)
     cat("\nSAI under SFI vs. PFI for the focal group\n")
-    cat("*********************************************************************")
+    cat(stars)
     cat("\n\nFocal group, full item set:\n\n")
     print(obj$outputlist[[1]])
     for(i in 2:length(obj$outputlist)){
-      cat("________________________________________________________________")
+      cat(dashes)
       cat("\n\nFocal group, if item", i-1,"is dropped:\n\n")
       print(obj$outputlist[[i]])
     }
@@ -97,126 +102,120 @@ setClass("itemdeletion",
     Ref_foc = "list",
     PartInv = "list",
     detail = "logical",
-    specific_items = "array"
+    return_items = "list"
 )
 )
 #'@export 
 print.itemdeletion <- function(obj){
-  specific_items <- obj$specific_items
-  if(!is.null(specific_items)){
-    cat("\n*********************************************************************")
-    cat("\nOVERALL SELECTION ACCURACY INDICES (SAI*)\n")
-    cat("*********************************************************************\n")
-    cat("SAI* under PFI computed for item subsets:\n")
-    print(obj[[8]][c(1, specific_items+1), ])
+  item_set <- obj$return_items
+  if(!is.null(item_set) & !obj$detail){ #default - not detailed, only the biased items
+    cat(paste0(stars,"\nOVERALL SELECTION ACCURACY INDICES (SAI*)\n", stars))
+    cat("\nSAI* under PFI computed for item subsets:\n")
+    print(obj[[8]][c(1, item_set+1), ])
     cat("\nImpact of deleting an item on SAI* under PFI:\n") 
-    print(obj[[1]][c(specific_items), ])
-    cat("________________________________________________________________")
-    cat("\n\nDiscrepancy between SAI* under SFI vs. PFI: \n")
-    print(obj[[9]][c(1, specific_items+1), ])
+    print(obj[[1]][c(item_set), ])
+    cat(paste0(dashes, "\nDiscrepancy between SAI* under SFI vs. PFI: \n"))
+    print(obj[[9]][c(1, item_set+1), ])
     cat("\nImpact of deleting an item on the discrepancy between SAI* \nunder SFI vs. SAI* under PFI:\n")
-    print(obj[[2]][c(specific_items), ]) 
-    cat("\n*********************************************************************")
-    cat("\nAdverse Impact (AI) ratio for item subsets:")
-    cat("\n*********************************************************************\n")
-    print(obj$AI[c(1, specific_items+1), ]) #AI
-    cat("\n*********************************************************************")
-    cat("\nCOMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS")
-    cat("\n*********************************************************************\n")
+    print(obj[[2]][c(item_set), ]) 
+    cat(paste0("\n", stars,"\nAdverse Impact (AI) ratio for item subsets:\n",stars, "\n"))
+    print(obj$AI[c(1, item_set+1), ]) #AI
+    cat(paste0("\n",stars,"\nCOMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS\n", stars))
     cat("\nDiscrepancy between SAI of reference vs. Efocal groups under PFI:\n")
-    print(obj[[4]][c(1, specific_items+1), ]) #h_R_Ef
-    cat("________________________________________________________________\n")
-    cat("\nImpact of deleting an item on the discrepancy between SAI of\nreference vs. Efocal groups under PFI:\n")
-    print(obj[[5]][c( specific_items), ]) #delta_R_Ef
-    cat("\n*********************************************************************")
-    cat("\nCOMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE")
-    cat("\n*********************************************************************\n")
+    print(obj[[4]][c(1, item_set+1), ]) #h_R_Ef
+    cat(paste0(dashes,"\nImpact of deleting an item on the discrepancy between SAI of\nreference vs. Efocal groups under PFI:\n"))
+    print(obj[[5]][c( item_set), ]) #delta_R_Ef
+    cat(paste0("\n", stars,"\nCOMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE\n", stars))
     cat("\nDiscrepancy between SAI under SFI vs. PFI for the reference group:\n")
-    print(obj[[7]][[1]][c(1, specific_items+1), ])
+    print(obj[[7]][[1]][c(1, item_set+1), ])
     cat("\nDiscrepancy between SAI under SFI vs. PFI for the focal group:\n")
-    print(obj[[7]][[2]][c(1, specific_items+1), ])
-    cat("\n________________________________________________________________")
-    cat("\nImpact of deleting an item on the difference between SAI under \nSFI vs. PFI for the reference group:\n")
-    print(obj[[6]][[1]][c(specific_items), ]) #str_vs_par ref
+    print(obj[[7]][[2]][c(1, item_set+1), ])
+    cat(paste0(dashes,"\nImpact of deleting an item on the difference between SAI under \nSFI vs. PFI for the reference group:\n"))
+    print(obj[[6]][[1]][c(item_set), ]) #str_vs_par foc
     cat("\nImpact of deleting an item on the difference between SAI under \nSFI vs. PFI for the focal group:\n")
-    print(obj[[6]][[2]][c(specific_items), ]) #str_vs_par foc
-    print(obj[[10]]$reference$outputlist[c(1, specific_items+1) ])#h_str_vs_par_list
-    print(obj[[10]]$focal$outputlist[c(1, specific_items+1) ])
-    print(obj[[11]]$strict$outputlist[c(1, specific_items+1) ])#cat("\nPartInv outputs for each item set\n")
-    print(obj[[11]]$partial$outputlist[c(1, specific_items+1) ])
+    print(obj[[6]][[2]][c(item_set), ]) #str_vs_par foc
   }
-  if(is.null(specific_items) & obj$detail==FALSE) {
-    cat("\n******************************************************************")
-    cat("\nOVERALL SELECTION ACCURACY INDICES (SAI*)\n")
-    cat("******************************************************************\n")
-    cat("SAI* under PFI computed for item subsets:\n")
+  if(!is.null(item_set) & obj$detail){ # 
+    cat(paste0(stars,"\nOVERALL SELECTION ACCURACY INDICES (SAI*)\n", stars))
+    cat("\nSAI* under PFI computed for item subsets:\n")
+    print(obj[[8]][c(1, item_set+1), ])
+    cat("\nImpact of deleting an item on SAI* under PFI:\n") 
+    print(obj[[1]][c(item_set), ])
+    cat(paste0(dashes, "\nDiscrepancy between SAI* under SFI vs. PFI: \n"))
+    print(obj[[9]][c(1, item_set+1), ])
+    cat("\nImpact of deleting an item on the discrepancy between SAI* \nunder SFI vs. SAI* under PFI:\n")
+    print(obj[[2]][c(item_set), ]) 
+    cat(paste0("\n", stars,"\nAdverse Impact (AI) ratio for item subsets:\n",stars, "\n"))
+    print(obj$AI[c(1, item_set+1), ]) #AI
+    cat(paste0("\n",stars,"\nCOMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS\n", stars))
+    cat("\nDiscrepancy between SAI of reference vs. Efocal groups under PFI:\n")
+    print(obj[[4]][c(1, item_set+1), ]) #h_R_Ef
+    cat(paste0(dashes,"\nImpact of deleting an item on the discrepancy between SAI of\nreference vs. Efocal groups under PFI:\n"))
+    print(obj[[5]][c( item_set), ]) #delta_R_Ef
+    cat(paste0("\n", stars,"\nCOMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE\n", stars))
+    cat("\nDiscrepancy between SAI under SFI vs. PFI for the reference group:\n")
+    print(obj[[7]][[1]][c(1, item_set+1), ])
+    cat("\nDiscrepancy between SAI under SFI vs. PFI for the focal group:\n")
+    print(obj[[7]][[2]][c(1, item_set+1), ])
+    cat(paste0(dashes,"\nImpact of deleting an item on the difference between SAI under \nSFI vs. PFI for the reference group:\n"))
+    print(obj[[6]][[1]][c(item_set), ]) #str_vs_par foc
+    cat("\nImpact of deleting an item on the difference between SAI under \nSFI vs. PFI for the focal group:\n")
+    print(obj[[6]][[2]][c(item_set), ]) #str_vs_par foc
+    print(obj[[10]]$reference$outputlist[c(1, item_set+1) ])#h_str_vs_par_list
+    print(obj[[10]]$focal$outputlist[c(1, item_set+1) ])
+    print(obj[[11]]$strict$outputlist[c(1, item_set+1) ])#cat("\nPartInv outputs for each item set\n")
+    print(obj[[11]]$partial$outputlist[c(1, item_set+1) ])
+  }
+  if(is.null(item_set) & obj$detail==FALSE) {
+    cat(paste0(stars,"\nOVERALL SELECTION ACCURACY INDICES (SAI*)\n", stars))
+    cat("\nSAI* under PFI computed for item subsets:\n")
     print(obj[[8]])
     cat("\nImpact of deleting an item on SAI* under PFI:\n") 
     print(obj[[1]])
-    cat("________________________________________________________________")
-    cat("\n\nDiscrepancy between SAI* under SFI vs. PFI: \n")
+    cat(paste0(dashes, "\n\nDiscrepancy between SAI* under SFI vs. PFI: \n"))
     print(obj[[9]])
     cat("\nImpact of deleting an item on the discrepancy between SAI* \nunder SFI vs. SAI* under PFI:\n")
     print(obj[[2]]) 
-    cat("\n******************************************************************")
-    cat("\nAdverse Impact (AI) ratio for item subsets:")
-    cat("\n******************************************************************\n")
+    cat(paste0(stars,"\nAdverse Impact (AI) ratio for item subsets:", stars))
     print(obj$AI) #AI
-    cat("\n******************************************************************")
-    cat("\nCOMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS")
-    cat("\n******************************************************************\n")
+    cat(paste0(stars,"\nCOMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS", stars))
     cat("\nDiscrepancy between SAI of reference vs. Efocal groups under PFI:\n")
     print(obj[[4]][,5:8]) #h_R_Ef
-    cat("________________________________________________________________")
-    cat("\n\nImpact of deleting an item on the discrepancy between SAI of\nreference vs. Efocal groups under PFI:\n")
+    cat(paste0(dashes,"\n\nImpact of deleting an item on the discrepancy between SAI of\nreference vs. Efocal groups under PFI:\n"))
     print(obj[[5]][,5:8]) #delta_R_Ef
-    cat("\n******************************************************************")
-    cat("\nCOMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE")
-    cat("\n******************************************************************\n")
+    cat(paste0(stars,"\nCOMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE",stars))
     cat("\nDiscrepancy between SAI under SFI vs. PFI for the reference group:\n")
     print(obj[[7]][[1]][,5:8]) 
     cat("\nDiscrepancy between SAI under SFI vs. PFI for the focal group:\n")
     print(obj[[7]][[2]][,5:8])
-    cat("\n________________________________________________________________")
-    cat("\n\nImpact of deleting an item on the difference between SAI under \nSFI vs. PFI for the reference group:\n")
+    cat(paste0(dashes,"\n\nImpact of deleting an item on the difference between SAI under \nSFI vs. PFI for the reference group:\n"))
     print(obj[[6]][[1]][,5:8]) #str_vs_par ref
     cat("\nImpact of deleting an item on the difference between SAI under \nSFI vs. PFI for the focal group:\n")
     print(obj[[6]][[2]][,5:8]) #str_vs_par foc
   }
-  if(is.null(specific_items) & obj$detail){
-    cat("\n*********************************************************************")
-    cat("\nOVERALL SELECTION ACCURACY INDICES (SAI*)\n")
-    cat("*********************************************************************\n")
+  if(is.null(item_set) & obj$detail){
+    cat(paste0(stars,"\nOVERALL SELECTION ACCURACY INDICES (SAI*)\n",stars))
     cat("SAI* under PFI computed for item subsets:\n")
     print(obj[[8]])
     cat("\nImpact of deleting an item on SAI* under PFI:\n") 
     print(obj[[1]])
-    cat("________________________________________________________________")
-    cat("\n\nDiscrepancy between SAI* under SFI vs. PFI: \n")
+    cat(dashes,"\n\nDiscrepancy between SAI* under SFI vs. PFI: \n")
     print(obj[[9]])
     cat("\nImpact of deleting an item on the discrepancy between SAI* \nunder SFI vs. SAI* under PFI:\n")
     print(obj[[2]]) 
-    cat("\n*********************************************************************")
-    cat("\nAdverse Impact (AI) ratio for item subsets:")
-    cat("\n*********************************************************************\n")
+    cat(stars,"\nAdverse Impact (AI) ratio for item subsets:\n",stars)
     print(obj$AI) #AI
-    cat("\n*********************************************************************")
-    cat("\nCOMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS")
-    cat("\n*********************************************************************\n")
+    cat(stars,"\nCOMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS\n",stars)
     cat("\nDiscrepancy between SAI of reference vs. Efocal groups under PFI:\n")
     print(obj[[4]]) #h_R_Ef
-    cat("________________________________________________________________\n")
-    cat("\nImpact of deleting an item on the discrepancy between SAI of\nreference vs. Efocal groups under PFI:\n")
+    cat(dashes,"\nImpact of deleting an item on the discrepancy between SAI of\nreference vs. Efocal groups under PFI:\n")
     print(obj[[5]]) #delta_R_Ef
-    cat("\n*********************************************************************")
-    cat("\nCOMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE")
-    cat("\n*********************************************************************\n")
+    cat(stars,"\nCOMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE\n",stars)
     cat("\nDiscrepancy between SAI under SFI vs. PFI for the reference group:\n")
     print(obj[[7]][[1]])
     cat("\nDiscrepancy between SAI under SFI vs. PFI for the focal group:\n")
     print(obj[[7]][[2]])
-    cat("\n________________________________________________________________")
-    cat("\nImpact of deleting an item on the difference between SAI under \nSFI vs. PFI for the reference group:\n")
+    cat(dashes,"\nImpact of deleting an item on the difference between SAI under \nSFI vs. PFI for the reference group:\n")
     print(obj[[6]][[1]]) #str_vs_par ref
     cat("\nImpact of deleting an item on the difference between SAI under \nSFI vs. PFI for the focal group:\n")
     print(obj[[6]][[2]]) #str_vs_par foc

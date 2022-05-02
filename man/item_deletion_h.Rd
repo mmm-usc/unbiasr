@@ -15,15 +15,17 @@ item_deletion_h(
   alpha_f = alpha_r,
   psi_r,
   psi_f = psi_r,
-  lambda_r_p,
-  lambda_f_p = lambda_r_p,
-  nu_r_p,
-  nu_f_p = nu_r_p,
-  theta_r_p,
-  theta_f_p = theta_r_p,
+  lambda_r,
+  lambda_f = lambda_r,
+  nu_r,
+  nu_f = nu_r,
+  Theta_r,
+  Theta_f = Theta_r,
   pmix_ref = 0.5,
   plot_contour = TRUE,
   return_detailed = FALSE,
+  biased_items_only = TRUE,
+  user_specified_items = NULL,
   ...
 )
 }
@@ -56,26 +58,26 @@ group; if no input, set equal to \code{alpha_r}.}
 \item{psi_f}{(optional) A matrix of latent factor variance for the focal
 group; if no input, set equal to \code{psi_r}.}
 
-\item{lambda_r_p}{A matrix of factor loadings for the reference group under
+\item{lambda_r}{A matrix of factor loadings for the reference group under
 the partial invariance condition.}
 
-\item{lambda_f_p}{(optional) A matrix of factor loadings for the focal group
+\item{lambda_f}{(optional) A matrix of factor loadings for the focal group
 under the partial invariance condition; if no input, set equal to
-\code{lambda_r_p}.}
+\code{lambda_r}.}
 
-\item{nu_r_p}{A matrix of measurement intercepts for the reference group
+\item{nu_r}{A matrix of measurement intercepts for the reference group
 under the partial invariance condition.}
 
-\item{nu_f_p}{(optional) A matrix of measurement intercepts for the focal
+\item{nu_f}{(optional) A matrix of measurement intercepts for the focal
 group under the partial invariance condition; if no input, set equal
-to \code{nu_r_p}.}
+to \code{nu_r}.}
 
-\item{theta_r_p}{A matrix of the unique factor variances and covariances
+\item{Theta_r}{A matrix of the unique factor variances and covariances
 for the reference group under the partial invariance condition.}
 
-\item{theta_f_p}{(optional) A matrix of the unique factor variances and
+\item{Theta_f}{(optional) A matrix of the unique factor variances and
 covariances for the focal group under the partial invariance
-condition; if no input, set equal to \code{theta_r_p}.}
+condition; if no input, set equal to \code{Theta_r}.}
 
 \item{pmix_ref}{Proportion of the reference group; default to 0.5 (i.e., two
 populations have equal size)}
@@ -129,27 +131,6 @@ given set of items.}
 stores Cohen's h values for the comparison between accuracy indices
 for the focal group under strict vs. partial invariance, for a
 given set of items.}
-\item{raw}{A list of length 3 containing \code{overall_sai.par},
-\code{h_str_vs_par_list}, and \code{PartInv}.}
-\item{raw$overall_sai.par}{A (3 x number of items + 1) data frame
-containing overall SR, SE, SP values under partial invariance.
-'Overall' refers to the weighting of the accuracy indices for focal
-and reference group proportions.}
-\item{raw$h_str_vs_par_list$ref}{A list of length (number of items + 1).
-Each item in the list is a (8 x 3) data frame with rows for accuracy
-indices and columns \code{strict_invariance}, \code{partial_invariance}, and
-\code{h}. Here, h is the Cohen's h effect size for the comparison between
-the accuracy indices under strict vs. partial invariance for a given
-set of items for the reference group.}
-\item{raw$h_str_vs_par_list$focal}{A list of length (number of items + 1).
-Each item in the list is a (8 x 3) data frame with rows for accuracy
-indices and columns \code{strict_invariance}, \code{partial_invariance}, and
-\code{h}. Here, h is the Cohen's h effect size for the comparison between
-the accuracy indices under strict vs. partial invariance for a given
-set of items for the focal group.}
-\item{raw$PartInv}{A list containing \code{strict} and \code{partial}, the
-function outputs for each call to \code{\link[=PartInv]{PartInv()}} under strict
-invariance and partial invariance respectively.}
 }
 \description{
 \code{item_deletion_h} computes Cohen's h effect size for the impact of
@@ -170,40 +151,24 @@ multi_dim <- item_deletion_h(propsel = .05, n_dim = 5,
                              alpha_r = c(0, 0),
                              alpha_f = c(-0.3, 0.1),
                              psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
-                             lambda_r_p = lambda_matrix,
-                             nu_r_p = c(.225, .025, .010, .240, .125),
-                             nu_f_p = c(.225, -.05, .240, -.025, .125),
-                             theta_r_p = diag(1, 5),
-                             theta_f_p = c(1, .95, .80, .75, 1),
+                             lambda_r = lambda_matrix,
+                             nu_r = c(.225, .025, .010, .240, .125),
+                             nu_f = c(.225, -.05, .240, -.025, .125),
+                             Theta_r = diag(1, 5),
+                             Theta_f = c(1, .95, .80, .75, 1),
                              plot_contour = TRUE,
                              return_detailed = TRUE)
-multi_dim$h_overall_par
-multi_dim$delta_h$R_vs_Ef.par
-multi_dim$delta_h$str_vs_par$ref
-multi_dim$h$str_vs_par$ref$`h(SFI, PFI; I)`
-multi_dim$h$str_vs_par$ref$`h(SFI, PFI; I-i1)`
-multi_dim$raw$PartInv$strict$`I`
-multi_dim$raw$PartInv$strict$`I-i2`
-
-# Single dimension examples
+# Single dimension example
 single_dim <- item_deletion_h(propsel = .10,
                                weights_item = c(1, 0.9, 0.8, 1),
                                weights_latent = 0.9,
                                alpha_r = 0.5,
                                alpha_f = 0,
                                psi_r = 1,
-                               lambda_r_p = c(.3, .5, .9, .7),
-                               nu_r_p = c(.225, .025, .010, .240),
-                               nu_f_p = c(.225, -.05, .240, -.025),
-                               theta_r_p = diag(.96, 4),
+                               lambda_r = c(.3, .5, .9, .7),
+                               nu_r = c(.225, .025, .010, .240),
+                               nu_f = c(.225, -.05, .240, -.025),
+                               Theta_r = diag(.96, 4),
                                n_dim = 1, plot_contour = TRUE,
                                return_detailed = TRUE)
-                         
-single_dim$h_overall_sai.par
-single_dim$delta_h$R_vs_Ef.par
-single_dim$delta_h$str_vs_par$ref
-single_dim$h$str_vs_par$ref$`h(SFI, PFI; I)`
-single_dim$h$str_vs_par$ref$`h(SFI, PFI; I-i1)`
-single_dim$raw$PartInv$strict$`I`
-single_dim$raw$PartInv$strict$`I-i2`
 }

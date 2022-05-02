@@ -1,5 +1,5 @@
 #' @title
-#' Compute SR, SE, SP weighted by group proportions
+#' Compute PS, SR, SE, SP weighted by group proportions
 #' 
 #' @name 
 #' get_overall
@@ -133,7 +133,7 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
 #' @examples
 #' cohens_h(0.7, 0.75)
 #' cohens_h(0.3, 0.4)
-
+#' @export
 cohens_h <- function(p1, p2) {
   h <- 2 * asin(sqrt(p1)) - 2 * asin(sqrt(p2))
   return(h)
@@ -238,7 +238,62 @@ acc_indices_h <- function(strict_output, partial_output) {
   df_f["h"] <- round(cohens_h(df_f$SFI, df_f$PFI), 3)
   return(list("Reference" = df_ref, "Focal" = df_f))
 }
-    
+ 
+   
 
+#' @title 
+#' Determine biased items
+#' 
+#' @name 
+#' determine_biased_items
+#' 
+#' @description 
+#' \code{determine_biased_items} takes in the factor loadings, intercepts, and
+#'  uniqueness for the reference and focal groups, and returns indices of 
+#'  noninvariant items.
+#'  
+#' @param lambda_r Factor loadings for the reference group.
+#' @param lambda_f Factor loadings for the focal group.
+#' @param nu_r Measurement intercepts for the reference group.
+#' @param nu_f Measurement intercepts for the focal group.
+#' @param Theta_r Uniqueness for the reference group.
+#' @param Theta_f Uniqueness for the focal group.
+#' 
+#' @return A vector containing the indices of the biased items.
+       
+determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f, 
+                                   Theta_r, Theta_f) {
+  biased_lambda <- biased_theta <- biased_nu <- c()
+  
+  # Compare factor loadings 
+  if(is.matrix(lambda_r)) {
+    for(i in seq_len(ncol(lambda_r))) {
+      items <- as.vector(which(lambda_r[,i] != lambda_f[,i]))
+      biased_lambda <- c(biased_lambda, items)}
+  } else {
+    items <- as.vector(which(lambda_r != lambda_f))
+    biased_lambda <- c(biased_lambda, items)
+  } 
+  # Compare uniqueness
+  if(is.matrix(Theta_r)) {
+    for(i in seq_len(ncol(Theta_r))) {
+      biased_theta <- c(biased_theta, 
+                        as.vector(which(Theta_r[,i] != Theta_f[,i])))}
+    } else {
+      biased_theta <- c(biased_theta, as.vector(c(which(Theta_r != Theta_f))))
+    }
+  
+  # Compare intercepts
+  if(is.matrix(nu_r)) {
+    for(i in seq_len(ncol(nu_r))) {
+      biased_nu <- c(biased_nu, as.vector(which(nu_r[,i] != nu_f[,i])))}
+    } else {
+      biased_nu<- c(biased_nu, as.vector(which(nu_r != nu_f)))
+    }
+  biased <- unique(c(biased_lambda, biased_theta, biased_nu))
+  
+  if(length(biased) == 0) { print("Strict invariance holds for all items.") }
+  return(sort(biased))
+}
 
 

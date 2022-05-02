@@ -93,27 +93,6 @@
 #'          stores Cohen's h values for the comparison between accuracy indices 
 #'          for the focal group under strict vs. partial invariance, for a
 #'          given set of items.}
-#'        \item{raw}{A list of length 3 containing `overall_sai.par`, 
-#'        `h_str_vs_par_list`, and `PartInv`.}
-#'        \item{raw$overall_sai.par}{A (3 x number of items + 1) data frame 
-#'          containing overall SR, SE, SP values under partial invariance. 
-#'          'Overall' refers to the weighting of the accuracy indices for focal 
-#'          and reference group proportions.}
-#'        \item{raw$h_str_vs_par_list$ref}{A list of length (number of items + 1). 
-#'          Each item in the list is a (8 x 3) data frame with rows for accuracy 
-#'          indices and columns `strict_invariance`, `partial_invariance`, and 
-#'          `h`. Here, h is the Cohen's h effect size for the comparison between 
-#'          the accuracy indices under strict vs. partial invariance for a given
-#'          set of items for the reference group.}
-#'        \item{raw$h_str_vs_par_list$focal}{A list of length (number of items + 1). 
-#'          Each item in the list is a (8 x 3) data frame with rows for accuracy 
-#'          indices and columns `strict_invariance`, `partial_invariance`, and 
-#'          `h`. Here, h is the Cohen's h effect size for the comparison between 
-#'          the accuracy indices under strict vs. partial invariance for a given
-#'          set of items for the focal group.}
-#'        \item{raw$PartInv}{A list containing `strict` and `partial`, the
-#'         function outputs for each call to [PartInv()] under strict 
-#'         invariance and partial invariance respectively.}
 #'         
 #' @examples
 #' # Multidimensional example 
@@ -133,15 +112,7 @@
 #'                              Theta_f = c(1, .95, .80, .75, 1),
 #'                              plot_contour = TRUE,
 #'                              return_detailed = TRUE)
-#' multi_dim$h_overall_par
-#' multi_dim$delta_h$R_vs_Ef.par
-#' multi_dim$delta_h$str_vs_par$ref
-#' multi_dim$h$str_vs_par$ref$`h(SFI, PFI; I)`
-#' multi_dim$h$str_vs_par$ref$`h(SFI, PFI; I-i1)`
-#' multi_dim$raw$PartInv$strict$`I`
-#' multi_dim$raw$PartInv$strict$`I-i2`
-#' 
-#' # Single dimension examples
+#' # Single dimension example
 #' single_dim <- item_deletion_h(propsel = .10,
 #'                                weights_item = c(1, 0.9, 0.8, 1),
 #'                                weights_latent = 0.9,
@@ -154,14 +125,6 @@
 #'                                Theta_r = diag(.96, 4),
 #'                                n_dim = 1, plot_contour = TRUE,
 #'                                return_detailed = TRUE)
-#'                          
-#' single_dim$h_overall_sai.par
-#' single_dim$delta_h$R_vs_Ef.par
-#' single_dim$delta_h$str_vs_par$ref
-#' single_dim$h$str_vs_par$ref$`h(SFI, PFI; I)`
-#' single_dim$h$str_vs_par$ref$`h(SFI, PFI; I-i1)`
-#' single_dim$raw$PartInv$strict$`I`
-#' single_dim$raw$PartInv$strict$`I-i2`
 #' @export
 item_deletion_h <- function(propsel, 
                             cut_z = NULL, 
@@ -182,19 +145,41 @@ item_deletion_h <- function(propsel,
                             pmix_ref = 0.5, 
                             plot_contour = TRUE,
                             return_detailed = FALSE,
-                            specific_items = NULL,
+                            biased_items_only = TRUE,
+                            user_specified_items = NULL,
                             ...) {
-  
-  # Start with pre-allocating space:
   N <- length(weights_item)
   
+  # Determine which set of items will be returned
+  return_items <- c()
+  if(is.null(user_specified_items)) {
+    if(biased_items_only == FALSE){ 
+      return_items <- seq_len(N)
+      } else { # default is to return only the biased items.
+      return_items <- determine_biased_items(lambda_r = lambda_r,
+                                             lambda_f = lambda_f, 
+                                             nu_r = nu_r, nu_f = nu_f, 
+                                             Theta_r = Theta_r,
+                                             Theta_f = Theta_f)}
+    } else {
+      if (!all(user_specified_items == floor(user_specified_items))) { 
+        stop("'user_specified_items' should only contain integers corresponding 
+             to item indices.")}
+      if (!all(user_specified_items < N)) { 
+        stop("'user_specified_items' cannot take integers larger than the scale
+             length.")}
+      return_items <- user_specified_items
+  }
+ # print(return_items)
+  
+  # Start with pre-allocating space:
   store_str <- store_par <- str_par_ref_list <- str_par_foc_list <- 
     vector(mode = "list", N + 1)
   
   delta_h_str_vs_par_ref <- delta_h_str_vs_par_foc <- delta_h_R_vs_Ef <- 
-    delta_h_f_vs_Ef <- as.data.frame(matrix(nrow = 8, ncol = N))
+    as.data.frame(matrix(nrow = 8, ncol = N))
   
-  h_f_Ef <- h_R_Ef <- h_str_vs_par_ref <- h_str_vs_par_foc <- 
+  h_R_Ef <- h_str_vs_par_ref <- h_str_vs_par_foc <- 
     as.data.frame(matrix(nrow = 8, ncol = N + 1))
   
   overall_par <- overall_str <- h_overall_str_par <-
@@ -255,7 +240,7 @@ item_deletion_h <- function(propsel,
   h_str_vs_par_foc[1] <-acc$Focal$h 
   
   h_R_Ef[1] <- cohens_h(partial$Reference, partial$`E_R(Focal)`)
-  h_f_Ef[1] <- cohens_h(partial$Focal, partial$`E_R(Focal)`)
+  
   # Re-weight SE, SR, SP by focal and group proportions to compute 
   # overall indices under partial invariance for the full item set
   overall_par[1] <- get_overall(pmix_ref, partial) 
@@ -339,14 +324,13 @@ item_deletion_h <- function(propsel,
     # focal group if it followed the same distribution as the reference group 
     # (`E_R(Focal)`)
     h_R_Ef[i] <- round(cohens_h(partial$Reference, partial$`E_R(Focal)`), 3)
-    h_f_Ef[i] <- round(cohens_h(partial$Focal, partial$`E_R(Focal)`), 3)
     
     # Compute the change in Cohen's h comparing accuracy indices under partial
     # invariance for the reference group vs. for the expected accuracy indices
     # for the focal group if it followed the same distribution as the reference
     # group when item i is deleted, i.e. the change in h_R_Ef_del
     delta_h_R_vs_Ef[i-1] <- round(delta_h(h_R_Ef[1], h_R_Ef[i]), 3)
-    delta_h_f_vs_Ef[i-1] <- round(delta_h(h_f_Ef[1], h_f_Ef[i]),3)
+    
     # Compute overall SR, SE, SP indices under partial invariance by weighting 
     # accuracy indices for the reference and focal groups by their group
     # proportions
@@ -372,7 +356,7 @@ item_deletion_h <- function(propsel,
   rownames(AI_ratios) <- c("SFI", "PFI")
   # h_R_Ef
   names(h_R_Ef) <-  c("h(r-Ef)", paste0("h(r-Ef|", c(1:N), c(")")))
-  names(h_f_Ef) <-  c("h(f-Ef)", paste0("h(f-Ef|", c(1:N), c(")")))
+  
   # delta_h_str_vs_par
   names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_foc) <- 
     paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
@@ -388,11 +372,10 @@ names(store_str) <- names(store_par) <-
     rownames(delta_h_str_par_overall) <- rownames(h_overall_str_par) <- 
     c("PS*", "SR*", "SE*", "SP*")
   
-  
   rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
-    rownames(h_R_Ef) <- rownames(h_f_Ef) <- rownames(delta_h_R_vs_Ef) <- 
-    rownames(delta_h_f_vs_Ef) <- rownames(h_str_vs_par_ref) <- 
-    rownames(h_str_vs_par_foc) <- c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
+    rownames(h_R_Ef) <- rownames(delta_h_R_vs_Ef) <- 
+    rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_foc) <- 
+    c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
   
   # Declare classes
   store_par <- list(outputlist = store_par, condition = "partial")
@@ -409,7 +392,6 @@ names(store_str) <- names(store_par) <-
       paste0("h(SFI, PFI|", c(1:N), c(")")))
   
   names(delta_h_R_vs_Ef) <- paste0('\u0394', "h(r-Ef|", c(1:N), c(")"))
-  names(delta_h_f_vs_Ef) <- paste0('\u0394', "h(f-Ef|", c(1:N), c(")"))
   names(delta_h_str_par_overall) <- paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
   names(h_overall_str_par) <- c("h(SFI, PFI)", paste0("h(SFI, PFI|", c(1:N), c(")")))
   
@@ -419,15 +401,13 @@ names(store_str) <- names(store_par) <-
   h_str_vs_par <- list("ref"= t(h_str_vs_par_ref), "foc" = t(h_str_vs_par_foc))
   
   h_overall_str_par <- round(h_overall_str_par, 3)
-  print(h_f_Ef)
-  print(delta_h_f_vs_Ef)
-  returned <- list("h_overall_par" = t(h_overall_par),
+
+  returned <- list(
+                   "h_overall_par" = t(h_overall_par),
                    "delta_h_str_par_overall" = t(delta_h_str_par_overall),
                    "AI Ratio" = t(round(AI_ratios, 3)),
                    "h_R_Ef" = t(round(h_R_Ef, 3)),
-                 #  "h_f_Ef" = t(round(h_f_Ef, 3)),
                    "h_R_vs_Ef.par" = t(round(delta_h_R_vs_Ef, 3)),
-                 #  "h_f_vs_Ef.par" = t(round(delta_h_f_vs_Ef, 3)),
                    "delta_h_str_vs_par" = list("ref" = t(delta_h_str_vs_par_ref), 
                                                "foc" = t(delta_h_str_vs_par_foc)), 
                    "str_vs_par" = h_str_vs_par,
@@ -437,22 +417,13 @@ names(store_str) <- names(store_par) <-
                                     "focal" = h_str_vs_par_list_foc),
                    "PartInv" = list("strict" = store_str,
                                     "partial" = store_par),
-                   "detail" = return_detailed, 
-                   "specific_items" =  specific_items)
-  class(returned) <- "itemdeletion"
+                   "detail" = return_detailed,
+                   "return_items" = return_items)
+   class(returned) <- "itemdeletion"
   
- # if (return_detailed == TRUE) {
- #    return(list("overall" = overall_l,
- #                "AI Ratio" = t(round(AI_ratios,3)),
- #                "delta_h" = list("h_R_vs_Ef.par" = t(round(delta_h_R_vs_Ef,3)),
- #                                 "h_str_vs_par" = delta_h_str_vs_par), 
- #                "h" = list("R_vs_Ef.par" = t(round(h_R_Ef,3)),
- #                           "str_vs_par"= h_str_vs_par),
- #                "raw" = list("overall_par" = t(overall_par),
- #                             "h_overall_str_par" = t(h_overall_str_par),
- #                             "h_str_vs_par_list" = h_str_vs_par_list,
- #                             "PartInv" = list("strict" = store_str, 
- #                                              "partial" = store_par))))
- #  }
+  # NOTE TO SELF: make return_items as a part of the class definition, final change 
+  # should be made there
+  
   return(returned)
 }
+
