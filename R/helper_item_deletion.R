@@ -22,7 +22,7 @@
 
 get_overall <- function(pmixr, store_summary) {
   r <- store_summary$Reference; f <- store_summary$Focal
-  PS <-  (pmixr*r[1] + (1 - pmixr)*f[1]) + (pmixr*r[3] + (1 - pmixr)*f[3])
+  PS <-  (pmixr*r[1] + (1 - pmixr)*f[1]) + (pmixr*r[2] + (1 - pmixr)*f[2])
   SR <- (pmixr*r[1] + (1 - pmixr)*f[1]) /
     (pmixr*r[1] + (1-pmixr)*f[1] + pmixr*r[2] + (1 - pmixr)*f[2]) 
   SE <- (pmixr*r[1] + (1 - pmixr)*f[1]) / 
