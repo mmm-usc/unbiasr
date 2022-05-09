@@ -155,22 +155,22 @@ item_deletion_h <- function(propsel,
   if(is.null(user_specified_items)) {
     if(biased_items_only == FALSE){ 
       return_items <- seq_len(N)
-      } else { # default is to return only the biased items.
+    } else { # default is to return only the biased items.
       return_items <- determine_biased_items(lambda_r = lambda_r,
                                              lambda_f = lambda_f, 
                                              nu_r = nu_r, nu_f = nu_f, 
                                              Theta_r = Theta_r,
                                              Theta_f = Theta_f)}
-    } else {
-      if (!all(user_specified_items == floor(user_specified_items))) { 
-        stop("'user_specified_items' should only contain integers corresponding 
+  } else {
+    if (!all(user_specified_items == floor(user_specified_items))) { 
+      stop("'user_specified_items' should only contain integers corresponding 
              to item indices.")}
-      if (!all(user_specified_items < N)) { 
-        stop("'user_specified_items' cannot take integers larger than the scale
+    if (!all(user_specified_items < N)) { 
+      stop("'user_specified_items' cannot take integers larger than the scale
              length.")}
-      return_items <- user_specified_items
+    return_items <- user_specified_items
   }
- # print(return_items)
+  # print(return_items)
   
   # Start with pre-allocating space:
   store_str <- store_par <- str_par_ref_list <- str_par_foc_list <- 
@@ -189,7 +189,7 @@ item_deletion_h <- function(propsel,
     as.data.frame(matrix(nrow = 4, ncol = N)) 
   
   AI_ratios <- as.data.frame(matrix(nrow = 2, ncol = N + 1))
- # Call PartInv with the full item set under strict invariance
+  # Call PartInv with the full item set under strict invariance
   store_str[[1]] <- PartInv(propsel, 
                             cut_z = cut_z, 
                             weights_item, weights_latent,
@@ -206,8 +206,8 @@ item_deletion_h <- function(propsel,
                             plot_contour = plot_contour)
   
   class(store_str[[1]]) <- "PartInv"
-
-   # Call PartInv with the full item set under partial invariance
+  
+  # Call PartInv with the full item set under partial invariance
   store_par[[1]] <- PartInv(propsel, 
                             cut_z = cut_z, 
                             weights_item, 
@@ -352,31 +352,63 @@ item_deletion_h <- function(propsel,
   # Format stored variables
   
   # AI ratio
-  names(AI_ratios) <- c("AI", paste0("AI|", c(1:N)))
-  rownames(AI_ratios) <- c("SFI", "PFI")
+  # names(AI_ratios) <- c("AI", paste0("AI|", c(1:N)))
+  # rownames(AI_ratios) <- c("SFI", "PFI")
+  names(AI_ratios) <- c("full", paste0("|", c(1:N)))
+  rownames(AI_ratios) <- c("AI_SFI", "AI_PFI")
   # h_R_Ef
-  names(h_R_Ef) <-  c("h(r-Ef)", paste0("h(r-Ef|", c(1:N), c(")")))
+  #names(h_R_Ef) <-  c("h(r-Ef)", paste0("h(r-Ef|", c(1:N), c(")")))
+  names(h_R_Ef) <-  c("r-Ef", paste0("r-Ef|", c(1:N)))
+  
   
   # delta_h_str_vs_par
+ # names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_foc) <- 
+ #   paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
   names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_foc) <- 
-    paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
+       paste0("SFI, PFI|", c(1:N))
   
-names(store_str) <- names(store_par) <- 
+  names(store_str) <- names(store_par) <- 
     names(str_par_ref_list) <- names(str_par_foc_list) <- 
-    c(" ", paste0(" |", c(1:N)))
-  names(overall_par) <- c("PFI", paste0("PFI|", c(1:N)))
+    c("full", paste0("|", c(1:N)))
+  names(overall_par) <- c("full", paste0("|", c(1:N)))
   
-  names(h_overall_par) <- paste0("h(PFI|", c(1:N), c(")"))
+  #  names(h_overall_par) <- paste0("h(|", c(1:N), c(")"))
+  names(h_overall_par) <- paste0("|", c(1:N))
   
-  rownames(h_overall_par) <- rownames(overall_par) <- 
-    rownames(delta_h_str_par_overall) <- rownames(h_overall_str_par) <- 
-    c("PS*", "SR*", "SE*", "SP*")
+  #rownames(h_overall_par) <- rownames(overall_par) <- 
+  #  rownames(delta_h_str_par_overall) <- rownames(h_overall_str_par) <- 
+  #  c("PS*", "SR*", "SE*", "SP*")
+  rownames(h_overall_par) <- rownames(h_overall_str_par) <-c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)")
+    rownames(overall_par) <-   c("PS*", "SR*", "SE*", "SP*")
+   rownames(delta_h_str_par_overall) <-  c(paste0('\u0394', c("h(PS*)")), 
+                                           paste0('\u0394', c("h(SR*)")),
+                                           paste0('\u0394', c("h(SE*)")), 
+                                           paste0('\u0394', c("h(SP*)")))
   
-  rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
-    rownames(h_R_Ef) <- rownames(delta_h_R_vs_Ef) <- 
-    rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_foc) <- 
-    c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
   
+  
+  
+  # rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
+  #   rownames(h_R_Ef) <- rownames(delta_h_R_vs_Ef) <- 
+  #   rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_foc) <- 
+  #   c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
+  
+   
+   rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
+     rownames(delta_h_R_vs_Ef) <-  c(paste0('\u0394', c("h(TP)")), 
+                                     paste0('\u0394', c("h(FP)")),
+                                     paste0('\u0394', c("h(TN)")), 
+                                     paste0('\u0394', c("h(FN)")),
+                                     paste0('\u0394', c("h(PS)")), 
+                                     paste0('\u0394', c("h(SR)")),
+                                     paste0('\u0394', c("h(SE)")), 
+                                     paste0('\u0394', c("h(SP)")))
+   
+     rownames(h_R_Ef) <- rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_foc) <- 
+     c("h(TP)", "h(FP)", "h(TN)", "h(FN)", "h(PS)", "h(SR)", "h(SE)", "h(SP)")
+   
+   
+   
   # Declare classes
   store_par <- list(outputlist = store_par, condition = "partial")
   store_str <- list(outputlist = store_str, condition = "strict")
@@ -387,13 +419,20 @@ names(store_str) <- names(store_par) <-
   class(h_str_vs_par_list_ref) <- "PartInvList"
   class(h_str_vs_par_list_foc) <- "PartInvList"
   
-
-  names(h_str_vs_par_ref) <- names(h_str_vs_par_foc) <- c("h(SFI, PFI)", 
-      paste0("h(SFI, PFI|", c(1:N), c(")")))
   
-  names(delta_h_R_vs_Ef) <- paste0('\u0394', "h(r-Ef|", c(1:N), c(")"))
-  names(delta_h_str_par_overall) <- paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
-  names(h_overall_str_par) <- c("h(SFI, PFI)", paste0("h(SFI, PFI|", c(1:N), c(")")))
+  # names(h_str_vs_par_ref) <- names(h_str_vs_par_foc) <- c("h(SFI, PFI)", 
+  #                                                         paste0("h(SFI, PFI|", c(1:N), c(")")))
+  names(h_str_vs_par_ref) <- names(h_str_vs_par_foc) <- c("SFI, PFI", 
+                                                          paste0("SFI, PFI|", c(1:N)))
+  
+  # names(delta_h_R_vs_Ef) <- paste0('\u0394', "h(r-Ef|", c(1:N), c(")"))
+  # names(delta_h_str_par_overall) <- paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
+  # names(h_overall_str_par) <- c("h(SFI, PFI)", paste0("h(SFI, PFI|", c(1:N), c(")")))
+  # 
+  names(delta_h_R_vs_Ef) <- paste0("r-Ef|", c(1:N))
+  names(delta_h_str_par_overall) <- paste0( "SFI, PFI|", c(1:N))
+  names(h_overall_str_par) <- c("SFI, PFI", paste0("SFI, PFI|", c(1:N)))
+  
   
   overall_par <- as.data.frame(round(cbind(overall_par), 3))
   h_overall_par <- as.data.frame(round(h_overall_par, 3))
@@ -401,27 +440,27 @@ names(store_str) <- names(store_par) <-
   h_str_vs_par <- list("ref"= t(h_str_vs_par_ref), "foc" = t(h_str_vs_par_foc))
   
   h_overall_str_par <- round(h_overall_str_par, 3)
-
-  returned <- list(
-                   "h_overall_par" = t(h_overall_par),
-                   "delta_h_str_par_overall" = t(delta_h_str_par_overall),
-                   "AI Ratio" = t(round(AI_ratios, 3)),
-                   "h_R_Ef" = t(round(h_R_Ef, 3)),
-                   "h_R_vs_Ef.par" = t(round(delta_h_R_vs_Ef, 3)),
-                   "delta_h_str_vs_par" = list("ref" = t(delta_h_str_vs_par_ref), 
-                                               "foc" = t(delta_h_str_vs_par_foc)), 
-                   "str_vs_par" = h_str_vs_par,
-                   "overall_par" = t(overall_par),
-                   "h_overall_str_par" = t(h_overall_str_par),
-                   "Ref_foc" = list("reference" = h_str_vs_par_list_ref, 
-                                    "focal" = h_str_vs_par_list_foc),
-                   "PartInv" = list("strict" = store_str,
-                                    "partial" = store_par),
-                   "detail" = return_detailed,
-                   "return_items" = return_items)
-   class(returned) <- "itemdeletion"
   
-  # NOTE TO SELF: make return_items as a part of the class definition, final change 
+  returned <- list(
+    "h_overall_par" = t(h_overall_par),
+    "delta_h_str_par_overall" = t(delta_h_str_par_overall),
+    "AI Ratio" = t(round(AI_ratios, 3)),
+    "h_R_Ef" = t(round(h_R_Ef, 3)),
+    "h_R_vs_Ef.par" = t(round(delta_h_R_vs_Ef, 3)),
+    "delta_h_str_vs_par" = list("ref" = t(delta_h_str_vs_par_ref), 
+                                "foc" = t(delta_h_str_vs_par_foc)), 
+    "str_vs_par" = h_str_vs_par,
+    "overall_par" = t(overall_par),
+    "h_overall_str_par" = t(h_overall_str_par),
+    "Ref_foc" = list("reference" = h_str_vs_par_list_ref, 
+                     "focal" = h_str_vs_par_list_foc),
+    "PartInv" = list("strict" = store_str,
+                     "partial" = store_par),
+    "detail" = return_detailed,
+    "return_items" = return_items)
+  class(returned) <- "itemdeletion"
+  
+  # NOTE TO SELF: make return_items a part of the class definition, final change 
   # should be made there
   
   return(returned)

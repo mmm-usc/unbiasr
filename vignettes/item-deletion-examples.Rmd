@@ -78,22 +78,39 @@ $$\h^{|j}\ov{\CAI} = 2\arcsin\left(\sqrt{\ov{\CAI}}\right)-2\arcsin\left(\sqrt{\
 A negative $\h^{|j}\ov{\CAI}$ indicates an improvement (as $h^{|j}\ov{\CAI}<0 \iff \ov{\CAI}<\ov{\CAI}^{|j}$) whereas a positive $\h^{|j}\ov{\CAI}$ indicates
 a deterioration in performance.
 
-### Comparing CAI under strict (SFI) vs. partial (PFI) factorial invariance
-$\h^{\sfi,\pfi}\CAI$:  Cohen's h effect sizes can be computed to quantify the discrepancy between $\CAI_{\sfi}$ vs. $\CAI$* for the full set of items. 
-\[
-\begin{align*}
-\h^{\sfi,\pfi}\CAI &= 2\text{arcsin}\left(\sqrt{\CAI^{ \sfi}}\right)-2\text{arcsin}\left(\sqrt{\CAI}\right)
-\end{align*}
-\]
-$\h^{\sfi,\pfi}\CAI^{|j}$:  Cohen's h effect size can quantifying the discrepancy between $\CAI_{\sfi}^{|j}$ vs. $\CAI^{|j}$* for the item set excluding the j-th item.
-\[
-\begin{align*}
-\h^{\sfi,\pfi}\CAI^{|j} &= 2\text{arcsin}\left(\sqrt{\CAI^{|j,\sfi}}\right)-2\text{arcsin}\left(\sqrt{\CAI^{|j}}\right)
-\end{align*}
-\]
-* note that $_\pfi$ is omitted as we are assuming the default is PFI.
+```{r include=FALSE}
+# As the SFI-PFI comparisons were not as interpretable as the other indices at the moment, I temporarily removed them from the default output to make the output cleaner and more concise. 
 
-This index can be computed for the focal group or the reference group, e.g., $\h^{\sfi,\pfi}\CAI^{|j}_{\r}$, $\h^{\sfi,\pfi}\CAI_{\f}$ etc.
+# ### Comparing CAI under strict (SFI) vs. partial (PFI) factorial invariance
+# $\h^{\sfi,\pfi}\CAI$:  Cohen's h effect sizes can be computed to quantify the discrepancy between $\CAI_{\sfi}$ vs. $\CAI$* for the full set of items. 
+# \[
+# \begin{align*}
+# \h^{\sfi,\pfi}\CAI &= 2\text{arcsin}\left(\sqrt{\CAI^{ \sfi}}\right)-2\text{arcsin}\left(\sqrt{\CAI}\right)
+# \end{align*}
+# \]
+# $\h^{\sfi,\pfi}\CAI^{|j}$:  Cohen's h effect size can quantifying the discrepancy between $\CAI_{\sfi}^{|j}$ vs. $\CAI^{|j}$* for the item set excluding the j-th item.
+# \[
+# \begin{align*}
+# \h^{\sfi,\pfi}\CAI^{|j} &= 2\text{arcsin}\left(\sqrt{\CAI^{|j,\sfi}}\right)-2\text{arcsin}\left(\sqrt{\CAI^{|j}}\right)
+# \end{align*}
+# \]
+# This index can be computed for the focal group or the reference group, e.g., $\h^{\sfi,\pfi}\CAI^{|j}_{\r}$, $\h^{\sfi,\pfi}\CAI_{\f}$ etc.
+
+# ### Impact of removing an item on the discrepancy between $\h^{\sfi,\pfi}\CAI$ vs. $\h^{\sfi,\pfi}\CAI^{|j}$
+# 
+# $\Delta^{|j}\h^{\sfi,\pfi}\CAI$: Cohen's h effect size quantifying the discrepancy between $\h^{\sfi,\pfi}\CAI$ vs. $\h^{\sfi,\pfi}\CAI^{|j}$.
+# In other words, the effect size of the change in bias when the j-th item is dropped.
+# 
+# \[
+# \begin{align*}
+# \Delta^{|j}\h^{\sfi,\pfi}\CAI&= \text{sign}\left(|\h^{\sfi,\pfi}\CAI| - |\h^{\sfi,\pfi}\CAI^{|j}| \right)\left||\h^{\sfi,\pfi}\CAI^{|j} |-|\h^{\sfi,\pfi}\CAI|\right|
+# \end{align*}
+# \]
+# 
+# This index can be computed for the reference group  ($\Delta^{|j}\h^{\sfi,\pfi}\CAI_{\r}$) or the focal group $\Delta^{|j}\h^{\sfi,\pfi}\CAI_{\f}$.
+
+```
+
 
 ### Comparing CAI for reference (R) vs. expected focal (Ef) groups under PFI 
 $\h^{\rr}\CAI$:  Cohen's h effect size quantifying the discrepancy between $\CAI_{\r}$ vs. $\ef$ for the full set of items under PFI. 
@@ -110,18 +127,6 @@ $\h^{\rr}\CAI^{|j}$:  Cohen's h effect size quantifying the discrepancy between 
 \end{align*}
 \]
 
-### Impact of removing an item on the discrepancy between $\h^{\sfi,\pfi}\CAI$ vs. $\h^{\sfi,\pfi}\CAI^{|j}$
-
-$\Delta^{|j}\h^{\sfi,\pfi}\CAI$: Cohen's h effect size quantifying the discrepancy between $\h^{\sfi,\pfi}\CAI$ vs. $\h^{\sfi,\pfi}\CAI^{|j}$.
-In other words, the effect size of the change in bias when the j-th item is dropped.
-
-\[
-\begin{align*}
-\Delta^{|j}\h^{\sfi,\pfi}\CAI&= \text{sign}\left(|\h^{\sfi,\pfi}\CAI| - |\h^{\sfi,\pfi}\CAI^{|j}| \right)\left||\h^{\sfi,\pfi}\CAI^{|j} |-|\h^{\sfi,\pfi}\CAI|\right|
-\end{align*}
-\]
-
-This index can be computed for the reference group  ($\Delta^{|j}\h^{\sfi,\pfi}\CAI_{\r}$) or the focal group $\Delta^{|j}\h^{\sfi,\pfi}\CAI_{\f}$.
 
 ### Impact of removing an item on the discrepancy between  $\h^{\rr}\CAI$ vs. $\h^{\rr}\CAI^{|j}$
 
@@ -134,9 +139,12 @@ In other words, the effect size of the change in bias when the j-th item is drop
 \end{align*}
 \]
 
-## Example 1: CES-D 
-Example from Lai, Kwok, Yoon and Hsiao (2017) 
-Center for Epidemiological Studies Depression  (CES-D) Scale 
+### Illustrative Example: CES-D 
+Example from Lai, Kwok, Yoon and Hsiao (2017), using the Center for Epidemiological Studies Depression (CES-D) Scale. 
+
+We first demonstrate the use of the item deletion indices and relevant
+functions by treating each subscale of the CES-D Scale as a separate factor, and assume that classification decisions will be based on the sum of the subscale scores. Then, we demonstrate the use of the item deletion indices with the full four dimensional CES-D Scale.
+For all five examples, we will consider the deletion of one item at a time.
 
 ```{r}
 # Zhang et al. (2011) BMC Medical Research Methodology, Tables 3-4 on page 7
@@ -191,7 +199,130 @@ psi_INT_r <- 0.574^2
 psi_INT_f <- 0.184^2
 ```
  
-```{r CESD_full, include=FALSE}
+### CES-D Positive Affect Factor
+
+```{r}
+#Positive Affect Factor
+#Items: good (biased), hopeful, happy, enjoyed
+CESD_pos <- item_deletion_h(weights_item = c(rep(1,4)), 
+                              propsel = .14, n_dim = 1,  
+                              alpha_r = alpha_POS_r,
+                              alpha_f = alpha_POS_f,
+                              psi_r = psi_POS_r,
+                              psi_f = psi_POS_f,
+                              lambda_r = lambda_POS_r,
+                              lambda_f = lambda_POS_f,
+                              nu_r = nu_POS_r,
+                              nu_f = nu_POS_f,
+                              Theta_r = Theta_POS_r, 
+                              Theta_f = Theta_POS_f,
+                              weights_latent = 1,
+                              plot_contour = TRUE,
+                              return_detailed = FALSE,
+                              pmix_ref = pmix_CESD_r, 
+                           # biased_items_only=TRUE 
+                           )
+CESD_pos 
+```
+ 
+ The only biased item is item 1. We see from the first output table that deleting the first item increases $\ov{\SR}$ from $0.653$ to $0.689$, 
+$\ov{\SE}$ from $0.654$ to $0.689$, and $\ov{\SP}$ from $0.949$ to $0.949$. The second output table shows that $h^{|1}\ov{\SR}=h^{|1}\ov{\SE}=-0.076$ and $h^{|1}\ov{\SP}=-0.026$, which suggests a slight improvement in all three $\CAI$ $(h < .20)$.
+
+The AI ratio when the full item set is used is $0.604$, which indicates the presence of adverse impact by the four-fifths rule ($0.604<0.8$). Removing the first item achieves an AI ratio of 1, suggesting that the proportion selected for the reference group is equal to that which would have been selected for the focal group if the focal and reference groups both followed the reference group's latent score distribution (i.e., if they were matched on their true positive affect). This finding shows that removing the first item eliminates measurement bias, and is replicated in the next table comparing $\CAI_R$ with $CAI_{Ef}$ where $h^{\rr}\SR^{|1}=h^{\rr}\SE^{|1}=h^{\rr}\SP^{|1}=0$ (i.e., PS, SR, SE, and SP for the reference group are the same with the expected  PS, SR, SE, and SP for the focal group). The final table shows that the effect size of removing the first item on the difference between the reference group's CAI and the focal group's expected CAI is largest for SE and SR (small-medium effect size). 
+
+Taken together, these improvements and the lack of any decreases in CAI suggests that the researcher may drop this item (barring any domain specific reasons not to do so).
+ 
+### CES-D Depressive Affect Factor
+
+```{r}
+# Depressive Affect Factor 
+# Items: blues, depressed, lonely, crying, sad, failure, fearful
+CESD_dep <- item_deletion_h(weights_item = c(rep(1,7)), 
+                              propsel = .14, n_dim = 1,  
+                              alpha_r = alpha_DEP_r,
+                              alpha_f = alpha_DEP_f,
+                              psi_r = psi_DEP_r,
+                              psi_f = psi_DEP_f,
+                              lambda_r = lambda_DEP_r,
+                              lambda_f = lambda_DEP_f,
+                              nu_r = nu_DEP_r,
+                              nu_f = nu_DEP_f,
+                              Theta_r = Theta_DEP_r, 
+                              Theta_f = Theta_DEP_f,
+                              weights_latent = 1,
+                              plot_contour = TRUE,
+                              return_detailed = FALSE,
+                              pmix_ref = pmix_CESD_r)#, 
+                           # biased_items_only = TRUE)
+CESD_dep # items 2, 3, 4 are biased
+```
+ 
+`item_deletion_h` has determined items 2, 3, and 4 to contain some level of bias.  We see from the first table that $\ov{\SP}$ is around $0.965$ for all item deletion scenarios and $\ov{\SR}$ and $\ov{\SE}$ are slightly lower, suggesting that the depressive affect subscale is overall better at not selecting the individuals who should not be selected. We see that composite CAI for the full item set are higher than the other item subsets, suggesting that the removal of an item will likely not improve composite CAI. h values in the second table are mostly positive and indicate a slight decrease in $\ov{\CAI}$ for each item set. 
+
+The AI ratio table shows that while removing the third item increases AI from $0.888$ to $0.984$, bias is not fully eliminated as $AI^{|3}<1$. The removal of any other items increases the discrepancy between the reference and Efocal groups. Moving on to the next two tables, we see that the removal of the third item brings $\h^{\rr}\CAI$ closer to 0, indicating an improvement that has a minimal-small effect size. Removing any other item harms CAI. 
+
+In light of the conflicting findings and the small effect size of the potential improvement, it may be best to retain all items or choose an alternative method to item deletion for this subscale. 
+
+
+### CES-D Somatic Complaints Factor
+
+```{r}
+# Somatic Complaints 
+# Items: bothered, appetite, mind, effort, sleep, talk, get going
+CESD_som <- item_deletion_h(weights_item = c(rep(1,7)), 
+                              propsel = .14, n_dim = 1,  
+                              alpha_r = alpha_SOM_r,
+                              alpha_f = alpha_SOM_f,
+                              psi_r = psi_SOM_r,
+                              psi_f = psi_SOM_f,
+                              lambda_r = lambda_SOM_r,
+                              lambda_f = lambda_SOM_f,
+                              nu_r = nu_SOM_r,
+                              nu_f = nu_SOM_f,
+                              Theta_r = Theta_SOM_r, 
+                              Theta_f = Theta_SOM_f,
+                              weights_latent = 1,
+                              plot_contour = TRUE,
+                              return_detailed = FALSE,
+                              pmix_ref = pmix_CESD_r)
+CESD_som #  item 4 is biased
+```
+ 
+Removing the fourth item leads to a decrease in composite CAI based on the first table.
+The AI ratio for the full item set is already quite high at 0.997, and increases to 1 when the fourth item is deleted. Similarly, removing this item brings the already-small difference between reference and Efocal groups on CAI to 0 with a very small effect size of around $0.003$. These findings suggest that removing the fourth item will harm CAI or lead to a negligible improvement in CAI, therefore the full item set should be retained.
+ 
+### CES-D Interpersonal Problems Factor
+
+```{r}
+# Interpersonal Problems
+# Items: unfriendly, dislike
+CESD_int <- item_deletion_h(weights_item = c(rep(1,2)), 
+                              propsel = .14, n_dim = 1,  
+                              alpha_r = alpha_INT_r,
+                              alpha_f = alpha_INT_f,
+                              psi_r = psi_INT_r,
+                              psi_f = psi_INT_f,
+                              lambda_r = lambda_INT_r,
+                              lambda_f = lambda_INT_f,
+                              nu_r = nu_INT_r,
+                              nu_f = nu_INT_f,
+                              Theta_r = Theta_INT_r, 
+                              Theta_f = Theta_INT_f,
+                              weights_latent = 1,
+                              plot_contour = TRUE,
+                              return_detailed = FALSE,
+                              pmix_ref = pmix_CESD_r)
+CESD_int #item 2 is biased
+```
+ 
+Removing the second item in this 2-item subscale leads to lower $\ov{\CAI}$, and the effect size of this decrease is $\h \ov{\SR}=0.174$ and $\h\ov{\SE}$, which correspond to an effect size approaching $0.2$. The adverse impact ratio goes up to 1 from 0.942 and $\h^{\rr}\CAI^{|2}=0$ for all indices. The effect size of the improvement in the discrepancy between the reference and Efocal groups on SR when the second item is deleted is $\Delta^{|2}\h^{\rr}\SR=0.158$ and the other effect sizes are quite small. 
+
+Given these conflicting findings, and the fact that this subscale only has two items, it may be best to retain both items if the subscale will be used on its own to make classification decisions.
+
+
+### Full 4-Factor CES-D Scale
+
+```{r CESD_full, include=TRUE}
 lambda_CESD_r <- rbind(cbind(lambda_SOM_r, rep(0, 7), rep(0, 7), rep(0, 7)),
                        cbind(rep(0, 7), lambda_DEP_r, rep(0, 7), rep(0, 7)),
                        cbind(rep(0, 4), rep(0, 4), lambda_POS_r, rep(0, 4)),
@@ -246,277 +377,57 @@ CESD_full <- item_deletion_h(weights_item = c(rep(1, 20)),
                             plot_contour = FALSE,
                             return_detailed = FALSE,
                             pmix_ref = pmix_CESD_r)
-CESD_full # items 4, 9, 10, 11, 15, 19, 20
-# These items correspond to SOM 4, DEP 2, 3, 4, POS 1, INT 1, 2
+CESD_full
 ```
  
- 
-```{r}
-#Positive Affect Factor
-#Items: good (biased), hopeful, happy, enjoyed
-CESD_pos <- item_deletion_h(weights_item = c(rep(1,4)), 
-                              propsel = .14, n_dim = 1,  
-                              alpha_r = alpha_POS_r,
-                              alpha_f = alpha_POS_f,
-                              psi_r = psi_POS_r,
-                              psi_f = psi_POS_f,
-                              lambda_r = lambda_POS_r,
-                              lambda_f = lambda_POS_f,
-                              nu_r = nu_POS_r,
-                              nu_f = nu_POS_f,
-                              Theta_r = Theta_POS_r, 
-                              Theta_f = Theta_POS_f,
-                              weights_latent = 1,
-                              plot_contour = FALSE,
-                              return_detailed = FALSE,
-                              pmix_ref = pmix_CESD_r, 
-                           # biased_items_only=TRUE 
-                           )
-CESD_pos 
+Items 4, 9, 10, 11, 15, 19, and 20 are determined to be the biased items, and correspond to SOM 4, DEP 2, DEP 3,DEP 4, POS 1, INT 1, and INT 2. Looking at the first table in the output, $\ov{\CAI}$ decrease in all item deletion scenarios, 
+with the exception of $\ov{\SR}^{|10}$ going up by 0.001 points which is unlikely 
+to be a significant improvement. The second table shows negative h values for 
+$\ov{\SR}^{|10}$ and $\ov{\SP}^{|10}$, in agreement of the very small improvement
+achieved if the 10-th item (DEP 3)  is dropped. We see the largest increase in AI
+ratio if item 15 (POS 1) is dropped: $AI=0.744$ to $AI^{|15}=0.924$, indicating
+thatthis item is a strong candidate for deletion. The second largest increase is 
+achieved by the deletion of item 10, with $AI^{10}=0.802$. The comparison of 
+CAI for the reference group with the expected CAI for the focal group in the next
+table shows that the discrepancy between $\CAI_r$ and $\CAI_{Ef}$ is smallest if item 15 is deleted as $\h^{\rr}\PS=0.131$ goes down to $\h^{\rr}\PS^{|15}=0.037$, $\h^{\rr}\SR=-0.234$ goes up to $\h^{\rr}\SR^{|15}=-0.073$, $\h^{\rr}\SE=0.227$ goes down to $\h^{\rr}\SE^{|15}=0.047$ and $\h^{\rr}\SP=-0.158$ goes up to $\h^{\rr}\SP^{|15}=-0.050$. Note that we judge improvement by the magnitude of the
+difference rather than the direction. In the comparison between CAI for reference vs. Efocal groups, the direction of the difference indicates the group that is benefiting from the bias. We would like to minimize bias regardless of group membership, but the signs of the indices nevertheless give valuable information 
+about the classification process. The 10-th item is the only other item that appears
+to lead to some reduction in the discrepancy between $\CAI_r$ and $\CAI_{Ef}$. 
+Moving on to the final table, we see that removing the 15-th item would have the
+largest impact on the discrepancy between $\CAI_r$ and $\CAI_{Ef}$, followed by
+the deletion of the 10-th item.
 
-# Depressive Affect Factor 
-# Items: blues, depressed, lonely, crying, sad, failure, fearful
-CESD_dep <- item_deletion_h(weights_item = c(rep(1,7)), 
-                              propsel = .14, n_dim = 1,  
-                              alpha_r = alpha_DEP_r,
-                              alpha_f = alpha_DEP_f,
-                              psi_r = psi_DEP_r,
-                              psi_f = psi_DEP_f,
-                              lambda_r = lambda_DEP_r,
-                              lambda_f = lambda_DEP_f,
-                              nu_r = nu_DEP_r,
-                              nu_f = nu_DEP_f,
-                              Theta_r = Theta_DEP_r, 
-                              Theta_f = Theta_DEP_f,
-                              weights_latent = 1,
-                              plot_contour = FALSE,
-                              return_detailed = FALSE,
-                              pmix_ref = pmix_CESD_r)#, 
-                           # biased_items_only = TRUE)
-CESD_dep # items 2, 3, 4 are biased
+Overall, the researcher may consider deleting either the 15-th or the 10-th item 
+using their domain specific expertise and consulting existing literature to choose 
+between the two items. The output object from item_deletion_h contains other tables
+that may aid the researcher in this process. For instance, the outputs of PartInv()
+may be examined for the two item deletion scenarios:
 
-# Somatic Complaints 
-# Items: bothered, appetite, mind, effort, sleep, talk, get going
-CESD_som <- item_deletion_h(weights_item = c(rep(1,7)), 
-                              propsel = .14, n_dim = 1,  
-                              alpha_r = alpha_SOM_r,
-                              alpha_f = alpha_SOM_f,
-                              psi_r = psi_SOM_r,
-                              psi_f = psi_SOM_f,
-                              lambda_r = lambda_SOM_r,
-                              lambda_f = lambda_SOM_f,
-                              nu_r = nu_SOM_r,
-                              nu_f = nu_SOM_f,
-                              Theta_r = Theta_SOM_r, 
-                              Theta_f = Theta_SOM_f,
-                              weights_latent = 1,
-                              plot_contour = FALSE,
-                              return_detailed = FALSE,
-                              pmix_ref = pmix_CESD_r)
-CESD_som #  item 4 is biased (?)
-
-# Interpersonal Problems
-# Items: unfriendly, dislike
-CESD_int <- item_deletion_h(weights_item = c(rep(1,2)), 
-                              propsel = .14, n_dim = 1,  
-                              alpha_r = alpha_INT_r,
-                              alpha_f = alpha_INT_f,
-                              psi_r = psi_INT_r,
-                              psi_f = psi_INT_f,
-                              lambda_r = lambda_INT_r,
-                              lambda_f = lambda_INT_f,
-                              nu_r = nu_INT_r,
-                              nu_f = nu_INT_f,
-                              Theta_r = Theta_INT_r, 
-                              Theta_f = Theta_INT_f,
-                              weights_latent = 1,
-                              plot_contour = FALSE,
-                              return_detailed = FALSE,
-                              pmix_ref = pmix_CESD_r)
-CESD_int #item 2 is biased
-```
-
-
-
-
-For the 4-item CES-D scale, the negative $h^{|1}(\ov{\SR})$,
-$h^{|1}(\ov{\SE})$, and $h^{|1}(\ov{\SP})$ values 
-indicate that removing the first item would lead to an improvement in SR, 
-SE, and SP. On the other hand, the positive $h$ values for modified item sets 
-excluding items 2, 3, or 4 suggest that SR, SE, and SP decreases if any of these 
-items are dropped.
-
-
-
-
-#### `delta_h$h_R_vs_Ef.par`
-
-HL: # (I would suggest separating out PS from SR, SE, and SP here, as PS is more a fairness index whereas SR, SE, SP are more about accuracy. We may only need delta h for PS. )
-
-
-Looking at PS, Delta h is only positive for the comparison between the full item
-set and the set where item 1 is deleted. As we know that item 1 is biased, this 
-indicates that seeing a positive delta h in PS is an indication that that item
-should be removed. We see the opposite patterns for item 1 vs. items 2-4 where 
-removing any of item 2, 3, or 4 would harm the accuracy indices.
-
-
-
-#### `h$R_vs_Ef.par`
-[HL]: # (We can call the following 'bias'. It'd be helpful to discuss the 'full' column first.)
-
-
-
-$\PS^{|1}_{\rr}=0$,$\SR^{|1}_{\rr}=0$,
-$\SE^{|1}_{\rr=0}$, $\SP^{|1}_{\rr}=0$ suggest that 
-if we delete the first item, the accuracy indices for the Efocal group under
-PFI will be equal to that of the reference group under PFI, *thus removing bias*. 
-
-$\PS_{\rr}=0.203$ indicates the proportion selected in the reference group is
-larger than the proportion selected in Efocal. In other words, *the reference group is favored when the full set of items are used*. Under the expected distribution for the 
-reference group, the focal group would have a higher success ratio and a higher
-specificity than the reference group when for item sets $\{I, I^{|2}, I^{|3}, I^{|4}\}$ but would have a lower proportion selected and a lower sensitivity.
-Dropping any item other than the first item would lead to a similar situation where
-a greater proportion is selected from the reference group than the focal group
-and is not advisable despite leading to an increase in SE.
-
-
-$\PS^{r}_{\sfi,\pfi}=-0.040$ indicates that 
-PS was slightly higher under PFI compared to under SFI for the full item set and when any of items 2-4 was deleted. Deleting
-item 1 brought the effect size of the difference between SFI and PFI conditions to 0 for all accuracy indices.
-
-## Example 2:  Millsap, Kwok (2004)
-'Evaluating the Impact of Partial Factorial Invariance on
-Selection in Two Populations'
-
-Biased items: 3, 4
-```{r}
-# Worry subscale of the test anxiety inventory
-ex2 <- item_deletion_h(weights_item = c(1, 1, 1, 1, 1, 1, 1, 1), 
-                              propsel = 0.1000001,#"90% cutpoint"
-                              #cut_z= 23.29952,
-                             n_dim = 1,  
-                             alpha_r = 0,
-                             alpha_f =-0.126,
-                             psi_r = 0.544,
-                             psi_f = 0.477,
-                             lambda_r = c(0.836, 1, 0.904, 0.808, 0.903,
-                                             0.960, 0.934, 0.934),
-                             lambda_f = c(0.836, 1, 1.111, 1.001, 0.903, 
-                                             0.960, 0.934, 0.934),
-                             nu_r = c(2.114, 2.064, 1.901, 2.004, 2.144,
-                                        1.985, 2.179, 2.230),
-                             nu_f= c(2.114, 2.064, 1.880, 1.985, 2.144,
-                                        1.985, 2.179, 2.230),
-                             Theta_r = diag(c(.517, .523, .631, .585, .481,
-                                                .469,.551,.572)),
-                             Theta_f = diag(c(.514, .407, .371, .475, .392,
-                                                .335,.454,.457)),
-                             weights_latent = 1,
-                             plot_contour = FALSE,
-                             return_detailed = FALSE, pmix_ref = 0.5)
-```
-
-
+All items retained:
 
 ```{r}
-ex2
+CESD_full$PartInv$partial$outputlist$`|10`
 ```
 
-The positive h values in h_overall_CAI_par suggest that no item should be 
-dropped, as dropping any of the items would lead to a lower success ratio, lower
-sensitivity, and lower specificity.
-
-`h$R_vs_Ef.par`
-
-If the focal group followed the same distribution as the reference group, a larger
-proportion would be selected for the focal group compared to the reference group 
-(indicated by the negative PS) when all items are used. If any one item is dropped
-there would be an increase in PS for the reference group, leading to a positive h.
-
-
-
-
-A greater proportion is selected under SFI compared to PFI when all items are used, but when any of the 8 items are dropped, a 
-greater proportion is selected under PFI. SR, SE, SP are always
-positive, indicating that regardless of item drop condition, 
-SR, SE, SP under SFI is always larger than SR, SE, SP under PFI. 
-
-
-
-## Example 3: Mini-IPIP - Ock, McAbee, Mulfinger, and Oswald (2020)
-'The Practical Effects of Measurement Invariance: Gender Invariance in Two Big Five Personality Measures'
-Biased items: 1, 7, 11, 13, 14
-```{r read data, include  = FALSE}
-data <- read.table("IPIPFFM.dat", header = TRUE)
-head(data)
-male <- data[data$sex == 1, ]
-female <- data[data$sex == 2, ]
-```
-
-```{r specify and fit model}
-model <- 'A =~  a2 + a5  + a7 + a9
-          C =~  c3 + c4 + c8 + c9
-          E =~ e1 + e4 + e6 + e7
-          N =~ n1 + n2 + n6 + n8
-          O =~ i2 + i8 + i9 + i10
-          a2 ~~ a5
-          e4 ~~ e7  
-          i2 ~~ i10
-          i8 ~~ i9
-          a9 ~~ i9
-          c3 ~~ e6
-          a2 ~~ e7
-          e7 ~~ n2'
-fit_strict <- cfa(model, data = data, group = "sex",
-                  group.equal = c("loadings", "Intercepts", "residuals"),
-                  group.partial = c("e6 ~ 1", "n1 ~ 1", "n2 ~ 1", "a2 ~ 1", 
-                                    #items  1 (A2), 7 (C8), 11 (E6), 13 (N1), 14 (N2)
-                                    "n2 ~~ n2", "n1 ~~ n1", "c8 ~~ c8"),
-                  estimator = "MLR", std.lv = TRUE)
-result <- lavInspect(fit_strict, what = "est")
-```
-
-```{r IPIPFFM item deletion}
-ex3 <- item_deletion_h(propsel=0.25,
-              weights_item = c(3.1385, 3.1385, 3.1385, 3.1385,
-                                8.3203, 8.3203, 8.3203, 8.3203,
-                                5.1586, 5.1586, 5.1586, 5.1586,
-                                -6.5870, -6.5870, -6.5870, -6.5870,
-                                1.7957, 1.7957, 1.7957, 1.7957), 
-              n_dim = 5, 
-              alpha_r = result[[2]]$alpha,
-              alpha_f = result[[1]]$alpha,
-              psi_r = result[[2]]$psi,
-              psi_f = result[[1]]$psi,
-              lambda_r = result[[2]]$lambda,
-              lambda_f = result[[1]]$lambda,
-              nu_r = result[[2]]$nu,
-              nu_f = result[[1]]$nu,
-              Theta_r = result[[2]]$theta,
-              Theta_f = result[[1]]$theta,
-              weights_latent = c(0.12553907, 0.33281060, 0.20634298, 
-                                 -0.26347936, 0.07182799),
-              plot_contour = FALSE, 
-              return_detailed = FALSE,
-              user_specified_items = c(1,7,11,13,14))
-```
+Subset excluding item 15:
 
 ```{r}
-ex3
+CESD_full$PartInv$partial$outputlist$`|15`
 ```
 
-Looking at `h_overall_par`, we see that dropping item 1 would lead to
-a marginal improvement in SR and SP, while SE would be unaffected. We see a similar
-pattern with item 18. 
+Subset excluding item 10:
 
-Item 12 appears to be a bad item to drop as dropping this item produces the highest
-h values (i.e., the largest decrease in SR, SE, and SP) in this example, followed
-by items 10 and 11. Conversely, removing item 4 would not harm SR, SP, or SE.
+```{r fig.keep='all'}
+CESD_full$PartInv$partial$outputlist$`|10`
+#plot.new()
+#CESD_full$PartInv$partial$outputlist$`|10`$plot
+```
 
-Out of the biased items (1, 7, 11, 13, and 14), we should consider dropping item 1
-and retaining item 11.
 
-When item 11 is dropped, h for PS is negative (a higher proportion is selected 
-under Efocal than the reference group). For all other item drop conditions, h for 
-PS is positive. 
+
+
+```{r include=FALSE}
+# return_detailed == TRUE outputs
+# Retrieving plots?
+```
+
