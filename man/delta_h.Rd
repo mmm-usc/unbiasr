@@ -17,8 +17,8 @@ item is deleted.
 }
 \description{
 \code{delta_h} Uses the formula below to compute the effect size for impact
-of item bias by comparing Cohen's h values for a given selection accuracy
-index when an item is deleted vs. included.
+of item bias by comparing Cohen's h values for CAI when an item is deleted vs.
+CAI when all items are included.
 
 e.g. for the improvement in SE:
 

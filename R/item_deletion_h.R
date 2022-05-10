@@ -243,9 +243,9 @@ item_deletion_h <- function(propsel,
   
   # Re-weight SE, SR, SP by focal and group proportions to compute 
   # overall indices under partial invariance for the full item set
-  overall_par[1] <- get_overall(pmix_ref, partial) 
+  overall_par[1] <- get_composite_CAI(pmix_ref, partial) 
   # Repeat for strict invariance
-  overall_str[1] <-  get_overall(pmix_ref, strict)
+  overall_str[1] <-  get_composite_CAI(pmix_ref, strict)
   
   # Compute h for the difference between strict and partial invariance for 
   # overall SE, SR, SP
@@ -334,9 +334,9 @@ item_deletion_h <- function(propsel,
     # Compute overall SR, SE, SP indices under partial invariance by weighting 
     # accuracy indices for the reference and focal groups by their group
     # proportions
-    overall_par[i] <- get_overall(pmix_ref, partial)
+    overall_par[i] <- get_composite_CAI(pmix_ref, partial)
     # Repeat for strict invariance
-    overall_str[i] <- get_overall(pmix_ref, strict)
+    overall_str[i] <- get_composite_CAI(pmix_ref, strict)
     # Compute Cohen's h for the difference between overall SE, SR, SP under 
     # strict vs. partial invariance
     h_overall_str_par[i] <- cohens_h(overall_str[i], overall_par[i])

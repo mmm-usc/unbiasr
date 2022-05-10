@@ -2,12 +2,12 @@
 #' Compute PS, SR, SE, SP weighted by group proportions
 #' 
 #' @name 
-#' get_overall
+#' get_composite_CAI
 #' 
 #' @description
-#' \code{get_overall} computes overall PS, SR, SE, SP under partial or strict 
-#' invariance by weighting the TP, TF, TN, FP values for the reference and focal 
-#' groups with the group proportions.
+#' \code{get_composite_CAI} computes composite PS, SR, SE, SP under partial or 
+#' strict invariance by weighting the TP, TF, TN, FP values for the reference 
+#' and focal groups with the group proportions.
 #' 
 #' @param pmixr Proportion of the reference group.
 #' @param store_summary The summary table from [PartInv()] 
@@ -18,9 +18,8 @@
 #'          \item{SR}{Success ratio, computed as \eqn{TP/(TP + FP)}.}
 #'          \item{SE}{Sensitivity, computed as \eqn{TP/(TP + FN)}.}
 #'          \item{SP}{Specificity, computed as \eqn{TN/(TN + FP)}.}
-#'        
 
-get_overall <- function(pmixr, store_summary) {
+get_composite_CAI <- function(pmixr, store_summary) {
   r <- store_summary$Reference; f <- store_summary$Focal
   PS <-  (pmixr*r[1] + (1 - pmixr)*f[1]) + (pmixr*r[2] + (1 - pmixr)*f[2])
   SR <- (pmixr*r[1] + (1 - pmixr)*f[1]) /
@@ -147,8 +146,8 @@ cohens_h <- function(p1, p2) {
 #' 
 #' @description 
 #' \code{delta_h} Uses the formula below to compute the effect size for impact 
-#' of item bias by comparing Cohen's h values for a given selection accuracy 
-#' index when an item is deleted vs. included.
+#' of item bias by comparing Cohen's h values for CAI when an item is deleted vs.
+#' CAI when all items are included.
 #' 
 #' e.g. for the improvement in SE:
 #' 
@@ -167,42 +166,8 @@ delta_h <- function(h_R, h_i_del) {
 
 
 #' @title 
-#' Selection accuracy indices for the reference group, and Cohen's h for their
-#' difference under strict vs. partial invariance.
-#' 
-#' @name 
-#' ref_acc_indices_h
-#' 
-#' @description 
-#' \code{ref_acc_indices_h} Takes in outputs from [PartInv()] 
-#' and returns a restructured data frame with the selection accuracy indices  
-#' for the reference group under the strict invariance and partial invariance 
-#' conditions, and the corresponding h for the difference in the selection
-#' accuracy indices between these two conditions.
-
-#' @param strict_output [PartInv()]  output (a list) under strict 
-#'        invariance. 
-#' @param partial_output [PartInv()] output (a list) under partial
-#'        invariance.
-#' @return A 8 x 3 dataframe with columns `strict invariance`, 
-#'        `partial invariance`, and `h`.
-
-ref_acc_indices_h <- function(strict_output, partial_output) {
-  ref_par_strict <- partial_output$summary[1][, 1]
-  ref_strict <- strict_output$summary[1][, 1]
-  r_names <- c("A (true positive)", "B (false positive)", "C (true negative)", 
-               "D (false negative)", "Proportion selected", "Success ratio", 
-               "Sensitivity", "Specificity")
-  df <- data.frame(strict_invariance =  ref_strict, 
-                   partial_invariance = ref_par_strict, row.names = r_names)
-  df["h"] <- round(cohens_h(df$strict_invariance, df$partial_invariance), 3)
-  
-  return(df)
-}
-
-#' @title 
-#' Selection accuracy indices for the reference and focal groups, and Cohen's h
-#' for the difference under strict vs. partial invariance for each group.
+#' Classification accuracy indices for the reference and focal groups, and 
+#' Cohen's h for the difference under strict vs. partial invariance for each group.
 #' 
 #' @name 
 #' acc_indices_h
@@ -239,7 +204,6 @@ acc_indices_h <- function(strict_output, partial_output) {
   return(list("Reference" = df_ref, "Focal" = df_f))
 }
  
-   
 
 #' @title 
 #' Determine biased items
@@ -288,12 +252,10 @@ determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f,
     for(i in seq_len(ncol(nu_r))) {
       biased_nu <- c(biased_nu, as.vector(which(nu_r[,i] != nu_f[,i])))}
     } else {
-      biased_nu<- c(biased_nu, as.vector(which(nu_r != nu_f)))
+      biased_nu <- c(biased_nu, as.vector(which(nu_r != nu_f)))
     }
   biased <- unique(c(biased_lambda, biased_theta, biased_nu))
   
   if(length(biased) == 0) { print("Strict invariance holds for all items.") }
   return(sort(biased))
 }
-
-
