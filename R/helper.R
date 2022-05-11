@@ -172,4 +172,9 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
   c(A, B, C, D, propsel, success_ratio, sensitivity, specificity)
 }
 
-
+is_symmetric_posdef <- function(x, tol = 1e-08) {
+  # Borrow from matrixcalc::is.positive.definite()
+  if (!isSymmetric(x)) return(FALSE)
+  eigenvalues <- eigen(x, only.values = TRUE)$values
+  all(eigenvalues >= tol)
+}

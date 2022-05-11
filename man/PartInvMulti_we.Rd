@@ -3,7 +3,7 @@
 \name{PartInvMulti_we}
 \alias{PartInvMulti_we}
 \alias{PartInv}
-\title{Evaluate selection accuracy based on the MCAA Framework}
+\title{Evaluating selection accuracy based on the MCAA Framework}
 \usage{
 PartInvMulti_we(
   propsel,
@@ -28,6 +28,7 @@ PartInvMulti_we(
   Theta_f = Theta_r,
   pmix_ref = 0.5,
   plot_contour = TRUE,
+  show_mi_result = FALSE,
   labels = c("Reference", "Focal"),
   ...
 )
@@ -55,6 +56,7 @@ PartInv(
   Theta_f = Theta_r,
   pmix_ref = 0.5,
   plot_contour = TRUE,
+  show_mi_result = FALSE,
   labels = c("Reference", "Focal"),
   ...
 )
@@ -65,9 +67,9 @@ PartInv(
 \item{cut_z}{pre-specified cutoff score on the observed composite. This
 argument is ignored when \code{propsel} has input.}
 
-\item{weights_item}{a vector of item weights}
+\item{weights_item}{a vector of item weights.}
 
-\item{weights_latent}{a vector of latent factor weights}
+\item{weights_latent}{a vector of latent factor weights.}
 
 \item{alpha_r}{a vector of latent factor means for the reference group.}
 
@@ -105,6 +107,12 @@ default to 0.5 (i.e., two populations have equal size).}
 \item{plot_contour}{logical; whether the contour of the two populations
 should be plotted; default to TRUE.}
 
+\item{show_mi_result}{If \code{TRUE}, perform selection accuracy analysis
+for both the input parameters and the implied
+parameters based on a strict invariance model, with
+common parameter values as weighted averages of
+the input values using \code{pmix_ref}.}
+
 \item{labels}{a character vector with two elements to label the reference
 and the focal group on the graph.}
 
@@ -132,22 +140,7 @@ an extension of Millsap & Kwok's (2004) approach
 }
 \examples{
 # Single dimension
-PartInv(propsel = .10,
-        weights_item = c(1, 0.9, 0.8, 1),
-        weights_latent = 1,
-        alpha_r = 0.5,
-        alpha_f = 0,
-        psi_r = 1,
-        lambda_r = c(.3, .5, .9, .7),
-        nu_r = c(.225, .025, .010, .240),
-        nu_f = c(.225, -.05, .240, -.025),
-        Theta_r = diag(.96, 4),
-        labels = c("Female", "Male"))
 # multiple dimensions
-lambda_matrix <- matrix(0,nrow = 5, ncol = 2)
-lambda_matrix[1:2, 1] <- c(.322, .655)
-lambda_matrix[3:5, 2] <- c(.398, .745, .543)
-PartInv(propsel = .05,
         weights_latent = c(0.5, 0.5),
         alpha_r = c(0, 0),
         alpha_f = c(-0.3, 0.1),
@@ -157,15 +150,4 @@ PartInv(propsel = .05,
         nu_f = c(.225, -.05, .240, -.025, .125),
         Theta_r = diag(1, 5),
         Theta_f = c(1, .95, .80, .75, 1))
-PartInvMulti_we(propsel = .10,
-                weights_item = c(1/3, 1/3, 1/3, 1/3),
-                weights_latent = 1,
-                alpha_r = 0.5,
-                alpha_f = 0,
-                psi_r = 1,
-                lambda_r = c(.3, .5, .9, .7),
-                nu_r = c(.225, .025, .010, .240),
-                nu_f = c(.225, -.05, .240, -.025),
-                Theta_r = diag(.96, 4),
-                labels = c("female", "male"))
 }

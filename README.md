@@ -1,2 +1,2 @@
 # PartInvShinyUI
-MMM Lab Partial Invariance Shiny UI
+MMM Lab Fair And Unbiased Classification Shiny UI

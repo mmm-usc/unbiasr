@@ -1,5 +1,5 @@
 Package: PartInvShinyUI
-Title: What the Package Does (One Line, Title Case)
+Title: Multidimensional Classification Accuracy Analysis Framework
 Version: 0.0.1
 Authors@R: c(
     person("Clay", "Cantrell", , "clay.cantrell@me.com",
@@ -15,7 +15,17 @@ Authors@R: c(
            role = c("aut"),
            comment = c(ORCID = "0000-0002-5054-8264"))       
     )
-Description: What the package does (one paragraph).
+Description: The multidimensional classification accuracy analysis 
+    framework (MCAA) is an extension of the selection accuracy 
+    framework proposed by Millsap & Kwok (2004). Since real-world 
+    selection usually involves multiple tests or subtests with 
+    different weights assigned to each dimension, the MCAA framework 
+    is proposed to quantify the impact of item bias on selection 
+    accuracy by examining the changes in selection accuracy indices 
+    (proportion selected, success ratio, sensitivity, specificity) 
+    for each subgroup. The adverse impact (AI) ratio (i.e., the ratio 
+    of the proportions selected between a minority and a majority group 
+    with matching latent trait levels) is also provided in results. 
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
