@@ -2,10 +2,10 @@
 #' Compute PS, SR, SE, SP weighted by group proportions
 #' 
 #' @name 
-#' get_composite_CAI
+#' get_aggregate_CAI
 #' 
 #' @description
-#' \code{get_composite_CAI} computes composite PS, SR, SE, SP under partial or 
+#' \code{get_aggregate_CAI} computes aggregate PS, SR, SE, SP under partial or 
 #' strict invariance by weighting the TP, TF, TN, FP values for the reference 
 #' and focal groups with the group proportions.
 #' 
@@ -19,7 +19,7 @@
 #'          \item{SE}{Sensitivity, computed as \eqn{TP/(TP + FN)}.}
 #'          \item{SP}{Specificity, computed as \eqn{TN/(TN + FP)}.}
 
-get_composite_CAI <- function(pmixr, store_summary) {
+get_aggregate_CAI <- function(pmixr, store_summary) {
   r <- store_summary$Reference; f <- store_summary$Focal
   PS <-  (pmixr*r[1] + (1 - pmixr)*f[1]) + (pmixr*r[2] + (1 - pmixr)*f[2])
   SR <- (pmixr*r[1] + (1 - pmixr)*f[1]) /
@@ -194,13 +194,13 @@ acc_indices_h <- function(strict_output, partial_output) {
   
   df_ref <- data.frame(SFI =  ref_strict, 
                    PFI = ref_par_strict, row.names = r_names)
-  df_ref["h"] <- round(cohens_h(df_ref$SFI, df_ref$PFI), 3)
+  df_ref["h"] <- cohens_h(df_ref$SFI, df_ref$PFI)
   
   f_par_strict <- partial_output$summary[2][, 1]
   f_strict <- strict_output$summary[2][, 1]
   df_f <- data.frame(SFI =  f_strict, 
                        PFI = f_par_strict, row.names = r_names)
-  df_f["h"] <- round(cohens_h(df_f$SFI, df_f$PFI), 3)
+  df_f["h"] <- cohens_h(df_f$SFI, df_f$PFI)
   return(list("Reference" = df_ref, "Focal" = df_f))
 }
  

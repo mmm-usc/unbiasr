@@ -199,8 +199,8 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                                   "Proportion selected", "Success ratio", 
                                   "Sensitivity", "Specificity"))
   colnames(dat) <- c(labels, paste0("E_R(",labels[2],")"))
-  # result plot
 
+  # result plot
   p <- NULL
   if (plot_contour) {
     x_lim <- range(c(zeta_r + c(-3, 3) * sd_xir, 
@@ -223,12 +223,13 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     text(x_cord, y_cord, c("A", "B", "D", "C"))
     p <- recordPlot()
 
-    # dev.off()
+     dev.off()
   }
   out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
-              summary = round(dat, 3), 
+              summary = dat, # round(dat, 3), 
               ai_ratio = dat["Proportion selected", 3] / 
                 dat["Proportion selected", 1], plot = p)
+
   if (show_mi_result) {  # Need to be updated
     # Strict
     pop_weights <- c(pmix_ref, 1 - pmix_ref)
@@ -291,9 +292,10 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
       text(x_cord, y_cord, c("A", "B", "D", "C"))
       p <- recordPlot()
     }
-    out$summary_mi <- round(dat, 3)
+    out$summary_mi <- dat #round(dat, 3)
     out$p_mi <- p
   }
+  class(out) <- c('PartInv', 'PartInvSummary')
   out
 }
 

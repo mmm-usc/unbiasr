@@ -16,13 +16,6 @@
 #' @param cut_z Pre-specified cutoff score on the observed composite. This 
 #'        argument is ignored when `propsel` has input.
 #' @param weights_item A vector of item weights.
-#' @param n_dim Number of dimensions, 1 by default. If the user does not supply 
-#'        a different value, proceeds with the assumption that the scale is 
-#'        unidimensional.
-#' @param n_i_per_dim A vector containing the number of items in each 
-#'        dimension; `NULL` by default. If the user provides a value for `n_dim` 
-#'        that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that 
-#'        the subscales have an equal number of items. 
 #' @param weights_latent A  vector of latent factor weights.
 #' @param alpha_r A vector of latent factor mean for the reference group.
 #' @param alpha_f (optional) A vector of latent factor mean for the focal  
@@ -49,16 +42,23 @@
 #'        populations have equal size)
 #' @param plot_contour Logical; whether the contour of the two populations 
 #'        should be plotted; default to `TRUE`.
+#' @param n_dim Number of dimensions, 1 by default. If the user does not supply 
+#'        a different value, proceeds with the assumption that the scale is 
+#'        unidimensional.
+#' @param n_i_per_dim A vector containing the number of items in each 
+#'        dimension; `NULL` by default. If the user provides a value for `n_dim` 
+#'        that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that 
+#'        the subscales have an equal number of items. 
 #' @param return_detailed Logical; whether additional data frames should be r
 #'        returned object; default to `FALSE`. If 
 #'        \code{return_detailed == FALSE}, returns a list of length 2 with the 
-#'        elements: `h_overall_sai.par` (a data frame) and`delta_h` (a list). 
+#'        elements: `h_aggregate_cai.par` (a data frame) and`delta_h` (a list). 
 #'        If set to `TRUE`, returns `h` and `raw` as an additional elements.
 #' @return A list with 3 elements if \code{return_detailed == FALSE}, 4 elements
 #'         if \code{return_detailed == TRUE}.
-#'        \item{h_overall_sai.par}{A (3 x number of items) data frame that 
-#'          stores Cohen's h values for the comparison between overall SR, SE, 
-#'          SP under partial invariance for the full item set vs. overall SR, 
+#'        \item{h_aggregate_cai.par}{A (3 x number of items) data frame that 
+#'          stores Cohen's h values for the comparison between aggregate SR, SE, 
+#'          SP under partial invariance for the full item set vs. aggregate SR, 
 #'          SE, SP under partial invariance when item i is deleted. 'Overall'
 #'          refers to the weighting of the accuracy indices for focal and 
 #'          reference group proportions.}
@@ -129,8 +129,6 @@
 item_deletion_h <- function(propsel, 
                             cut_z = NULL, 
                             weights_item, 
-                            n_dim = 1,
-                            n_i_per_dim = NULL, 
                             weights_latent,
                             alpha_r, 
                             alpha_f = alpha_r,
@@ -144,6 +142,10 @@ item_deletion_h <- function(propsel,
                             Theta_f = Theta_r,
                             pmix_ref = 0.5, 
                             plot_contour = TRUE,
+                            show_mi_result = TRUE,
+                            labels = c("Reference", "Focal"),
+                            n_dim = 1,
+                            n_i_per_dim = NULL, 
                             return_detailed = FALSE,
                             biased_items_only = TRUE,
                             user_specified_items = NULL,
@@ -182,10 +184,10 @@ item_deletion_h <- function(propsel,
   h_R_Ef <- h_str_vs_par_ref <- h_str_vs_par_foc <- 
     as.data.frame(matrix(nrow = 8, ncol = N + 1))
   
-  overall_par <- overall_str <- h_overall_str_par <-
+  aggregate_par <- aggregate_str <- h_aggregate_str_par <-
     as.data.frame(matrix(nrow = 4, ncol = N + 1))
   
-  h_overall_par <-  delta_h_str_par_overall <- 
+  h_aggregate_par <-  delta_h_str_par_aggregate <- 
     as.data.frame(matrix(nrow = 4, ncol = N)) 
   
   AI_ratios <- as.data.frame(matrix(nrow = 2, ncol = N + 1))
@@ -203,7 +205,9 @@ item_deletion_h <- function(propsel,
                             Theta_r = Theta_f * (1 - pmix_ref) + 
                               Theta_r * pmix_ref,
                             pmix_ref = pmix_ref, 
-                            plot_contour = plot_contour)
+                            plot_contour = plot_contour, 
+                            labels = c("Reference", "Focal"),
+                            show_mi_result=show_mi_result)
   
   class(store_str[[1]]) <- "PartInv"
   
@@ -223,7 +227,9 @@ item_deletion_h <- function(propsel,
                             Theta_r = Theta_r,
                             Theta_f = Theta_f,
                             pmix_ref = pmix_ref, 
-                            plot_contour = plot_contour) 
+                            plot_contour = plot_contour,
+                            labels = c("Reference", "Focal"),
+                            show_mi_result = show_mi_result) 
   class(store_par[[1]]) <- "PartInv"
   
   partial <- store_par[[1]]$summary
@@ -242,14 +248,14 @@ item_deletion_h <- function(propsel,
   h_R_Ef[1] <- cohens_h(partial$Reference, partial$`E_R(Focal)`)
   
   # Re-weight SE, SR, SP by focal and group proportions to compute 
-  # overall indices under partial invariance for the full item set
-  overall_par[1] <- get_composite_CAI(pmix_ref, partial) 
+  # aggregate indices under partial invariance for the full item set
+  aggregate_par[1] <- get_composite_CAI(pmix_ref, partial) 
   # Repeat for strict invariance
-  overall_str[1] <-  get_composite_CAI(pmix_ref, strict)
+  aggregate_str[1] <-  get_composite_CAI(pmix_ref, strict)
   
   # Compute h for the difference between strict and partial invariance for 
-  # overall SE, SR, SP
-  h_overall_str_par[1] <- cohens_h(overall_str[1], overall_par[1])
+  # aggregate SE, SR, SP
+  h_aggregate_str_par[1] <- cohens_h(aggregate_str[1], aggregate_par[1])
   AI_ratios[,1] <- c(store_str[[1]]$ai_ratio, store_par[[1]]$ai_ratio) 
   # (Re)set the proportion selected based on the PartInv output when all
   # items are included in the strict invariance condition
@@ -281,7 +287,9 @@ item_deletion_h <- function(propsel,
                               Theta_r = Theta_f * (1 - pmix_ref) + 
                                 Theta_r * pmix_ref,
                               pmix_ref = pmix_ref, 
-                              plot_contour = plot_contour)
+                              plot_contour = plot_contour,
+                              labels = c("Reference", "Focal"),
+                              show_mi_result = show_mi_result)
     class(store_str[[i]]) <- "PartInv"
     # Call PartInv with the new weights under partial invariance
     store_par[[i]] <- PartInv(propsel, 
@@ -298,7 +306,9 @@ item_deletion_h <- function(propsel,
                               Theta_r = Theta_r,
                               Theta_f = Theta_f,
                               pmix_ref = pmix_ref, 
-                              plot_contour = plot_contour)
+                              plot_contour = plot_contour,
+                              labels = c("Reference", "Focal"),
+                              show_mi_result = show_mi_result)
     class(store_par[[i]]) < "PartInv"
     partial <- store_par[[i]]$summary
     strict <- store_str[[i]]$summary
@@ -323,70 +333,65 @@ item_deletion_h <- function(propsel,
     # for the reference group vs. for the expected accuracy indices for the 
     # focal group if it followed the same distribution as the reference group 
     # (`E_R(Focal)`)
-    h_R_Ef[i] <- round(cohens_h(partial$Reference, partial$`E_R(Focal)`), 3)
+    h_R_Ef[i] <- cohens_h(partial$Reference, partial$`E_R(Focal)`)
     
     # Compute the change in Cohen's h comparing accuracy indices under partial
     # invariance for the reference group vs. for the expected accuracy indices
     # for the focal group if it followed the same distribution as the reference
     # group when item i is deleted, i.e. the change in h_R_Ef_del
-    delta_h_R_vs_Ef[i-1] <- round(delta_h(h_R_Ef[1], h_R_Ef[i]), 3)
+    delta_h_R_vs_Ef[i-1] <- delta_h(h_R_Ef[1], h_R_Ef[i])
     
-    # Compute overall SR, SE, SP indices under partial invariance by weighting 
+    # Compute aggregate SR, SE, SP indices under partial invariance by weighting 
     # accuracy indices for the reference and focal groups by their group
     # proportions
-    overall_par[i] <- get_composite_CAI(pmix_ref, partial)
+    aggregate_par[i] <- get_composite_CAI(pmix_ref, partial)
     # Repeat for strict invariance
-    overall_str[i] <- get_composite_CAI(pmix_ref, strict)
-    # Compute Cohen's h for the difference between overall SE, SR, SP under 
+    aggregate_str[i] <- get_composite_CAI(pmix_ref, strict)
+    # Compute Cohen's h for the difference between aggregate SE, SR, SP under 
     # strict vs. partial invariance
-    h_overall_str_par[i] <- cohens_h(overall_str[i], overall_par[i])
-    # Compute how the overall SR, SE, SP indices change when an item is deleted
+    h_aggregate_str_par[i] <- cohens_h(aggregate_str[i], aggregate_par[i])
+    # Compute how aggregate SR, SE, SP indices change when an item is deleted
     # under partial invariance
-    h_overall_par[i - 1] <- cohens_h(overall_par[1], overall_par[i])
+    h_aggregate_par[i - 1] <- cohens_h(aggregate_par[1], aggregate_par[i])
     
-    delta_h_str_par_overall[i - 1] <- round(delta_h(h_overall_str_par[1], 
-                                                    h_overall_str_par[i]), 3)
+    delta_h_str_par_aggregate[i - 1] <- delta_h(h_aggregate_str_par[1], 
+                                                    h_aggregate_str_par[i])
     
     AI_ratios[,i] <- c(store_str[[i]]$ai_ratio, store_par[[i]]$ai_ratio) 
   }
   # Format stored variables
-  
-  # AI ratio
   # names(AI_ratios) <- c("AI", paste0("AI|", c(1:N)))
   # rownames(AI_ratios) <- c("SFI", "PFI")
   names(AI_ratios) <- c("full", paste0("|", c(1:N)))
   rownames(AI_ratios) <- c("AI_SFI", "AI_PFI")
   # h_R_Ef
-  #names(h_R_Ef) <-  c("h(r-Ef)", paste0("h(r-Ef|", c(1:N), c(")")))
+  # names(h_R_Ef) <-  c("h(r-Ef)", paste0("h(r-Ef|", c(1:N), c(")")))
   names(h_R_Ef) <-  c("r-Ef", paste0("r-Ef|", c(1:N)))
   
   
   # delta_h_str_vs_par
- # names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_foc) <- 
- #   paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
+  # names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_foc) <- 
+  #   paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
   names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_foc) <- 
        paste0("SFI, PFI|", c(1:N))
   
   names(store_str) <- names(store_par) <- 
     names(str_par_ref_list) <- names(str_par_foc_list) <- 
     c("full", paste0("|", c(1:N)))
-  names(overall_par) <- c("full", paste0("|", c(1:N)))
+  names(aggregate_par) <- c("full", paste0("|", c(1:N)))
   
-  #  names(h_overall_par) <- paste0("h(|", c(1:N), c(")"))
-  names(h_overall_par) <- paste0("|", c(1:N))
+  #  names(h_aggregate_par) <- paste0("h(|", c(1:N), c(")"))
+  names(h_aggregate_par) <- paste0("|", c(1:N))
   
-  #rownames(h_overall_par) <- rownames(overall_par) <- 
-  #  rownames(delta_h_str_par_overall) <- rownames(h_overall_str_par) <- 
+  # rownames(h_aggregate_par) <- rownames(aggregate_par) <- 
+  #  rownames(delta_h_str_par_aggregate) <- rownames(h_aggregate_str_par) <- 
   #  c("PS*", "SR*", "SE*", "SP*")
-  rownames(h_overall_par) <- rownames(h_overall_str_par) <-c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)")
-    rownames(overall_par) <-   c("PS*", "SR*", "SE*", "SP*")
-   rownames(delta_h_str_par_overall) <-  c(paste0('\u0394', c("h(PS*)")), 
+  rownames(h_aggregate_par) <- rownames(h_aggregate_str_par) <-c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)")
+    rownames(aggregate_par) <-   c("PS*", "SR*", "SE*", "SP*")
+   rownames(delta_h_str_par_aggregate) <-  c(paste0('\u0394', c("h(PS*)")), 
                                            paste0('\u0394', c("h(SR*)")),
                                            paste0('\u0394', c("h(SE*)")), 
                                            paste0('\u0394', c("h(SP*)")))
-  
-  
-  
   
   # rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
   #   rownames(h_R_Ef) <- rownames(delta_h_R_vs_Ef) <- 
@@ -407,15 +412,17 @@ item_deletion_h <- function(propsel,
      rownames(h_R_Ef) <- rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_foc) <- 
      c("h(TP)", "h(FP)", "h(TN)", "h(FN)", "h(PS)", "h(SR)", "h(SE)", "h(SP)")
    
-   
-   
   # Declare classes
-  store_par <- list(outputlist = store_par, condition = "partial")
-  store_str <- list(outputlist = store_str, condition = "strict")
+  store_par <- list(outputlist = store_par, condition = "partial",
+                    itemset = return_items)
+  store_str <- list(outputlist = store_str, condition = "strict", 
+                    itemset = return_items)
   class(store_par) <- c("PartInvList", "PartInv")
   class(store_str) <- c("PartInvList", "PartInv")
-  h_str_vs_par_list_ref <- list(outputlist = str_par_ref_list, condition="ref")
-  h_str_vs_par_list_foc <- list(outputlist = str_par_foc_list, condition="foc")
+  h_str_vs_par_list_ref <- list(outputlist = str_par_ref_list, condition="ref",
+                                itemset = return_items)
+  h_str_vs_par_list_foc <- list(outputlist = str_par_foc_list, condition="foc",
+                                itemset = return_items)
   class(h_str_vs_par_list_ref) <- "PartInvList"
   class(h_str_vs_par_list_foc) <- "PartInvList"
   
@@ -426,32 +433,32 @@ item_deletion_h <- function(propsel,
                                                           paste0("SFI, PFI|", c(1:N)))
   
   # names(delta_h_R_vs_Ef) <- paste0('\u0394', "h(r-Ef|", c(1:N), c(")"))
-  # names(delta_h_str_par_overall) <- paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
-  # names(h_overall_str_par) <- c("h(SFI, PFI)", paste0("h(SFI, PFI|", c(1:N), c(")")))
+  # names(delta_h_str_par_aggregate) <- paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
+  # names(h_aggregate_str_par) <- c("h(SFI, PFI)", paste0("h(SFI, PFI|", c(1:N), c(")")))
   # 
   names(delta_h_R_vs_Ef) <- paste0("r-Ef|", c(1:N))
-  names(delta_h_str_par_overall) <- paste0( "SFI, PFI|", c(1:N))
-  names(h_overall_str_par) <- c("SFI, PFI", paste0("SFI, PFI|", c(1:N)))
+  names(delta_h_str_par_aggregate) <- paste0( "SFI, PFI|", c(1:N))
+  names(h_aggregate_str_par) <- c("SFI, PFI", paste0("SFI, PFI|", c(1:N)))
   
   
-  overall_par <- as.data.frame(round(cbind(overall_par), 3))
-  h_overall_par <- as.data.frame(round(h_overall_par, 3))
+  aggregate_par <- as.data.frame(cbind(aggregate_par))
+  h_aggregate_par <- as.data.frame(h_aggregate_par)
   
   h_str_vs_par <- list("ref"= t(h_str_vs_par_ref), "foc" = t(h_str_vs_par_foc))
   
-  h_overall_str_par <- round(h_overall_str_par, 3)
+  h_aggregate_str_par <- h_aggregate_str_par
   
   returned <- list(
-    "h_overall_par" = t(h_overall_par),
-    "delta_h_str_par_overall" = t(delta_h_str_par_overall),
-    "AI Ratio" = t(round(AI_ratios, 3)),
-    "h_R_Ef" = t(round(h_R_Ef, 3)),
-    "h_R_vs_Ef.par" = t(round(delta_h_R_vs_Ef, 3)),
+    "h_aggregate_par" = t(h_aggregate_par),
+    "delta_h_str_par_aggregate" = t(delta_h_str_par_aggregate),
+    "AI Ratio" = t(AI_ratios),
+    "h_R_Ef" = t(h_R_Ef),
+    "h_R_vs_Ef.par" = t(delta_h_R_vs_Ef),
     "delta_h_str_vs_par" = list("ref" = t(delta_h_str_vs_par_ref), 
                                 "foc" = t(delta_h_str_vs_par_foc)), 
     "str_vs_par" = h_str_vs_par,
-    "overall_par" = t(overall_par),
-    "h_overall_str_par" = t(h_overall_str_par),
+    "aggregate_par" = t(aggregate_par),
+    "h_aggregate_str_par" = t(h_aggregate_str_par),
     "Ref_foc" = list("reference" = h_str_vs_par_list_ref, 
                      "focal" = h_str_vs_par_list_foc),
     "PartInv" = list("strict" = store_str,
