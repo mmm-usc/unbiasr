@@ -20,26 +20,28 @@ the subscales have an equal number of items.}
 \item{del_i}{Index of the item to be deleted.}
 }
 \value{
-\code{take_one_out} Weights vector with redistributed weights.
+\code{new_w} Weights vector with redistributed weights.
 }
 \description{
 \code{redistribute_weights} replaces the item weight with 0 for the item to
 be deleted, and redistributes this item's weight across the remaining items.
 }
 \examples{
-one_dim_weights <- c(1:7)
-redistribute_weights(one_dim_weights, del_i = 2)
-one_dim_weights2 <- c(1:7)
-redistribute_weights(one_dim_weights2, n_dim = 1, n_i_per_dim = 7, del_i = 2)
-multi_equal_len_weights <- c(1:9)
-redistribute_weights(multi_equal_len_weights, n_dim = 3, del_i = 2)
-multi_equal_len_weights2 <- c(1:9)
-redistribute_weights(multi_equal_len_weights2, n_dim = 3, 
-                   n_i_per_dim = c(3, 3, 3), del_i = 2)
-multi_unequal_len_weights <- c(1:12)
-redistribute_weights(multi_unequal_len_weights, n_dim = 3, 
-                   n_i_per_dim = c(3, 6, 3), del_i = 2)
+one_dim_w <- c(1:7)
+redistribute_weights(one_dim_w, del_i = 2)
+redistribute_weights(one_dim_w, n_dim = 1, n_i_per_dim = 7, del_i = 2)
+sum(one_dim_w)==sum(redistribute_weights(one_dim_w, del_i = 2))
+
+multi_eq_w <- c(1:9)
+redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2)
+redistribute_weights(multi_eq_w, n_dim = 3, n_i_per_dim = c(3, 3, 3), del_i = 2)
+sum(multi_eq_w)==sum(redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2))
+
+multi_uneq_w <- c(1:12)
+redistribute_weights(multi_uneq_w, n_dim = 3, n_i_per_dim = c(3, 6, 3), del_i=2)
+sum(multi_uneq_w)==sum(redistribute_weights(multi_uneq_w, n_dim = 3, 
+                                            n_i_per_dim = c(3, 6, 3), del_i=2))
 error_ex <- c(1:12)
-redistribute_weights(error_ex, n_dim = -3, 
-                   n_i_per_dim = c(3, 6, 3), del_i = 2)
+redistribute_weights(error_ex, n_dim = -3, n_i_per_dim = c(3, 6, 3), del_i = 2)
+redistribute_weights(error_ex, n_dim = 5, del_i = 2)
 }

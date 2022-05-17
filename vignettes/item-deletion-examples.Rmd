@@ -12,6 +12,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+#knitr::opts_knit$set(upload.fun = image_uri)
 ```
 
 ```{r setup, warning=FALSE, message=FALSE}
@@ -108,9 +109,7 @@ a deterioration in performance.
 # \]
 # 
 # This index can be computed for the reference group  ($\Delta^{|j}\h^{\sfi,\pfi}\CAI_{\r}$) or the focal group $\Delta^{|j}\h^{\sfi,\pfi}\CAI_{\f}$.
-
 ```
-
 
 ### Comparing CAI for reference (R) vs. expected focal (Ef) groups under PFI 
 $\h^{\rr}\CAI$:  Cohen's h effect size quantifying the discrepancy between $\CAI_{\r}$ vs. $\ef$ for the full set of items under PFI. 
@@ -198,17 +197,16 @@ psi_INT_r <- 0.574^2
 psi_INT_f <- 0.184^2
 
 # Cutoff of 16/60 on full scale. 20 items, each item scored 0-3.
-
 ```
  
 ### CES-D Positive Affect Factor
 
-```{r}
+```{r fig.show='hold'}
 #Positive Affect Factor
 #Items: good (biased), hopeful, happy, enjoyed
 CESD_pos <- item_deletion_h(weights_item = c(rep(1,4)), 
                               weights_latent = 1,
-                              cut_z = 16/60*4,
+                              cut_z = 16/60*12,
                               #propsel = .14,  
                               alpha_r = alpha_POS_r,
                               alpha_f = alpha_POS_f,
@@ -220,9 +218,20 @@ CESD_pos <- item_deletion_h(weights_item = c(rep(1,4)),
                               nu_f = nu_POS_f,
                               Theta_r = Theta_POS_r, 
                               Theta_f = Theta_POS_f,
-                              plot_contour = FALSE,
-                              pmix_ref = pmix_CESD_r)
-CESD_pos 
+                              plot_contour = TRUE,
+                              pmix_ref = pmix_CESD_r, 
+                              return_detailed = TRUE)
+CESD_pos
+```
+
+```{r include=FALSE}
+# Can print out regular plots, just not the PartInv ones
+#par(mar=c(4,4,.1,.1))
+#plot(cars, pch=19)
+```
+ 
+```{r include=FALSE,fig.show='hold'}
+print(CESD_pos$PartInv$partial$outputlist$`|1`$plot )
 ```
  
  The only biased item is item 1. We see from the first output table that deleting the first item increases $\ov{\SR}$ from $0.728$ to $0.756$, 
@@ -239,7 +248,7 @@ Taken together, these improvements and the lack of any decreases in CAI suggests
 # Items: blues, depressed, lonely, crying, sad, failure, fearful
 CESD_dep <- item_deletion_h(weights_item = c(rep(1,7)), 
                              # propsel = 0.14, 
-                            cut_z = 16/60*7,
+                            cut_z = 16/60*7*3,
                             n_dim = 1,  
                               alpha_r = alpha_DEP_r,
                               alpha_f = alpha_DEP_f,
@@ -253,9 +262,8 @@ CESD_dep <- item_deletion_h(weights_item = c(rep(1,7)),
                               Theta_f = Theta_DEP_f,
                               weights_latent = 1,
                               plot_contour = FALSE,
-                              return_detailed = FALSE,
-                              pmix_ref = pmix_CESD_r)#, 
-                           # biased_items_only = TRUE)
+                              return_detailed = TRUE,
+                              pmix_ref = pmix_CESD_r)
 CESD_dep # items 2, 3, 4 are biased
 ```
 
@@ -274,7 +282,7 @@ In light of the conflicting findings and the small effect size of the potential 
 # Items: bothered, appetite, mind, effort, sleep, talk, get going
 CESD_som <- item_deletion_h(weights_item = c(rep(1,7)), 
                               #propsel = .14,
-                            cut_z = 16/60*7,
+                            cut_z = 16/60*7*3,
                             n_dim = 1,  
                               alpha_r = alpha_SOM_r,
                               alpha_f = alpha_SOM_f,
@@ -303,7 +311,7 @@ The AI ratio for the full item set is already quite high at 0.997, and increases
 # Items: unfriendly, dislike
 CESD_int <- item_deletion_h(weights_item = c(rep(1,2)), 
                              # propsel = .14, 
-                            cut_z = 16/60*2,
+                            cut_z = 16/60*2*3,
                             n_dim = 1,  
                               alpha_r = alpha_INT_r,
                               alpha_f = alpha_INT_f,
@@ -359,8 +367,8 @@ nu_CESD_f <- as.matrix(c(nu_SOM_f, nu_DEP_f, nu_POS_f, nu_INT_f))
 
 # From Miller et al. (1997) The Factor Structure of the CES-D in Two Surveys
 # of Elderly Mexican Americans p.S264; the correlation matrix of latent variables
-corr_CESD <- matrix(c(1, .93, -.58, .85, .93, 1, -.64, .88,
-                      -.61, -.61, 1, -.55, .97, .93, -.63, 1), 
+corr_CESD <- matrix(c(1, .93, .58, .85, .93, 1, .64, .88,
+                      .61, .61, 1, .55, .97, .93, .63, 1), 
                     nrow = 4, ncol = 4, byrow = TRUE)
 # Compute an estimate for the variance-covariance matrix using diag(S)^-1 C diag(S) 
 S <- as.matrix(sqrt(psi_CESD_f) * (1 - pmix_CESD_r) + 
@@ -382,7 +390,7 @@ CESD_full <- item_deletion_h(weights_item = c(rep(1, 20)),
                             Theta_f = Theta_CESD_f,
                             weights_latent = c(rep(1,4)),
                             plot_contour = FALSE,
-                            return_detailed = FALSE,
+                            return_detailed = TRUE,
                             pmix_ref = pmix_CESD_r)
 CESD_full
 ```
@@ -413,7 +421,7 @@ may be examined for the two item deletion scenarios:
 All items retained:
 
 ```{r}
-CESD_full$PartInv$partial$outputlist$`|10`
+CESD_full$PartInv$partial$outputlist$full
 ```
 
 Subset excluding item 15:
@@ -422,23 +430,15 @@ Subset excluding item 15:
 CESD_full$PartInv$partial$outputlist$`|15`
 ```
 
-Subset excluding item 10:
-
-```{r fig.keep='all'}
-CESD_full$PartInv$partial$outputlist$`|10`
-#plot.new()
-#CESD_full$PartInv$partial$outputlist$`|10`$plot
+```{r include=FALSE, echo=FALSE}
+# plot not embedded in knitted vignette, need to fix
+CESD_full$PartInv$partial$outputlist$`|15`
+CESD_full$PartInv$partial$outputlist$`|15`$plot
 ```
 
 
-
-
-```{r include=FALSE}
-# return_detailed == TRUE outputs
-# Retrieving plots?
-```
-```{r include = FALSE, echo=FALSE}
-AA<- PartInv(weights_item = c(rep(1,7)), 
+```{r include=FALSE, echo=FALSE}
+AA <- PartInv(weights_item = c(rep(1,7)), 
                               propsel = .14,
                               alpha_r = alpha_DEP_r,
                               alpha_f = alpha_DEP_f,
@@ -476,3 +476,37 @@ a<- item_deletion_h(weights_item = c(rep(1,7)),
 a
 ```
 
+```{r}
+# run item_deletion_h() after dropping item 15 (POS1)
+CESD_full_drop15 <- item_deletion_h(weights_item = c(rep(1,14), 0, 
+                                                     rep(1.33333, 3), 1, 1),
+                            cut_z = 16,
+                            n_dim = 4, n_i_per_dim = c(7, 7, 4, 2),
+                            alpha_r = alpha_CESD_r,
+                            alpha_f = alpha_CESD_f,
+                            psi_r = psi_cesd,
+                            psi_f = psi_cesd,
+                            lambda_r = lambda_CESD_r,
+                            lambda_f = lambda_CESD_f,
+                            nu_r = nu_CESD_r,
+                            nu_f = nu_CESD_f,
+                            Theta_r = Theta_CESD_r,
+                            Theta_f = Theta_CESD_f,
+                            weights_latent = c(rep(1,4)),
+                            plot_contour = FALSE,
+                            return_detailed = FALSE,
+                            pmix_ref = pmix_CESD_r)
+CESD_full_drop15
+```
+
+All items retained:
+
+```{r}
+CESD_full_drop15$PartInv$partial$outputlist$full
+```
+
+Subset excluding item 10:
+
+```{r}
+CESD_full_drop15$PartInv$partial$outputlist$`|10`
+```

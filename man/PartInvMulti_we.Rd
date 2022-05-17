@@ -62,77 +62,73 @@ PartInv(
 )
 }
 \arguments{
-\item{propsel}{proportion of selection. If missing, computed using \code{cut_z}.}
+\item{propsel}{Proportion of selection. If missing, computed using \code{cut_z}.}
 
-\item{cut_z}{pre-specified cutoff score on the observed composite. This
+\item{cut_z}{Pre-specified cutoff score on the observed composite. This
 argument is ignored when \code{propsel} has input.}
 
-\item{weights_item}{a vector of item weights.}
+\item{weights_item}{A vector of item weights.}
 
-\item{weights_latent}{a vector of latent factor weights.}
+\item{weights_latent}{A vector of latent factor weights.}
 
-\item{alpha_r}{a vector of latent factor means for the reference group.}
+\item{alpha_r}{A vector of latent factor means for the reference group.}
 
-\item{alpha_f}{(optional) a vector of latent factor means for the focal group;
-if no input, set equal to alpha_r.}
+\item{alpha_f}{(optional) A vector of latent factor means for the focal group;
+if no input, set equal to \code{alpha_r}.}
 
-\item{phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f}{deprecated; included
+\item{phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f}{Deprecated; included
 only for backward compatibility.}
 
-\item{psi_r}{a matrix of latent factor variance-covariances for the
+\item{psi_r}{A matrix of latent factor variance-covariances for the
 reference group.}
 
-\item{psi_f}{(optional) a matrix of latent factor variance-covariances for
-the focal group; if no input, set equal to psi_r.}
+\item{psi_f}{(optional) A matrix of latent factor variance-covariances for
+the focal group; if no input, set equal to \code{psi_r}.}
 
-\item{lambda_r}{a matrix of factor loadings for the reference group.}
+\item{lambda_r}{A matrix of factor loadings for the reference group.}
 
 \item{lambda_f}{(optional) a matrix of factor loadings for the focal group;
-if no input, set equal to lambda_r.}
+if no input, set equal to \code{lambda_r}.}
 
-\item{nu_r}{a matrix of measurement intercepts for the reference group.}
+\item{nu_r}{A matrix of measurement intercepts for the reference group.}
 
-\item{nu_f}{(optional) a matrix of measurement intercepts for the focal group;
-if no input, set equal to nu_r.}
+\item{nu_f}{(optional) A matrix of measurement intercepts for the focal
+group; if no input, set equal to \code{nu_r}.}
 
-\item{Theta_r}{a matrix of the unique factor variances and covariances
+\item{Theta_r}{A matrix of the unique factor variances and covariances
 for the reference group.}
 
-\item{Theta_f}{(optional) a matrix of the unique factor variances and
-covariances for the focal group; if no input, set equal to Theta_r.}
+\item{Theta_f}{(optional) A matrix of the unique factor variances and
+covariances for the focal group; if no input, set equal to \code{Theta_r}.}
 
-\item{pmix_ref}{Proportion of the reference group;
-default to 0.5 (i.e., two populations have equal size).}
+\item{pmix_ref}{Proportion of the reference group; default to 0.5 (i.e., two
+populations have equal size).}
 
-\item{plot_contour}{logical; whether the contour of the two populations
-should be plotted; default to TRUE.}
+\item{plot_contour}{Logical; whether the contour of the two populations
+should be plotted; default to \code{TRUE}.}
 
 \item{show_mi_result}{If \code{TRUE}, perform selection accuracy analysis
-for both the input parameters and the implied
-parameters based on a strict invariance model, with
-common parameter values as weighted averages of
-the input values using \code{pmix_ref}.}
+for both the input parameters and the implied parameters based on a
+strict invariance model, with common parameter values as weighted
+averages of the input values using \code{pmix_ref}.}
 
-\item{labels}{a character vector with two elements to label the reference
+\item{labels}{A character vector with two elements to label the reference
 and the focal group on the graph.}
 
-\item{...}{other arguments passed to the \code{\link[graphics]{contour}}
+\item{...}{Other arguments passed to the \code{\link[graphics]{contour}}
 function.}
 }
 \value{
 The output will be a list of four elements and a plot if
 \code{plot_contour == TRUE}:
-\enumerate{
-\item propsel: echo the same argument as input.
-\item cutpt_xi: cut point on the latent scale (xi).
-\item cutpt_z: cut point on the observed scale (Z).
-\item summary: A 8 x 3 table, with columns representing the reference,
+\item{propsel}{Echo the same argument as input.}
+\item{cutpt_xi}{Cut point on the latent scale (xi).}
+\item{cutpt_z}{Cut point on the observed scale (Z).}
+\item{summary}{A 8 x 3 table, with columns representing the reference,
 the focal, and the expected results if the latent distribution of
 focal group matches the reference group. The rows represent
 probabilities of true positive (A), false positive (B),
 true negative (C), false negative (D); proportion selected,
-success ratio, sensitivity, and specificity.
-}
 }
 \description{
 \code{PartInv, PartInvMulti_we} evaluate partial measurement invariance using

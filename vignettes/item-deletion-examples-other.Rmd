@@ -5,20 +5,21 @@ date: "5/9/2022"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(PartInvShinyUI)
+library(lavaan)
 ```
-
 ## Example 2:  Millsap, Kwok (2004)
 'Evaluating the Impact of Partial Factorial Invariance on
 Selection in Two Populations'
 
-Biased items: 3, 4
+Worry Subscale of the Test Anxiety Inventory (TAI), biased items: 3, 4
 ```{r}
 # Worry subscale of the test anxiety inventory
 ex2 <- item_deletion_h(weights_item = c(1, 1, 1, 1, 1, 1, 1, 1), 
-                              propsel = 0.1000001,#"90% cutpoint"
-                              #cut_z= 23.29952,
+                              #propsel = 0.1000001,#"90% cutpoint"
+                              cut_z= 23.29952,
                              n_dim = 1,  
                              alpha_r = 0,
                              alpha_f =-0.126,
@@ -120,8 +121,8 @@ ex3 <- item_deletion_h(propsel=0.25,
               weights_latent = c(0.12553907, 0.33281060, 0.20634298, 
                                  -0.26347936, 0.07182799),
               plot_contour = FALSE, 
-              return_detailed = FALSE,
-              user_specified_items = c(1,7,11,13,14))
+              return_detailed = FALSE)
+              #user_specified_items = c(1,7,11,13,14))
 ```
 
 ```{r}

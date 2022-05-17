@@ -8,8 +8,6 @@ item_deletion_h(
   propsel,
   cut_z = NULL,
   weights_item,
-  n_dim = 1,
-  n_i_per_dim = NULL,
   weights_latent,
   alpha_r,
   alpha_f = alpha_r,
@@ -23,9 +21,13 @@ item_deletion_h(
   Theta_f = Theta_r,
   pmix_ref = 0.5,
   plot_contour = TRUE,
+  show_mi_result = TRUE,
+  labels = c("Reference", "Focal"),
+  n_dim = 1,
+  n_i_per_dim = NULL,
   return_detailed = FALSE,
-  biased_items_only = TRUE,
   user_specified_items = NULL,
+  delete_one_cutoff = NULL,
   ...
 )
 }
@@ -37,6 +39,47 @@ argument is ignored when \code{propsel} has input.}
 
 \item{weights_item}{A vector of item weights.}
 
+\item{weights_latent}{A  vector of latent factor weights.}
+
+\item{alpha_r}{A vector of latent factor mean for the reference group.}
+
+\item{alpha_f}{(optional) A vector of latent factor mean for the focal
+group; if no input, set equal to \code{alpha_r}.}
+
+\item{psi_r}{A matrix of latent factor variance covariances for the reference
+group.}
+
+\item{psi_f}{(optional) A matrix of latent factor variance-covariances for
+the focal group; if no input, set equal to \code{psi_r}.}
+
+\item{lambda_r}{A matrix of factor loadings for the reference group.}
+
+\item{lambda_f}{(optional) A matrix of factor loadings for the focal group;
+if no input, set equal to \code{lambda_r}.}
+
+\item{nu_r}{A matrix of measurement intercepts for the reference group
+under the partial invariance condition.}
+
+\item{nu_f}{(optional) A matrix of measurement intercepts for the focal
+group; if no input, set equal to \code{nu_r}.}
+
+\item{Theta_r}{A matrix of the unique factor variances and covariances
+for the reference group.}
+
+\item{Theta_f}{(optional) A matrix of the unique factor variances and
+covariances for the focal group; if no input, set equal to \code{Theta_r}.}
+
+\item{pmix_ref}{Proportion of the reference group; default to 0.5 (i.e., two
+populations have equal size)}
+
+\item{plot_contour}{Logical; whether the contour of the two populations
+should be plotted; default to \code{TRUE}.}
+
+\item{show_mi_result}{If \code{TRUE}, perform selection accuracy analysis
+for both the input parameters and the implied parameters based on a
+strict invariance model, with common parameter values as weighted
+averages of the input values using \code{pmix_ref}.}
+
 \item{n_dim}{Number of dimensions, 1 by default. If the user does not supply
 a different value, proceeds with the assumption that the scale is
 unidimensional.}
@@ -46,57 +89,22 @@ dimension; \code{NULL} by default. If the user provides a value for \code{n_dim}
 that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that
 the subscales have an equal number of items.}
 
-\item{weights_latent}{A  vector of latent factor weights.}
-
-\item{alpha_r}{A vector of latent factor mean for the reference group.}
-
-\item{alpha_f}{(optional) A vector of latent factor mean for the focal
-group; if no input, set equal to \code{alpha_r}.}
-
-\item{psi_r}{a matrix of latent factor variance for the reference group.}
-
-\item{psi_f}{(optional) A matrix of latent factor variance for the focal
-group; if no input, set equal to \code{psi_r}.}
-
-\item{lambda_r}{A matrix of factor loadings for the reference group under
-the partial invariance condition.}
-
-\item{lambda_f}{(optional) A matrix of factor loadings for the focal group
-under the partial invariance condition; if no input, set equal to
-\code{lambda_r}.}
-
-\item{nu_r}{A matrix of measurement intercepts for the reference group
-under the partial invariance condition.}
-
-\item{nu_f}{(optional) A matrix of measurement intercepts for the focal
-group under the partial invariance condition; if no input, set equal
-to \code{nu_r}.}
-
-\item{Theta_r}{A matrix of the unique factor variances and covariances
-for the reference group under the partial invariance condition.}
-
-\item{Theta_f}{(optional) A matrix of the unique factor variances and
-covariances for the focal group under the partial invariance
-condition; if no input, set equal to \code{Theta_r}.}
-
-\item{pmix_ref}{Proportion of the reference group; default to 0.5 (i.e., two
-populations have equal size)}
-
-\item{plot_contour}{Logical; whether the contour of the two populations
-should be plotted; default to \code{TRUE}.}
-
 \item{return_detailed}{Logical; whether additional data frames should be r
 returned object; default to \code{FALSE}. If
 \code{return_detailed == FALSE}, returns a list of length 2 with the
-elements: \code{h_overall_sai.par} (a data frame) and\code{delta_h} (a list).
+elements: \code{h_aggregate_cai.par} (a data frame) and\code{delta_h} (a list).
 If set to \code{TRUE}, returns \code{h} and \code{raw} as an additional elements.}
+
+\item{delete_one_cutoff}{(optional) New cutoff to use in delete-one scenarios.
+\code{NULL} by default; if \code{NULL}, proportions selected under SFI and PFI
+when the full item set is used is passed onto calls to PartInv.}
 }
 \value{
 A list with 3 elements if \code{return_detailed == FALSE}, 4 elements
 if \code{return_detailed == TRUE}.
-\item{h_overall_sai.par}{A (3 x number of items) data frame that
-stores Cohen's h values for the comparison between overall SR, SE,
-SP under partial invariance for the full item set vs. overall SR,
+\item{h_aggregate_cai.par}{A (3 x number of items) data frame that
+stores Cohen's h values for the comparison between aggregate SR, SE,
+SP under partial invariance for the full item set vs. aggregate SR,
 SE, SP under partial invariance when item i is deleted. 'Overall'
 refers to the weighting of the accuracy indices for focal and
 reference group proportions.}

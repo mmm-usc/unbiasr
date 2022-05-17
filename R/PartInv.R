@@ -9,56 +9,52 @@ NULL
 #' \code{PartInv, PartInvMulti_we} evaluate partial measurement invariance using 
 #'  an extension of Millsap & Kwok's (2004) approach
 #' 
-#' @param propsel proportion of selection. If missing, computed using `cut_z`.
-#' @param cut_z pre-specified cutoff score on the observed composite. This 
+#' @param propsel Proportion of selection. If missing, computed using `cut_z`.
+#' @param cut_z Pre-specified cutoff score on the observed composite. This 
 #' argument is ignored when `propsel` has input.
-#' @param weights_item a vector of item weights.
-#' @param weights_latent a vector of latent factor weights.
-#' @param alpha_r a vector of latent factor means for the reference group.
-#' @param alpha_f (optional) a vector of latent factor means for the focal group; 
-#'            if no input, set equal to alpha_r.
-#' @param psi_r a matrix of latent factor variance-covariances for the
-#'            reference group.
-#' @param psi_f (optional) a matrix of latent factor variance-covariances for
-#'            the focal group; if no input, set equal to psi_r.
-#' @param lambda_r a matrix of factor loadings for the reference group.
+#' @param weights_item A vector of item weights.
+#' @param weights_latent A vector of latent factor weights.
+#' @param alpha_r A vector of latent factor means for the reference group.
+#' @param alpha_f (optional) A vector of latent factor means for the focal group; 
+#'        if no input, set equal to `alpha_r`.
+#' @param psi_r A matrix of latent factor variance-covariances for the
+#'        reference group.
+#' @param psi_f (optional) A matrix of latent factor variance-covariances for
+#'        the focal group; if no input, set equal to `psi_r`.
+#' @param lambda_r A matrix of factor loadings for the reference group.
 #' @param lambda_f (optional) a matrix of factor loadings for the focal group; 
-#'             if no input, set equal to lambda_r.
-#' @param nu_r a matrix of measurement intercepts for the reference group.
-#' @param nu_f (optional) a matrix of measurement intercepts for the focal group; 
-#'          if no input, set equal to nu_r.
-#' @param Theta_r a matrix of the unique factor variances and covariances 
-#'            for the reference group.
-#' @param Theta_f (optional) a matrix of the unique factor variances and 
-#'            covariances for the focal group; if no input, set equal to Theta_r.
-#' @param pmix_ref Proportion of the reference group; 
-#'            default to 0.5 (i.e., two populations have equal size).
-#' @param plot_contour logical; whether the contour of the two populations 
-#'            should be plotted; default to TRUE.
+#'        if no input, set equal to `lambda_r`.
+#' @param nu_r A matrix of measurement intercepts for the reference group.
+#' @param nu_f (optional) A matrix of measurement intercepts for the focal 
+#'        group; if no input, set equal to `nu_r`.
+#' @param Theta_r A matrix of the unique factor variances and covariances 
+#'        for the reference group.
+#' @param Theta_f (optional) A matrix of the unique factor variances and 
+#'        covariances for the focal group; if no input, set equal to `Theta_r`.
+#' @param pmix_ref Proportion of the reference group; default to 0.5 (i.e., two 
+#'        populations have equal size).
+#' @param plot_contour Logical; whether the contour of the two populations 
+#'        should be plotted; default to `TRUE`.
 #' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
-#'                       for both the input parameters and the implied
-#'                       parameters based on a strict invariance model, with
-#'                       common parameter values as weighted averages of
-#'                       the input values using `pmix_ref`.
-#' @param labels a character vector with two elements to label the reference
+#'        for both the input parameters and the implied parameters based on a
+#'        strict invariance model, with common parameter values as weighted
+#'        averages of the input values using `pmix_ref`.
+#' @param labels A character vector with two elements to label the reference
 #'            and the focal group on the graph.
-#' @param ... other arguments passed to the \code{\link[graphics]{contour}} 
+#' @param ... Other arguments passed to the \code{\link[graphics]{contour}} 
 #'            function.
-#' @param phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f deprecated; included
+#' @param phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f Deprecated; included
 #'            only for backward compatibility.
 #' @return The output will be a list of four elements and a plot if 
 #'         \code{plot_contour == TRUE}:
-#'         \enumerate{
-#'           \item propsel: echo the same argument as input.
-#'           \item cutpt_xi: cut point on the latent scale (xi).
-#'           \item cutpt_z: cut point on the observed scale (Z).
-#'           \item summary: A 8 x 3 table, with columns representing the reference,
+#'           \item{propsel}{Echo the same argument as input.}
+#'           \item{cutpt_xi}{Cut point on the latent scale (xi).}
+#'           \item{cutpt_z}{Cut point on the observed scale (Z).}
+#'           \item{summary}{A 8 x 3 table, with columns representing the reference,
 #'                the focal, and the expected results if the latent distribution of
 #'                focal group matches the reference group. The rows represent
 #'                probabilities of true positive (A), false positive (B), 
 #'                true negative (C), false negative (D); proportion selected, 
-#'                success ratio, sensitivity, and specificity.
-#'         }
 #'         
 #' @examples
 #' # Single dimension
@@ -291,6 +287,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
       y_cord <- rep(cut_z + c(.25, -.25) * sd_zr, each = 2)
       text(x_cord, y_cord, c("A", "B", "D", "C"))
       p <- recordPlot()
+      dev.off()
     }
     out$summary_mi <- dat #round(dat, 3)
     out$p_mi <- p

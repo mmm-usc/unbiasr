@@ -20,28 +20,29 @@
 #' @param alpha_r A vector of latent factor mean for the reference group.
 #' @param alpha_f (optional) A vector of latent factor mean for the focal  
 #'        group; if no input, set equal to `alpha_r`.
-#' @param psi_r a matrix of latent factor variance for the reference group.
-#' @param psi_f (optional) A matrix of latent factor variance for the focal  
-#'        group; if no input, set equal to `psi_r`.
-#' @param lambda_r A matrix of factor loadings for the reference group under
-#'        the partial invariance condition.
-#' @param lambda_f (optional) A matrix of factor loadings for the focal group 
-#'        under the partial invariance condition; if no input, set equal to 
-#'        `lambda_r`.
+#' @param psi_r A matrix of latent factor variance covariances for the reference
+#'        group.
+#' @param psi_f (optional) A matrix of latent factor variance-covariances for 
+#'        the focal group; if no input, set equal to `psi_r`.
+#' @param lambda_r A matrix of factor loadings for the reference group.
+#' @param lambda_f (optional) A matrix of factor loadings for the focal group; 
+#'        if no input, set equal to `lambda_r`.
 #' @param nu_r A matrix of measurement intercepts for the reference group 
 #'        under the partial invariance condition.
 #' @param nu_f (optional) A matrix of measurement intercepts for the focal 
-#'        group under the partial invariance condition; if no input, set equal 
-#'        to `nu_r`.
+#'        group; if no input, set equal to `nu_r`.
 #' @param Theta_r A matrix of the unique factor variances and covariances 
-#'        for the reference group under the partial invariance condition.
+#'        for the reference group.
 #' @param Theta_f (optional) A matrix of the unique factor variances and 
-#'        covariances for the focal group under the partial invariance
-#'        condition; if no input, set equal to `Theta_r`.
+#'        covariances for the focal group; if no input, set equal to `Theta_r`.
 #' @param pmix_ref Proportion of the reference group; default to 0.5 (i.e., two 
 #'        populations have equal size)
 #' @param plot_contour Logical; whether the contour of the two populations 
 #'        should be plotted; default to `TRUE`.
+#' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
+#'        for both the input parameters and the implied parameters based on a
+#'        strict invariance model, with common parameter values as weighted
+#'        averages of the input values using `pmix_ref`.
 #' @param n_dim Number of dimensions, 1 by default. If the user does not supply 
 #'        a different value, proceeds with the assumption that the scale is 
 #'        unidimensional.
@@ -54,6 +55,9 @@
 #'        \code{return_detailed == FALSE}, returns a list of length 2 with the 
 #'        elements: `h_aggregate_cai.par` (a data frame) and`delta_h` (a list). 
 #'        If set to `TRUE`, returns `h` and `raw` as an additional elements.
+#' @param delete_one_cutoff (optional) New cutoff to use in delete-one scenarios. 
+#'        `NULL` by default; if `NULL`, proportions selected under SFI and PFI 
+#'        when the full item set is used is passed onto calls to PartInv.
 #' @return A list with 3 elements if \code{return_detailed == FALSE}, 4 elements
 #'         if \code{return_detailed == TRUE}.
 #'        \item{h_aggregate_cai.par}{A (3 x number of items) data frame that 
@@ -147,33 +151,28 @@ item_deletion_h <- function(propsel,
                             n_dim = 1,
                             n_i_per_dim = NULL, 
                             return_detailed = FALSE,
-                            biased_items_only = TRUE,
                             user_specified_items = NULL,
+                            delete_one_cutoff = NULL,
                             ...) {
   N <- length(weights_item)
   
   # Determine which set of items will be returned
   return_items <- c()
-  if(is.null(user_specified_items)) {
-    if(biased_items_only == FALSE){ 
-      return_items <- seq_len(N)
-    } else { # default is to return only the biased items.
+  if(is.null(user_specified_items)) { # default: return only the biased items.
       return_items <- determine_biased_items(lambda_r = lambda_r,
                                              lambda_f = lambda_f, 
                                              nu_r = nu_r, nu_f = nu_f, 
                                              Theta_r = Theta_r,
-                                             Theta_f = Theta_f)}
+                                             Theta_f = Theta_f, weights_item)
   } else {
     if (!all(user_specified_items == floor(user_specified_items))) { 
       stop("'user_specified_items' should only contain integers corresponding 
              to item indices.")}
-    if (!all(user_specified_items < N)) { 
+    if (!all(user_specified_items < N + 1)) { 
       stop("'user_specified_items' cannot take integers larger than the scale
              length.")}
     return_items <- user_specified_items
   }
-  # print(return_items)
-  
   # Start with pre-allocating space:
   store_str <- store_par <- str_par_ref_list <- str_par_foc_list <- 
     vector(mode = "list", N + 1)
@@ -207,7 +206,7 @@ item_deletion_h <- function(propsel,
                             pmix_ref = pmix_ref, 
                             plot_contour = plot_contour, 
                             labels = c("Reference", "Focal"),
-                            show_mi_result=show_mi_result)
+                            show_mi_result = show_mi_result)
   
   class(store_str[[1]]) <- "PartInv"
   
@@ -234,7 +233,7 @@ item_deletion_h <- function(propsel,
   
   partial <- store_par[[1]]$summary
   strict  <- store_str[[1]]$summary
-  
+ 
   # Compare accuracy indices for reference and focal groups under strict vs. 
   # partial invariance conditions and compute h for full item set
   acc <- acc_indices_h(store_str[[1]], store_par[[1]])
@@ -249,18 +248,26 @@ item_deletion_h <- function(propsel,
   
   # Re-weight SE, SR, SP by focal and group proportions to compute 
   # aggregate indices under partial invariance for the full item set
-  aggregate_par[1] <- get_composite_CAI(pmix_ref, partial) 
+  aggregate_par[1] <- get_aggregate_CAI(pmix_ref, partial) 
   # Repeat for strict invariance
-  aggregate_str[1] <-  get_composite_CAI(pmix_ref, strict)
+  aggregate_str[1] <-  get_aggregate_CAI(pmix_ref, strict)
   
   # Compute h for the difference between strict and partial invariance for 
   # aggregate SE, SR, SP
   h_aggregate_str_par[1] <- cohens_h(aggregate_str[1], aggregate_par[1])
   AI_ratios[,1] <- c(store_str[[1]]$ai_ratio, store_par[[1]]$ai_ratio) 
-  # (Re)set the proportion selected based on the PartInv output when all
-  # items are included in the strict invariance condition
-  propsel <- store_str[[1]]$propsel
-  cut_z <- NULL
+  
+  # If the user supplied a new cutoff, set cut_z to that and set propsels to NULL.
+  # If no cutoff was inputted, set propsel based on PartInv output with all items
+  if(is.null(delete_one_cutoff)) {
+    propsel_p <- store_par[[1]]$propsel
+    propsel_s <- store_str[[1]]$propsel
+    cut_z <- NULL
+  } else {
+    cut_z <- delete_one_cutoff
+    propsel_p <- NULL
+    propsel_s <- NULL
+  }
   
   # Item deletion scenarios
   for (i in seq_len(length(weights_item) + 1)[-1]) {
@@ -270,9 +277,8 @@ item_deletion_h <- function(propsel,
     take_one_out <- redistribute_weights(weights_item, n_dim = n_dim,
                                          n_i_per_dim = n_i_per_dim, 
                                          del_i = i - 1)
-    
     # Call PartInv with the new weights under strict invariance
-    store_str[[i]] <- PartInv(propsel, 
+    store_str[[i]] <- PartInv(propsel_s, 
                               cut_z = cut_z,
                               take_one_out, 
                               weights_latent,
@@ -292,7 +298,7 @@ item_deletion_h <- function(propsel,
                               show_mi_result = show_mi_result)
     class(store_str[[i]]) <- "PartInv"
     # Call PartInv with the new weights under partial invariance
-    store_par[[i]] <- PartInv(propsel, 
+    store_par[[i]] <- PartInv(propsel_p, 
                               cut_z = cut_z,
                               take_one_out, 
                               weights_latent,
@@ -344,9 +350,9 @@ item_deletion_h <- function(propsel,
     # Compute aggregate SR, SE, SP indices under partial invariance by weighting 
     # accuracy indices for the reference and focal groups by their group
     # proportions
-    aggregate_par[i] <- get_composite_CAI(pmix_ref, partial)
+    aggregate_par[i] <- get_aggregate_CAI(pmix_ref, partial)
     # Repeat for strict invariance
-    aggregate_str[i] <- get_composite_CAI(pmix_ref, strict)
+    aggregate_str[i] <- get_aggregate_CAI(pmix_ref, strict)
     # Compute Cohen's h for the difference between aggregate SE, SR, SP under 
     # strict vs. partial invariance
     h_aggregate_str_par[i] <- cohens_h(aggregate_str[i], aggregate_par[i])
@@ -466,9 +472,6 @@ item_deletion_h <- function(propsel,
     "detail" = return_detailed,
     "return_items" = return_items)
   class(returned) <- "itemdeletion"
-  
-  # NOTE TO SELF: make return_items a part of the class definition, final change 
-  # should be made there
   
   return(returned)
 }

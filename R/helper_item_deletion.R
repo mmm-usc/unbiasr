@@ -51,47 +51,51 @@ get_aggregate_CAI <- function(pmixr, store_summary) {
 #'        the subscales have an equal number of items. 
 #' @param del_i Index of the item to be deleted.
 #' 
-#' @return `take_one_out` Weights vector with redistributed weights.
+#' @return `new_w` Weights vector with redistributed weights.
 #' @examples
-#' one_dim_weights <- c(1:7)
-#' redistribute_weights(one_dim_weights, del_i = 2)
-#' one_dim_weights2 <- c(1:7)
-#' redistribute_weights(one_dim_weights2, n_dim = 1, n_i_per_dim = 7, del_i = 2)
-#' multi_equal_len_weights <- c(1:9)
-#' redistribute_weights(multi_equal_len_weights, n_dim = 3, del_i = 2)
-#' multi_equal_len_weights2 <- c(1:9)
-#' redistribute_weights(multi_equal_len_weights2, n_dim = 3, 
-#'                    n_i_per_dim = c(3, 3, 3), del_i = 2)
-#' multi_unequal_len_weights <- c(1:12)
-#' redistribute_weights(multi_unequal_len_weights, n_dim = 3, 
-#'                    n_i_per_dim = c(3, 6, 3), del_i = 2)
+#' one_dim_w <- c(1:7)
+#' redistribute_weights(one_dim_w, del_i = 2)
+#' redistribute_weights(one_dim_w, n_dim = 1, n_i_per_dim = 7, del_i = 2)
+#' sum(one_dim_w)==sum(redistribute_weights(one_dim_w, del_i = 2))
+#' 
+#' multi_eq_w <- c(1:9)
+#' redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2)
+#' redistribute_weights(multi_eq_w, n_dim = 3, n_i_per_dim = c(3, 3, 3), del_i = 2)
+#' sum(multi_eq_w)==sum(redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2))
+#' 
+#' multi_uneq_w <- c(1:12)
+#' redistribute_weights(multi_uneq_w, n_dim = 3, n_i_per_dim = c(3, 6, 3), del_i=2)
+#' sum(multi_uneq_w)==sum(redistribute_weights(multi_uneq_w, n_dim = 3, 
+#'                                             n_i_per_dim = c(3, 6, 3), del_i=2))
 #' error_ex <- c(1:12)
-#' redistribute_weights(error_ex, n_dim = -3, 
-#'                    n_i_per_dim = c(3, 6, 3), del_i = 2)
+#' redistribute_weights(error_ex, n_dim = -3, n_i_per_dim = c(3, 6, 3), del_i = 2)
+#' redistribute_weights(error_ex, n_dim = 5, del_i = 2)
 
 redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
                                del_i){
   n_items <- length(weights_item)
-  take_one_out <- weights_item; take_one_out[del_i] <- 0
-  
+  new_w <- weights_item; new_w[del_i] <- 0
+  del_weight <- weights_item[del_i] #the weight to be redistributed
+   
   # Unidimensional
   if ((n_dim == 1) & (is.null(n_i_per_dim) | length(n_i_per_dim) == 1)) {
-    take_one_out <- take_one_out / (n_items - 1) * n_items
-    
+    new_w[new_w != 0] <- new_w[new_w != 0] + del_weight/length(new_w[new_w != 0])
     # Multidimensional, equal n  
+  } else if ((n_dim > 1) & is.null(n_i_per_dim) & n_items %% n_dim != 0){
+    stop('Please pass a vector of subscale lengths to n_i_per_dim.')
   } else if ((n_dim > 1) & is.null(n_i_per_dim)) { 
     subscale_len <- n_items / n_dim # subscale length
     # Split indices into dimensions
-    i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), n_dim, 
-                                     labels = FALSE))
+    i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), n_dim, labels = FALSE))
     for(k in 1:n_dim) {
       if(del_i %in% i_by_dim[[k]]) { # If del_i is in dimension k
         # Create temporary vector to store the remaining indices in dimension k
         temp_i <- i_by_dim[[k]][i_by_dim[[k]] != del_i] 
+        non0 <- length(temp_i)
         for(j in temp_i) { # Re-weight the remaining indices in the subscale
-          take_one_out[j] <- take_one_out[j] / (subscale_len - 1) * subscale_len
+          new_w[j][new_w[j] != 0] <- new_w[j][new_w[j] != 0] + del_weight/non0
         }
-      }
+      } 
     }
     # Multidimensional, unequal n
   } else if ((n_dim > 1) & !is.null(n_i_per_dim)) { 
@@ -101,18 +105,19 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
                                      labels = FALSE))
     for(k in 1:n_dim) {
       if(del_i %in% i_by_dim[[k]]){ # If del_i is in dimension k
-        subscale_len <- n_i_per_dim[k]
+        # Determine number of nonzero item weights in dimension k
+        non0 <- length(new_w[i_by_dim[[k]]][new_w[i_by_dim[[k]]] != 0])
         # Create temporary vector to store the remaining indices in dimension k
         temp_i <- i_by_dim[[k]][i_by_dim[[k]] != del_i] 
         for(j in temp_i) { # Re-weight the remaining indices in the subscale
-          take_one_out[j] <- take_one_out[j] / (subscale_len - 1) * subscale_len
+          new_w[j][new_w[j] != 0] <- new_w[j][new_w[j] != 0] + del_weight/non0
         }
       }
     }
   } else {
     stop('Check n_dim and n_i_per_dim')
   }
-  return(take_one_out)
+  return(new_w)
 }
 
 
@@ -222,11 +227,14 @@ acc_indices_h <- function(strict_output, partial_output) {
 #' @param nu_f Measurement intercepts for the focal group.
 #' @param Theta_r Uniqueness for the reference group.
 #' @param Theta_f Uniqueness for the focal group.
+#' @param weights Vector of item weights. If an item weight is assigned to be 0, 
+#' it won't be returned as a biased item.
+#' 
 #' 
 #' @return A vector containing the indices of the biased items.
        
 determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f, 
-                                   Theta_r, Theta_f) {
+                                   Theta_r, Theta_f, weights) {
   biased_lambda <- biased_theta <- biased_nu <- c()
   
   # Compare factor loadings 
@@ -254,8 +262,8 @@ determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f,
     } else {
       biased_nu <- c(biased_nu, as.vector(which(nu_r != nu_f)))
     }
-  biased <- unique(c(biased_lambda, biased_theta, biased_nu))
-  
+  biased <- unique(c(biased_lambda, biased_theta, biased_nu)) 
+  biased <- setdiff(biased, which(weights==0))
   if(length(biased) == 0) { print("Strict invariance holds for all items.") }
   return(sort(biased))
 }
