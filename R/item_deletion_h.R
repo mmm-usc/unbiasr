@@ -5,13 +5,13 @@
 #' item_deletion_h
 #' 
 #' @description
-#' \code{item_deletion_h} computes Cohen's h effect size for the impact of
-#' deleting an item on selection accuracy indices (TP, FP, TN, FN, PS, SR, SE, 
-#' SP) under a number of combinations of conditions such as partial vs. strict 
-#' invariance, for the reference group vs. the focal group if it followed the 
-#' same distribution as the reference group under partial invariance, and for 
-#' the weighted average of reference and focal groups under partial invariance.
-#' 
+#' \code{item_deletion_h} computes effect size indices that quantify the impact 
+#'  of (and changes in the impact of) measurement bias on classification accuracy 
+#'  indices (CAI) such as TP and SE if an item is dropped vs. included in analyses. 
+#'  Comparisons are made between CAI computed for the reference group and 
+#'  expected CAI computed for the focal group; between CAI computed under strict 
+#'  factorial invariance (SFI) vs. CAI computed under partial factorial 
+#'  invariance (PFI); and between aggregate CAI computed for item subsets.
 #' @param propsel Proportion of selection. If missing, computed using `cut_z`.
 #' @param cut_z Pre-specified cutoff score on the observed composite. This 
 #'        argument is ignored when `propsel` has input.
@@ -50,54 +50,65 @@
 #'        dimension; `NULL` by default. If the user provides a value for `n_dim` 
 #'        that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that 
 #'        the subscales have an equal number of items. 
-#' @param return_detailed Logical; whether additional data frames should be r
-#'        returned object; default to `FALSE`. If 
-#'        \code{return_detailed == FALSE}, returns a list of length 2 with the 
-#'        elements: `h_aggregate_cai.par` (a data frame) and`delta_h` (a list). 
-#'        If set to `TRUE`, returns `h` and `raw` as an additional elements.
+#' @param user_specified_items A vector; default to `NULL`. If the user does not
+#'        input a vector of items, only the items determined to contain bias will
+#'        be considered for deletion.
+#' @param print_detailed Logical; default to `FALSE`. If 
+#'        \code{print_detailed == FALSE}, prints four summary tables for
+#'        biased items: `ACAI` (ACAI under PFI for the full item set as well as 
+#'        after the deletion of any biased items or user specified items), 
+#'        `h ACAI (deletion)` (Cohen's h computed for the impact of deleting 
+#'        each item considered in the `ACAI` table), `AI Ratio` (Adverse Impact 
+#'        Ratio for item subsets by invariance condition), `h CAI Ref-EF` 
+#'        (Cohen's h values quantifying the discrepancy between CAI computed 
+#'        for the reference group and the expected CAI computed for the focal 
+#'        group if it matched the distribution of the reference group (Efocal),
+#'        under PFI for subsets of items), and `delta h CAI Ref-EF (deletion)` 
+#'        (delta h values quantifying the impact of deleting an item on the 
+#'        discrepancy between CAI of reference vs. Efocal groups under PFI).
 #' @param delete_one_cutoff (optional) New cutoff to use in delete-one scenarios. 
 #'        `NULL` by default; if `NULL`, proportions selected under SFI and PFI 
 #'        when the full item set is used is passed onto calls to PartInv.
-#' @return A list with 3 elements if \code{return_detailed == FALSE}, 4 elements
-#'         if \code{return_detailed == TRUE}.
-#'        \item{h_aggregate_cai.par}{A (3 x number of items) data frame that 
-#'          stores Cohen's h values for the comparison between aggregate SR, SE, 
-#'          SP under partial invariance for the full item set vs. aggregate SR, 
-#'          SE, SP under partial invariance when item i is deleted. 'Overall'
-#'          refers to the weighting of the accuracy indices for focal and 
-#'          reference group proportions.}
-#'        \item{delta_h}{A list of length 2 with elements `h_R_vs_Ef.par` and 
-#'        `h_str_vs_par`, which stores `ref` and `foc`. }
-#'        \item{delta_h$h_R_vs_Ef.par}{A (8 x number of items) data frame that 
-#'          stores the Cohen's h effect size for the change in `h$R_vs_Ef_par` 
-#'          when the full item set is included vs. `h$R_vs_Ef_par` when item i 
-#'          is deleted.} 
-#'        \item{delta_h$h_str_vs_par$ref}{A (8 x number of items) data frame that 
-#'          stores the Cohen's h effect size for the change in `h$str_vs_par$ref`
-#'          when the full item set is included vs. `h$str_vs_par$ref` when item i 
-#'          is deleted, i.e., the impact of deleting an item on the h values 
-#'          comparing performance under strict invariance vs. under partial
-#'          invariance, for the reference group.}
-#'        \item{delta_h$h_str_vs_par$foc}{A (8 x number of items) data frame that 
-#'          stores the Cohen's h effect size for the change in `h$str_vs_par$foc`
-#'          when the full item set is included vs. `raw$h_str_vs_par_list$foc` 
-#'          when item i is deleted.}
-#'        \item{h}{A list of length 2 storing `R_vs_ef.par` and `str_vs_par`, 
-#'          which stores `ref` and `foc`.}
-#'        \item{h$R_vs_Ef.par}{A (8 x (number of items + 1)) data frame that 
-#'          stores Cohen's h values for the comparison between accuracy indices 
-#'          for the reference group vs. the expected accuracy indices for the 
-#'          focal group if it followed the same distribution as the reference 
-#'          group, under partial invariance, for a given set of items.}
-#'        \item{h$str_vs_par$ref}{A (8 x (number of items + 1)) data frame that 
-#'          stores Cohen's h values for the comparison between accuracy indices 
-#'          for the reference group under strict vs. partial invariance, for a
-#'          given set of items.}
-#'        \item{h$str_vs_par$foc}{A (8 x (number of items + 1)) data frame that 
-#'          stores Cohen's h values for the comparison between accuracy indices 
-#'          for the focal group under strict vs. partial invariance, for a
-#'          given set of items.}
-#'         
+#' @return An object of class `itemdeletion` containing 13 elements. 
+#'        \item{ACAI}{A matrix that stores aggregate PS, SR, SE, SP computed for
+#'        the full set of items and item subsets excluding biased/user specified
+#'        items under PFI.}
+#'        \item{h ACAI (deletion)}{A matrix that stores Cohen's h computed for 
+#'        the impact of deleting each item considered in the `ACAI` table.}
+#'        \item{h ACAI SFI-PFI}{A matrix that stores Cohen's h values 
+#'        quantifying the discrepancy between ACAI under SFI vs. ACAI under PFI.}
+#'        \item{delta h ACAI SFI-PFI (deletion)}{A matrix that stores delta h 
+#'        values quantifying the impact of deleting an item on the discrepancy 
+#'        between ACAI under SFI vs. ACAI under PFI for subsets of items.}
+#'        \item{AI Ratio}{A matrix storing Adverse Impact Ratio values computed
+#'        for item subsets by invariance condition.}
+#'        \item{h CAI Ref-EF}{A matrix that stores Cohen's h values quantifying
+#'        the discrepancy between CAI computed for the reference group and the 
+#'        expected CAI computed for the focal group if it matched the 
+#'        distribution of the reference group (Efocal), under PFI for subsets of
+#'        items.}
+#'        \item{delta h CAI Ref-EF (deletion)}{A matrix that stores delta h 
+#'        values quantifying the impact of deleting an item on the discrepancy 
+#'        between CAI of reference vs. Efocal groups under PFI.}
+#'        \item{h CAI SFI-PFI}{A list containing two items, `ref` and `foc` 
+#'        which are matrices storing Cohen's h values quantifying the 
+#'        discrepancy between CAI under SFI vs. PFI for the reference group and
+#'        the focal group respectively, for subsets of items.}
+#'        \item{delta h SFI-PFI (deletion)}{A list containing two items, 
+#'        `ref` and `foc` which are matrices storing delta h values quantifying 
+#'        the impact of deleting an item on the discrepancy between CAI under
+#'        SFI vs. PFI for the reference group and the focal group respectively,
+#'        for subsets of items.}
+#'        \item{PartInv by groups}{Two lists (`reference` and `focal`), each 
+#'        containing restructured tables of PartInv outputs by invariance
+#'        condition, and corresponding Cohen's h values for each item deletion
+#'        scenario.}
+#'        \item{PartInv}{Two lists (`strict` and `partial`), each containing 
+#'        PartInv() outputs.}
+#'        \item{detail}{Logical, whether detailed or simplified output should 
+#'        be printed.}
+#'        \item{return_items}{A vector containing the items that will be considered
+#'        for deletion.}
 #' @examples
 #' # Multidimensional example 
 #' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
@@ -115,7 +126,7 @@
 #'                              Theta_r = diag(1, 5),
 #'                              Theta_f = c(1, .95, .80, .75, 1),
 #'                              plot_contour = TRUE,
-#'                              return_detailed = TRUE)
+#'                              print_detailed = TRUE)
 #' # Single dimension example
 #' single_dim <- item_deletion_h(propsel = .10,
 #'                                weights_item = c(1, 0.9, 0.8, 1),
@@ -128,7 +139,7 @@
 #'                                nu_f = c(.225, -.05, .240, -.025),
 #'                                Theta_r = diag(.96, 4),
 #'                                n_dim = 1, plot_contour = TRUE,
-#'                                return_detailed = TRUE)
+#'                                print_detailed = TRUE)
 #' @export
 item_deletion_h <- function(propsel, 
                             cut_z = NULL, 
@@ -150,7 +161,7 @@ item_deletion_h <- function(propsel,
                             labels = c("Reference", "Focal"),
                             n_dim = 1,
                             n_i_per_dim = NULL, 
-                            return_detailed = FALSE,
+                            print_detailed = FALSE,
                             user_specified_items = NULL,
                             delete_one_cutoff = NULL,
                             ...) {
@@ -429,8 +440,8 @@ item_deletion_h <- function(propsel,
                                 itemset = return_items)
   h_str_vs_par_list_foc <- list(outputlist = str_par_foc_list, condition="foc",
                                 itemset = return_items)
-  class(h_str_vs_par_list_ref) <- "PartInvList"
-  class(h_str_vs_par_list_foc) <- "PartInvList"
+  class(h_str_vs_par_list_ref) <-  c("PartInvList", "PartInv", "PartInv_groups" )
+  class(h_str_vs_par_list_foc) <-  c("PartInvList", "PartInv", "PartInv_groups")
   
   
   # names(h_str_vs_par_ref) <- names(h_str_vs_par_foc) <- c("h(SFI, PFI)", 
@@ -455,21 +466,21 @@ item_deletion_h <- function(propsel,
   h_aggregate_str_par <- h_aggregate_str_par
   
   returned <- list(
-    "h_aggregate_par" = t(h_aggregate_par),
-    "delta_h_str_par_aggregate" = t(delta_h_str_par_aggregate),
+    "ACAI" = t(aggregate_par),
+    "h ACAI (deletion)" = t(h_aggregate_par),
+    "h ACAI SFI-PFI" = t(h_aggregate_str_par),
+    "delta h ACAI SFI-PFI (deletion)" = t(delta_h_str_par_aggregate),
     "AI Ratio" = t(AI_ratios),
-    "h_R_Ef" = t(h_R_Ef),
-    "h_R_vs_Ef.par" = t(delta_h_R_vs_Ef),
-    "delta_h_str_vs_par" = list("ref" = t(delta_h_str_vs_par_ref), 
+    "h CAI Ref-EF" = t(h_R_Ef),
+    "delta h CAI Ref-EF (deletion)" = t(delta_h_R_vs_Ef),
+    "h CAI SFI-PFI" = h_str_vs_par,
+    "delta h SFI-PFI (deletion)" = list("ref" = t(delta_h_str_vs_par_ref), 
                                 "foc" = t(delta_h_str_vs_par_foc)), 
-    "str_vs_par" = h_str_vs_par,
-    "aggregate_par" = t(aggregate_par),
-    "h_aggregate_str_par" = t(h_aggregate_str_par),
-    "Ref_foc" = list("reference" = h_str_vs_par_list_ref, 
+    "PartInv by groups" = list("reference" = h_str_vs_par_list_ref, 
                      "focal" = h_str_vs_par_list_foc),
     "PartInv" = list("strict" = store_str,
                      "partial" = store_par),
-    "detail" = return_detailed,
+    "detail" = print_detailed,
     "return_items" = return_items)
   class(returned) <- "itemdeletion"
   

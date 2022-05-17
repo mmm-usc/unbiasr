@@ -190,7 +190,6 @@ delta_h <- function(h_R, h_i_del) {
 #'        invariance.
 #' @return A 8 x 3 dataframe with columns `strict invariance`, 
 #'        `partial invariance`, and `h`.
-
 acc_indices_h <- function(strict_output, partial_output) {
   r_names <- c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
   

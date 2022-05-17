@@ -201,7 +201,7 @@ psi_INT_f <- 0.184^2
  
 ### CES-D Positive Affect Factor
 
-```{r fig.show='hold'}
+```{r}
 #Positive Affect Factor
 #Items: good (biased), hopeful, happy, enjoyed
 CESD_pos <- item_deletion_h(weights_item = c(rep(1,4)), 
@@ -218,9 +218,9 @@ CESD_pos <- item_deletion_h(weights_item = c(rep(1,4)),
                               nu_f = nu_POS_f,
                               Theta_r = Theta_POS_r, 
                               Theta_f = Theta_POS_f,
-                              plot_contour = TRUE,
+                              plot_contour = FALSE,
                               pmix_ref = pmix_CESD_r, 
-                              return_detailed = TRUE)
+                              print_detailed = FALSE)
 CESD_pos
 ```
 
@@ -248,8 +248,8 @@ Taken together, these improvements and the lack of any decreases in CAI suggests
 # Items: blues, depressed, lonely, crying, sad, failure, fearful
 CESD_dep <- item_deletion_h(weights_item = c(rep(1,7)), 
                              # propsel = 0.14, 
-                            cut_z = 16/60*7*3,
-                            n_dim = 1,  
+                              cut_z = 16/60*7*3,
+                              n_dim = 1,  
                               alpha_r = alpha_DEP_r,
                               alpha_f = alpha_DEP_f,
                               psi_r = psi_DEP_r,
@@ -262,7 +262,7 @@ CESD_dep <- item_deletion_h(weights_item = c(rep(1,7)),
                               Theta_f = Theta_DEP_f,
                               weights_latent = 1,
                               plot_contour = FALSE,
-                              return_detailed = TRUE,
+                              print_detailed = FALSE,
                               pmix_ref = pmix_CESD_r)
 CESD_dep # items 2, 3, 4 are biased
 ```
@@ -282,8 +282,8 @@ In light of the conflicting findings and the small effect size of the potential 
 # Items: bothered, appetite, mind, effort, sleep, talk, get going
 CESD_som <- item_deletion_h(weights_item = c(rep(1,7)), 
                               #propsel = .14,
-                            cut_z = 16/60*7*3,
-                            n_dim = 1,  
+                              cut_z = 16/60*7*3,
+                              n_dim = 1,  
                               alpha_r = alpha_SOM_r,
                               alpha_f = alpha_SOM_f,
                               psi_r = psi_SOM_r,
@@ -296,7 +296,7 @@ CESD_som <- item_deletion_h(weights_item = c(rep(1,7)),
                               Theta_f = Theta_SOM_f,
                               weights_latent = 1,
                               plot_contour = FALSE,
-                              return_detailed = FALSE,
+                              print_detailed = FALSE,
                               pmix_ref = pmix_CESD_r)
 CESD_som #  item 4 is biased
 ```
@@ -311,8 +311,8 @@ The AI ratio for the full item set is already quite high at 0.997, and increases
 # Items: unfriendly, dislike
 CESD_int <- item_deletion_h(weights_item = c(rep(1,2)), 
                              # propsel = .14, 
-                            cut_z = 16/60*2*3,
-                            n_dim = 1,  
+                              cut_z = 16/60*2*3,
+                              n_dim = 1,  
                               alpha_r = alpha_INT_r,
                               alpha_f = alpha_INT_f,
                               psi_r = psi_INT_r,
@@ -325,7 +325,7 @@ CESD_int <- item_deletion_h(weights_item = c(rep(1,2)),
                               Theta_f = Theta_INT_f,
                               weights_latent = 1,
                               plot_contour = TRUE,
-                              return_detailed = FALSE,
+                              print_detailed = FALSE,
                               pmix_ref = pmix_CESD_r)
 CESD_int #item 2 is biased
 ```
@@ -390,7 +390,7 @@ CESD_full <- item_deletion_h(weights_item = c(rep(1, 20)),
                             Theta_f = Theta_CESD_f,
                             weights_latent = c(rep(1,4)),
                             plot_contour = FALSE,
-                            return_detailed = TRUE,
+                            print_detailed = FALSE,
                             pmix_ref = pmix_CESD_r)
 CESD_full
 ```
@@ -452,8 +452,7 @@ AA <- PartInv(weights_item = c(rep(1,7)),
                               Theta_f = Theta_DEP_f,
                               weights_latent = 1,
                               plot_contour = TRUE,
-                              pmix_ref = pmix_CESD_r, labels=c("Chinese", "Dutch"),
-        show_mi_result=TRUE)
+                              pmix_ref = pmix_CESD_r, labels=c("Chinese", "Dutch"))
 AA
 a<- item_deletion_h(weights_item = c(rep(1,7)), 
                               propsel = .14, 
@@ -471,8 +470,7 @@ a<- item_deletion_h(weights_item = c(rep(1,7)),
                               plot_contour = FALSE,
                               pmix_ref = pmix_CESD_r, 
                               labels=c("Chinese", "Dutch"),
-                              n_dim = 1, return_detailed=FALSE,
-                              show_mi_result=TRUE)
+                              n_dim = 1, print_detailed=FALSE)
 a
 ```
 
@@ -494,7 +492,7 @@ CESD_full_drop15 <- item_deletion_h(weights_item = c(rep(1,14), 0,
                             Theta_f = Theta_CESD_f,
                             weights_latent = c(rep(1,4)),
                             plot_contour = FALSE,
-                            return_detailed = FALSE,
+                            print_detailed = FALSE,
                             pmix_ref = pmix_CESD_r)
 CESD_full_drop15
 ```
@@ -509,4 +507,54 @@ Subset excluding item 10:
 
 ```{r}
 CESD_full_drop15$PartInv$partial$outputlist$`|10`
+```
+
+
+
+Now to illustrate `print_detailed=TRUE`:
+
+```{r}
+CESD_pos <- item_deletion_h(weights_item = c(rep(1,4)), 
+                              weights_latent = 1,
+                              cut_z = 16/60*12,
+                              #propsel = .14,  
+                              alpha_r = alpha_POS_r,
+                              alpha_f = alpha_POS_f,
+                              psi_r = psi_POS_r,
+                              psi_f = psi_POS_f,
+                              lambda_r = lambda_POS_r,
+                              lambda_f = lambda_POS_f,
+                              nu_r = nu_POS_r,
+                              nu_f = nu_POS_f,
+                              Theta_r = Theta_POS_r, 
+                              Theta_f = Theta_POS_f,
+                              plot_contour = FALSE,
+                              pmix_ref = pmix_CESD_r, 
+                              print_detailed = TRUE)
+CESD_pos
+```
+
+Now to illustrate the use of `user_specified_items`:
+
+```{r }
+CESD_pos <- item_deletion_h(weights_item = c(rep(1,4)), 
+                              weights_latent = 1,
+                              cut_z = 16/60*12,
+                              #propsel = .14,  
+                              alpha_r = alpha_POS_r,
+                              alpha_f = alpha_POS_f,
+                              psi_r = psi_POS_r,
+                              psi_f = psi_POS_f,
+                              lambda_r = lambda_POS_r,
+                              lambda_f = lambda_POS_f,
+                              nu_r = nu_POS_r,
+                              nu_f = nu_POS_f,
+                              Theta_r = Theta_POS_r, 
+                              Theta_f = Theta_POS_f,
+                              plot_contour = FALSE,
+                              pmix_ref = pmix_CESD_r, 
+                              print_detailed = TRUE,
+                              user_specified_items = c(1:3)
+                            )
+CESD_pos
 ```

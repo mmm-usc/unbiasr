@@ -39,7 +39,7 @@ ex2 <- item_deletion_h(weights_item = c(1, 1, 1, 1, 1, 1, 1, 1),
                                                 .335,.454,.457)),
                              weights_latent = 1,
                              plot_contour = FALSE,
-                             return_detailed = FALSE, pmix_ref = 0.5)
+                             print_detailed = FALSE, pmix_ref = 0.5)
 ```
 
 
@@ -121,7 +121,7 @@ ex3 <- item_deletion_h(propsel=0.25,
               weights_latent = c(0.12553907, 0.33281060, 0.20634298, 
                                  -0.26347936, 0.07182799),
               plot_contour = FALSE, 
-              return_detailed = FALSE)
+              print_detailed = FALSE)
               #user_specified_items = c(1,7,11,13,14))
 ```
 
