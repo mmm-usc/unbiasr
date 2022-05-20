@@ -192,6 +192,18 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                                zeta_r, sd_xir, mean_zref,
                                sd_zref,
                                cov12 = cov_z_xiref)
+  zf_par <- list(
+    zeta_r = zeta_r,
+    zeta_f = zeta_f,
+    sd_xir = sd_xir,
+    sd_xif = sd_xif,
+    mean_zr = mean_zr,
+    mean_zf = mean_zf,
+    sd_zr = sd_zr,
+    sd_zf = sd_zf,
+    cov_z_xir = cov_z_xir,
+    cov_z_xif = cov_z_xif
+  )
   # result table
   dat <- data.frame("Reference" = partit_1, "Focal" = partit_2,
                     "E_R(Focal)" = partit_1e2,
@@ -227,6 +239,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
   }
   out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
               summary = dat,
+              bivar_data = zf_par,
               ai_ratio = dat["Proportion selected", 3] /
                 dat["Proportion selected", 1], plot = p)
 
