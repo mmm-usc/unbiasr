@@ -1069,23 +1069,24 @@ myApp <- function(...) {
       if (input$usepropsel == FALSE & input$tab_strict == FALSE) {
         #plug everything into PartInv function
         #calls to reactive functions have () brackets
-        print(paste0("cut_z = ",input$cut_z, ", propsel = ",input$prop))
-        print(PartInv(
-          plot_contour = TRUE,
-          cut_z = input$cut_z,
-          pmix_ref = input$pmix,
-          kappa_r = input$kappa_r,
-          kappa_f = kappa_f(),
-          phi_r = input$phi_r,
-          phi_f = phi_f(),
-          lambda_r = lambda_rNumeric(),
-          lambda_f = lambda_f(),
-          tau_f = tau_f(),
-          Theta_f = theta_f(),
-          tau_r = tau_rNumeric(),
-          Theta_r = theta_r(),
-          labels = c(input$legend_r, input$legend_f)
-        )[[4]])
+        # print(paste0("cut_z = ",input$cut_z, ", propsel = ",input$prop))
+        # print(PartInv(
+        #   plot_contour = TRUE,
+        #   cut_z = input$cut_z,
+        #   pmix_ref = input$pmix,
+        #   kappa_r = input$kappa_r,
+        #   kappa_f = kappa_f(),
+        #   phi_r = input$phi_r,
+        #   phi_f = phi_f(),
+        #   lambda_r = lambda_rNumeric(),
+        #   lambda_f = lambda_f(),
+        #   tau_f = tau_f(),
+        #   Theta_f = theta_f(),
+        #   tau_r = tau_rNumeric(),
+        #   Theta_r = theta_r(),
+        #   labels = c(input$legend_r, input$legend_f),
+        #   show_mi_result = TRUE
+        # )[[8]])
         PartInv(
           plot_contour = TRUE,
           cut_z = input$cut_z,
@@ -1102,7 +1103,7 @@ myApp <- function(...) {
           Theta_r = theta_r(),
           labels = c(input$legend_r, input$legend_f),
           show_mi_result = FALSE
-        )[[4]]
+        )[c(4,6)]
       }else if(input$usepropsel == TRUE & input$tab_strict == FALSE){
         PartInv(
           #propsel adds value as input if true
@@ -1122,7 +1123,7 @@ myApp <- function(...) {
           Theta_r = theta_r(),
           labels = c(input$legend_r, input$legend_f),
           show_mi_result = FALSE
-        )[[4]]
+        )[c(4,6)]
       } else if (input$usepropsel == FALSE & input$tab_strict == TRUE) {
         #plug everything into PartInv function
         #calls to reactive functions have () brackets
@@ -1142,7 +1143,7 @@ myApp <- function(...) {
           Theta_r = theta_r(),
           labels = c(input$legend_r, input$legend_f),
           show_mi_result = TRUE
-        )[c(4,7)]
+        )[c(4,6,7,8)]
       }else if(input$usepropsel == TRUE & input$tab_strict == TRUE){
         PartInv(
           #propsel adds value as input if true
@@ -1162,19 +1163,25 @@ myApp <- function(...) {
           Theta_r = theta_r(),
           labels = c(input$legend_r, input$legend_f),
           show_mi_result = TRUE
-        )[c(4,7)]
+        )[c(4,6,7,8)]
       }
     })
     
     output$distPlot <- renderPlot({
       validations()
       partInvOutput()
+      if(input$tab_strict == FALSE){
+        partInvOutput()[2]
+      }else{
+        partInvOutput()[4]
+      }
     })
+  
     
     output$table <- renderTable(rownames = TRUE, {
       validations()
       if(input$tab_strict == FALSE){
-        partInvOutput()
+        partInvOutput()[1]
       }else{
         partInvOutput()[1]
       }
@@ -1182,7 +1189,7 @@ myApp <- function(...) {
     
     output$tablestrict <- renderTable(rownames = TRUE, {
       validations()
-      partInvOutput()[2]
+      partInvOutput()[3]
     })
     
     output$distPlot_m <- renderTable(rownames = TRUE, {
