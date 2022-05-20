@@ -158,10 +158,12 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     }
     # compute the cut score using helper function qnormmix based on input selection
     # proportion
+    fixed_cut_z <- FALSE
     cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf, 
                       pmix_ref, lower.tail = FALSE)
   } else if (!is.null(cut_z) & missing(propsel)) {
     # if missing selection proportion but has a cut score
+    fixed_cut_z <- TRUE
     propsel <- pnormmix(cut_z, mean_zr, sd_zr, mean_zf, sd_zf, 
                         pmix_ref, lower.tail = FALSE)
   }
@@ -222,7 +224,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
      dev.off()
   }
   out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
-              summary = dat, # round(dat, 3), 
+              summary = dat, 
               ai_ratio = dat["Proportion selected", 3] / 
                 dat["Proportion selected", 1], plot = p)
 
@@ -252,8 +254,13 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     sd_xif <- c(sqrt(crossprod(weights_latent, psi_f) %*% weights_latent))
     zeta_r <- c(crossprod(weights_latent, alpha_r))
     zeta_f <- c(crossprod(weights_latent, alpha_f))
-    cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf, 
-                      pmix_ref, lower.tail = FALSE)
+    if (fixed_cut_z) {
+      propsel <- pnormmix(cut_z, mean_zr, sd_zr, mean_zf, sd_zf, 
+                          pmix_ref, lower.tail = FALSE)
+    } else {
+      cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf, 
+                        pmix_ref, lower.tail = FALSE)
+    }
     cut_xi <- qnormmix(propsel, zeta_r, sd_xir, zeta_f, sd_xif,
                        pmix_ref, lower.tail = FALSE)
     partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr, 
@@ -289,7 +296,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
       p <- recordPlot()
       dev.off()
     }
-    out$summary_mi <- dat #round(dat, 3)
+    out$summary_mi <- dat
     out$p_mi <- p
   }
   class(out) <- c('PartInv', 'PartInvSummary')
