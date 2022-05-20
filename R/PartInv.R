@@ -224,7 +224,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     # dev.off()
   }
   out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
-              summary = round(dat, 3), 
+              summary = dat, 
               ai_ratio = dat["Proportion selected", 3] / 
                 dat["Proportion selected", 1], plot = p)
   if (show_mi_result) {  # Need to be updated
@@ -289,7 +289,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
       text(x_cord, y_cord, c("A", "B", "D", "C"))
       p <- recordPlot()
     }
-    out$summary_mi <- round(dat, 3)
+    out$summary_mi <- dat
     out$p_mi <- p
   }
   out
