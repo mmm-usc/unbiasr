@@ -200,6 +200,7 @@ item_deletion_h <- function(propsel,
   h_aggregate_par <-  delta_h_str_par_aggregate <- 
     as.data.frame(matrix(nrow = 4, ncol = N)) 
   
+  
   AI_ratios <- as.data.frame(matrix(nrow = 2, ncol = N + 1))
   # Call PartInv with the full item set under strict invariance
   store_str[[1]] <- PartInv(propsel, 
@@ -330,6 +331,11 @@ item_deletion_h <- function(propsel,
     partial <- store_par[[i]]$summary
     strict <- store_str[[i]]$summary
     
+    # Check whether improvements in ACAI may be misleading due pmix_ref
+    err_improv_acai(i = i, store_summary_full = store_par[[1]]$summary,
+                    store_summary_del1 = store_par[[i]]$summary)
+    err_improv_acai(i = i, store_summary_full = store_str[[1]]$summary,
+                    store_summary_del1 = store_str[[i]]$summary)
     # Compute h for the difference in accuracy indices for reference and focal 
     # groups under strict vs. partial invariance conditions 
     acc_del_i <- acc_indices_h(store_str[[i]], store_par[[i]])
@@ -464,7 +470,7 @@ item_deletion_h <- function(propsel,
   h_str_vs_par <- list("ref"= t(h_str_vs_par_ref), "foc" = t(h_str_vs_par_foc))
   
   h_aggregate_str_par <- h_aggregate_str_par
-  
+
   returned <- list(
     "ACAI" = t(aggregate_par),
     "h ACAI (deletion)" = t(h_aggregate_par),

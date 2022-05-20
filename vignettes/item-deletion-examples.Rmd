@@ -326,7 +326,7 @@ CESD_int <- item_deletion_h(weights_item = c(rep(1,2)),
                               weights_latent = 1,
                               plot_contour = TRUE,
                               print_detailed = FALSE,
-                              pmix_ref = pmix_CESD_r)
+                              pmix_ref = pmix_CESD_r, show_mi_result = FALSE)
 CESD_int #item 2 is biased
 ```
  
@@ -391,7 +391,8 @@ CESD_full <- item_deletion_h(weights_item = c(rep(1, 20)),
                             weights_latent = c(rep(1,4)),
                             plot_contour = FALSE,
                             print_detailed = FALSE,
-                            pmix_ref = pmix_CESD_r)
+                            pmix_ref = pmix_CESD_r,
+                            show_mi_result = FALSE)
 CESD_full
 ```
  
@@ -491,9 +492,10 @@ CESD_full_drop15 <- item_deletion_h(weights_item = c(rep(1,14), 0,
                             Theta_r = Theta_CESD_r,
                             Theta_f = Theta_CESD_f,
                             weights_latent = c(rep(1,4)),
-                            plot_contour = FALSE,
+                            plot_contour = TRUE,
                             print_detailed = FALSE,
-                            pmix_ref = pmix_CESD_r)
+                            pmix_ref = pmix_CESD_r,
+                            show_mi_result = FALSE)
 CESD_full_drop15
 ```
 
@@ -508,8 +510,6 @@ Subset excluding item 10:
 ```{r}
 CESD_full_drop15$PartInv$partial$outputlist$`|10`
 ```
-
-
 
 Now to illustrate `print_detailed=TRUE`:
 
@@ -529,9 +529,11 @@ CESD_pos <- item_deletion_h(weights_item = c(rep(1,4)),
                               Theta_r = Theta_POS_r, 
                               Theta_f = Theta_POS_f,
                               plot_contour = FALSE,
+                            show_mi_result = FALSE,
                               pmix_ref = pmix_CESD_r, 
-                              print_detailed = TRUE)
+                              print_detailed = FALSE)
 CESD_pos
+CESD_pos$PartInv$partial$outputlist$`|1`$plot
 ```
 
 Now to illustrate the use of `user_specified_items`:
