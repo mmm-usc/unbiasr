@@ -1,7 +1,5 @@
 #' @importFrom stats qchisq pnorm qnorm nlminb
 #' @importFrom mnormt pmnorm
-#' @importFrom graphics legend abline text contour
-#' @importFrom grDevices recordPlot
 NULL
 
 #' Evaluating selection accuracy based on the MCAA Framework
@@ -109,7 +107,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                             tau_r = NULL, tau_f = tau_r,
                             nu_r, nu_f = nu_r,
                             Theta_r, Theta_f = Theta_r,
-                            pmix_ref = 0.5, plot_contour = TRUE,
+                            pmix_ref = 0.5, plot_contour = FALSE,
                             show_mi_result = FALSE,
                             labels = c("Reference", "Focal"), ...) {
   # For backward compatibility with different input names
@@ -173,8 +171,6 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
   # print warning message if propsel is too small
   if (propsel <= 0.01) {
     warning("Proportion selected is 1% or less.")
-   warning("Proportion selected is 1% or less.") 
-    warning("Proportion selected is 1% or less.")
   }
   # computing summary statistics using helper function .partit_bvnorm
   partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr,
@@ -213,35 +209,11 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                                   "Sensitivity", "Specificity"))
   colnames(dat) <- c(labels, paste0("E_R(", labels[2], ")"))
 
-  # result plot
-  p <- NULL
-  if (plot_contour) {
-    x_lim <- range(c(zeta_r + c(-3, 3) * sd_xir,
-                     zeta_f + c(-3, 3) * sd_xif))
-    y_lim <- range(c(mean_zr + c(-3, 3) * sd_zr,
-                     mean_zf + c(-3, 3) * sd_zf))
-    contour_bvnorm(zeta_r, sd_xir, mean_zr, sd_zr, cov12 = cov_z_xir,
-                   xlab = bquote("Latent Composite" ~ (zeta)),
-                   ylab = bquote("Observed Composite" ~ (italic(Z))),
-                   lwd = 2, col = "red", xlim = x_lim, ylim = y_lim,
-                   ...)
-    contour_bvnorm(zeta_f, sd_xif, mean_zf, sd_zf, cov12 = cov_z_xif,
-                   add = TRUE, lty = "dashed", lwd = 2, col = "blue",
-                   ...)
-    legend("topleft", labels,
-           lty = c("solid", "dashed"), col = c("red", "blue"))
-    abline(h = cut_z, v = cut_xi)
-    x_cord <- rep(cut_xi + c(.25, -.25) * sd_xir, 2)
-    y_cord <- rep(cut_z + c(.25, -.25) * sd_zr, each = 2)
-    text(x_cord, y_cord, c("A", "B", "D", "C"))
-    p <- recordPlot()
-    dev.off()
-  }
   out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
               summary = dat,
               bivar_data = zf_par,
               ai_ratio = dat["Proportion selected", 3] /
-                dat["Proportion selected", 1], plot = p)
+                dat["Proportion selected", 1])
 
   if (show_mi_result) {  # Need to be updated
     # Strict
@@ -278,6 +250,18 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     }
     cut_xi <- qnormmix(propsel, zeta_r, sd_xir, zeta_f, sd_xif,
                        pmix_ref, lower.tail = FALSE)
+    zf_par_mi <- list(
+      zeta_r = zeta_r,
+      zeta_f = zeta_f,
+      sd_xir = sd_xir,
+      sd_xif = sd_xif,
+      mean_zr = mean_zr,
+      mean_zf = mean_zf,
+      sd_zr = sd_zr,
+      sd_zf = sd_zf,
+      cov_z_xir = cov_z_xir,
+      cov_z_xif = cov_z_xif
+    )
     partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr,
                                cov12 = cov_z_xir)
     partit_2 <- .partit_bvnorm(cut_xi, cut_z, zeta_f, sd_xif, mean_zf, sd_zf,
@@ -288,33 +272,16 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                                     "Proportion selected", "Success ratio",
                                     "Sensitivity", "Specificity"))
     colnames(dat) <- labels
-    p <- NULL
-    if (plot_contour) {
-      x_lim <- range(c(zeta_r + c(-3, 3) * sd_xir,
-                       zeta_f + c(-3, 3) * sd_xif))
-      y_lim <- range(c(mean_zr + c(-3, 3) * sd_zr,
-                       mean_zf + c(-3, 3) * sd_zf))
-      contour_bvnorm(zeta_r, sd_xir, mean_zr, sd_zr, cov12 = cov_z_xir,
-                     xlab = bquote("Latent Score" ~ (xi)),
-                     ylab = bquote("Observed Composite" ~ (italic(Z))),
-                     lwd = 2, col = "red", xlim = x_lim, ylim = y_lim,
-                     ...)
-      contour_bvnorm(zeta_f, sd_xif, mean_zf, sd_zf, cov12 = cov_z_xif,
-                     add = TRUE, lty = "dashed", lwd = 2, col = "blue",
-                     ...)
-      legend("topleft", labels,
-             lty = c("solid", "dashed"), col = c("red", "blue"))
-      abline(h = cut_z, v = cut_xi)
-      x_cord <- rep(cut_xi + c(.25, -.25) * sd_xir, 2)
-      y_cord <- rep(cut_z + c(.25, -.25) * sd_zr, each = 2)
-      text(x_cord, y_cord, c("A", "B", "D", "C"))
-      p <- recordPlot()
-      dev.off()
-    }
+    out$propsel_mi <- propsel
+    out$cutpt_xi_mi <- cut_xi
+    out$cutpt_z_mi <- cut_z
     out$summary_mi <- dat
-    out$p_mi <- p
+    out$bivar_data_mi <- zf_par_mi
   }
   class(out) <- c("PartInv", "PartInvSummary")
+  if (plot_contour) {
+    plot(out, labels = labels, ...)
+  }
   out
 }
 

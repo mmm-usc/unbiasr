@@ -39,10 +39,13 @@ setClass("PartInv",
          representation(
            propsel = "numeric",
            cutpt_xi = "numeric", cutpt_z = "numeric",
-           bivar_data = "list",
            summary = "PartInvSummary",
+           bivar_data = "list",
            ai_ratio = "numeric",
            plot = "recordedplot",
+           propsel_mi = "numeric",
+           cutpt_xi_mi = "numeric", cutpt_z_mi = "numeric",
+           bivar_data_mi = "list",
            summary_mi = "PartInvSummary",
            p_mi = "recordedplot"
          )

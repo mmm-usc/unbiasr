@@ -1,3 +1,6 @@
+#' @importFrom graphics legend abline text contour
+NULL
+
 #' Plot contour for a bivariate normal distribution
 #' 
 #' @param mean1 Mean of the first normal distribution (on x-axis).
@@ -43,8 +46,28 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
 }
 
 #'@export
-plot.PartInv <- function(obj, labels = c("Reference", "Focal"), ...) {
-    plot_dat <- obj$bivar_data
+plot.PartInv <- function(obj, labels,
+                         which_result = c("pi", "mi"), ...) {
+    which_result <- match.arg(which_result)
+    if (which_result == "pi") {
+        plot_dat <- obj$bivar_data
+        cut_xi <- obj$cutpt_xi
+        cut_z <- obj$cutpt_z
+        summ <- obj$summary
+    } else if (which_result == "mi") {
+        summ <- obj$summary_mi
+        if (is.null(summ)) {
+            stop("Strict invariance results not found. ",
+                 "Please include `show_mi_result = TRUE` ",
+                 "when running `PartInv()`")
+        }
+        plot_dat <- obj$bivar_data_mi
+        cut_xi <- obj$cutpt_xi_mi
+        cut_z <- obj$cutpt_z_mi
+    }
+    if (missing(labels)) {
+        labels <- colnames(summ)[1:2]
+    }
     x_lim <- range(c(plot_dat$zeta_r + c(-3, 3) * plot_dat$sd_xir,
                      plot_dat$zeta_f + c(-3, 3) * plot_dat$sd_xif))
     y_lim <- range(c(plot_dat$mean_zr + c(-3, 3) * plot_dat$sd_zr,
@@ -63,8 +86,8 @@ plot.PartInv <- function(obj, labels = c("Reference", "Focal"), ...) {
                    ...)
     legend("topleft", labels,
            lty = c("solid", "dashed"), col = c("red", "blue"))
-    abline(h = obj$cutpt_z, v = obj$cutpt_xi)
-    x_cord <- rep(obj$cutpt_xi + c(.25, -.25) * plot_dat$sd_xir, 2)
-    y_cord <- rep(obj$cutpt_z + c(.25, -.25) * plot_dat$sd_zr, each = 2)
+    abline(h = cut_z, v = cut_xi)
+    x_cord <- rep(cut_xi + c(.25, -.25) * plot_dat$sd_xir, 2)
+    y_cord <- rep(cut_z + c(.25, -.25) * plot_dat$sd_zr, each = 2)
     text(x_cord, y_cord, c("A", "B", "D", "C"))
 }
