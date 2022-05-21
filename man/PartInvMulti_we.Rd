@@ -27,7 +27,7 @@ PartInvMulti_we(
   Theta_r,
   Theta_f = Theta_r,
   pmix_ref = 0.5,
-  plot_contour = TRUE,
+  plot_contour = FALSE,
   show_mi_result = FALSE,
   labels = c("Reference", "Focal"),
   ...
@@ -55,7 +55,7 @@ PartInv(
   Theta_r,
   Theta_f = Theta_r,
   pmix_ref = 0.5,
-  plot_contour = TRUE,
+  plot_contour = FALSE,
   show_mi_result = FALSE,
   labels = c("Reference", "Focal"),
   ...
