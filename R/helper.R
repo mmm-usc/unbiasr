@@ -91,52 +91,6 @@ qnormmix <- function(p, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5,
   numer / (1 - cor^2)
 }
 
-#' Plot contour for a bivariate normal distribution
-#' 
-#' \code{.bvnorm_kernel} returns the kernel for bivariate normal density
-#' 
-#' @param mean1 Mean of the first normal distribution (on x-axis).
-#' @param sd1 Standard deviation of thefirst normal distribution.
-#' @param mean2 Mean of the second normal distribution (on y-axis).
-#' @param sd2 Standard deviation of the second normal distribution.
-#' @param cor12 Correlation in the bivariate normal distribution.
-#' @param cov12 Covariance in the bivariate normal distribution. If not input, compute the
-#'          covariance using the correlation and the standard deviations.
-#' @param density Density level, i.e., probability enclosed by the ellipse.
-#' @param length_out Number of values on the x-axis and on the y-axis to be
-#'               evaluated; default to 101.
-#' @param bty Argument passed to the `contour` function.
-#' @param ... Additional arguments passed to \code{\link[graphics]{contour}}
-#' 
-#' @return A plot showing the contour of the bivariate normal distribution on 
-#'   a two-dimensional space.
-#' @examples 
-#' \dontrun{
-#' contour_bvnorm(
-#'   0.5, 1, 0.57, 1.03, cov12 = 0.8,
-#'   xlab = bquote("Latent Composite" ~ (zeta)),
-#'   ylab = bquote("Observed Composite" ~ (italic(Z))),
-#'   lwd = 2, col = "red", xlim = c(-3.0, 3.5),
-#'   ylim = c(-2.97, 3.67)
-#' )
-#' }
-
-contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, 
-                           cor12 = 0, cov12 = NULL, 
-                           density = .95, length_out = 101, 
-                           bty = "L", 
-                           ...) {
-  # Error handling
-  stopifnot(cor12 >= -1, cor12 <= 1)
-  if (is.null(cov12)) cov12 <- cor12 * sd1 * sd2
-  x_seq <- mean1 + seq(-3, 3, length.out = length_out) * sd1
-  y_seq <- mean2 + seq(-3, 3, length.out = length_out) * sd2
-  z <- outer(x_seq, y_seq, .bvnorm_kernel, mu_x = mean1, mu_y = mean2, 
-             sd_x = sd1, sd_y = sd2, cov_xy = cov12)
-  contour(x_seq, y_seq, z, levels = qchisq(density, 2), drawlabels = FALSE, 
-          bty = bty, ...)
-}
-
 #' Computing summary statistics from a selection approach
 #' 
 #' \code{.partit_bvnorm} returns a table of selection accuracy indices

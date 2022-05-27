@@ -27,7 +27,7 @@ PartInvMulti_we(
   Theta_r,
   Theta_f = Theta_r,
   pmix_ref = 0.5,
-  plot_contour = TRUE,
+  plot_contour = FALSE,
   show_mi_result = FALSE,
   labels = c("Reference", "Focal"),
   ...
@@ -55,7 +55,7 @@ PartInv(
   Theta_r,
   Theta_f = Theta_r,
   pmix_ref = 0.5,
-  plot_contour = TRUE,
+  plot_contour = FALSE,
   show_mi_result = FALSE,
   labels = c("Reference", "Focal"),
   ...
@@ -87,7 +87,7 @@ the focal group; if no input, set equal to \code{psi_r}.}
 
 \item{lambda_r}{A matrix of factor loadings for the reference group.}
 
-\item{lambda_f}{(optional) a matrix of factor loadings for the focal group;
+\item{lambda_f}{(optional) A matrix of factor loadings for the focal group;
 if no input, set equal to \code{lambda_r}.}
 
 \item{nu_r}{A matrix of measurement intercepts for the reference group.}
@@ -129,6 +129,7 @@ the focal, and the expected results if the latent distribution of
 focal group matches the reference group. The rows represent
 probabilities of true positive (A), false positive (B),
 true negative (C), false negative (D); proportion selected,
+success ratio, sensitivity, and specificity.}
 }
 \description{
 \code{PartInv, PartInvMulti_we} evaluate partial measurement invariance using
@@ -136,7 +137,22 @@ an extension of Millsap & Kwok's (2004) approach
 }
 \examples{
 # Single dimension
+PartInv(propsel = .30,
+        weights_item = c(1,1,1,1),
+        weights_latent = 1,
+        alpha_r = 0,
+        alpha_f = 0,
+        psi_r = 1,
+        lambda_r = c(1,1,1,1),
+        nu_r = c(1,1,1,2),
+        nu_f = c(1,1,1,1),
+        Theta_r = diag(1, 4),
+        labels = c("Female", "Male"),
+        show_mi_result = FALSE)
 # multiple dimensions
+lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
+lambda_matrix[1:2, 1] <- c(.322, .655)
+lambda_matrix[3:5, 2] <- c(.398, .745, .543)
         weights_latent = c(0.5, 0.5),
         alpha_r = c(0, 0),
         alpha_f = c(-0.3, 0.1),
