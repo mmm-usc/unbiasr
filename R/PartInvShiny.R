@@ -331,11 +331,20 @@ myApp <- function(...) {
               box(
                 id = "outputBox",
                 title = "Relationship Between True Latent Construct Scores
-               and Observed Test Scores",
+               and Observed Test Scores for Partial Invariance",
                status = "primary",
                solidHeader = FALSE,
                width = 8,
                plotOutput("distPlot")
+              ),
+              box(
+                id = "outputPlot_strict",
+                title = "Relationship Between True Latent Construct Scores
+               and Observed Test Scores for Strict Invariance",
+                status = "primary",
+                solidHeader = FALSE,
+                width = 8,
+                plotOutput("distPlotstrict")
               ),
               box(
                 id = "outputTableBox",
@@ -702,6 +711,14 @@ myApp <- function(...) {
         shinyjs::show(id = "outputTable_strict")
       } else{
         shinyjs::hide(id = "outputTable_strict")
+      }
+    })
+    
+    observeEvent(input$tab_strict, {
+      if (input$tab_strict == TRUE){
+        shinyjs::show(id = "outputPlot_strict")
+      } else{
+        shinyjs::hide(id = "outputPlot_strict")
       }
     })
     # 
@@ -1169,22 +1186,18 @@ myApp <- function(...) {
     
     output$distPlot <- renderPlot({
       validations()
-      partInvOutput()
-      if(input$tab_strict == FALSE){
-        partInvOutput()[2]
-      }else{
-        partInvOutput()[4]
-      }
+      partInvOutput()[2]
     })
-  
+    
+    
+    output$distPlotstrict <- renderPlot({
+      validations()
+      partInvOutput()[4]
+    })
     
     output$table <- renderTable(rownames = TRUE, {
       validations()
-      if(input$tab_strict == FALSE){
-        partInvOutput()[1]
-      }else{
-        partInvOutput()[1]
-      }
+      partInvOutput()[1]
     })
     
     output$tablestrict <- renderTable(rownames = TRUE, {
