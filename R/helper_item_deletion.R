@@ -21,19 +21,18 @@
 
 get_aggregate_CAI <- function(pmixr, store_summary) {
   r <- store_summary$Reference; f <- store_summary$Focal
-  PS <-  (pmixr*r[1] + (1 - pmixr)*f[1]) + (pmixr*r[2] + (1 - pmixr)*f[2])
+  PS <- (pmixr*r[1] + (1 - pmixr)*f[1]) + (pmixr*r[2] + (1 - pmixr)*f[2])
   SR <- (pmixr*r[1] + (1 - pmixr)*f[1]) /
-    (pmixr*r[1] + (1-pmixr)*f[1] + pmixr*r[2] + (1 - pmixr)*f[2]) 
+    (pmixr*r[1] + (1 - pmixr)*f[1] + pmixr*r[2] + (1 - pmixr)*f[2]) 
   SE <- (pmixr*r[1] + (1 - pmixr)*f[1]) / 
-    (pmixr*r[1] + (1-pmixr)*f[1] + pmixr*r[4] + (1 - pmixr)*f[4])
+    (pmixr*r[1] + (1 - pmixr)*f[1] + pmixr*r[4] + (1 - pmixr)*f[4])
   SP <- (pmixr*r[3] + (1 - pmixr)*f[3]) / 
     (pmixr*r[3] + (1 - pmixr)*f[3] + pmixr*r[2] + (1 - pmixr)*f[2]) 
-  
   return(c(PS, SR, SE, SP))
 }
 
 #' @title
-#' Check if improvements in ACAI may be misleading.
+#' Check if improvements in ACAI may be misleading.x
 #' 
 #' @name 
 #' err_improv_acai
