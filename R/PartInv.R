@@ -308,26 +308,3 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
 #' @rdname PartInvMulti_we
 #' @export
 PartInv <- PartInvMulti_we
- 
-# 
-#' PartInvMulti_we(cut_z = 9,
-#'                 weights_item = c(1, 1, 1),
-#'                 weights_latent = 1,
-#'                 alpha_r =NSI_V_kappa_ref_conf ,
-#'                 alpha_f = NSI_V_kappa_foc_conf,
-#'                 psi_r = NSI_V_phi_ref_conf,
-#'                 psi_f = NSI_V_phi_foc_conf,
-#'                 lambda_r = NSI_V_lambda_ref_conf,
-#'                 lambda_f = NSI_V_lambda_foc_conf,
-#'                 nu_r = NSI_V_tau_ref_conf,
-#'                 nu_f = NSI_V_tau_foc_conf,
-#'                 Theta_r = NSI_V_theta_ref_conf,
-#'                 Theta_f = NSI_V_theta_foc_conf,
-#'                 plot_contour = FALSE)
-#
-# PartInv(cut_z = 9, kappa_r = NSI_V_kappa_ref_conf, kappa_f = NSI_V_kappa_foc_conf,
-#         phi_r = NSI_V_phi_ref_conf, phi_f = NSI_V_phi_foc_conf,
-#         lambda_r = NSI_V_lambda_ref_conf, lambda_f = NSI_V_lambda_foc_conf,
-#         tau_r = NSI_V_tau_ref_conf, tau_f = NSI_V_tau_foc_conf,
-#         Theta_r = NSI_V_theta_ref_conf, Theta_f = NSI_V_theta_foc_conf
-# )[4]
