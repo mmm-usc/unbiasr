@@ -58,14 +58,14 @@ NULL
 #' @examples
 #' # Single dimension
 #' PartInv(propsel = .30,
-#'         weights_item = c(1,1,1,1),
+#'         weights_item = c(1, 1, 1, 1),
 #'         weights_latent = 1,
 #'         alpha_r = 0,
 #'         alpha_f = 0,
 #'         psi_r = 1,
-#'         lambda_r = c(1,1,1,1),
-#'         nu_r = c(1,1,1,2),
-#'         nu_f = c(1,1,1,1),
+#'         lambda_r = c(1, 1, 1, 1),
+#'         nu_r = c(1, 1, 1, 2),
+#'         nu_f = c(1, 1, 1, 1),
 #'         Theta_r = diag(1, 4),
 #'         labels = c("Female", "Male"),
 #'         show_mi_result = FALSE)
@@ -73,14 +73,14 @@ NULL
 #'         alpha_r = 0.5,
 #'         alpha_f = 0,
 #'         psi_r = 1,
-#'         lambda_r = c(1,1,1,1),
-#'         nu_r = c(1,2,1,2),
-#'         nu_f = c(1,1,1,1),
+#'         lambda_r = c(1, 1, 1, 1),
+#'         nu_r = c(1, 2, 1, 2),
+#'         nu_f = c(1, 1, 1, 1),
 #'         Theta_r = diag(1, 4),
 #'         labels = c("Female", "Male"),
 #'         show_mi_result = TRUE)
 #' # multiple dimensions
-#' lambda_matrix <- matrix(0,nrow = 5, ncol = 2)
+#' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
 #' lambda_matrix[1:2, 1] <- c(.322, .655)
 #' lambda_matrix[3:5, 2] <- c(.398, .745, .543)
 #' PartInv(propsel = .05,
