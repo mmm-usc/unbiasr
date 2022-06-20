@@ -1,65 +1,60 @@
 #' @importFrom stats qchisq pnorm qnorm nlminb
 #' @importFrom mnormt pmnorm
-#' @importFrom graphics legend abline text contour
-#' @importFrom grDevices recordPlot
 NULL
 
 #' Evaluating selection accuracy based on the MCAA Framework
-#' 
-#' \code{PartInv, PartInvMulti_we} evaluate partial measurement invariance using 
-#'  an extension of Millsap & Kwok's (2004) approach
-#' 
-#' @param propsel proportion of selection. If missing, computed using `cut_z`.
-#' @param cut_z pre-specified cutoff score on the observed composite. This 
-#' argument is ignored when `propsel` has input.
-#' @param weights_item a vector of item weights.
-#' @param weights_latent a vector of latent factor weights.
-#' @param alpha_r a vector of latent factor means for the reference group.
-#' @param alpha_f (optional) a vector of latent factor means for the focal group; 
-#'            if no input, set equal to alpha_r.
-#' @param psi_r a matrix of latent factor variance-covariances for the
-#'            reference group.
-#' @param psi_f (optional) a matrix of latent factor variance-covariances for
-#'            the focal group; if no input, set equal to psi_r.
-#' @param lambda_r a matrix of factor loadings for the reference group.
-#' @param lambda_f (optional) a matrix of factor loadings for the focal group; 
-#'             if no input, set equal to lambda_r.
-#' @param nu_r a matrix of measurement intercepts for the reference group.
-#' @param nu_f (optional) a matrix of measurement intercepts for the focal group; 
-#'          if no input, set equal to nu_r.
-#' @param Theta_r a matrix of the unique factor variances and covariances 
-#'            for the reference group.
-#' @param Theta_f (optional) a matrix of the unique factor variances and 
-#'            covariances for the focal group; if no input, set equal to Theta_r.
-#' @param pmix_ref Proportion of the reference group; 
-#'            default to 0.5 (i.e., two populations have equal size).
-#' @param plot_contour logical; whether the contour of the two populations 
-#'            should be plotted; default to TRUE.
+#'
+#' \code{PartInv, PartInvMulti_we} evaluate partial measurement invariance using
+#' an extension of Millsap & Kwok's (2004) approach
+#'
+#' @param propsel Proportion of selection. If missing, computed using `cut_z`.
+#' @param cut_z Pre-specified cutoff score on the observed composite. This
+#'     argument is ignored when `propsel` has input.
+#' @param weights_item A vector of item weights.
+#' @param weights_latent A vector of latent factor weights.
+#' @param alpha_r A vector of latent factor means for the reference group.
+#' @param alpha_f (optional) A vector of latent factor means for the focal group;
+#'     if no input, set equal to `alpha_r`.
+#' @param psi_r A matrix of latent factor variance-covariances for the
+#'     reference group.
+#' @param psi_f (optional) A matrix of latent factor variance-covariances for
+#'     the focal group; if no input, set equal to `psi_r`.
+#' @param lambda_r A matrix of factor loadings for the reference group.
+#' @param lambda_f (optional) a matrix of factor loadings for the focal group;
+#'     if no input, set equal to `lambda_r`.
+#' @param nu_r A matrix of measurement intercepts for the reference group.
+#' @param nu_f (optional) A matrix of measurement intercepts for the focal
+#'     group; if no input, set equal to `nu_r`.
+#' @param Theta_r A matrix of the unique factor variances and covariances
+#'     for the reference group.
+#' @param Theta_f (optional) A matrix of the unique factor variances and
+#'     covariances for the focal group; if no input, set equal to `Theta_r`.
+#' @param pmix_ref Proportion of the reference group; default to 0.5 (i.e., two
+#'     populations have equal size).
+#' @param plot_contour Logical; whether the contour of the two populations
+#'     should be plotted; default to `TRUE`.
 #' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
-#'                       for both the input parameters and the implied
-#'                       parameters based on a strict invariance model, with
-#'                       common parameter values as weighted averages of
-#'                       the input values using `pmix_ref`.
-#' @param labels a character vector with two elements to label the reference
-#'            and the focal group on the graph.
-#' @param ... other arguments passed to the \code{\link[graphics]{contour}} 
-#'            function.
-#' @param phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f deprecated; included
-#'            only for backward compatibility.
-#' @return The output will be a list of four elements and a plot if 
-#'         \code{plot_contour == TRUE}:
-#'         \enumerate{
-#'           \item propsel: echo the same argument as input.
-#'           \item cutpt_xi: cut point on the latent scale (xi).
-#'           \item cutpt_z: cut point on the observed scale (Z).
-#'           \item summary: A 8 x 3 table, with columns representing the reference,
-#'                the focal, and the expected results if the latent distribution of
-#'                focal group matches the reference group. The rows represent
-#'                probabilities of true positive (A), false positive (B), 
-#'                true negative (C), false negative (D); proportion selected, 
-#'                success ratio, sensitivity, and specificity.
-#'         }
-#'         
+#'     for both the input parameters and the implied parameters based on a
+#'     strict invariance model, with common parameter values as weighted
+#'     averages of the input values using `pmix_ref`.
+#' @param labels A character vector with two elements to label the reference
+#'     and the focal group on the graph.
+#' @param ... Other arguments passed to the \code{\link[graphics]{contour}}
+#'     function.
+#' @param phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f Deprecated; included
+#'     only for backward compatibility.
+#' @return The output will be a list of four elements and a plot if
+#'     \code{plot_contour == TRUE}:
+#'         \item{propsel}{Echo the same argument as input.}
+#'         \item{cutpt_xi}{Cut point on the latent scale (xi).}
+#'         \item{cutpt_z}{Cut point on the observed scale (Z).}
+#'         \item{summary}{A 8 x 3 table, with columns representing the reference,
+#'             the focal, and the expected results if the latent distribution of
+#'             focal group matches the reference group. The rows represent
+#'             probabilities of true positive (A), false positive (B),
+#'             true negative (C), false negative (D); proportion selected,
+#'             success ratio, sensitivity, and specificity.}
+#'
 #' @examples
 #' # Single dimension
 #' PartInv(propsel = .30,
@@ -116,13 +111,13 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                             weights_latent = NULL,
                             kappa_r = NULL, kappa_f = kappa_r,
                             alpha_r, alpha_f = alpha_r,
-                            phi_r = NULL, phi_f = phi_r, 
+                            phi_r = NULL, phi_f = phi_r,
                             psi_r, psi_f = psi_r,
                             lambda_r, lambda_f = lambda_r,
                             tau_r = NULL, tau_f = tau_r,
                             nu_r, nu_f = nu_r,
-                            Theta_r, Theta_f = Theta_r, 
-                            pmix_ref = 0.5, plot_contour = TRUE,
+                            Theta_r, Theta_f = Theta_r,
+                            pmix_ref = 0.5, plot_contour = FALSE,
                             show_mi_result = FALSE,
                             labels = c("Reference", "Focal"), ...) {
   # For backward compatibility with different input names
@@ -152,8 +147,8 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
             nrow(psi_r) == ncol(as.matrix(lambda_r)))
   mean_zr <- c(crossprod(weights_item, nu_r + lambda_r %*% alpha_r))
   mean_zf <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_f))
-  sd_zr <- c(sqrt(crossprod(weights_item, 
-                            lambda_r %*% psi_r %*% t(lambda_r) + Theta_r) %*% 
+  sd_zr <- c(sqrt(crossprod(weights_item,
+                            lambda_r %*% psi_r %*% t(lambda_r) + Theta_r) %*%
                     weights_item))
   sd_zf <- c(sqrt(crossprod(weights_item,
                             lambda_f %*% psi_f %*% t(lambda_f) + Theta_f) %*%
@@ -173,88 +168,79 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     # compute the cut score using helper function qnormmix based on input selection
     # proportion
     fixed_cut_z <- FALSE
-    cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf, 
+    cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf,
                       pmix_ref, lower.tail = FALSE)
   } else if (!is.null(cut_z) & missing(propsel)) {
     # if missing selection proportion but has a cut score
     fixed_cut_z <- TRUE
-    propsel <- pnormmix(cut_z, mean_zr, sd_zr, mean_zf, sd_zf, 
+    propsel <- pnormmix(cut_z, mean_zr, sd_zr, mean_zf, sd_zf,
                         pmix_ref, lower.tail = FALSE)
   }
   cut_xi <- qnormmix(propsel, zeta_r, sd_xir, zeta_f, sd_xif,
                      pmix_ref, lower.tail = FALSE)
   # print warning message if propsel is too small
   if (propsel <= 0.01) {
-   warning("Proportion selected is 1% or less.") 
+    warning("Proportion selected is 1% or less.")
   }
   # computing summary statistics using helper function .partit_bvnorm
-  partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr, 
+  partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr,
                              cov12 = cov_z_xir)
-  partit_2 <- .partit_bvnorm(cut_xi, cut_z, zeta_f, sd_xif, mean_zf, sd_zf, 
+  partit_2 <- .partit_bvnorm(cut_xi, cut_z, zeta_f, sd_xif, mean_zf, sd_zf,
                              cov12 = cov_z_xif)
   # selection indices for the focal group if latent dist matches the reference
   mean_zref <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_r))
   sd_zref <- c(sqrt(crossprod(weights_item,
                               lambda_f %*% psi_r %*% t(lambda_f) + Theta_f) %*%
                       weights_item))
-  cov_z_xiref <- c(crossprod(weights_item, lambda_f %*% psi_r) %*% 
+  cov_z_xiref <- c(crossprod(weights_item, lambda_f %*% psi_r) %*%
                      weights_latent)
-  partit_1e2 <- .partit_bvnorm(cut_xi, cut_z, 
-                               zeta_r, sd_xir, mean_zref, 
-                               sd_zref, 
+  partit_1e2 <- .partit_bvnorm(cut_xi, cut_z,
+                               zeta_r, sd_xir, mean_zref,
+                               sd_zref,
                                cov12 = cov_z_xiref)
+  zf_par <- list(
+    zeta_r = zeta_r,
+    zeta_f = zeta_f,
+    sd_xir = sd_xir,
+    sd_xif = sd_xif,
+    mean_zr = mean_zr,
+    mean_zf = mean_zf,
+    sd_zr = sd_zr,
+    sd_zf = sd_zf,
+    cov_z_xir = cov_z_xir,
+    cov_z_xif = cov_z_xif
+  )
   # result table
-  dat <- data.frame("Reference" = partit_1, "Focal" = partit_2, 
-                    "E_R(Focal)" = partit_1e2, 
-                    row.names = c("A (true positive)", "B (false positive)", 
-                                  "C (true negative)", "D (false negative)", 
-                                  "Proportion selected", "Success ratio", 
+  dat <- data.frame("Reference" = partit_1, "Focal" = partit_2,
+                    "E_R(Focal)" = partit_1e2,
+                    row.names = c("A (true positive)", "B (false positive)",
+                                  "C (true negative)", "D (false negative)",
+                                  "Proportion selected", "Success ratio",
                                   "Sensitivity", "Specificity"))
-  colnames(dat) <- c(labels, paste0("E_R(",labels[2],")"))
-  # result plot
-  p <- NULL
-  if (plot_contour) {
-    x_lim <- range(c(zeta_r + c(-3, 3) * sd_xir, 
-                     zeta_f + c(-3, 3) * sd_xif))
-    y_lim <- range(c(mean_zr + c(-3, 3) * sd_zr, 
-                     mean_zf + c(-3, 3) * sd_zf))
-    contour_bvnorm(zeta_r, sd_xir, mean_zr, sd_zr, cov12 = cov_z_xir, 
-                   xlab = bquote("Latent Composite" ~ (zeta)), 
-                   ylab = bquote("Observed Composite" ~ (italic(Z))), 
-                   lwd = 2, col = "red", xlim = x_lim, ylim = y_lim, 
-                   ...)
-    contour_bvnorm(zeta_f, sd_xif, mean_zf, sd_zf, cov12 = cov_z_xif, 
-                   add = TRUE, lty = "dashed", lwd = 2, col = "blue", 
-                   ...)
-    legend("topleft", labels, 
-           lty = c("solid", "dashed"), col = c("red", "blue"))
-    abline(h = cut_z, v = cut_xi)
-    x_cord <- rep(cut_xi + c(.25, -.25) * sd_xir, 2)
-    y_cord <- rep(cut_z + c(.25, -.25) * sd_zr, each = 2)
-    text(x_cord, y_cord, c("A", "B", "D", "C"))
-    p <- recordPlot()
-    # dev.off()
-  }
-  out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, 
-              summary = dat, 
-              ai_ratio = dat["Proportion selected", 3] / 
-                dat["Proportion selected", 1], plot = p)
+  colnames(dat) <- c(labels, paste0("E_R(", labels[2], ")"))
+
+  out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
+              summary = dat,
+              bivar_data = zf_par,
+              ai_ratio = dat["Proportion selected", 3] /
+                dat["Proportion selected", 1])
+
   if (show_mi_result) {  # Need to be updated
     # Strict
     pop_weights <- c(pmix_ref, 1 - pmix_ref)
-    lambda_r <- lambda_f <- 
+    lambda_r <- lambda_f <-
       .weighted_average_list(list(lambda_r, lambda_f),
                              weights = pop_weights)
-    nu_r <- nu_f <- 
+    nu_r <- nu_f <-
       .weighted_average_list(list(nu_r, nu_f),
                              weights = pop_weights)
-    Theta_r <- Theta_f <- 
+    Theta_r <- Theta_f <-
       .weighted_average_list(list(Theta_r, Theta_f),
                              weights = pop_weights)
     mean_zr <- c(crossprod(weights_item, nu_r + lambda_r %*% alpha_r))
     mean_zf <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_f))
-    sd_zr <- c(sqrt(crossprod(weights_item, 
-                              lambda_r %*% psi_r %*% t(lambda_r) + Theta_r) %*% 
+    sd_zr <- c(sqrt(crossprod(weights_item,
+                              lambda_r %*% psi_r %*% t(lambda_r) + Theta_r) %*%
                       weights_item))
     sd_zf <- c(sqrt(crossprod(weights_item,
                               lambda_f %*% psi_f %*% t(lambda_f) + Theta_f) %*%
@@ -266,48 +252,45 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     zeta_r <- c(crossprod(weights_latent, alpha_r))
     zeta_f <- c(crossprod(weights_latent, alpha_f))
     if (fixed_cut_z) {
-      propsel <- pnormmix(cut_z, mean_zr, sd_zr, mean_zf, sd_zf, 
+      propsel <- pnormmix(cut_z, mean_zr, sd_zr, mean_zf, sd_zf,
                           pmix_ref, lower.tail = FALSE)
     } else {
-      cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf, 
+      cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf,
                         pmix_ref, lower.tail = FALSE)
     }
     cut_xi <- qnormmix(propsel, zeta_r, sd_xir, zeta_f, sd_xif,
                        pmix_ref, lower.tail = FALSE)
-    partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr, 
+    zf_par_mi <- list(
+      zeta_r = zeta_r,
+      zeta_f = zeta_f,
+      sd_xir = sd_xir,
+      sd_xif = sd_xif,
+      mean_zr = mean_zr,
+      mean_zf = mean_zf,
+      sd_zr = sd_zr,
+      sd_zf = sd_zf,
+      cov_z_xir = cov_z_xir,
+      cov_z_xif = cov_z_xif
+    )
+    partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr,
                                cov12 = cov_z_xir)
-    partit_2 <- .partit_bvnorm(cut_xi, cut_z, zeta_f, sd_xif, mean_zf, sd_zf, 
+    partit_2 <- .partit_bvnorm(cut_xi, cut_z, zeta_f, sd_xif, mean_zf, sd_zf,
                                cov12 = cov_z_xif)
     dat <- data.frame("Reference" = partit_1, "Focal" = partit_2,
-                      row.names = c("A (true positive)", "B (false positive)", 
-                                    "C (true negative)", "D (false negative)", 
-                                    "Proportion selected", "Success ratio", 
+                      row.names = c("A (true positive)", "B (false positive)",
+                                    "C (true negative)", "D (false negative)",
+                                    "Proportion selected", "Success ratio",
                                     "Sensitivity", "Specificity"))
     colnames(dat) <- labels
-    p <- NULL
-    if (plot_contour) {
-      x_lim <- range(c(zeta_r + c(-3, 3) * sd_xir, 
-                       zeta_f + c(-3, 3) * sd_xif))
-      y_lim <- range(c(mean_zr + c(-3, 3) * sd_zr, 
-                       mean_zf + c(-3, 3) * sd_zf))
-      contour_bvnorm(zeta_r, sd_xir, mean_zr, sd_zr, cov12 = cov_z_xir, 
-                     xlab = bquote("Latent Score" ~ (xi)), 
-                     ylab = bquote("Observed Composite" ~ (italic(Z))), 
-                     lwd = 2, col = "red", xlim = x_lim, ylim = y_lim, 
-                     ...)
-      contour_bvnorm(zeta_f, sd_xif, mean_zf, sd_zf, cov12 = cov_z_xif, 
-                     add = TRUE, lty = "dashed", lwd = 2, col = "blue", 
-                     ...)
-      legend("topleft", labels,
-             lty = c("solid", "dashed"), col = c("red", "blue"))
-      abline(h = cut_z, v = cut_xi)
-      x_cord <- rep(cut_xi + c(.25, -.25) * sd_xir, 2)
-      y_cord <- rep(cut_z + c(.25, -.25) * sd_zr, each = 2)
-      text(x_cord, y_cord, c("A", "B", "D", "C"))
-      p <- recordPlot()
-    }
+    out$propsel_mi <- propsel
+    out$cutpt_xi_mi <- cut_xi
+    out$cutpt_z_mi <- cut_z
     out$summary_mi <- dat
-    out$p_mi <- p
+    out$bivar_data_mi <- zf_par_mi
+  }
+  class(out) <- c("PartInv", "PartInvSummary")
+  if (plot_contour) {
+    plot(out, labels = labels, ...)
   }
   out
 }

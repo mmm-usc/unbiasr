@@ -1083,29 +1083,11 @@ myApp <- function(...) {
       )})
     
     partInvOutput <- reactive({
-      if (input$usepropsel == FALSE & input$tab_strict == FALSE) {
+      if (input$usepropsel == FALSE) {
         #plug everything into PartInv function
         #calls to reactive functions have () brackets
-        # print(paste0("cut_z = ",input$cut_z, ", propsel = ",input$prop))
-        # print(PartInv(
-        #   plot_contour = TRUE,
-        #   cut_z = input$cut_z,
-        #   pmix_ref = input$pmix,
-        #   kappa_r = input$kappa_r,
-        #   kappa_f = kappa_f(),
-        #   phi_r = input$phi_r,
-        #   phi_f = phi_f(),
-        #   lambda_r = lambda_rNumeric(),
-        #   lambda_f = lambda_f(),
-        #   tau_f = tau_f(),
-        #   Theta_f = theta_f(),
-        #   tau_r = tau_rNumeric(),
-        #   Theta_r = theta_r(),
-        #   labels = c(input$legend_r, input$legend_f),
-        #   show_mi_result = TRUE
-        # )[[8]])
         PartInv(
-          plot_contour = TRUE,
+          plot_contour = FALSE,
           cut_z = input$cut_z,
           pmix_ref = input$pmix,
           kappa_r = input$kappa_r,
@@ -1119,13 +1101,13 @@ myApp <- function(...) {
           tau_r = tau_rNumeric(),
           Theta_r = theta_r(),
           labels = c(input$legend_r, input$legend_f),
-          show_mi_result = FALSE
-        )[c(4,6)]
-      }else if(input$usepropsel == TRUE & input$tab_strict == FALSE){
+          show_mi_result = input$tab_strict
+        )
+      } else if (input$usepropsel == TRUE) {
         PartInv(
           #propsel adds value as input if true
           propsel = input$prop,
-          plot_contour = TRUE,
+          plot_contour = FALSE,
           # cut_z = input$cut_z,
           pmix_ref = input$pmix,
           kappa_r = input$kappa_r,
@@ -1139,70 +1121,24 @@ myApp <- function(...) {
           tau_r = tau_rNumeric(),
           Theta_r = theta_r(),
           labels = c(input$legend_r, input$legend_f),
-          show_mi_result = FALSE
-        )[c(4,6)]
-      } else if (input$usepropsel == FALSE & input$tab_strict == TRUE) {
-        #plug everything into PartInv function
-        #calls to reactive functions have () brackets
-        PartInv(
-          plot_contour = TRUE,
-          cut_z = input$cut_z,
-          pmix_ref = input$pmix,
-          kappa_r = input$kappa_r,
-          kappa_f = kappa_f(),
-          phi_r = input$phi_r,
-          phi_f = phi_f(),
-          lambda_r = lambda_rNumeric(),
-          lambda_f = lambda_f(),
-          tau_f = tau_f(),
-          Theta_f = theta_f(),
-          tau_r = tau_rNumeric(),
-          Theta_r = theta_r(),
-          labels = c(input$legend_r, input$legend_f),
-          show_mi_result = TRUE
-        )[c(4,6,7,8)]
-      }else if(input$usepropsel == TRUE & input$tab_strict == TRUE){
-        PartInv(
-          #propsel adds value as input if true
-          propsel = input$prop,
-          plot_contour = TRUE,
-          # cut_z = input$cut_z,
-          pmix_ref = input$pmix,
-          kappa_r = input$kappa_r,
-          kappa_f = kappa_f(),
-          phi_r = input$phi_r,
-          phi_f = phi_f(),
-          lambda_r = lambda_rNumeric(),
-          lambda_f = lambda_f(),
-          tau_f = tau_f(),
-          Theta_f = theta_f(),
-          tau_r = tau_rNumeric(),
-          Theta_r = theta_r(),
-          labels = c(input$legend_r, input$legend_f),
-          show_mi_result = TRUE
-        )[c(4,6,7,8)]
+          show_mi_result = input$tab_strict
+        )
       }
     })
     
     output$distPlot <- renderPlot({
       validations()
-      partInvOutput()[2]
-    })
-    
-    
-    output$distPlotstrict <- renderPlot({
-      validations()
-      partInvOutput()[4]
+      plot(partInvOutput())
     })
     
     output$table <- renderTable(rownames = TRUE, {
       validations()
-      partInvOutput()[1]
+      partInvOutput()$summary
     })
     
     output$tablestrict <- renderTable(rownames = TRUE, {
       validations()
-      partInvOutput()[3]
+      partInvOutput()$summary_mi
     })
     
     output$distPlot_m <- renderTable(rownames = TRUE, {
@@ -1211,7 +1147,7 @@ myApp <- function(...) {
     })
     output$table_m <- renderTable(rownames = TRUE, {
       validations()
-      if(input$tab_strictm == FALSE){
+      if (input$tab_strictm == FALSE) {
         partInvOutput()
       }else{
         partInvOutput()[1]
