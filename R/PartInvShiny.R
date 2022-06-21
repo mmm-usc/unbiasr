@@ -1133,20 +1133,12 @@ myApp <- function(...) {
     
     output$table <- renderTable(rownames = TRUE, {
       validations()
-<<<<<<< HEAD
-      partInvOutput()[[1]]
-=======
       partInvOutput()$summary
->>>>>>> 5a0746a781aec4a6a49a63855d9fbb1c14404a0a
     })
     
     output$tablestrict <- renderTable(rownames = TRUE, {
       validations()
-<<<<<<< HEAD
-      partInvOutput()[[3]]
-=======
       partInvOutput()$summary_mi
->>>>>>> 5a0746a781aec4a6a49a63855d9fbb1c14404a0a
     })
     
     output$distPlot_m <- renderTable(rownames = TRUE, {
