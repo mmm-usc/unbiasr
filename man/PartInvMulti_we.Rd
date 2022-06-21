@@ -3,7 +3,7 @@
 \name{PartInvMulti_we}
 \alias{PartInvMulti_we}
 \alias{PartInv}
-\title{Evaluate selection accuracy based on the MCAA Framework}
+\title{Evaluating selection accuracy based on the MCAA Framework}
 \usage{
 PartInvMulti_we(
   propsel,
@@ -27,7 +27,7 @@ PartInvMulti_we(
   Theta_r,
   Theta_f = Theta_r,
   pmix_ref = 0.5,
-  plot_contour = TRUE,
+  plot_contour = FALSE,
   show_mi_result = FALSE,
   labels = c("Reference", "Focal"),
   ...
@@ -55,84 +55,81 @@ PartInv(
   Theta_r,
   Theta_f = Theta_r,
   pmix_ref = 0.5,
-  plot_contour = TRUE,
+  plot_contour = FALSE,
   show_mi_result = FALSE,
   labels = c("Reference", "Focal"),
   ...
 )
 }
 \arguments{
-\item{propsel}{proportion of selection. If missing, computed using \code{cut_z}.}
+\item{propsel}{Proportion of selection. If missing, computed using \code{cut_z}.}
 
-\item{cut_z}{pre-specified cutoff score on the observed composite. This
+\item{cut_z}{Pre-specified cutoff score on the observed composite. This
 argument is ignored when \code{propsel} has input.}
 
-\item{weights_item}{a vector of item weights}
+\item{weights_item}{A vector of item weights.}
 
-\item{weights_latent}{a vector of latent factor weights}
+\item{weights_latent}{A vector of latent factor weights.}
 
-\item{alpha_r}{a vector of latent factor means for the reference group.}
+\item{alpha_r}{A vector of latent factor means for the reference group.}
 
-\item{alpha_f}{(optional) a vector of latent factor means for the focal group;
-if no input, set equal to alpha_r.}
+\item{alpha_f}{(optional) A vector of latent factor means for the focal group;
+if no input, set equal to \code{alpha_r}.}
 
-\item{phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f}{deprecated; included
+\item{phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f}{Deprecated; included
 only for backward compatibility.}
 
-\item{psi_r}{a matrix of latent factor variance-covariances for the
+\item{psi_r}{A matrix of latent factor variance-covariances for the
 reference group.}
 
-\item{psi_f}{(optional) a matrix of latent factor variance-covariances for
-the focal group; if no input, set equal to psi_r.}
+\item{psi_f}{(optional) A matrix of latent factor variance-covariances for
+the focal group; if no input, set equal to \code{psi_r}.}
 
-\item{lambda_r}{a matrix of factor loadings for the reference group.}
+\item{lambda_r}{A matrix of factor loadings for the reference group.}
 
 \item{lambda_f}{(optional) a matrix of factor loadings for the focal group;
-if no input, set equal to lambda_r.}
+if no input, set equal to \code{lambda_r}.}
 
-\item{nu_r}{a matrix of measurement intercepts for the reference group.}
+\item{nu_r}{A matrix of measurement intercepts for the reference group.}
 
-\item{nu_f}{(optional) a matrix of measurement intercepts for the focal group;
-if no input, set equal to nu_r.}
+\item{nu_f}{(optional) A matrix of measurement intercepts for the focal
+group; if no input, set equal to \code{nu_r}.}
 
-\item{Theta_r}{a matrix of the unique factor variances and covariances
+\item{Theta_r}{A matrix of the unique factor variances and covariances
 for the reference group.}
 
-\item{Theta_f}{(optional) a matrix of the unique factor variances and
-covariances for the focal group; if no input, set equal to Theta_r.}
+\item{Theta_f}{(optional) A matrix of the unique factor variances and
+covariances for the focal group; if no input, set equal to \code{Theta_r}.}
 
-\item{pmix_ref}{Proportion of the reference group;
-default to 0.5 (i.e., two populations have equal size).}
+\item{pmix_ref}{Proportion of the reference group; default to 0.5 (i.e., two
+populations have equal size).}
 
-\item{plot_contour}{logical; whether the contour of the two populations
-should be plotted; default to TRUE.}
+\item{plot_contour}{Logical; whether the contour of the two populations
+should be plotted; default to \code{TRUE}.}
 
 \item{show_mi_result}{If \code{TRUE}, perform selection accuracy analysis
-for both the input parameters and the implied
-parameters based on a strict invariance model, with
-common parameter values as weighted averages of
-the input values using \code{pmix_ref}.}
+for both the input parameters and the implied parameters based on a
+strict invariance model, with common parameter values as weighted
+averages of the input values using \code{pmix_ref}.}
 
-\item{labels}{a character vector with two elements to label the reference
+\item{labels}{A character vector with two elements to label the reference
 and the focal group on the graph.}
 
-\item{...}{other arguments passed to the \code{\link[graphics]{contour}}
+\item{...}{Other arguments passed to the \code{\link[graphics]{contour}}
 function.}
 }
 \value{
 The output will be a list of four elements and a plot if
 \code{plot_contour == TRUE}:
-\enumerate{
-\item propsel: echo the same argument as input.
-\item cutpt_xi: cut point on the latent scale (xi).
-\item cutpt_z: cut point on the observed scale (Z).
-\item summary: A 8 x 3 table, with columns representing the reference,
+\item{propsel}{Echo the same argument as input.}
+\item{cutpt_xi}{Cut point on the latent scale (xi).}
+\item{cutpt_z}{Cut point on the observed scale (Z).}
+\item{summary}{A 8 x 3 table, with columns representing the reference,
 the focal, and the expected results if the latent distribution of
 focal group matches the reference group. The rows represent
 probabilities of true positive (A), false positive (B),
 true negative (C), false negative (D); proportion selected,
-success ratio, sensitivity, and specificity.
-}
+success ratio, sensitivity, and specificity.}
 }
 \description{
 \code{PartInv, PartInvMulti_we} evaluate partial measurement invariance using
@@ -140,19 +137,30 @@ an extension of Millsap & Kwok's (2004) approach
 }
 \examples{
 # Single dimension
-PartInv(propsel = .10,
-        weights_item = c(1, 0.9, 0.8, 1),
+PartInv(propsel = .30,
+        weights_item = c(1, 1, 1, 1),
         weights_latent = 1,
+        alpha_r = 0,
+        alpha_f = 0,
+        psi_r = 1,
+        lambda_r = c(1, 1, 1, 1),
+        nu_r = c(1, 1, 1, 2),
+        nu_f = c(1, 1, 1, 1),
+        Theta_r = diag(1, 4),
+        labels = c("Female", "Male"),
+        show_mi_result = FALSE)
+ res <- PartInv(propsel = .50,
         alpha_r = 0.5,
         alpha_f = 0,
         psi_r = 1,
-        lambda_r = c(.3, .5, .9, .7),
-        nu_r = c(.225, .025, .010, .240),
-        nu_f = c(.225, -.05, .240, -.025),
-        Theta_r = diag(.96, 4),
-        labels = c("Female", "Male"))
+        lambda_r = c(1, 1, 1, 1),
+        nu_r = c(1, 2, 1, 2),
+        nu_f = c(1, 1, 1, 1),
+        Theta_r = diag(1, 4),
+        labels = c("Female", "Male"),
+        show_mi_result = TRUE)
 # multiple dimensions
-lambda_matrix <- matrix(0,nrow = 5, ncol = 2)
+lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
 lambda_matrix[1:2, 1] <- c(.322, .655)
 lambda_matrix[3:5, 2] <- c(.398, .745, .543)
 PartInv(propsel = .05,
@@ -175,5 +183,6 @@ PartInvMulti_we(propsel = .10,
                 nu_r = c(.225, .025, .010, .240),
                 nu_f = c(.225, -.05, .240, -.025),
                 Theta_r = diag(.96, 4),
-                labels = c("female", "male"))
+                labels = c("female", "male"),
+                show_mi_result = TRUE)
 }

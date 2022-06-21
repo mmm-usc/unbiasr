@@ -20,17 +20,32 @@ piout_eq <- PartInv(
   labels = c("female", "male")
 )
 
-test_that("PartInv() returns a data frame and a graph", {
-  pidf <- vapply(piout, FUN = inherits, what = c("data.frame"), 
+test_that("PartInv() returns a data frame", {
+  pidf <- vapply(piout, FUN = inherits, what = c("data.frame"),
                  FUN.VALUE = logical(1))
-  piplot <- vapply(piout, FUN = inherits, what = c("recordedplot"), 
-                   FUN.VALUE = logical(1))
   expect_true(any(pidf))
-  expect_true(any(piplot))
+})
+
+test_that("plot.PartInv() works successfully", {
+  expect_error(plot(piout), regexp = NA)
+  expect_error(plot(piout, which_result = "mi"))
+  piout_with_mi <- PartInv(
+    .10,
+    kappa_r = 0.5,
+    kappa_f = 0,
+    phi_r = 1,
+    lambda_r = c(.3, .5, .9, .7, .8),
+    tau_r = c(.225, .025, .010, .240, .123),
+    Theta_r = diag(.96, 5),
+    labels = c("female", "male"),
+    show_mi_result = TRUE
+  )
+  expect_error(plot(piout_with_mi, which_result = "mi"),
+               regexp = NA)
 })
 
 test_that("Identical selection with the same parameters", {
-  expect_equal(piout_eq$summary[ , 1], 
+  expect_equal(piout_eq$summary[ , 1],
                piout_eq$summary[ , 2])
   expect_equal(piout_eq$summary["Proportion selected", 1], .10)
 })
@@ -113,9 +128,9 @@ test_that("PartInv() output passes logical test", {
   expect_equal(sum(psel_strict), psel * 2)
   expect_gt(psel_pstrict["reference"] - psel_strict["reference"], 0)
   expect_lt(abs(
-    sum_ps["Specificity", "reference"] - 
-      sum_ps["C (true negative)", "reference"] / 
-      (sum_ps["C (true negative)", "reference"] + 
+    sum_ps["Specificity", "reference"] -
+      sum_ps["C (true negative)", "reference"] /
+      (sum_ps["C (true negative)", "reference"] +
          sum_ps["B (false positive)", "reference"])),
     .0005)
 })
