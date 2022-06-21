@@ -1197,12 +1197,12 @@ myApp <- function(...) {
     
     output$table <- renderTable(rownames = TRUE, {
       validations()
-      partInvOutput()[1]
+      partInvOutput()[[1]]
     })
     
     output$tablestrict <- renderTable(rownames = TRUE, {
       validations()
-      partInvOutput()[3]
+      partInvOutput()[[3]]
     })
     
     output$distPlot_m <- renderTable(rownames = TRUE, {
