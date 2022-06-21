@@ -1128,7 +1128,12 @@ myApp <- function(...) {
     
     output$distPlot <- renderPlot({
       validations()
-      plot(partInvOutput())
+      plot(partInvOutput(), which_result = "pi")
+    })
+    
+    output$distPlotstrict <- renderPlot({
+      validations()
+      plot(partInvOutput(), which_result = "mi")
     })
     
     output$table <- renderTable(rownames = TRUE, {
