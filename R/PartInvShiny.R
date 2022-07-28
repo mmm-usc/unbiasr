@@ -6,7 +6,7 @@
 #' @importFrom shinyWidgets materialSwitch
 #' @importFrom shinyMatrix matrixInput
 #' @export
-myApp <- function(...) {
+launch <- function(...) {
   ui <- dashboardPage(
     dashboardHeader(title = "Computation of Selection Accuracy Indexes",
                     titleWidth = 400),
@@ -1166,3 +1166,7 @@ myApp <- function(...) {
   }
   shinyApp(ui, server = server, ...)
 }
+
+#' @rdname launch
+#' @export
+myApp <- launch
