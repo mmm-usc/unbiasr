@@ -46,24 +46,24 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
 }
 
 #'@export
-plot.PartInv <- function(obj, labels,
+plot.PartInv <- function(x, labels,
                          which_result = c("pi", "mi"), ...) {
     which_result <- match.arg(which_result)
     if (which_result == "pi") {
-        plot_dat <- obj$bivar_data
-        cut_xi <- obj$cutpt_xi
-        cut_z <- obj$cutpt_z
-        summ <- obj$summary
+        plot_dat <- x$bivar_data
+        cut_xi <- x$cutpt_xi
+        cut_z <- x$cutpt_z
+        summ <- x$summary
     } else if (which_result == "mi") {
-        summ <- obj$summary_mi
+        summ <- x$summary_mi
         if (is.null(summ)) {
             stop("Strict invariance results not found. ",
                  "Please include `show_mi_result = TRUE` ",
                  "when running `PartInv()`")
         }
-        plot_dat <- obj$bivar_data_mi
-        cut_xi <- obj$cutpt_xi_mi
-        cut_z <- obj$cutpt_z_mi
+        plot_dat <- x$bivar_data_mi
+        cut_xi <- x$cutpt_xi_mi
+        cut_z <- x$cutpt_z_mi
     }
     if (missing(labels)) {
         labels <- colnames(summ)[1:2]
