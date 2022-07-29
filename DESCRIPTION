@@ -35,10 +35,10 @@ Suggests:
     testthat,
     shinytest
 Imports: 
+    methods,
     mnormt,
     shiny,
     shinydashboard,
     shinyjs,
     shinyMatrix,
-    shinyWidgets,
-    roxygen2
+    shinyWidgets
