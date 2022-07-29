@@ -6,7 +6,6 @@ stars <-
 dashes <-
   "-----------------------------------------------------------------------"
 
-#'@export
 setClass("PartInvSummary",
          representation(
            summary = "data.frame"
@@ -22,7 +21,6 @@ print.PartInvSummary <- function(x, ...) {
   print(round(x, 3))
 }
 
-#'@export
 setClass("PartInv_groups",
          representation(
            tab = "data.frame"
@@ -36,7 +34,6 @@ print.PartInv_groups <- function(x, ...) {
   print(round(x, 3))
 }
 
-#'@export
 setClass("PartInv",
          representation(
            propsel = "numeric",
@@ -71,7 +68,6 @@ print.PartInv <- function(x, ...) {
   #}
 }
 
-#'@export
 setClass("PartInvList",
          representation(
            outputlist = "list",
