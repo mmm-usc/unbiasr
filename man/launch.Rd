@@ -9,6 +9,9 @@ launch(...)
 
 myApp(...)
 }
+\arguments{
+\item{...}{Currently not used.}
+}
 \description{
 Launch the 'PartInv' app
 }

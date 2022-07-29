@@ -1,4 +1,6 @@
 #' Launch the 'PartInv' app
+#' 
+#' @param ... Currently not used.
 #'
 #' @import shiny
 #' @import shinydashboard
@@ -202,7 +204,7 @@ launch <- function(...) {
                        #HTML style buttons side by side
                        div(style = "display:inline-block, float:right",
                            materialSwitch(
-                             "useMatrix",
+                             "usematrix",
                              "Matrix input?",
                              status = "primary",
                              FALSE,
@@ -451,7 +453,7 @@ launch <- function(...) {
                 #HTML style buttons side by side
                 div(style = "display:inline-block, float:right",
                     materialSwitch(
-                      "useMatrixm",
+                      "usematrixm",
                       "Matrix input?",
                       status = "primary",
                       FALSE,
@@ -665,9 +667,9 @@ launch <- function(...) {
 
     
     #if either button press is observed
-    observeEvent(list(input$usetheta_f, input$useMatrix), {
+    observeEvent(list(input$usetheta_f, input$usematrix), {
       #for every combination of the two buttons, show/hide the appropriate inputs
-      if (input$useMatrix == FALSE & input$usetheta_f == TRUE) {
+      if (input$usematrix == FALSE & input$usetheta_f == TRUE) {
         shinyjs::show(id = "theta_f")
         shinyjs::show(id = "theta_r")
         shinyjs::hide(id = "theta_rMatrixTitle")
@@ -677,7 +679,7 @@ launch <- function(...) {
         shinyjs::hide(id = "matrixSlider")
         
       }
-      else if (input$useMatrix == FALSE & input$usetheta_f == FALSE) {
+      else if (input$usematrix == FALSE & input$usetheta_f == FALSE) {
         shinyjs::hide(id = "theta_f")
         shinyjs::show(id = "theta_r")
         shinyjs::hide(id = "theta_rMatrixTitle")
@@ -686,7 +688,7 @@ launch <- function(...) {
         shinyjs::hide(id = "theta_fMatrixUI")
         shinyjs::hide(id = "matrixSlider")
       }
-      else if (input$useMatrix == TRUE & input$usetheta_f == FALSE) {
+      else if (input$usematrix == TRUE & input$usetheta_f == FALSE) {
         shinyjs::hide(id = "theta_f")
         shinyjs::hide(id = "theta_r")
         shinyjs::show(id = "theta_rMatrixTitle")
@@ -793,13 +795,13 @@ launch <- function(...) {
     #set theta_f output to either the diagonal inputs or matrix inputs
     #for theta_r and theta_f depending on button presses
     theta_f <- reactive({
-      if (input$usetheta_f == FALSE & input$useMatrix == FALSE) {
+      if (input$usetheta_f == FALSE & input$usematrix == FALSE) {
         theta_f = diag(theta_rNumeric())
       }
-      else if (input$usetheta_f == TRUE & input$useMatrix == FALSE) {
+      else if (input$usetheta_f == TRUE & input$usematrix == FALSE) {
         theta_f = diag(theta_fNumeric())
       }
-      else if (input$usetheta_f == TRUE & input$useMatrix == TRUE) {
+      else if (input$usetheta_f == TRUE & input$usematrix == TRUE) {
         theta_f = input$theta_fMatrixInput
       }
       else{
@@ -808,7 +810,7 @@ launch <- function(...) {
     })
     
     theta_r <- reactive({
-      if (input$useMatrix == TRUE) {
+      if (input$usematrix == TRUE) {
         theta_r = input$theta_rMatrixInput
       }
       else{
@@ -869,9 +871,9 @@ launch <- function(...) {
       }
     })
     #if either button press is observed
-    observeEvent(list(input$usetheta_fm, input$useMatrixm), {
+    observeEvent(list(input$usetheta_fm, input$usematrixm), {
       #for every combination of the two buttons, show/hide the appropriate inputs
-      if (input$useMatrixm == FALSE & input$usetheta_fm == TRUE) {
+      if (input$usematrixm == FALSE & input$usetheta_fm == TRUE) {
         shinyjs::show(id = "theta_fm")
         shinyjs::show(id = "theta_rm")
         shinyjs::hide(id = "theta_rMatrixm")
@@ -881,7 +883,7 @@ launch <- function(...) {
         shinyjs::hide(id = "matrixSliderm")
         
       }
-      else if (input$useMatrixm == FALSE & input$usetheta_fm == FALSE) {
+      else if (input$usematrixm == FALSE & input$usetheta_fm == FALSE) {
         shinyjs::hide(id = "theta_fm")
         shinyjs::show(id = "theta_rm")
         shinyjs::hide(id = "theta_rMatrixm")
@@ -890,7 +892,7 @@ launch <- function(...) {
         shinyjs::hide(id = "theta_fMatrixmUI")
         shinyjs::hide(id = "matrixSliderm")
       }
-      else if (input$useMatrixm == TRUE & input$usetheta_fm == FALSE) {
+      else if (input$usematrixm == TRUE & input$usetheta_fm == FALSE) {
         shinyjs::hide(id = "theta_fm")
         shinyjs::hide(id = "theta_rm")
         shinyjs::show(id = "theta_rMatrixm")
@@ -952,14 +954,15 @@ launch <- function(...) {
     })
     
     #set lambda_f to lambda_r input or lambda_f input depending on button press
-    lambda_fm <- reactive({
-      if (input$uselambda_fm == FALSE) {
-        lambda_f = lambda_rNumeric_m()
-      }
-      else{
-        lambda_f = lambda_fNumeric_m()
-      }
-    })
+    # Commented out as lambda_fNumeric_m and lambda_rNumeric_m were not defined.
+    # lambda_fm <- reactive({
+    #   if (input$uselambda_fm == FALSE) {
+    #     lambda_f = lambda_rNumeric_m()
+    #   }
+    #   else{
+    #     lambda_f = lambda_fNumeric_m()
+    #   }
+    # })
     tau_fm <- reactive({
       if (input$usetau_f == FALSE) {
         tau_f = tau_rNumeric_m()
@@ -969,13 +972,13 @@ launch <- function(...) {
       }
     })
     theta_fm <- reactive({
-      if (input$usetheta_fm == FALSE & input$useMatrixm == FALSE) {
+      if (input$usetheta_fm == FALSE & input$usematrixm == FALSE) {
         theta_f = diag(theta_rNumeric_m())
       }
-      else if (input$usetheta_fm == TRUE & input$useMatrixm == FALSE) {
+      else if (input$usetheta_fm == TRUE & input$usematrixm == FALSE) {
         theta_f = diag(theta_fNumeric_m())
       }
-      else if (input$usetheta_fm == TRUE & input$useMatrixm == TRUE) {
+      else if (input$usetheta_fm == TRUE & input$usematrixm == TRUE) {
         theta_f = input$theta_fMatrixm
       }
       else{
@@ -984,7 +987,7 @@ launch <- function(...) {
     })
     
     theta_rm <- reactive({
-      if (input$useMatrixm == TRUE) {
+      if (input$usematrixm == TRUE) {
         theta_r = input$theta_rMatrixm
       }
       else{
@@ -1036,45 +1039,45 @@ launch <- function(...) {
             "intercepts for referance and focal groups need to have the same number of values\n"
           )
         },
-        if (input$useMatrix == FALSE && input$usetheta_f == TRUE) {
+        if (input$usematrix == FALSE && input$usetheta_f == TRUE) {
           need(
             length(theta_rNumeric()) == length(theta_fNumeric()),
             "(placeholder) diagonals of referance and focal groups must match"
           )
         },
         #only checks for numeric input of theta_r when matrix is not being used as input
-        if (input$useMatrix == FALSE) {
+        if (input$usematrix == FALSE) {
           need(
             input$theta_r,
             "Input for unique variance-covariance matrix of reference group is missing\n"
           )
         },
-        if (input$useMatrix == FALSE && length(theta_rNumeric()) > 0) {
+        if (input$usematrix == FALSE && length(theta_rNumeric()) > 0) {
           need(
             length(theta_rNumeric()) == length(lambda_rNumeric()),
             "number of inputs for measurement intercepts must match factor loadings"
           )
         },
-        if (input$useMatrix == TRUE) {
+        if (input$usematrix == TRUE) {
           need(
             input$matrixSlider == length(lambda_rNumeric()),
             "Matrix dimensions must match # loadings and intercepts\n"
           )
         },
-        if (input$useMatrix == TRUE) {
+        if (input$usematrix == TRUE) {
           need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
                "reference matrix empty")
         },
-        if (input$useMatrix == TRUE && input$usetheta_f == TRUE) {
+        if (input$usematrix == TRUE && input$usetheta_f == TRUE) {
           need(length(unique(theta_f())) / length(lambda_rNumeric())[1] != 1,
                "focal matrix empty")
         },
-        if (input$useMatrix == TRUE) {
+        if (input$usematrix == TRUE) {
           need(isSymmetric(input$theta_rMatrixInput) &&
                  is_symmetric_posdef(input$theta_rMatrixInput),
                "reference Theta matrix not positive definite")
         },
-        if (input$useMatrix == TRUE && input$usetheta_f == TRUE) {
+        if (input$usematrix == TRUE && input$usetheta_f == TRUE) {
           need(isSymmetric(input$theta_fMatrixInput) &&
                  is_symmetric_posdef(input$theta_fMatrixInput),
                "focal Theta matrix not positive definite")
