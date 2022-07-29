@@ -258,7 +258,7 @@ launch <- function(...) {
                        numericInput(
                          "kappa_r",
                          "Latent factor mean \\( \\kappa \\) for the reference group:",
-                         value = 0.5,
+                         value = 0,
                          min = 0,
                          max = 1,
                          step = 0.01
@@ -300,15 +300,15 @@ launch <- function(...) {
                        numericInput(
                          "cut_z",
                          "Cutoff score on the observed composite:",
-                         value = 0.5,
-                         min = 0,
-                         max = 1,
+                         value = 0,
+                         min = -100,
+                         max = 100,
                          step = 0.01
                        ),
                        numericInput(
                          "prop",
                          "Selection proportion:",
-                         value = 0.5,
+                         value = 0.25,
                          min = 0,
                          max = 1,
                          step = 0.01
