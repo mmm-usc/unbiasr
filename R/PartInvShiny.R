@@ -315,7 +315,7 @@ launch <- function(...) {
                        ),
                        numericInput(
                          "pmix",
-                         "Mixing proportion:",
+                         "Mixing proportion (reference group; 0 to 1):",
                          value = 0.5,
                          min = 0,
                          max = 1,
