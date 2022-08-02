@@ -652,6 +652,10 @@ myApp <- function(...) {
           length(lambda_rNumeric()) == length(tau_rNumeric()),
           "Factor loadings and intercepts need to have the same value\n"
         ),
+        need(
+          input$usepropsel || !is.na(input$cut_z),
+          "Input for cutoff score is missing\n"
+        ),
         if (input$uselambda_f == TRUE) {
           need(
             length(lambda_rNumeric()) == length(lambda_fNumeric()),
