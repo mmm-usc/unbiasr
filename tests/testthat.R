@@ -1,4 +1,4 @@
 library(testthat)
-library(PartInvShinyUI)
+library(unbiasr)
 
-test_check("PartInvShinyUI")
+test_check("unbiasr")

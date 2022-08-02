@@ -4,21 +4,27 @@
 #' Multidimensional Classification Accuracy Analysis
 #' (MCAA) Framework for evaluating measurement invariance in the
 #' personnel selection context.
+#' 
+#' @details The app has three pages
+#' * Instruction: Provides direction for this Shinyapp
+#' * Single dimension: Implements the CAA framework for
+#'     single dimensional constructs
+#' * Multiple dimensions: Implements the MCAA framework for
+#'     multidimensional constructs
+#'
+#' @param ... Currently not used.
 #'
 #' @import shiny
 #' @import shinydashboard
 #' @importFrom shinyjs useShinyjs inlineCSS reset
 #' @importFrom shinyWidgets materialSwitch
 #' @importFrom shinyMatrix matrixInput
-#' @return The output is an R Shinyapp with three pages
-#'        \item{Instruction}{Provides direction for this Shinyapp}
-#'        \item{Single dimension}{Implements the MCAA framework for 
-#'        single dimensional constructs}
-#'        \item{Multidimensions}{Implements the MCAA framework for 
-#'        multidimensional constructs}
-#'@examples
+#'
+#' @examples
+#' \dontrun{
 #' myApp()
 #' launch()
+#' }
 #'@export
 myApp <- function(...) {
   ui <- dashboardPage(
@@ -334,21 +340,21 @@ myApp <- function(...) {
                          "cut_z",
                          "Cutoff score on the observed composite:",
                          value = NULL,
-                         min = 0,
-                         max = 1,
+                         min = -100,
+                         max = 100,
                          step = 0.01
                        ),
                        numericInput(
                          "prop",
                          "Selection proportion:",
-                         value = 0.5,
+                         value = 0.25,
                          min = 0,
                          max = 1,
                          step = 0.01
                        ),
                        numericInput(
                          "pmix",
-                         "Mixing proportion:",
+                         "Mixing proportion (reference group; 0 to 1):",
                          value = 0.5,
                          min = 0,
                          max = 1,
