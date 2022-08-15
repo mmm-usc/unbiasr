@@ -1,3 +1,0 @@
-library(PartInvShinyUI)
-
-myApp()
