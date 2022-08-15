@@ -27,6 +27,9 @@
 #' }
 #'@export
 myApp <- function(...) {
+  shiny::addResourcePath("images",
+                         system.file("www", "images",
+                                     package = "unbiasr"))
   ui <- dashboardPage(
     dashboardHeader(title = "Selection Accuracy Indexes",
                     titleWidth = 400),
@@ -86,28 +89,28 @@ myApp <- function(...) {
                       "Here is an example for how to use the app."),
                     p("The first step is to input group labels for the graph."
                     ),
-                    img(src="step1.png", align = "center",height='300px',width='270px'),
+                    img(src="images/step1.png", align = "center",height='300px',width='270px'),
                     p("Next, input factor loadings and intercepts
                        for each group."
                     ), 
-                    img(src="step2.png", align = "center",height='400px',width='270px'),
+                    img(src="images/step2.png", align = "center",height='400px',width='270px'),
                     p("Third, input unique factor variance-covariance matrix. 
                     You can choose to enter the diagonal of the covariance matrix, 
                     or upload the covariance matrix. Note the header should not be included. "
                     ), 
-                    img(src="step3.png", align = "center",height='400px',width='270px'),
+                    img(src="images/step3.png", align = "center",height='400px',width='270px'),
                     p("Then, input latent factor means and variances. Last, 
                       set selection parameters such as mixing proportion and selection proportion."
                     ), 
-                    img(src="step4.png", align = "center",height='500px',width='270px'),
+                    img(src="images/step4.png", align = "center",height='500px',width='270px'),
                     p("Lastly, set selection parameters such as mixing proportion 
                       and selection proportion."
                     ),
-                    img(src="step5.png", align = "center",height='300px',width='270px'),
+                    img(src="images/step5.png", align = "center",height='300px',width='270px'),
                     p("Here are the graph and the selection accuracy table"
                     ), 
-                    img(src="graph.png", align = "left",height='300px',width='290px'),
-                    img(src="table.png", align = "right",height='300px',width='290px'),
+                    img(src="images/graph.png", align = "left",height='300px',width='290px'),
+                    img(src="images/table.png", align = "right",height='300px',width='290px'),
                   ), 
                   
                   box(
