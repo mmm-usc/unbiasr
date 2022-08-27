@@ -32,17 +32,18 @@ get_aggregate_CAI <- function(pmixr, store_summary) {
 }
 
 #' @title
-#' Check if improvements in ACAI may be misleading.x
+#' Check for misleading improvements in aggregate CAI
 #' 
 #' @name 
 #' err_improv_acai
 #' 
 #' @description
-#' \code{err_improv_acai} Checks if any improvement observed in ACAI may have 
-#' resulted from the higher mixing proportion of the reference group masking 
-#' worsening performance for the focal group. If the effect size of any change 
-#' indicating worse performance for the focal group and better performance for
-#'  the reference group is larger than 0.1, prints a warning message.
+#' \code{err_improv_acai} checks if any improvement observed in aggregate CAI 
+#' may have resulted from the higher mixing proportion of the reference group 
+#' masking worsening performance for the focal group. If the effect size of any
+#' change indicating worse performance for the focal group and better
+#' performance for the reference group is larger than 0.1, prints a warning 
+#' message.
 #' @param i Index of item under consideration.
 #' @param store_summary_full PartInv summary for the case where all items are 
 #' retained.
@@ -54,35 +55,51 @@ err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
   f <- round(store_summary_full$Focal, 3)
   r_del1 <- round(store_summary_del1$Reference, 3)
   f_del1 <- round(store_summary_del1$Focal, 3)
-  if(# TP_f decreases/remains unchanged and TP_r increases, and either change has Cohen's h > 0.1
+  if(# TP_f decreases/remains unchanged and TP_r increases, and either
+     # change has Cohen's h > 0.1
     ((r[1] < r_del1[1]) & (f[1] >= f_del1[1]) & 
      (cohens_h(r[1], r_del1[1]) > 0.1 | cohens_h(f[1], f_del1[1]) > 0.1)) | 
-    # FP_r decreases and FP_f increases/remains unchanged, and either change has Cohen's h > 0.1
+    # FP_r decreases and FP_f increases/remains unchanged, and either change 
+    # has Cohen's h > 0.1
     ((r[2] > r_del1[2]) & (f[2] <= f_del1[2]) & 
        (cohens_h(r[2], r_del1[2]) > 0.1 | cohens_h(f[2], f_del1[2]) > 0.1)) | 
-    # TN_f decreases/remains unchanged and TN_r increases, and either change has Cohen's h > 0.1
+    # TN_f decreases/remains unchanged and TN_r increases, and either change 
+    # has Cohen's h > 0.1
     ((r[3] < r_del1[3]) & (f[3] >= f_del1[3]) & 
      (cohens_h(r[3], r_del1[3]) > 0.1 | cohens_h(f[3], f_del1[3]) > 0.1)) |  
-    # FN_r decreases and FN_f increases/remains unchanged, and either change has Cohen's h > 0.1
+    # FN_r decreases and FN_f increases/remains unchanged, and either change 
+    # has Cohen's h > 0.1
     ((r[4] > r_del1[4]) & (f[4] <= f_del1[4]) & 
        (cohens_h(r[4], r_del1[4]) > 0.1 | cohens_h(f[4], f_del1[4]) > 0.1))
     )
   {
     if((r[1] < r_del1[1]) & (f[1] > f_del1[1]) & 
-      (cohens_h(r[1 ], r_del1[1]) > 0.1|cohens_h(f[1],f_del1[1]) > 0.1)){
-      cat("Increases in ACAI related to the deletion of item ", i, "may be misleading due to \nthe mixing proportion. Examine TP values from detailed output tables for the \nreference and focal groups before proceeding.\n")
+      (cohens_h(r[1 ], r_del1[1]) > 0.1| cohens_h(f[1], f_del1[1]) > 0.1)){
+      cat("Increases in ACAI related to the deletion of item ", i, "may be
+          misleading due to \nthe mixing proportion. Examine TP values from 
+          detailed output tables for the \nreference and focal groups before 
+          proceeding.\n")
       }
     if((r[2] > r_del1[2]) & (f[2] < f_del1[2]) & 
-       (cohens_h(r[2 ], r_del1[2]) > 0.1|cohens_h(f[2],f_del1[2]) > 0.1)){
-      cat("Increases in ACAI related to the deletion of item ", i, "may be misleading due to \nthe mixing proportion. Examine FP values from detailed output tables for the \nreference and focal groups before proceeding.\n")
+       (cohens_h(r[2 ], r_del1[2]) > 0.1|cohens_h(f[2], f_del1[2]) > 0.1)){
+      cat("Increases in ACAI related to the deletion of item ", i, "may be 
+          misleading due to \nthe mixing proportion. Examine FP values from 
+          detailed output tables for the \nreference and focal groups before 
+          proceeding.\n")
       }
     if((r[3] < r_del1[3]) & (f[3] > f_del1[3]) & 
-       (cohens_h(r[3 ], r_del1[3]) > 0.1|cohens_h(f[3],f_del1[3]) > 0.1)){
-      cat("Increases in ACAI related to the deletion of item ", i, "may be misleading due to \nthe mixing proportion. Examine TN values from detailed output tables for the \nreference and focal groups before proceeding.\n")
+       (cohens_h(r[3 ], r_del1[3]) > 0.1|cohens_h(f[3], f_del1[3]) > 0.1)){
+      cat("Increases in ACAI related to the deletion of item ", i, "may be
+          misleading due to \nthe mixing proportion. Examine TN values from
+          detailed output tables for the \nreference and focal groups before
+          proceeding.\n")
       }
     if((r[4] > r_del1[4]) & (f[4] < f_del1[4]) & 
-      (cohens_h(r[4 ], r_del1[4]) > 0.1|cohens_h(f[4],f_del1[4]) > 0.1)){
-      cat("Increases in ACAI related to the deletion of item ", i, "may be misleading due to \nthe mixing proportion. Examine FN values from detailed output tables for the \nreference and focal groups before proceeding.\n")
+      (cohens_h(r[4 ], r_del1[4]) > 0.1| cohens_h(f[4], f_del1[4]) > 0.1)){
+      cat("Increases in ACAI related to the deletion of item ", i, "may be
+          misleading due to \nthe mixing proportion. Examine FN values from
+          detailed output tables for the \nreference and focal groups before
+          proceeding.\n")
     }
     }
   }
@@ -130,7 +147,7 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
                                del_i){
   n_items <- length(weights_item)
   new_w <- weights_item; new_w[del_i] <- 0
-  del_weight <- weights_item[del_i] #the weight to be redistributed
+  del_weight <- weights_item[del_i] # the weight to be redistributed
    
   # Unidimensional
   if ((n_dim == 1) & (is.null(n_i_per_dim) | length(n_i_per_dim) == 1)) {
@@ -177,13 +194,13 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
 
 
 #' @title 
-#' Compute Cohen's h effect size for the difference in two proportions
+#' Compute Cohen's h effect size for the difference in two proportions.
 #' 
 #' @name 
 #' cohens_h
 #' 
 #' @description 
-#' \code{cohens_h} Computes Cohen's h (Cohen, 1988) for the difference in two 
+#' \code{cohens_h} computes Cohen's h (Cohen, 1988) for the difference in two 
 #' proportions using \eqn{h = 2arcsin(\sqrt{p1}) - 2arcsin(\sqrt{p2})}. 
 #' 
 #' @param p1 The first proportion.
@@ -205,17 +222,13 @@ cohens_h <- function(p1, p2) {
 #' delta_h
 #' 
 #' @description 
-#' \code{delta_h} Uses the formula below to compute the effect size for impact 
-#' of item bias by comparing Cohen's h values for CAI when an item is deleted vs.
-#' CAI when all items are included.
+#' \code{delta_h} Computes the effect size of the impact of item bias by 
+#' comparing Cohen's h values for CAI for the full versus delete-one item sets.
 #' 
-#' e.g. for the improvement in SE:
-#' 
-#' \eqn{\Delta h^{|k}(SE)=\text{sign}\left(|h({SE)}|-|h^{|k}(SE)|\right)||h^{|k}(SE)|-|h(SE)||}
 #' @param h_R h effect sizes for when the item is included.
 #' @param h_i_del h effect sizes for when the item is deleted.
-#' @return Cohen's h for the difference in the selection accuracy index when the
-#'         item is deleted.
+#' @return Cohen's h for the difference in the classification accuracy index 
+#' when the item is deleted.
 #' @examples
 #' delta_h(0.04, 0.01)
 #' delta_h(-0.002, 0.011)
@@ -226,23 +239,20 @@ delta_h <- function(h_R, h_i_del) {
 
 
 #' @title 
-#' Classification accuracy indices for the reference and focal groups, and 
-#' Cohen's h for the difference under strict vs. partial invariance for each group.
+#' Compute Cohen's h for the difference under strict vs. partial invariance for
+#' the reference and the focal group.
 #' 
 #' @name 
 #' acc_indices_h
 #' 
 #' @description 
-#' \code{acc_indices_h} Takes in outputs from [PartInv()] 
-#' and returns two restructured data frames with the selection accuracy indices  
-#' for the reference and focal groups under the strict invariance and partial
-#' invariance conditions, and the corresponding h for the difference in the 
-#' selection accuracy indices between these two conditions for each group.
-
-#' @param strict_output [PartInv()]  output (a list) under strict 
-#'        invariance. 
-#' @param partial_output [PartInv()] output (a list) under partial
-#'        invariance.
+#' \code{acc_indices_h} takes in outputs from [PartInv()] 
+#' and returns two restructured data frames with the classification accuracy   
+#' indices for the reference and focal groups under strict invariance and 
+#' partial invariance conditions, and the corresponding h for the difference in  
+#' CAI between the two invariance conditions for each group.
+#' @param strict_output Output from [PartInv()] under strict invariance. 
+#' @param partial_output Output from [PartInv()] under partial invariance. 
 #' @return A 8 x 3 dataframe with columns `strict invariance`, 
 #'        `partial invariance`, and `h`.
 acc_indices_h <- function(strict_output, partial_output) {
@@ -286,7 +296,17 @@ acc_indices_h <- function(strict_output, partial_output) {
 #' 
 #' 
 #' @return A vector containing the indices of the biased items.
-       
+#' @examples 
+#' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
+#' lambda_matrix[1:2, 1] <- c(.322, .655)
+#' lambda_matrix[3:5, 2] <- c(.398, .745, .543)
+#' determine_biased_items(lambda_r = lambda_matrix,
+#'                        lambda_f = lambda_matrix, 
+#'                        nu_r = c(.225, .025, .010, .240, .125),
+#'                        nu_f = c(.225, -.05, .240, -.025, .125),
+#'                        Theta_r = diag(1, 5),  
+#'                        Theta_f = diag(c(1, .95, .80, .75, 1)), 
+#'                        weights = c(1/4, 1/4, 1/6, 1/6, 1/6))       
 determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f, 
                                    Theta_r, Theta_f, weights) {
   biased_lambda <- biased_theta <- biased_nu <- c()
@@ -301,7 +321,7 @@ determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f,
     biased_lambda <- c(biased_lambda, items)
   } 
   # Compare uniqueness
-  if(is.matrix(Theta_r)) {
+  if(is.matrix(Theta_r) & is.matrix(Theta_f)) {
     for(i in seq_len(ncol(Theta_r))) {
       biased_theta <- c(biased_theta, 
                         as.vector(which(Theta_r[,i] != Theta_f[,i])))}

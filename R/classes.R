@@ -60,13 +60,6 @@ print.PartInv <- function(obj) {
   if (!is.null(obj$plot)) {
     print(obj$plot)
   }
-#  if(!is.null(obj$summary_mi)) {
-#  cat("\nMI ")
- #   print.PartInvSummary(obj$summary_mi)
-#  }
-  #if(!is.null(obj$p_mi)){
-  #  print(obj$plot)
-  #}
 }
 
 #'@export
@@ -143,7 +136,7 @@ setClass("itemdeletion",
     h_aggregate_str_par = "matrix",
     Ref_foc = "PartInvList",
     PartInv = "PartInvList",
-    detail = "logical",
+    formatted = "logical",
     return_items = "list"
 )
 )
@@ -153,11 +146,11 @@ print.itemdeletion <- function(obj) {
   item_set <- obj$return_items
   # ------------------------------------------------------------------------
   # DEFAULT OUTPUT: only biased items printed
-  if (!obj$detail) {
+  if (obj$formatted) {
     cat(paste0(stars, "\nAGGREGATE CLASSIFICATION ACCURACY INDICES (ACAI)\n", stars))
-    cat("\nACAI under PFI computed for item subsets:\n")
+    cat("\nAggregate CAI under PFI computed for item subsets:\n")
     print(round(obj$`ACAI`[c(1, item_set + 1), , drop = FALSE], 3))
-    cat("\nImpact of deleting an item on ACAI under PFI:\n")
+    cat("\nImpact of deleting an item on aggregate CAI under PFI:\n")
     print(round(obj$`h ACAI (deletion)`[c(item_set), , drop = FALSE], 3))
     cat(paste0("\n", stars, "\nAdverse Impact (AI) ratio for item subsets by invariance condition:\n", stars, "\n"))
     print(round(obj$AI[c(1, item_set + 1), , drop = FALSE], 3))
@@ -168,13 +161,13 @@ print.itemdeletion <- function(obj) {
     print(round(obj$`delta h CAI Ref-EF (deletion)`[c(item_set), 5:8, drop = FALSE], 3))
   }
  # ------------------------------------------------------------------------
-  if (obj$detail) { #
+  if (!obj$formatted) { #
     cat(paste0(stars, "\nAGGREGATE CLASSIFICATION ACCURACY INDICES (ACAI)\n", stars))
-    cat("\nACAI under PFI computed for item subsets:\n")
+    cat("\nAggregate CAI under PFI computed for item subsets:\n")
     print(round(obj$`ACAI`[c(1, item_set + 1), , drop = FALSE], 3))
-    cat("\nImpact of deleting an item on ACAI under PFI:\n")
+    cat("\nImpact of deleting an item on aggregate CAI under PFI:\n")
     print(round(obj$`h ACAI (deletion)`[c(item_set), , drop = FALSE], 3))
-    cat(paste0(dashes, "\nDiscrepancy between ACAI under SFI vs. PFI: \n"))
+    cat(paste0(dashes, "\nDiscrepancy between aggregate CAI under SFI vs. PFI: \n"))
     print(round(obj$`h ACAI SFI-PFI`[c(1, item_set + 1), , drop = FALSE], 3))
     cat("\nImpact of deleting an item on the discrepancy between ACAI \nunder SFI vs. ACAI under PFI:\n")
     print(round(obj$`delta h ACAI SFI-PFI (deletion)`[c(item_set), , drop = FALSE], 3))

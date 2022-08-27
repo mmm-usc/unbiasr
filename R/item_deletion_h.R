@@ -1,5 +1,5 @@
 #' @title
-#' Effect size of item deletion on selection accuracy
+#' Impact of deleting biased item(s) on classification accuracy indices
 #' 
 #' @name
 #' item_deletion_h
@@ -14,7 +14,7 @@
 #'  invariance (PFI); and between aggregate CAI computed for item subsets.
 #' @param propsel Proportion of selection. If missing, computed using `cut_z`.
 #' @param cut_z Pre-specified cutoff score on the observed composite. This 
-#'        argument is ignored when `propsel` has input.
+#'        argument is ignored when `propsel` has an input.
 #' @param weights_item A vector of item weights.
 #' @param weights_latent A  vector of latent factor weights.
 #' @param alpha_r A vector of latent factor mean for the reference group.
@@ -36,10 +36,10 @@
 #' @param Theta_f (optional) A matrix of the unique factor variances and 
 #'        covariances for the focal group; if no input, set equal to `Theta_r`.
 #' @param pmix_ref Proportion of the reference group; default to 0.5 (i.e., two 
-#'        populations have equal size)
+#'        populations have equal size).
 #' @param plot_contour Logical; whether the contour of the two populations 
 #'        should be plotted; default to `TRUE`.
-#' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
+#' @param show_mi_result If \code{TRUE}, perform classification accuracy analysis
 #'        for both the input parameters and the implied parameters based on a
 #'        strict invariance model, with common parameter values as weighted
 #'        averages of the input values using `pmix_ref`.
@@ -53,25 +53,21 @@
 #' @param user_specified_items A vector; default to `NULL`. If the user does not
 #'        input a vector of items, only the items determined to contain bias will
 #'        be considered for deletion.
-#' @param print_detailed Logical; default to `FALSE`. If 
-#'        \code{print_detailed == FALSE}, prints four summary tables for
-#'        biased items: `ACAI` (ACAI under PFI for the full item set as well as 
-#'        after the deletion of any biased items or user specified items), 
-#'        `h ACAI (deletion)` (Cohen's h computed for the impact of deleting 
-#'        each item considered in the `ACAI` table), `AI Ratio` (Adverse Impact 
-#'        Ratio for item subsets by invariance condition), `h CAI Ref-EF` 
-#'        (Cohen's h values quantifying the discrepancy between CAI computed 
-#'        for the reference group and the expected CAI computed for the focal 
-#'        group if it matched the distribution of the reference group (Efocal),
-#'        under PFI for subsets of items), and `delta h CAI Ref-EF (deletion)` 
-#'        (delta h values quantifying the impact of deleting an item on the 
-#'        discrepancy between CAI of reference vs. Efocal groups under PFI).
-#' @param delete_one_cutoff (optional) New cutoff to use in delete-one scenarios. 
-#'        `NULL` by default; if `NULL`, proportions selected under SFI and PFI 
-#'        when the full item set is used is passed onto calls to PartInv.
+#' @param print_formatted Logical; default to `TRUE`. By default, prints five 
+#'        formatted summary tables for biased (or user-specified) items: `ACAI`,
+#'        `h ACAI (deletion)`, `AI Ratio`, `h CAI Ref-EF`, and 
+#'        `delta h CAI Ref-EF (deletion)`. The formatted print output is separate 
+#'        from the returned object. The function always returns an object with 
+#'        detailed elements that can be accessed if the function output is stored 
+#'        in a variable. If `print_formatted==FALSE`, all elements in the 
+#'        returned object are printed without formatting.
+#' @param delete_one_cutoff (optional) User-specified cutoff to use in
+#'        delete-one scenarios. `NULL` by default; if `NULL`, proportion 
+#'        selected under SFI and PFI when the full item set is used is passed 
+#'        onto calls to PartInv.
 #' @return An object of class `itemdeletion` containing 13 elements. 
 #'        \item{ACAI}{A matrix that stores aggregate PS, SR, SE, SP computed for
-#'        the full set of items and item subsets excluding biased/user specified
+#'        the full set of items and item subsets excluding biased or user specified
 #'        items under PFI.}
 #'        \item{h ACAI (deletion)}{A matrix that stores Cohen's h computed for 
 #'        the impact of deleting each item considered in the `ACAI` table.}
@@ -105,12 +101,12 @@
 #'        scenario.}
 #'        \item{PartInv}{Two lists (`strict` and `partial`), each containing 
 #'        PartInv() outputs.}
-#'        \item{detail}{Logical, whether detailed or simplified output should 
-#'        be printed.}
+#'        \item{formatted}{Logical, whether simplified and formatted output  
+#'        should be printed.}
 #'        \item{return_items}{A vector containing the items that will be considered
 #'        for deletion.}
 #' @examples
-#' # Multidimensional example 
+#' # Multidimensional example
 #' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
 #' lambda_matrix[1:2, 1] <- c(.322, .655)
 #' lambda_matrix[3:5, 2] <- c(.398, .745, .543)
@@ -124,9 +120,9 @@
 #'                              nu_r = c(.225, .025, .010, .240, .125),
 #'                              nu_f = c(.225, -.05, .240, -.025, .125),
 #'                              Theta_r = diag(1, 5),
-#'                              Theta_f = c(1, .95, .80, .75, 1),
+#'                              Theta_f = diag(c(1, .95, .80, .75, 1)),
 #'                              plot_contour = TRUE,
-#'                              print_detailed = TRUE)
+#'                              print_formatted = TRUE)
 #' # Single dimension example
 #' single_dim <- item_deletion_h(propsel = .10,
 #'                                weights_item = c(1, 0.9, 0.8, 1),
@@ -139,7 +135,7 @@
 #'                                nu_f = c(.225, -.05, .240, -.025),
 #'                                Theta_r = diag(.96, 4),
 #'                                n_dim = 1, plot_contour = TRUE,
-#'                                print_detailed = TRUE)
+#'                                print_formatted = TRUE)
 #' @export
 item_deletion_h <- function(propsel, 
                             cut_z = NULL, 
@@ -161,7 +157,7 @@ item_deletion_h <- function(propsel,
                             labels = c("Reference", "Focal"),
                             n_dim = 1,
                             n_i_per_dim = NULL, 
-                            print_detailed = FALSE,
+                            print_formatted = TRUE,
                             user_specified_items = NULL,
                             delete_one_cutoff = NULL,
                             ...) {
@@ -200,8 +196,8 @@ item_deletion_h <- function(propsel,
   h_aggregate_par <-  delta_h_str_par_aggregate <- 
     as.data.frame(matrix(nrow = 4, ncol = N)) 
   
-  
   AI_ratios <- as.data.frame(matrix(nrow = 2, ncol = N + 1))
+  
   # Call PartInv with the full item set under strict invariance
   store_str[[1]] <- PartInv(propsel, 
                             cut_z = cut_z, 
@@ -486,7 +482,7 @@ item_deletion_h <- function(propsel,
                      "focal" = h_str_vs_par_list_foc),
     "PartInv" = list("strict" = store_str,
                      "partial" = store_par),
-    "detail" = print_detailed,
+    "formatted" = print_formatted,
     "return_items" = return_items)
   class(returned) <- "itemdeletion"
   
