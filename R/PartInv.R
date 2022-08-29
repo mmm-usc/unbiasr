@@ -73,7 +73,7 @@ NULL
 #' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
 #' lambda_matrix[1:2, 1] <- c(.322, .655)
 #' lambda_matrix[3:5, 2] <- c(.398, .745, .543)
-# PartInv(propsel = .05,
+#'  PartInv(propsel = .05,
 #'         weights_latent = c(0.5, 0.5),
 #'         alpha_r = c(0, 0),
 #'         alpha_f = c(-0.3, 0.1),
@@ -83,18 +83,18 @@ NULL
 #'         nu_f = c(.225, -.05, .240, -.025, .125),
 #'         Theta_r = diag(1, 5),
 #'         Theta_f = c(1, .95, .80, .75, 1))
-# PartInvMulti_we(propsel = .10,
-#                 weights_item = c(1/3, 1/3, 1/3, 1/3),
-#                 weights_latent = 1,
-#                 alpha_r = 0.5,
-#                 alpha_f = 0,
-#                 psi_r = 1,
-#                 lambda_r = c(.3, .5, .9, .7),
-#                 nu_r = c(.225, .025, .010, .240),
-#                 nu_f = c(.225, -.05, .240, -.025),
-#                 Theta_r = diag(.96, 4),
-#                 labels = c("female", "male"),
-#                 show_mi_result = TRUE)
+#' PartInvMulti_we(propsel = .10,
+#'                 weights_item = c(1/3, 1/3, 1/3, 1/3),
+#'                 weights_latent = 1,
+#'                 alpha_r = 0.5,
+#'                 alpha_f = 0,
+#'                 psi_r = 1,
+#'                 lambda_r = c(.3, .5, .9, .7),
+#'                 nu_r = c(.225, .025, .010, .240),
+#'                 nu_f = c(.225, -.05, .240, -.025),
+#'                 Theta_r = diag(.96, 4),
+#'                 labels = c("female", "male"),
+#'                 show_mi_result = TRUE)
 #' @export
 PartInvMulti_we <- function(propsel, cut_z = NULL,
                             weights_item = NULL,

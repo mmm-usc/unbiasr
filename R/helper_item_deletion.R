@@ -139,10 +139,7 @@ err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
 #' redistribute_weights(multi_uneq_w, n_dim = 3, n_i_per_dim = c(3, 6, 3), del_i=2)
 #' sum(multi_uneq_w)==sum(redistribute_weights(multi_uneq_w, n_dim = 3, 
 #'                                             n_i_per_dim = c(3, 6, 3), del_i=2))
-#' error_ex <- c(1:12)
-#' redistribute_weights(error_ex, n_dim = -3, n_i_per_dim = c(3, 6, 3), del_i = 2)
-#' redistribute_weights(error_ex, n_dim = 5, del_i = 2)
-
+#' @export
 redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
                                del_i){
   n_items <- length(weights_item)
@@ -232,7 +229,7 @@ cohens_h <- function(p1, p2) {
 #' @examples
 #' delta_h(0.04, 0.01)
 #' delta_h(-0.002, 0.011)
-
+#' @export
 delta_h <- function(h_R, h_i_del) {
   sign(abs(h_R) - abs(h_i_del)) * abs(abs(h_i_del) - abs(h_R))
 }
@@ -307,6 +304,7 @@ acc_indices_h <- function(strict_output, partial_output) {
 #'                        Theta_r = diag(1, 5),  
 #'                        Theta_f = diag(c(1, .95, .80, .75, 1)), 
 #'                        weights = c(1/4, 1/4, 1/6, 1/6, 1/6))       
+#' @export
 determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f, 
                                    Theta_r, Theta_f, weights) {
   biased_lambda <- biased_theta <- biased_nu <- c()
