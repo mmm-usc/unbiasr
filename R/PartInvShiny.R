@@ -1,45 +1,64 @@
-#' Launch the 'PartInv' app
+#' Launching Partial Invariance Evaluation Shinyapp
+#'
+#' \code{launch, myApp} launch the Shinyapp designed for the use of the
+#' Multidimensional Classification Accuracy Analysis
+#' (MCAA) Framework for evaluating measurement invariance in the
+#' personnel selection context.
+#' 
+#' @details The app has three pages
+#' * Instruction: Provides direction for this Shinyapp
+#' * Single dimension: Implements the CAA framework for
+#'     single dimensional constructs
+#' * Multiple dimensions: Implements the MCAA framework for
+#'     multidimensional constructs
+#'
+#' @param ... Currently not used.
 #'
 #' @import shiny
 #' @import shinydashboard
 #' @importFrom shinyjs useShinyjs inlineCSS reset
 #' @importFrom shinyWidgets materialSwitch
 #' @importFrom shinyMatrix matrixInput
-#' @export
+#'
+#' @examples
+#' \dontrun{
+#' myApp()
+#' launch()
+#' }
+#'@export
 myApp <- function(...) {
+  shiny::addResourcePath("images",
+                         system.file("www", "images",
+                                     package = "unbiasr"))
   ui <- dashboardPage(
-    dashboardHeader(title = "Computation of Selection Accuracy Indexes",
+    dashboardHeader(title = "Selection Accuracy Indexes",
                     titleWidth = 400),
-    dashboardSidebar(width = 105,
+    dashboardSidebar(width = 150,
                      sidebarMenu(
                        menuItem(
                          "Instruction",
-                         tabName = "Reference",
+                         tabName = "Direction_page",
                          icon = icon("dashboard")
                        ),
                        menuItem(
-                         "FirstPage",
-                         tabName = "firstpage",
+                         "Single dimension",
+                         tabName = "Single",
                          icon = icon("dashboard")
-                       ),
-                       #unused
-                       menuItem("Other", tabName = "other", icon = icon("table"))
+                       )
                      )),
     dashboardBody(
       #include for shinyjs features to work
       useShinyjs(),
       #inlineCSS using shinyjs to style margins and padding as well as size of box
       inlineCSS(
-        '
-          #outputTableBox {overflow-y: auto; height: 350px}
+        ' #outputTableBox {overflow-y: auto; height: 350px}
           .box {margin:5px;}
-          .col-sm-4 {padding:6px !important;}
-          .col-sm-8 {padding:6px !important;}'
+          .col-sm-4 {padding:6px !important;}'
       ),
       #pages
       tabItems(
         #page one
-        tabItem(tabName = "Reference",
+        tabItem(tabName = "Direction_page",
                 fluidPage(fluidRow(
                   box(
                     title = "Summary of the framework",
@@ -47,14 +66,19 @@ myApp <- function(...) {
                     width = 12,
                     solidHeader = FALSE,
                     p(
-                      "The multidimensional classification accuracy analysis framework (MCAA) is an extension of the selection accuracy
-                    framework proposed by Millsap & Kwok (2004). Since real-world selection usually involves multiple tests or subtests
-                    with different weights assigned to each dimension, the MCAA framework is proposed to quantify
-                    the impact of item bias on selection accuracy by examining the changes in 
+                      "The multidimensional classification accuracy analysis 
+                      framework (MCAA) is an extension of the selection accuracy
+                    framework proposed by Millsap & Kwok (2004). Since real-world 
+                    selection usually involves multiple tests or subtests
+                    with different weights assigned to each dimension, the MCAA 
+                    framework is proposed to quantify the impact of item bias on 
+                    selection accuracy by examining the changes in 
                     selection accuracy indices (proportion selected, success ratio, 
-                    sensitivity, specificity) for each subgroup. The adverse impact (AI) ratio 
-                    (i.e., the ratio of the proportions selected between a minority and a majority group with matching latent trait levels) 
-                    is also provided in results. Further details are provided in Lai & Zhang (2022)."
+                    sensitivity, specificity) for each subgroup. The adverse impact 
+                    (AI) ratio (i.e., the ratio of the proportions selected between 
+                    a minority and a majority group with matching latent trait levels) 
+                    is also provided in results. Further details are provided in 
+                    Lai & Zhang (2022)."
                     )),
                   box(
                     title = "Example",
@@ -65,28 +89,29 @@ myApp <- function(...) {
                       "Here is an example for how to use the app."),
                     p("The first step is to input group labels for the graph."
                     ),
-                    
-                    img(src="step1.png", align = "center",height='300px',width='270px'),
+                    img(src="images/step1.png", align = "center",height='300px',width='270px'),
                     p("Next, input factor loadings and intercepts
                        for each group."
+                    ), 
+                    img(src="images/step2.png", align = "center",height='400px',width='270px'),
+                    p("Third, input unique factor variance-covariance matrix. 
+                    You can choose to enter the diagonal of the covariance matrix, 
+                    or upload the covariance matrix. Note the header should not be included. "
+                    ), 
+                    img(src="images/step3.png", align = "center",height='400px',width='270px'),
+                    p("Then, input latent factor means and variances. Last, 
+                      set selection parameters such as mixing proportion and selection proportion."
+                    ), 
+                    img(src="images/step4.png", align = "center",height='500px',width='270px'),
+                    p("Lastly, set selection parameters such as mixing proportion 
+                      and selection proportion."
                     ),
-                    img(src="step2.png", align = "center",height='400px',width='270px'),
-                    p("Third, input unique factor variance-covariance matrix. You can choose to enter the diagonal 
-                      of the covariance matrix, or upload the covariance matrix. Note the header should not be included. "
-                    ),
-                    img(src="step3.png", align = "center",height='400px',width='280px'),
-                    p("Then, input latent factor
-                      means and variances. Last, set selection parameters such as mixing proportion and selection proportion."
-                    ),
-                    img(src="step4.png", align = "center",height='400px',width='200px'),
-                    p("Lastly, set selection parameters such as mixing proportion and selection proportion."
-                    ),
-                    img(src="step5.png", align = "center",height='300px',width='270px'),
+                    img(src="images/step5.png", align = "center",height='300px',width='270px'),
                     p("Here are the graph and the selection accuracy table"
-                    ),
-                    img(src="graph.png", align = "left",height='300px',width='330px'),
-                    img(src="table.png", align = "right",height='280px',width='350px'),
-                  ),
+                    ), 
+                    img(src="images/graph.png", align = "left",height='300px',width='290px'),
+                    img(src="images/table.png", align = "right",height='300px',width='290px'),
+                  ), 
                   
                   box(
                     title = "Reference",
@@ -105,19 +130,32 @@ myApp <- function(...) {
                         partial factorial invariance on selection in two populations. 
                         Psychological Methods, 9, 93--115. https://doi.org/10.1037/1082-989X.9.1.93."
                     )),
-                  
+                  box(
+                    title = "Statement",
+                    status = "primary",
+                    width = 12,
+                    solidHeader = FALSE,
+                    p("This work was sponsored by the U.S. Army Research Institute 
+                    for the Behavioral and Social Sciences (ARI) and was accomplished
+                    under Grant #W911NF-20-1-0282. The views, opinions, and/or
+                    findings contained in this paper are those of the authors 
+                    and shall not be construed as an official Department of the 
+                    Army position, policy, or decision, unless so designated by 
+                    other documents."), 
+                   ),
+
                   box(
                     title = "Note",
                     status = "primary",
                     width = 12,
                     solidHeader = FALSE,
                     p(
-                      "If you have any questions, please email us at mmm.lab.usc@zohomail.com ."
-                    )
-                  )
+                      "If you have any questions, please email us at 
+                      mmm.lab.usc@zohomail.com ."
+                    ))
                 ))),
         #second page
-        tabItem(tabName = "firstpage", fluidPage(
+        tabItem(tabName = "Single", fluidPage(
           #wrap all UI code in list command so it can be accessed from main app.R file
           list(
             #withMathJax adds HTML for greek characters
@@ -133,12 +171,15 @@ myApp <- function(...) {
                 width = 12,
                 solidHeader = FALSE,
                 p(
-                  "This application is designed for the use of the Multidimensional Classification Accuracy Analysis (MCAA) Framework
-                      for evaluating measurement invariance in the personnel selection context. By entering the parameter estimates from the factor model,
-                      such as the factor loadings and intercepts, you will be able to visualize the impact of item bias on selection accuracy indices and
-                      get a table that summarize the change of selection indices."
-                )
-              )
+                  "This application is designed for the use of the 
+                  Multidimensional Classification Accuracy Analysis (MCAA) Framework
+                  for evaluating measurement invariance in the personnel 
+                  selection context. By entering the parameter estimates from the 
+                  factor model, such as the factor loadings and intercepts, 
+                  you will be able to visualize the impact of item bias on 
+                  selection accuracy indices and get a table that summarize 
+                  the change of selection indices."
+                ))
             ),
             #second row which contains input and output columns
             fluidRow(
@@ -201,7 +242,7 @@ myApp <- function(...) {
                        #HTML style buttons side by side
                        div(style = "display:inline-block, float:right",
                            materialSwitch(
-                             "useMatrix",
+                             "use_mat_theta_f",
                              "Matrix input?",
                              status = "primary",
                              FALSE,
@@ -215,7 +256,7 @@ myApp <- function(...) {
                              inline = TRUE
                            ),
                            sliderInput(
-                             "matrixSlider",
+                             "mat_size_theta_f",
                              "Matrix Size",
                              min = 2,
                              max = 10,
@@ -229,22 +270,25 @@ myApp <- function(...) {
                        ),
                        textInput(
                          'theta_f',
-                         'Input the diagonal of the unique factor variance-covariance matrix \\( \\Theta \\) for the focal group',
+                         'Input the diagonal of the unique factor 
+                         variance-covariance matrix \\( \\Theta \\) for the focal group',
                          placeholder = "0.72, 0.81, 0.32, 0.32"
                        ),
                        #strong is a text output in bold
                        strong(
-                         id = "theta_rMatrixTitle",
-                         "input the unique factor variance-covariance matrix \\( \\Theta \\) for the referance group"
+                         id = "ins_mat_theta_r",
+                         "Input the unique factor variance-covariance matrix 
+                         \\( \\Theta \\) for the referance group"
                        ),
                        #uiOutput used for dynamic inputs, in this case matrices with variable size
                        #logic defined in renderUI in pageOneServer.R
-                       uiOutput("theta_rMatrixUI"),
+                       uiOutput("ins_mat_theta_rUI"),
                        strong(
-                         id = "theta_fMatrixTitle",
-                         "input the unique factor variance-covariance matrix \\( \\Theta \\) for the focal group"
+                         id = "ins_mat_theta_f",
+                         "Input the unique factor variance-covariance matrix 
+                         \\( \\Theta \\) for the focal group"
                        ),
-                       uiOutput("theta_fMatrixUI"),
+                       uiOutput("ins_mat_theta_fUI"),
                        
                      ),
                      box(
@@ -255,7 +299,7 @@ myApp <- function(...) {
                        numericInput(
                          "kappa_r",
                          "Latent factor mean \\( \\kappa \\) for the reference group:",
-                         value = 0.5,
+                         value = 0.0,
                          min = 0,
                          max = 1,
                          step = 0.01
@@ -292,71 +336,94 @@ myApp <- function(...) {
                        status = "primary",
                        solidHeader = FALSE,
                        width = 12,
-                       materialSwitch("usepropsel", "Select 10% population?", status = "primary", FALSE),
+                       materialSwitch("usepropsel", "Selection based on percentage?", 
+                                      status = "primary", FALSE),
                        #numeric input for single number values
                        numericInput(
                          "cut_z",
                          "Cutoff score on the observed composite:",
-                         value = 0.5,
-                         min = 0,
-                         max = 1,
+                         value = NULL,
+                         min = -100,
+                         max = 100,
                          step = 0.01
                        ),
                        numericInput(
                          "prop",
                          "Selection proportion:",
-                         value = 0.5,
+                         value = 0.25,
                          min = 0,
                          max = 1,
                          step = 0.01
                        ),
                        numericInput(
                          "pmix",
-                         "Mixing proportion:",
+                         "Mixing proportion (reference group; 0 to 1):",
                          value = 0.5,
                          min = 0,
                          max = 1,
                          step = 0.01
                        ),
                      ),
+                     box(
+                       title = "Output",
+                       status = "primary",
+                       solidHeader = FALSE,
+                       width = 12,
+                       materialSwitch("tab_strict", "Show strict invariance output?", 
+                                      status = "primary", FALSE),
+                     ),
               ),
               box(
-                id = "outputBox",
+                id = "outputPlot",
                 title = "Relationship Between True Latent Construct Scores
-               and Observed Test Scores",
+               and Observed Test Scores for Partial Invariance",
                status = "primary",
                solidHeader = FALSE,
                width = 8,
                plotOutput("distPlot")
               ),
               box(
-                id = "outputTableBox",
-                title = "Impact of Item Bias on Selection Accuracy Indices",
+                id = "outputPlot_strict",
+                title = "Relationship Between True Latent Construct Scores
+               and Observed Test Scores for Strict Invariance",
+                status = "primary",
+                solidHeader = FALSE,
+                width = 8,
+                plotOutput("distPlotstrict")
+              ),
+              box(
+                id = "outputTable",
+                title = "Impact of Item Bias on Selection Accuracy Indices 
+                for Partial Invariance",
                 status = "primary",
                 solidHeader = FALSE,
                 width = 8,
                 tableOutput("table")
+              ),
+              box(
+                id = "outputTable_strict",
+                title = "Impact of Item Bias on Selection Accuracy Indices 
+                for Strict Invariance",
+                status = "primary",
+                solidHeader = FALSE,
+                width = 8,
+                tableOutput("tablestrict")
               )
-            )
-            # ,
-            # downloadButton("downloadData", "Download")
-          )
-          
-        )),
-        #second page
-        tabItem(tabName = "other", fluidPage(fluidRow()))
+            ))
+        ))
       )
     )
   )
+  
   server <- function(input, output) {
     
     #renderUI output for Matrix Inputs
-    output$theta_fMatrixUI <- renderUI({
+    output$ins_mat_theta_fUI <- renderUI({
       #matrixInput for focal
       matrixInput(
-        "theta_fMatrixInput",
+        "ins_mat_theta_fInput",
         #use slider value to determine dimensions of matrix input
-        value = matrix("0", input$matrixSlider, input$matrixSlider),
+        value = matrix("0", input$mat_size_theta_f, input$mat_size_theta_f),
         rows = list(names = FALSE),
         cols = list(names = FALSE),
         class = "numeric",
@@ -364,11 +431,11 @@ myApp <- function(...) {
     })
     
     #renderUI output for Matrix Inputs
-    output$theta_rMatrixUI <- renderUI({
+    output$ins_mat_theta_rUI <- renderUI({
       #matrixInput for referance
       matrixInput(
-        inputId = "theta_rMatrixInput",
-        value = matrix("0", input$matrixSlider, input$matrixSlider),
+        inputId = "ins_mat_theta_rInput",
+        value = matrix("0", input$mat_size_theta_f, input$mat_size_theta_f),
         rows = list(names = FALSE),
         cols = list(names = FALSE),
         class = "numeric"
@@ -402,60 +469,78 @@ myApp <- function(...) {
     observeEvent(input$usephi_f, {
       shinyjs::toggle(id = "phi_f")
     })
+
     
     #if either button press is observed
-    observeEvent(list(input$usetheta_f, input$useMatrix), {
+    observeEvent(list(input$usetheta_f, input$use_mat_theta_f), {
       #for every combination of the two buttons, show/hide the appropriate inputs
-      if (input$useMatrix == FALSE & input$usetheta_f == TRUE) {
+      if (input$use_mat_theta_f == FALSE & input$usetheta_f == TRUE) {
         shinyjs::show(id = "theta_f")
         shinyjs::show(id = "theta_r")
-        shinyjs::hide(id = "theta_rMatrixTitle")
-        shinyjs::hide(id = "theta_rMatrixUI")
-        shinyjs::hide(id = "theta_fMatrixTitle")
-        shinyjs::hide(id = "theta_fMatrixUI")
-        shinyjs::hide(id = "matrixSlider")
+        shinyjs::hide(id = "ins_mat_theta_r")
+        shinyjs::hide(id = "ins_mat_theta_rUI")
+        shinyjs::hide(id = "ins_mat_theta_f")
+        shinyjs::hide(id = "ins_mat_theta_fUI")
+        shinyjs::hide(id = "mat_size_theta_f")
         
       }
-      else if (input$useMatrix == FALSE & input$usetheta_f == FALSE) {
+      else if (input$use_mat_theta_f == FALSE & input$usetheta_f == FALSE) {
         shinyjs::hide(id = "theta_f")
         shinyjs::show(id = "theta_r")
-        shinyjs::hide(id = "theta_rMatrixTitle")
-        shinyjs::hide(id = "theta_rMatrixUI")
-        shinyjs::hide(id = "theta_fMatrixTitle")
-        shinyjs::hide(id = "theta_fMatrixUI")
-        shinyjs::hide(id = "matrixSlider")
+        shinyjs::hide(id = "ins_mat_theta_r")
+        shinyjs::hide(id = "ins_mat_theta_rUI")
+        shinyjs::hide(id = "ins_mat_theta_f")
+        shinyjs::hide(id = "ins_mat_theta_fUI")
+        shinyjs::hide(id = "mat_size_theta_f")
       }
-      else if (input$useMatrix == TRUE & input$usetheta_f == FALSE) {
+      else if (input$use_mat_theta_f == TRUE & input$usetheta_f == FALSE) {
         shinyjs::hide(id = "theta_f")
         shinyjs::hide(id = "theta_r")
-        shinyjs::show(id = "theta_rMatrixTitle")
-        shinyjs::show(id = "theta_rMatrixUI")
-        shinyjs::hide(id = "theta_fMatrixTitle")
-        shinyjs::hide(id = "theta_fMatrixUI")
-        shinyjs::show(id = "matrixSlider")
+        shinyjs::show(id = "ins_mat_theta_r")
+        shinyjs::show(id = "ins_mat_theta_rUI")
+        shinyjs::hide(id = "ins_mat_theta_f")
+        shinyjs::hide(id = "ins_mat_theta_fUI")
+        shinyjs::show(id = "mat_size_theta_f")
       }
       else{
         shinyjs::hide(id = "theta_f")
         shinyjs::hide(id = "theta_r")
-        shinyjs::show(id = "theta_rMatrixTitle")
-        shinyjs::show(id = "theta_rMatrixUI")
-        shinyjs::show(id = "theta_fMatrixTitle")
-        shinyjs::show(id = "theta_fMatrixUI")
-        shinyjs::show(id = "matrixSlider")
+        shinyjs::show(id = "ins_mat_theta_r")
+        shinyjs::show(id = "ins_mat_theta_rUI")
+        shinyjs::show(id = "ins_mat_theta_f")
+        shinyjs::show(id = "ins_mat_theta_fUI")
+        shinyjs::show(id = "mat_size_theta_f")
       }
     })
     
+    observeEvent(input$tab_strict, {
+      if (input$tab_strict == TRUE){
+        shinyjs::show(id = "outputTable_strict")
+      } else{
+        shinyjs::hide(id = "outputTable_strict")
+      }
+    })
+    
+    observeEvent(input$tab_strict, {
+      if (input$tab_strict == TRUE){
+        shinyjs::show(id = "outputPlot_strict")
+      } else{
+        shinyjs::hide(id = "outputPlot_strict")
+      }
+    })
+    # 
     #if resetButton is pressed
     observeEvent(input$resetButton, {
       #reset all
-      reset("matrixSlider")
+      reset("mat_size_theta_f")
       reset("usepropsel")
+      reset("tab_strict")
       reset("uselambda_f")
       reset("usetau_f")
       reset("usetheta_f")
       reset("usekappa_f")
       reset("usephi_f")
-      reset("useMatrix")
+      reset("use_mat_theta_f")
       reset("prop")
       reset("cut_z")
       reset("pmix")
@@ -510,26 +595,27 @@ myApp <- function(...) {
         tau_f = tau_fNumeric()
       }
     })
+
     #set theta_f output to either the diagonal inputs or matrix inputs
     #for theta_r and theta_f depending on button presses
     theta_f <- reactive({
-      if (input$usetheta_f == FALSE & input$useMatrix == FALSE) {
+      if (input$usetheta_f == FALSE & input$use_mat_theta_f == FALSE) {
         theta_f = diag(theta_rNumeric())
       }
-      else if (input$usetheta_f == TRUE & input$useMatrix == FALSE) {
+      else if (input$usetheta_f == TRUE & input$use_mat_theta_f == FALSE) {
         theta_f = diag(theta_fNumeric())
       }
-      else if (input$usetheta_f == TRUE & input$useMatrix == TRUE) {
-        theta_f = input$theta_fMatrixInput
+      else if (input$usetheta_f == TRUE & input$use_mat_theta_f == TRUE) {
+        theta_f = input$ins_mat_theta_fInput
       }
       else{
-        theta_f = input$theta_rMatrixInput
+        theta_f = input$ins_mat_theta_rInput
       }
     })
     
     theta_r <- reactive({
-      if (input$useMatrix == TRUE) {
-        theta_r = input$theta_rMatrixInput
+      if (input$use_mat_theta_f == TRUE) {
+        theta_r = input$ins_mat_theta_rInput
       }
       else{
         theta_r = diag(theta_rNumeric())
@@ -551,6 +637,8 @@ myApp <- function(...) {
         phi_f = input$phi_f
       }
     })
+    
+    
     #distribution plot output
     
     validations <- reactive({
@@ -567,6 +655,10 @@ myApp <- function(...) {
           length(lambda_rNumeric()) == length(tau_rNumeric()),
           "Factor loadings and intercepts need to have the same value\n"
         ),
+        need(
+          input$usepropsel || !is.na(input$cut_z),
+          "Input for cutoff score is missing\n"
+        ),
         if (input$uselambda_f == TRUE) {
           need(
             length(lambda_rNumeric()) == length(lambda_fNumeric()),
@@ -579,47 +671,47 @@ myApp <- function(...) {
             "intercepts for referance and focal groups need to have the same number of values\n"
           )
         },
-        if (input$useMatrix == FALSE && input$usetheta_f == TRUE) {
+        if (input$use_mat_theta_f == FALSE && input$usetheta_f == TRUE) {
           need(
             length(theta_rNumeric()) == length(theta_fNumeric()),
             "(placeholder) diagonals of referance and focal groups must match"
           )
         },
         #only checks for numeric input of theta_r when matrix is not being used as input
-        if (input$useMatrix == FALSE) {
+        if (input$use_mat_theta_f == FALSE) {
           need(
             input$theta_r,
             "Input for unique variance-covariance matrix of reference group is missing\n"
           )
         },
-        if (input$useMatrix == FALSE && length(theta_rNumeric()) > 0) {
+        if (input$use_mat_theta_f == FALSE && length(theta_rNumeric()) > 0) {
           need(
             length(theta_rNumeric()) == length(lambda_rNumeric()),
             "number of inputs for measurement intercepts must match factor loadings"
           )
         },
-        if (input$useMatrix == TRUE) {
+        if (input$use_mat_theta_f == TRUE) {
           need(
-            input$matrixSlider == length(lambda_rNumeric()),
+            input$mat_size_theta_f == length(lambda_rNumeric()),
             "Matrix dimensions must match # loadings and intercepts\n"
           )
         },
-        if (input$useMatrix == TRUE) {
+        if (input$use_mat_theta_f == TRUE) {
           need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
                "reference matrix empty")
         },
-        if (input$useMatrix == TRUE && input$usetheta_f == TRUE) {
+        if (input$use_mat_theta_f == TRUE && input$usetheta_f == TRUE) {
           need(length(unique(theta_f())) / length(lambda_rNumeric())[1] != 1,
                "focal matrix empty")
         },
-        if (input$useMatrix == TRUE) {
-          need(isSymmetric(input$theta_rMatrixInput) &&
-                 is_symmetric_posdef(input$theta_rMatrixInput),
+        if (input$use_mat_theta_f == TRUE) {
+          need(isSymmetric(input$ins_mat_theta_rInput) &&
+                 is_symmetric_posdef(input$ins_mat_theta_rInput),
                "reference Theta matrix not positive definite")
         },
-        if (input$useMatrix == TRUE && input$usetheta_f == TRUE) {
-          need(isSymmetric(input$theta_fMatrixInput) &&
-                 is_symmetric_posdef(input$theta_fMatrixInput),
+        if (input$use_mat_theta_f == TRUE && input$usetheta_f == TRUE) {
+          need(isSymmetric(input$ins_mat_theta_fInput) &&
+                 is_symmetric_posdef(input$ins_mat_theta_fInput),
                "focal Theta matrix not positive definite")
         }
         
@@ -630,7 +722,7 @@ myApp <- function(...) {
         #plug everything into PartInv function
         #calls to reactive functions have () brackets
         PartInv(
-          plot_contour = TRUE,
+          plot_contour = FALSE,
           cut_z = input$cut_z,
           pmix_ref = input$pmix,
           kappa_r = input$kappa_r,
@@ -643,15 +735,15 @@ myApp <- function(...) {
           Theta_f = theta_f(),
           tau_r = tau_rNumeric(),
           Theta_r = theta_r(),
-          labels = c(input$legend_r, input$legend_f)
-        )[[4]]
-      }
-      else{
+          labels = c(input$legend_r, input$legend_f),
+          show_mi_result = input$tab_strict
+        )
+      } else if (input$usepropsel == TRUE) {
         PartInv(
           #propsel adds value as input if true
           propsel = input$prop,
-          plot_contour = TRUE,
-          cut_z = input$cut_z,
+          plot_contour = FALSE,
+          # cut_z = input$cut_z,
           pmix_ref = input$pmix,
           kappa_r = input$kappa_r,
           kappa_f = kappa_f(),
@@ -663,20 +755,35 @@ myApp <- function(...) {
           Theta_f = theta_f(),
           tau_r = tau_rNumeric(),
           Theta_r = theta_r(),
-          labels = c(input$legend_r, input$legend_f)
-        )[[4]]
+          labels = c(input$legend_r, input$legend_f),
+          show_mi_result = input$tab_strict
+        )
       }
     })
     
     output$distPlot <- renderPlot({
       validations()
-      partInvOutput()
+      plot(partInvOutput(), which_result = "pi")
+    })
+    
+    output$distPlotstrict <- renderPlot({
+      validations()
+      plot(partInvOutput(), which_result = "mi")
     })
     
     output$table <- renderTable(rownames = TRUE, {
       validations()
-      partInvOutput()
+      partInvOutput()$summary
     })
-  }
+    
+    output$tablestrict <- renderTable(rownames = TRUE, {
+      validations()
+      partInvOutput()$summary_mi
+    })
+}
   shinyApp(ui, server = server, ...)
 }
+
+#' @rdname myApp
+#' @export
+launch <- myApp

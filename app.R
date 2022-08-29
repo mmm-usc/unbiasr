@@ -1,5 +1,7 @@
-#pkgload::load_all(".")
+pkgload::load_all()
 
 myApp()
+
+
 
 
