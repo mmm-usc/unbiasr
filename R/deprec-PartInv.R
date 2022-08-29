@@ -1,3 +1,6 @@
+#' @importFrom grDevices recordPlot
+NULL
+
 #' Evaluate partial measurement invariance using Millsap & Kwok's (2004) 
 #' approach
 #' 

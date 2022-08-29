@@ -23,10 +23,7 @@ piout_eq <- PartInv(
 test_that("PartInv() returns a data frame", {
   pidf <- vapply(piout, FUN = inherits, what = c("data.frame"),
                  FUN.VALUE = logical(1))
-  # piplot <- vapply(piout, FUN = inherits, what = c("recordedplot"), 
-  #                  FUN.VALUE = logical(1))
   expect_true(any(pidf))
-  # expect_true(any(piplot))
 })
 
 test_that("plot.PartInv() works successfully", {
@@ -131,9 +128,9 @@ test_that("PartInv() output passes logical test", {
   expect_equal(sum(psel_strict), psel * 2)
   expect_gt(psel_pstrict["reference"] - psel_strict["reference"], 0)
   expect_lt(abs(
-    sum_ps["Specificity", "reference"] - 
-      sum_ps["C (true negative)", "reference"] / 
-      (sum_ps["C (true negative)", "reference"] + 
+    sum_ps["Specificity", "reference"] -
+      sum_ps["C (true negative)", "reference"] /
+      (sum_ps["C (true negative)", "reference"] +
          sum_ps["B (false positive)", "reference"])),
     .0005)
 })

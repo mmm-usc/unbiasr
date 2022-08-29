@@ -1,40 +1,39 @@
+#' @importFrom methods setClass
+
 # dividers
 stars <-
   "***********************************************************************"
 dashes <-
   "-----------------------------------------------------------------------"
 
-#'@export
 setClass("PartInvSummary",
          representation(
            summary = "data.frame"
          )
 )
 #'@export
-print.PartInvSummary <- function(objsum) {
+print.PartInvSummary <- function(x, ...) {
   cat("Classification Accuracy Indices:\n")
-  rownames(objsum) <- c("True Positive", "False Positive", "True Negative",
+  rownames(x) <- c("True Positive", "False Positive", "True Negative",
                         "False Negative",  "Proportion Selected",
                         "Success Ratio", "Sensitivity", "Specificity")
  # c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
-  print(round(objsum, 3))
+  print(round(x, 3))
 }
 
-#'@export
 setClass("PartInv_groups",
          representation(
            tab = "data.frame"
          )
 )
 #'@export
-print.PartInv_groups <- function(objsum) {
-  rownames(objsum) <- c("True Positive", "False Positive", "True Negative",
+print.PartInv_groups <- function(x, ...) {
+  rownames(x) <- c("True Positive", "False Positive", "True Negative",
                         "False Negative",  "Proportion Selected",
                         "Success Ratio", "Sensitivity", "Specificity")
-  print(round(objsum, 3))
+  print(round(x, 3))
 }
 
-#'@export
 setClass("PartInv",
          representation(
            propsel = "numeric",
@@ -51,18 +50,17 @@ setClass("PartInv",
          )
 )
 #'@export
-print.PartInv <- function(obj) {
-  cat("Proportion selected: ", round(obj$propsel, 3), "\n")
-  cat("Cutpoint on the latent scale (xi): ", round(obj$cutpt_xi, 3), "\n")
-  cat("Cutpoint on the observed scale (Z): ", round(obj$cutpt_z, 3), "\n")
-  cat("AI ratio: ", round(obj$ai_ratio, 3), "\n\n")
-  print.PartInvSummary(obj$summary)
-  if (!is.null(obj$plot)) {
-    print(obj$plot)
+print.PartInv <- function(x, ...) {
+  cat("Proportion selected: ", round(x$propsel, 3), "\n")
+  cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi, 3), "\n")
+  cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z, 3), "\n")
+  cat("AI ratio: ", round(x$ai_ratio, 3), "\n\n")
+  print.PartInvSummary(x$summary)
+  if (!is.null(x$plot)) {
+    print(x$plot)
   }
 }
 
-#'@export
 setClass("PartInvList",
          representation(
            outputlist = "list",
@@ -72,56 +70,57 @@ setClass("PartInvList",
 )
 
 #'@export
-print.PartInvList <- function(obj) {
-  if (obj$condition == "partial") {
+print.PartInvList <- function(x, ...) {
+  if (x$condition == "partial") {
     cat(paste0("\n", stars))
     cat("\nPartInv() outputs under Partial Factorial Invariance (PFI)\n")
     cat(stars)
     cat("\n\nUnder PFI, full item set:\n\n")
-    print.PartInv(obj$outputlist[[1]])
-    for (i in obj$itemset) {
+    print.PartInv(x$outputlist[[1]])
+    for (i in x$itemset) {
       cat(dashes)
       cat("\n\nUnder PFI, if item", i, "is dropped:\n\n")
-      print.PartInv(obj$outputlist[[i]])
+      print.PartInv(x$outputlist[[i]])
     }
   }
-    if (obj$condition == "strict") {
+    if (x$condition == "strict") {
     cat(paste0("\n", stars))
     cat("\nPartInv() outputs under Strict Factorial Invariance (SFI)\n")
     cat(stars)
     cat("\n\nUnder SFI, full item set:\n\n")
-    print.PartInv(obj$outputlist[[1]])
-    for (i in obj$itemset) {
+    print.PartInv(x$outputlist[[1]])
+    for (i in x$itemset) {
       cat(dashes)
       cat("\n\nUnder SFI, if item", i, "is dropped:\n\n")
-      print.PartInv(obj$outputlist[[i]])
+      print.PartInv(x$outputlist[[i]])
     }
     }
-  if (obj$condition == "ref") {
+  if (x$condition == "ref") {
     cat(paste0("\n", stars))
     cat("\nCAI under SFI vs. PFI for the reference group\n")
     cat(stars)
     cat("\n\nReference group, full item set:\n")
-    print.PartInv_groups(obj$outputlist[[1]])
-    for (i in obj$itemset) {
+    print.PartInv_groups(x$outputlist[[1]])
+    for (i in x$itemset) {
       cat(dashes)
       cat("\n\nReference group, if item", i,"is dropped:\n")
-      print.PartInv_groups(obj$outputlist[[i]])
+      print.PartInv_groups(x$outputlist[[i]])
     }
   }
-  if (obj$condition == "foc") {
+  if (x$condition == "foc") {
     cat(paste0("\n", stars))
     cat("\nCAI under SFI vs. PFI for the focal group\n")
     cat(stars)
     cat("\n\nFocal group, full item set:\n")
-    print.PartInv_groups(obj$outputlist[[1]])
-    for (i in obj$itemset) {
+    print.PartInv_groups(x$outputlist[[1]])
+    for (i in x$itemset) {
       cat(dashes)
       cat("\n\nFocal group, if item", i, "is dropped:\n")
-      print.PartInv_groups(obj$outputlist[[i]])
+      print.PartInv_groups(x$outputlist[[i]])
     }
   }
 }
+
 #'@export
 setClass("itemdeletion",
   representation(
