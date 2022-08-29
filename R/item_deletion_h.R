@@ -65,6 +65,10 @@
 #'        delete-one scenarios. `NULL` by default; if `NULL`, proportion 
 #'        selected under SFI and PFI when the full item set is used is passed 
 #'        onto calls to PartInv.
+#' @param labels A character vector with two elements to label the reference
+#'     and the focal group on the graph.
+#' @param ... Other arguments passed to the \code{\link[graphics]{contour}}
+#'     function.
 #' @return An object of class `itemdeletion` containing 13 elements. 
 #'        \item{ACAI}{A matrix that stores aggregate PS, SR, SE, SP computed for
 #'        the full set of items and item subsets excluding biased or user specified
