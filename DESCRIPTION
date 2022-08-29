@@ -1,6 +1,6 @@
 Package: unbiasr
 Title: Multidimensional Classification Accuracy Analysis Framework
-Version: 0.0.1.1
+Version: 0.0.2
 Authors@R: c(
     person("Clay", "Cantrell", , "clay.cantrell@me.com",
             role = c("aut", "cre"), 
