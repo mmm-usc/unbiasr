@@ -135,7 +135,78 @@ expect_equal(1, determine_biased_items(lambda_r = lambda_matrix,
                                        Theta_r = diag(1, 5), 
                                        Theta_f = diag(1, 5), 
                                        weights = c(1/4, 1/4, 1/6, 1/6, 1/6))) 
+     
+})
 
-         
+
+# more example outputs
+propsel <- 0.72
+cut_z <- NULL
+weights_item <- c(rep(1,4)) 
+weights_latent <- 1
+pmix_ref <- 4903/(1903+4903)
+lambda_r <- lambda_f <- c(1.00, 1.66, 2.30, 2.29)
+nu_r <- c(1.54, 1.36, 1.16, 1.08)
+nu_f <- c(0.68, 1.36, 1.16, 1.08)
+Theta_r <- diag(c(1.20, 0.81, 0.32, 0.32))
+Theta_f <- diag(c(0.72, 0.81, 0.32, 0.32))
+alpha_r <- 0
+alpha_f <- -0.125
+psi_r <- 0.354^2
+psi_f <- 0.329^2
+labels <- c("Reference", "Focal")
+n_dim <- 1 
+n_i_per_dim <- NULL
+print_formatted <- TRUE
+user_specified_items <- 2
+delete_one_cutoff <- NULL
+plot_contour <- FALSE  
+
+ex_strict <- PartInv(propsel, 
+                     cut_z = cut_z, 
+                     weights_item, weights_latent,
+                     alpha_r = alpha_r,
+                     alpha_f = alpha_f,
+                     psi_r = psi_r,
+                     psi_f = psi_f,
+                     lambda_r = lambda_f * (1 - pmix_ref) +
+                       lambda_r * pmix_ref,
+                     nu_r = nu_f * (1 - pmix_ref) + nu_r * pmix_ref,
+                     Theta_r = Theta_f * (1 - pmix_ref) + 
+                       Theta_r * pmix_ref,
+                     pmix_ref = pmix_ref, 
+                     plot_contour = plot_contour, 
+                     labels = c("Reference", "Focal"))
+ex_partial <- PartInv(propsel, 
+                      cut_z = cut_z, 
+                      weights_item, 
+                      weights_latent,
+                      alpha_r = alpha_r,
+                      alpha_f = alpha_f,
+                      psi_r = psi_r,
+                      psi_f = psi_f,
+                      lambda_r = lambda_r,
+                      lambda_f = lambda_f,
+                      nu_r = nu_r,
+                      nu_f = nu_f,
+                      Theta_r = Theta_r,
+                      Theta_f = Theta_f,
+                      pmix_ref = pmix_ref, 
+                      plot_contour = plot_contour,
+                      labels = c("Reference", "Focal"))
+
+test_that("acc_indices_h() returns data frames", {
+  acc <- vapply(acc_indices_h(ex_strict, ex_partial), FUN = inherits, 
+                what = c("data.frame"), FUN.VALUE = logical(1))
+  expect_true(any(acc))
+})
+
+test_that("cohens_h() is computed correctly for comparing reference with the
+          Efocal", {
+  out <- c(0.104203486, 0.166642094, -0.101844057, -0.180318247,  0.200493093,
+           -0.161048764, 0.211048367, -0.373602451)
+  expect_equal(out, cohens_h(ex_partial$summary$Reference, 
+                             ex_partial$summary$`E_R(Focal)`))
+  
 })
 
