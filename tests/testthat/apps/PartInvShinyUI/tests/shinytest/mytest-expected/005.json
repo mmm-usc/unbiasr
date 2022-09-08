@@ -1,0 +1,63 @@
+{
+  "input": {
+    "cut_z": 0.5,
+    "kappa_f": 0,
+    "kappa_r": 0.5,
+    "lambda_f": "",
+    "lambda_r": "1,2,3,4",
+    "legend_f": "Focal group",
+    "legend_r": "Reference group",
+    "matrixSlider": 4,
+    "phi_f": 1,
+    "phi_r": 1,
+    "pmix": 0.5,
+    "prop": 0.5,
+    "resetButton": 0,
+    "sidebarCollapsed": false,
+    "sidebarItemExpanded": null,
+    "tau_f": "",
+    "tau_r": "6,7,8,9",
+    "theta_f": "",
+    "theta_r": "2,3,4,5",
+    "usekappa_f": false,
+    "uselambda_f": true,
+    "useMatrix": false,
+    "usephi_f": false,
+    "usepropsel": false,
+    "usetau_f": false,
+    "usetheta_f": false
+  },
+  "output": {
+    "distPlot": {
+      "message": "factor loadings for referance and focal groups need to have the same number of values\n",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "table": {
+      "message": "factor loadings for referance and focal groups need to have the same number of values\n",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "theta_fMatrixUI": {
+      "html": "<!--SHINY.SINGLETON[318d44bd7cd83737295e0412bb5540ef750f845a]-->\n<head>\n  <script src=\"shinyMatrix/lodash.min.js\"><\/script>\n<\/head>\n<!--/SHINY.SINGLETON[318d44bd7cd83737295e0412bb5540ef750f845a]-->\n<!--SHINY.SINGLETON[7f44bf3d13ba6283b6f87def388c9f24ace22111]-->\n<head>\n  <script src=\"shinyMatrix/vue.js\"><\/script>\n<\/head>\n<!--/SHINY.SINGLETON[7f44bf3d13ba6283b6f87def388c9f24ace22111]-->\n<!--SHINY.SINGLETON[c0a827f8d6517fe00ce394cc89078422a2932639]-->\n<head>\n  <script src=\"shinyMatrix/matrix-input.js\"><\/script>\n<\/head>\n<!--/SHINY.SINGLETON[c0a827f8d6517fe00ce394cc89078422a2932639]-->\n<!--SHINY.SINGLETON[0bf15fa01b25514eef0a61eea61811b6c3d40ef0]-->\n<head>\n  <link rel=\"stylesheet\" type=\"text/css\" href=\"shinyMatrix/matrix-input.css\"/>\n<\/head>\n<!--/SHINY.SINGLETON[0bf15fa01b25514eef0a61eea61811b6c3d40ef0]-->\n<div class=\"form-group shiny-matrix-input-container shiny-input-container-inline shiny-input-container\">\n  <div id=\"theta_fMatrixInput\" class=\"vue-input \" data-values=\"[[&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],[&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],[&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],[&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;]]\" data-rownames=\"[&quot;&quot;,&quot;&quot;,&quot;&quot;,&quot;&quot;]\" data-colnames=\"[&quot;&quot;,&quot;&quot;,&quot;&quot;,&quot;&quot;]\" data-rows=\"{&quot;names&quot;:false,&quot;editableNames&quot;:false,&quot;extend&quot;:false,&quot;delta&quot;:1}\" data-cols=\"{&quot;names&quot;:false,&quot;editableNames&quot;:false,&quot;extend&quot;:false,&quot;delta&quot;:1}\" data-class=\"[&quot;numeric&quot;]\" data-pagination=\"false\" data-lazy=\"false\">\n    <div class=\"vue-element\"><\/div>\n  <\/div>\n<\/div>",
+      "deps": [
+
+      ]
+    },
+    "theta_rMatrixUI": {
+      "html": "<!--SHINY.SINGLETON[318d44bd7cd83737295e0412bb5540ef750f845a]-->\n<head>\n  <script src=\"shinyMatrix/lodash.min.js\"><\/script>\n<\/head>\n<!--/SHINY.SINGLETON[318d44bd7cd83737295e0412bb5540ef750f845a]-->\n<!--SHINY.SINGLETON[7f44bf3d13ba6283b6f87def388c9f24ace22111]-->\n<head>\n  <script src=\"shinyMatrix/vue.js\"><\/script>\n<\/head>\n<!--/SHINY.SINGLETON[7f44bf3d13ba6283b6f87def388c9f24ace22111]-->\n<!--SHINY.SINGLETON[c0a827f8d6517fe00ce394cc89078422a2932639]-->\n<head>\n  <script src=\"shinyMatrix/matrix-input.js\"><\/script>\n<\/head>\n<!--/SHINY.SINGLETON[c0a827f8d6517fe00ce394cc89078422a2932639]-->\n<!--SHINY.SINGLETON[0bf15fa01b25514eef0a61eea61811b6c3d40ef0]-->\n<head>\n  <link rel=\"stylesheet\" type=\"text/css\" href=\"shinyMatrix/matrix-input.css\"/>\n<\/head>\n<!--/SHINY.SINGLETON[0bf15fa01b25514eef0a61eea61811b6c3d40ef0]-->\n<div class=\"form-group shiny-matrix-input-container shiny-input-container-inline shiny-input-container\">\n  <div id=\"theta_rMatrixInput\" class=\"vue-input \" data-values=\"[[&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],[&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],[&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],[&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;]]\" data-rownames=\"[&quot;&quot;,&quot;&quot;,&quot;&quot;,&quot;&quot;]\" data-colnames=\"[&quot;&quot;,&quot;&quot;,&quot;&quot;,&quot;&quot;]\" data-rows=\"{&quot;names&quot;:false,&quot;editableNames&quot;:false,&quot;extend&quot;:false,&quot;delta&quot;:1}\" data-cols=\"{&quot;names&quot;:false,&quot;editableNames&quot;:false,&quot;extend&quot;:false,&quot;delta&quot;:1}\" data-class=\"[&quot;numeric&quot;]\" data-pagination=\"false\" data-lazy=\"false\">\n    <div class=\"vue-element\"><\/div>\n  <\/div>\n<\/div>",
+      "deps": [
+
+      ]
+    }
+  },
+  "export": {
+
+  }
+}
