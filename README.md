@@ -1,4 +1,4 @@
-# PartInvShinyUI
+# `unbiasr` R package
 
 MMM Lab @USC Partial Invariance Shiny UI
 
