@@ -21,13 +21,14 @@
 
 get_aggregate_CAI <- function(pmixr, store_summary) {
   r <- store_summary$Reference; f <- store_summary$Focal
-  PS <- (pmixr*r[1] + (1 - pmixr)*f[1]) + (pmixr*r[2] + (1 - pmixr)*f[2])
-  SR <- (pmixr*r[1] + (1 - pmixr)*f[1]) /
-    (pmixr*r[1] + (1 - pmixr)*f[1] + pmixr*r[2] + (1 - pmixr)*f[2]) 
-  SE <- (pmixr*r[1] + (1 - pmixr)*f[1]) / 
-    (pmixr*r[1] + (1 - pmixr)*f[1] + pmixr*r[4] + (1 - pmixr)*f[4])
-  SP <- (pmixr*r[3] + (1 - pmixr)*f[3]) / 
-    (pmixr*r[3] + (1 - pmixr)*f[3] + pmixr*r[2] + (1 - pmixr)*f[2]) 
+  pmixf <- 1 - pmixr
+  PS <- (pmixr*r[1] + pmixf*f[1]) + (pmixr*r[2] + pmixf*f[2])
+  SR <- (pmixr*r[1] + pmixf*f[1]) /
+    (pmixr*r[1] + pmixf*f[1] + pmixr*r[2] + pmixf*f[2]) 
+  SE <- (pmixr*r[1] + pmixf*f[1]) / 
+    (pmixr*r[1] + pmixf*f[1] + pmixr*r[4] + pmixf*f[4])
+  SP <- (pmixr*r[3] + pmixf*f[3]) / 
+    (pmixr*r[3] + pmixf*f[3] + pmixr*r[2] + pmixf*f[2]) 
   return(c(PS, SR, SE, SP))
 }
 
@@ -51,10 +52,10 @@ get_aggregate_CAI <- function(pmixr, store_summary) {
 #' excluded.
 
 err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
-  r <- round(store_summary_full$Reference, 3)
-  f <- round(store_summary_full$Focal, 3)
-  r_del1 <- round(store_summary_del1$Reference, 3)
-  f_del1 <- round(store_summary_del1$Focal, 3)
+  r <- store_summary_full$Reference
+  f <- store_summary_full$Focal
+  r_del1 <- store_summary_del1$Reference
+  f_del1 <- store_summary_del1$Focal
   if(# TP_f decreases/remains unchanged and TP_r increases, and either
      # change has Cohen's h > 0.1
     ((r[1] < r_del1[1]) & (f[1] >= f_del1[1]) & 

@@ -167,7 +167,7 @@ item_deletion_h <- function(propsel,
                             delete_one_cutoff = NULL,
                             ...) {
   N <- length(weights_item)
-  
+  pmix_f <- 1 - pmix_ref
   # Determine which set of items will be returned
   return_items <- c()
   if(is.null(user_specified_items)) { # default: return only the biased items.
@@ -211,10 +211,10 @@ item_deletion_h <- function(propsel,
                             alpha_f = alpha_f,
                             psi_r = psi_r,
                             psi_f = psi_f,
-                            lambda_r = lambda_f * (1 - pmix_ref) +
+                            lambda_r = lambda_f * pmix_f +
                               lambda_r * pmix_ref,
-                            nu_r = nu_f * (1 - pmix_ref) + nu_r * pmix_ref,
-                            Theta_r = Theta_f * (1 - pmix_ref) + 
+                            nu_r = nu_f * pmix_f + nu_r * pmix_ref,
+                            Theta_r = Theta_f * pmix_f + 
                               Theta_r * pmix_ref,
                             pmix_ref = pmix_ref, 
                             plot_contour = plot_contour, 
@@ -299,11 +299,11 @@ item_deletion_h <- function(propsel,
                               alpha_f = alpha_f,
                               psi_r = psi_r,
                               psi_f = psi_f,
-                              lambda_r = lambda_f * (1 - pmix_ref) + 
+                              lambda_r = lambda_f * pmix_f + 
                                 lambda_r * pmix_ref,
-                              nu_r = nu_f * (1 - pmix_ref) + 
+                              nu_r = nu_f * pmix_f + 
                                 nu_r * pmix_ref,
-                              Theta_r = Theta_f * (1 - pmix_ref) + 
+                              Theta_r = Theta_f * pmix_f + 
                                 Theta_r * pmix_ref,
                               pmix_ref = pmix_ref, 
                               plot_contour = plot_contour,
@@ -381,60 +381,29 @@ item_deletion_h <- function(propsel,
     delta_h_str_par_aggregate[i - 1] <- delta_h(h_aggregate_str_par[1], 
                                                     h_aggregate_str_par[i])
     
-    AI_ratios[,i] <- c(store_str[[i]]$ai_ratio, store_par[[i]]$ai_ratio) 
+    AI_ratios[, i] <- c(store_str[[i]]$ai_ratio, store_par[[i]]$ai_ratio) 
   }
+  
   # Format stored variables
-  # names(AI_ratios) <- c("AI", paste0("AI|", c(1:N)))
-  # rownames(AI_ratios) <- c("SFI", "PFI")
   names(AI_ratios) <- c("full", paste0("|", c(1:N)))
   rownames(AI_ratios) <- c("AI_SFI", "AI_PFI")
-  # h_R_Ef
-  # names(h_R_Ef) <-  c("h(r-Ef)", paste0("h(r-Ef|", c(1:N), c(")")))
   names(h_R_Ef) <-  c("r-Ef", paste0("r-Ef|", c(1:N)))
-  
-  
-  # delta_h_str_vs_par
-  # names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_foc) <- 
-  #   paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
   names(delta_h_str_vs_par_ref) <- names(delta_h_str_vs_par_foc) <- 
        paste0("SFI, PFI|", c(1:N))
-  
-  names(store_str) <- names(store_par) <- 
-    names(str_par_ref_list) <- names(str_par_foc_list) <- 
-    c("full", paste0("|", c(1:N)))
+  names(store_str) <- names(store_par) <- names(str_par_ref_list) <- 
+    names(str_par_foc_list) <- c("full", paste0("|", c(1:N)))
   names(aggregate_par) <- c("full", paste0("|", c(1:N)))
-  
-  #  names(h_aggregate_par) <- paste0("h(|", c(1:N), c(")"))
   names(h_aggregate_par) <- paste0("|", c(1:N))
-  
-  # rownames(h_aggregate_par) <- rownames(aggregate_par) <- 
-  #  rownames(delta_h_str_par_aggregate) <- rownames(h_aggregate_str_par) <- 
-  #  c("PS*", "SR*", "SE*", "SP*")
-  rownames(h_aggregate_par) <- rownames(h_aggregate_str_par) <-c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)")
-    rownames(aggregate_par) <-   c("PS*", "SR*", "SE*", "SP*")
-   rownames(delta_h_str_par_aggregate) <-  c(paste0('\u0394', c("h(PS*)")), 
-                                           paste0('\u0394', c("h(SR*)")),
-                                           paste0('\u0394', c("h(SE*)")), 
-                                           paste0('\u0394', c("h(SP*)")))
-  
-  # rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
-  #   rownames(h_R_Ef) <- rownames(delta_h_R_vs_Ef) <- 
-  #   rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_foc) <- 
-  #   c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
-  
-   
-   rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
-     rownames(delta_h_R_vs_Ef) <-  c(paste0('\u0394', c("h(TP)")), 
-                                     paste0('\u0394', c("h(FP)")),
-                                     paste0('\u0394', c("h(TN)")), 
-                                     paste0('\u0394', c("h(FN)")),
-                                     paste0('\u0394', c("h(PS)")), 
-                                     paste0('\u0394', c("h(SR)")),
-                                     paste0('\u0394', c("h(SE)")), 
-                                     paste0('\u0394', c("h(SP)")))
-   
-     rownames(h_R_Ef) <- rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_foc) <- 
-     c("h(TP)", "h(FP)", "h(TN)", "h(FN)", "h(PS)", "h(SR)", "h(SE)", "h(SP)")
+  rownames(h_aggregate_par) <- rownames(h_aggregate_str_par) <-
+    c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)")
+  rownames(aggregate_par) <- c("PS*", "SR*", "SE*", "SP*")
+  rownames(delta_h_str_par_aggregate) <-  
+    paste0("\u0394h(", c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)"), ")")
+  rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
+    rownames(delta_h_R_vs_Ef) <-  
+    paste0("\u0394h(", c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP"), ")")
+  rownames(h_R_Ef) <- rownames(h_str_vs_par_ref) <- rownames(h_str_vs_par_foc) <- 
+    c("h(TP)", "h(FP)", "h(TN)", "h(FN)", "h(PS)", "h(SR)", "h(SE)", "h(SP)")
    
   # Declare classes
   store_par <- list(outputlist = store_par, condition = "partial",
@@ -450,20 +419,12 @@ item_deletion_h <- function(propsel,
   class(h_str_vs_par_list_ref) <-  c("PartInvList", "PartInv", "PartInv_groups" )
   class(h_str_vs_par_list_foc) <-  c("PartInvList", "PartInv", "PartInv_groups")
   
+  names(h_str_vs_par_ref) <- names(h_str_vs_par_foc) <- 
+    c("SFI, PFI", paste0("SFI, PFI|", c(1:N)))
   
-  # names(h_str_vs_par_ref) <- names(h_str_vs_par_foc) <- c("h(SFI, PFI)", 
-  #                                                         paste0("h(SFI, PFI|", c(1:N), c(")")))
-  names(h_str_vs_par_ref) <- names(h_str_vs_par_foc) <- c("SFI, PFI", 
-                                                          paste0("SFI, PFI|", c(1:N)))
-  
-  # names(delta_h_R_vs_Ef) <- paste0('\u0394', "h(r-Ef|", c(1:N), c(")"))
-  # names(delta_h_str_par_aggregate) <- paste0('\u0394', "h(SFI, PFI|", c(1:N), c(")"))
-  # names(h_aggregate_str_par) <- c("h(SFI, PFI)", paste0("h(SFI, PFI|", c(1:N), c(")")))
-  # 
   names(delta_h_R_vs_Ef) <- paste0("r-Ef|", c(1:N))
   names(delta_h_str_par_aggregate) <- paste0( "SFI, PFI|", c(1:N))
   names(h_aggregate_str_par) <- c("SFI, PFI", paste0("SFI, PFI|", c(1:N)))
-  
   
   aggregate_par <- as.data.frame(cbind(aggregate_par))
   h_aggregate_par <- as.data.frame(h_aggregate_par)
