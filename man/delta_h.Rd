@@ -12,17 +12,12 @@ delta_h(h_R, h_i_del)
 \item{h_i_del}{h effect sizes for when the item is deleted.}
 }
 \value{
-Cohen's h for the difference in the selection accuracy index when the
-item is deleted.
+Cohen's h for the difference in the classification accuracy index
+when the item is deleted.
 }
 \description{
-\code{delta_h} Uses the formula below to compute the effect size for impact
-of item bias by comparing Cohen's h values for CAI when an item is deleted vs.
-CAI when all items are included.
-
-e.g. for the improvement in SE:
-
-\eqn{\Delta h^{|k}(SE)=\text{sign}\left(|h({SE)}|-|h^{|k}(SE)|\right)||h^{|k}(SE)|-|h(SE)||}
+\code{delta_h} Computes the effect size of the impact of item bias by
+comparing Cohen's h values for CAI for the full versus delete-one item sets.
 }
 \examples{
 delta_h(0.04, 0.01)
