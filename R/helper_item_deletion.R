@@ -176,8 +176,9 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
   }
   return(new_w)
 }
-
-# Helper function for redistribute_weights()
+# Helper function for redistribute_weights() that, for each dimension of the
+# scale, updates the specific subscale with redistributed weights proportional
+# to the original weights if the item to be deleted is in that dimension.
 multidim_redist <- function(n_dim, del_i, i_by_dim, new_w, del_weight) {
   for(k in 1:n_dim) {
     if(del_i %in% i_by_dim[[k]]){ # If del_i is in dimension k
