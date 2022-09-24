@@ -39,6 +39,6 @@ sum(multi_eq_w)==sum(redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2))
 
 multi_uneq_w <- c(1:12)
 redistribute_weights(multi_uneq_w, n_dim = 3, n_i_per_dim = c(3, 6, 3), del_i=2)
-sum(multi_uneq_w)==sum(redistribute_weights(multi_uneq_w, n_dim = 3, 
+sum(multi_uneq_w)==sum(redistribute_weights(multi_uneq_w, n_dim = 3,
                                             n_i_per_dim = c(3, 6, 3), del_i=2))
 }
