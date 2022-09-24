@@ -1,19 +1,19 @@
 #' @title
 #' Compute PS, SR, SE, SP weighted by group proportions
-#' 
-#' @name 
+#'
+#' @name
 #' get_aggregate_CAI
-#' 
+#'
 #' @description
-#' \code{get_aggregate_CAI} computes aggregate PS, SR, SE, SP under partial or 
-#' strict invariance by weighting the TP, TF, TN, FP values for the reference 
+#' \code{get_aggregate_CAI} computes aggregate PS, SR, SE, SP under partial or
+#' strict invariance by weighting the TP, TF, TN, FP values for the reference
 #' and focal groups with the group proportions.
-#' 
+#'
 #' @param pmixr Proportion of the reference group.
-#' @param store_summary The summary table from [PartInv()] 
+#' @param store_summary The summary table from [PartInv()]
 #' under partial or strict invariance.
-#' 
-#' @return A vector of length 4. 
+#'
+#' @return A vector of length 4.
 #'          \item{PS}{Proportion selected, computed as \eqn{TP + TN}.}
 #'          \item{SR}{Success ratio, computed as \eqn{TP/(TP + FP)}.}
 #'          \item{SE}{Sensitivity, computed as \eqn{TP/(TP + FN)}.}
@@ -24,31 +24,31 @@ get_aggregate_CAI <- function(pmixr, store_summary) {
   pmixf <- 1 - pmixr
   PS <- (pmixr*r[1] + pmixf*f[1]) + (pmixr*r[2] + pmixf*f[2])
   SR <- (pmixr*r[1] + pmixf*f[1]) /
-    (pmixr*r[1] + pmixf*f[1] + pmixr*r[2] + pmixf*f[2]) 
-  SE <- (pmixr*r[1] + pmixf*f[1]) / 
+    (pmixr*r[1] + pmixf*f[1] + pmixr*r[2] + pmixf*f[2])
+  SE <- (pmixr*r[1] + pmixf*f[1]) /
     (pmixr*r[1] + pmixf*f[1] + pmixr*r[4] + pmixf*f[4])
-  SP <- (pmixr*r[3] + pmixf*f[3]) / 
-    (pmixr*r[3] + pmixf*f[3] + pmixr*r[2] + pmixf*f[2]) 
+  SP <- (pmixr*r[3] + pmixf*f[3]) /
+    (pmixr*r[3] + pmixf*f[3] + pmixr*r[2] + pmixf*f[2])
   return(c(PS, SR, SE, SP))
 }
 
 #' @title
 #' Check for misleading improvements in aggregate CAI
-#' 
-#' @name 
+#'
+#' @name
 #' err_improv_acai
-#' 
+#'
 #' @description
-#' \code{err_improv_acai} checks if any improvement observed in aggregate CAI 
-#' may have resulted from the higher mixing proportion of the reference group 
+#' \code{err_improv_acai} checks if any improvement observed in aggregate CAI
+#' may have resulted from the higher mixing proportion of the reference group
 #' masking worsening performance for the focal group. If the effect size of any
 #' change indicating worse performance for the focal group and better
-#' performance for the reference group is larger than 0.1, prints a warning 
+#' performance for the reference group is larger than 0.1, prints a warning
 #' message.
 #' @param i Index of item under consideration.
-#' @param store_summary_full PartInv summary for the case where all items are 
+#' @param store_summary_full PartInv summary for the case where all items are
 #' retained.
-#' @param store_summary_del1 PartInv summary for the case where item i is 
+#' @param store_summary_del1 PartInv summary for the case where item i is
 #' excluded.
 
 err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
@@ -58,44 +58,44 @@ err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
   f_del1 <- store_summary_del1$Focal
   if(# TP_f decreases/remains unchanged and TP_r increases, and either
      # change has Cohen's h > 0.1
-    ((r[1] < r_del1[1]) & (f[1] >= f_del1[1]) & 
-     (cohens_h(r[1], r_del1[1]) > 0.1 | cohens_h(f[1], f_del1[1]) > 0.1)) | 
-    # FP_r decreases and FP_f increases/remains unchanged, and either change 
+    ((r[1] < r_del1[1]) & (f[1] >= f_del1[1]) &
+     (cohens_h(r[1], r_del1[1]) > 0.1 | cohens_h(f[1], f_del1[1]) > 0.1)) |
+    # FP_r decreases and FP_f increases/remains unchanged, and either change
     # has Cohen's h > 0.1
-    ((r[2] > r_del1[2]) & (f[2] <= f_del1[2]) & 
-       (cohens_h(r[2], r_del1[2]) > 0.1 | cohens_h(f[2], f_del1[2]) > 0.1)) | 
-    # TN_f decreases/remains unchanged and TN_r increases, and either change 
+    ((r[2] > r_del1[2]) & (f[2] <= f_del1[2]) &
+       (cohens_h(r[2], r_del1[2]) > 0.1 | cohens_h(f[2], f_del1[2]) > 0.1)) |
+    # TN_f decreases/remains unchanged and TN_r increases, and either change
     # has Cohen's h > 0.1
-    ((r[3] < r_del1[3]) & (f[3] >= f_del1[3]) & 
-     (cohens_h(r[3], r_del1[3]) > 0.1 | cohens_h(f[3], f_del1[3]) > 0.1)) |  
-    # FN_r decreases and FN_f increases/remains unchanged, and either change 
+    ((r[3] < r_del1[3]) & (f[3] >= f_del1[3]) &
+     (cohens_h(r[3], r_del1[3]) > 0.1 | cohens_h(f[3], f_del1[3]) > 0.1)) |
+    # FN_r decreases and FN_f increases/remains unchanged, and either change
     # has Cohen's h > 0.1
-    ((r[4] > r_del1[4]) & (f[4] <= f_del1[4]) & 
+    ((r[4] > r_del1[4]) & (f[4] <= f_del1[4]) &
        (cohens_h(r[4], r_del1[4]) > 0.1 | cohens_h(f[4], f_del1[4]) > 0.1))
     )
   {
-    if((r[1] < r_del1[1]) & (f[1] > f_del1[1]) & 
+    if((r[1] < r_del1[1]) & (f[1] > f_del1[1]) &
       (cohens_h(r[1 ], r_del1[1]) > 0.1| cohens_h(f[1], f_del1[1]) > 0.1)){
       cat("Increases in ACAI related to the deletion of item ", i, "may be
-          misleading due to \nthe mixing proportion. Examine TP values from 
-          detailed output tables for the \nreference and focal groups before 
+          misleading due to \nthe mixing proportion. Examine TP values from
+          detailed output tables for the \nreference and focal groups before
           proceeding.\n")
       }
-    if((r[2] > r_del1[2]) & (f[2] < f_del1[2]) & 
+    if((r[2] > r_del1[2]) & (f[2] < f_del1[2]) &
        (cohens_h(r[2 ], r_del1[2]) > 0.1|cohens_h(f[2], f_del1[2]) > 0.1)){
-      cat("Increases in ACAI related to the deletion of item ", i, "may be 
-          misleading due to \nthe mixing proportion. Examine FP values from 
-          detailed output tables for the \nreference and focal groups before 
+      cat("Increases in ACAI related to the deletion of item ", i, "may be
+          misleading due to \nthe mixing proportion. Examine FP values from
+          detailed output tables for the \nreference and focal groups before
           proceeding.\n")
       }
-    if((r[3] < r_del1[3]) & (f[3] > f_del1[3]) & 
+    if((r[3] < r_del1[3]) & (f[3] > f_del1[3]) &
        (cohens_h(r[3 ], r_del1[3]) > 0.1|cohens_h(f[3], f_del1[3]) > 0.1)){
       cat("Increases in ACAI related to the deletion of item ", i, "may be
           misleading due to \nthe mixing proportion. Examine TN values from
           detailed output tables for the \nreference and focal groups before
           proceeding.\n")
       }
-    if((r[4] > r_del1[4]) & (f[4] < f_del1[4]) & 
+    if((r[4] > r_del1[4]) & (f[4] < f_del1[4]) &
       (cohens_h(r[4 ], r_del1[4]) > 0.1| cohens_h(f[4], f_del1[4]) > 0.1)){
       cat("Increases in ACAI related to the deletion of item ", i, "may be
           misleading due to \nthe mixing proportion. Examine FN values from
@@ -107,38 +107,38 @@ err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
 
 #' @title
 #' Delete item i and redistribute its weight within subscale
-#' 
-#' @name 
+#'
+#' @name
 #' redistribute_weights
-#' 
-#' @description 
-#' \code{redistribute_weights} replaces the item weight with 0 for the item to 
+#'
+#' @description
+#' \code{redistribute_weights} replaces the item weight with 0 for the item to
 #' be deleted, and redistributes this item's weight across the remaining items.
 
 #' @param weights_item A vector of item weights.
-#' @param n_dim Number of dimensions, 1 by default. If the user does not supply 
+#' @param n_dim Number of dimensions, 1 by default. If the user does not supply
 #'        a value, assumes that the scale is unidimensional.
-#' @param n_i_per_dim A vector containing the number of items in each 
-#'        dimension; `NULL` by default. If the user provides a value for n_dim 
-#'        that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that 
-#'        the subscales have an equal number of items. 
+#' @param n_i_per_dim A vector containing the number of items in each
+#'        dimension; `NULL` by default. If the user provides a value for n_dim
+#'        that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that
+#'        the subscales have an equal number of items.
 #' @param del_i Index of the item to be deleted.
-#' 
+#'
 #' @return `new_w` Weights vector with redistributed weights.
 #' @examples
 #' one_dim_w <- c(1:7)
 #' redistribute_weights(one_dim_w, del_i = 2)
 #' redistribute_weights(one_dim_w, n_dim = 1, n_i_per_dim = 7, del_i = 2)
 #' sum(one_dim_w)==sum(redistribute_weights(one_dim_w, del_i = 2))
-#' 
+#'
 #' multi_eq_w <- c(1:9)
 #' redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2)
 #' redistribute_weights(multi_eq_w, n_dim = 3, n_i_per_dim = c(3, 3, 3), del_i = 2)
 #' sum(multi_eq_w)==sum(redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2))
-#' 
+#'
 #' multi_uneq_w <- c(1:12)
 #' redistribute_weights(multi_uneq_w, n_dim = 3, n_i_per_dim = c(3, 6, 3), del_i=2)
-#' sum(multi_uneq_w)==sum(redistribute_weights(multi_uneq_w, n_dim = 3, 
+#' sum(multi_uneq_w)==sum(redistribute_weights(multi_uneq_w, n_dim = 3,
 #'                                             n_i_per_dim = c(3, 6, 3), del_i=2))
 #' @export
 redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
@@ -146,61 +146,60 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
   n_items <- length(weights_item)
   new_w <- weights_item; new_w[del_i] <- 0
   del_weight <- weights_item[del_i] # the weight to be redistributed
-   
+
   # Unidimensional
   if ((n_dim == 1) & (is.null(n_i_per_dim) | length(n_i_per_dim) == 1)) {
-    new_w[new_w != 0] <- new_w[new_w != 0] + del_weight/length(new_w[new_w != 0])
-    # Multidimensional, equal n  
+    # Increase each non-zero item in the vector by the weight to be distributed
+    # proportional to the original weighting of the items.
+    new_w[new_w != 0] <- new_w[new_w != 0] +
+      new_w[new_w != 0] * del_weight / sum(new_w[new_w != 0])
+
+  # Multidimensional, equal n
   } else if ((n_dim > 1) & is.null(n_i_per_dim) & n_items %% n_dim != 0){
     stop('Please pass a vector of subscale lengths to n_i_per_dim.')
-  } else if ((n_dim > 1) & is.null(n_i_per_dim)) { 
-    subscale_len <- n_items / n_dim # subscale length
-    # Split indices into dimensions
+
+  # Multidimensional, number of items per dimension is not specified
+  } else if ((n_dim > 1) & is.null(n_i_per_dim)) {
+    # Split indices into dimensions assuming dimensions have the same length.
     i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), n_dim, labels = FALSE))
-    for(k in 1:n_dim) {
-      if(del_i %in% i_by_dim[[k]]) { # If del_i is in dimension k
-        # Create temporary vector to store the remaining indices in dimension k
-        temp_i <- i_by_dim[[k]][i_by_dim[[k]] != del_i] 
-        non0 <- length(temp_i)
-        for(j in temp_i) { # Re-weight the remaining indices in the subscale
-          new_w[j][new_w[j] != 0] <- new_w[j][new_w[j] != 0] + del_weight/non0
-        }
-      } 
-    }
-    # Multidimensional, unequal n
-  } else if ((n_dim > 1) & !is.null(n_i_per_dim)) { 
+    new_w <- multidim_redist(n_dim, del_i, i_by_dim, new_w, del_weight)
+
+  # Multidimensional, unequal n
+  } else if ((n_dim > 1) & !is.null(n_i_per_dim)) {
     # Split indices into dimensions
-    i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), 
-                                     breaks = cumsum(c(0, n_i_per_dim)), 
+    i_by_dim <- split(1:n_items, cut(seq_along(1:n_items),
+                                     breaks = cumsum(c(0, n_i_per_dim)),
                                      labels = FALSE))
-    for(k in 1:n_dim) {
-      if(del_i %in% i_by_dim[[k]]){ # If del_i is in dimension k
-        # Determine number of nonzero item weights in dimension k
-        non0 <- length(new_w[i_by_dim[[k]]][new_w[i_by_dim[[k]]] != 0])
-        # Create temporary vector to store the remaining indices in dimension k
-        temp_i <- i_by_dim[[k]][i_by_dim[[k]] != del_i] 
-        for(j in temp_i) { # Re-weight the remaining indices in the subscale
-          new_w[j][new_w[j] != 0] <- new_w[j][new_w[j] != 0] + del_weight/non0
-        }
-      }
-    }
+    new_w <- multidim_redist(n_dim, del_i, i_by_dim, new_w, del_weight)
   } else {
     stop('Check n_dim and n_i_per_dim')
   }
   return(new_w)
 }
 
+# Helper function for redistribute_weights()
+multidim_redist <- function(n_dim, del_i, i_by_dim, new_w, del_weight) {
+  for(k in 1:n_dim) {
+    if(del_i %in% i_by_dim[[k]]){ # If del_i is in dimension k
+      # Create temporary vector to store the remaining indices in dimension k
+      temp_i <- i_by_dim[[k]][i_by_dim[[k]] != del_i]
+      new_w[temp_i][new_w[temp_i] != 0] <- new_w[temp_i][new_w[temp_i] != 0] +
+        new_w[temp_i][new_w[temp_i] != 0] * del_weight / sum(new_w[temp_i])
+    }
+  }
+  return(new_w)
+}
 
-#' @title 
+#' @title
 #' Compute Cohen's h effect size for the difference in two proportions.
-#' 
-#' @name 
+#'
+#' @name
 #' cohens_h
-#' 
-#' @description 
-#' \code{cohens_h} computes Cohen's h (Cohen, 1988) for the difference in two 
-#' proportions using \eqn{h = 2arcsin(\sqrt{p1}) - 2arcsin(\sqrt{p2})}. 
-#' 
+#'
+#' @description
+#' \code{cohens_h} computes Cohen's h (Cohen, 1988) for the difference in two
+#' proportions using \eqn{h = 2arcsin(\sqrt{p1}) - 2arcsin(\sqrt{p2})}.
+#'
 #' @param p1 The first proportion.
 #' @param p2 The second proportion.
 #' @return `h` The computed Cohen's h value.
@@ -215,17 +214,17 @@ cohens_h <- function(p1, p2) {
 
 #' @title
 #' Compute effect size for the impact of item deletion
-#' 
-#' @name 
+#'
+#' @name
 #' delta_h
-#' 
-#' @description 
-#' \code{delta_h} Computes the effect size of the impact of item bias by 
+#'
+#' @description
+#' \code{delta_h} Computes the effect size of the impact of item bias by
 #' comparing Cohen's h values for CAI for the full versus delete-one item sets.
-#' 
+#'
 #' @param h_R h effect sizes for when the item is included.
 #' @param h_i_del h effect sizes for when the item is deleted.
-#' @return Cohen's h for the difference in the classification accuracy index 
+#' @return Cohen's h for the difference in the classification accuracy index
 #' when the item is deleted.
 #' @examples
 #' delta_h(0.04, 0.01)
@@ -236,81 +235,81 @@ delta_h <- function(h_R, h_i_del) {
 }
 
 
-#' @title 
+#' @title
 #' Compute Cohen's h for the difference under strict vs. partial invariance for
 #' the reference and the focal group.
-#' 
-#' @name 
+#'
+#' @name
 #' acc_indices_h
-#' 
-#' @description 
-#' \code{acc_indices_h} takes in outputs from [PartInv()] 
-#' and returns two restructured data frames with the classification accuracy   
-#' indices for the reference and focal groups under strict invariance and 
-#' partial invariance conditions, and the corresponding h for the difference in  
+#'
+#' @description
+#' \code{acc_indices_h} takes in outputs from [PartInv()]
+#' and returns two restructured data frames with the classification accuracy
+#' indices for the reference and focal groups under strict invariance and
+#' partial invariance conditions, and the corresponding h for the difference in
 #' CAI between the two invariance conditions for each group.
-#' @param strict_output Output from [PartInv()] under strict invariance. 
-#' @param partial_output Output from [PartInv()] under partial invariance. 
-#' @return A 8 x 3 dataframe with columns `strict invariance`, 
+#' @param strict_output Output from [PartInv()] under strict invariance.
+#' @param partial_output Output from [PartInv()] under partial invariance.
+#' @return A 8 x 3 dataframe with columns `strict invariance`,
 #'        `partial invariance`, and `h`.
 acc_indices_h <- function(strict_output, partial_output) {
   r_names <- c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
-  
+
   ref_par_strict <- partial_output$summary[1][, 1]
   ref_strict <- strict_output$summary[1][, 1]
-  
-  df_ref <- data.frame(SFI =  ref_strict, 
+
+  df_ref <- data.frame(SFI =  ref_strict,
                    PFI = ref_par_strict, row.names = r_names)
   df_ref["h"] <- cohens_h(df_ref$SFI, df_ref$PFI)
-  
+
   f_par_strict <- partial_output$summary[2][, 1]
   f_strict <- strict_output$summary[2][, 1]
-  df_f <- data.frame(SFI =  f_strict, 
+  df_f <- data.frame(SFI =  f_strict,
                        PFI = f_par_strict, row.names = r_names)
   df_f["h"] <- cohens_h(df_f$SFI, df_f$PFI)
   return(list("Reference" = df_ref, "Focal" = df_f))
 }
- 
 
-#' @title 
+
+#' @title
 #' Determine biased items
-#' 
-#' @name 
+#'
+#' @name
 #' determine_biased_items
-#' 
-#' @description 
+#'
+#' @description
 #' \code{determine_biased_items} takes in the factor loadings, intercepts, and
-#'  uniqueness for the reference and focal groups, and returns indices of 
+#'  uniqueness for the reference and focal groups, and returns indices of
 #'  noninvariant items.
-#'  
+#'
 #' @param lambda_r Factor loadings for the reference group.
 #' @param lambda_f Factor loadings for the focal group.
 #' @param nu_r Measurement intercepts for the reference group.
 #' @param nu_f Measurement intercepts for the focal group.
 #' @param Theta_r Uniqueness for the reference group.
 #' @param Theta_f Uniqueness for the focal group.
-#' @param weights Vector of item weights. If an item weight is assigned to be 0, 
+#' @param weights Vector of item weights. If an item weight is assigned to be 0,
 #' it won't be returned as a biased item.
-#' 
-#' 
+#'
+#'
 #' @return A vector containing the indices of the biased items.
-#' @examples 
+#' @examples
 #' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
 #' lambda_matrix[1:2, 1] <- c(.322, .655)
 #' lambda_matrix[3:5, 2] <- c(.398, .745, .543)
 #' determine_biased_items(lambda_r = lambda_matrix,
-#'                        lambda_f = lambda_matrix, 
+#'                        lambda_f = lambda_matrix,
 #'                        nu_r = c(.225, .025, .010, .240, .125),
 #'                        nu_f = c(.225, -.05, .240, -.025, .125),
-#'                        Theta_r = diag(1, 5),  
-#'                        Theta_f = diag(c(1, .95, .80, .75, 1)), 
-#'                        weights = c(1/4, 1/4, 1/6, 1/6, 1/6))       
+#'                        Theta_r = diag(1, 5),
+#'                        Theta_f = diag(c(1, .95, .80, .75, 1)),
+#'                        weights = c(1/4, 1/4, 1/6, 1/6, 1/6))
 #' @export
-determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f, 
+determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f,
                                    Theta_r, Theta_f, weights) {
   biased_lambda <- biased_theta <- biased_nu <- c()
-  
-  # Compare factor loadings 
+
+  # Compare factor loadings
   if(is.matrix(lambda_r)) {
     for(i in seq_len(ncol(lambda_r))) {
       items <- as.vector(which(lambda_r[,i] != lambda_f[,i]))
@@ -318,16 +317,16 @@ determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f,
   } else {
     items <- as.vector(which(lambda_r != lambda_f))
     biased_lambda <- c(biased_lambda, items)
-  } 
+  }
   # Compare uniqueness
   if(is.matrix(Theta_r) & is.matrix(Theta_f)) {
     for(i in seq_len(ncol(Theta_r))) {
-      biased_theta <- c(biased_theta, 
+      biased_theta <- c(biased_theta,
                         as.vector(which(Theta_r[,i] != Theta_f[,i])))}
     } else {
       biased_theta <- c(biased_theta, as.vector(c(which(Theta_r != Theta_f))))
     }
-  
+
   # Compare intercepts
   if(is.matrix(nu_r)) {
     for(i in seq_len(ncol(nu_r))) {
@@ -335,7 +334,7 @@ determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f,
     } else {
       biased_nu <- c(biased_nu, as.vector(which(nu_r != nu_f)))
     }
-  biased <- unique(c(biased_lambda, biased_theta, biased_nu)) 
+  biased <- unique(c(biased_lambda, biased_theta, biased_nu))
   biased <- setdiff(biased, which(weights==0))
   if(length(biased) == 0) { print("Strict invariance holds for all items.") }
   return(sort(biased))
