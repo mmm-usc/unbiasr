@@ -1,5 +1,5 @@
 ---
-title: "Applied examples"
+title: "Applied examples of item deletion statistics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Applied examples}
@@ -464,7 +464,7 @@ Overall, the researcher may consider deleting either the 15-th or the 10-th item
 using their domain specific expertise and consulting existing literature to 
 choose between the two items. The output object from item_deletion_h contains 
 other tables that may aid the researcher in this process. For instance, the 
-outputs of PartInv() may be examined for the two item deletion scenarios:
+outputs of `PartInv()` may be examined for the two item deletion scenarios:
 
 All items retained:
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper_item_deletion.R
 \name{cohens_h}
 \alias{cohens_h}
-\title{Compute Cohen's h effect size for the difference in two proportions}
+\title{Compute Cohen's h effect size for the difference in two proportions.}
 \usage{
 cohens_h(p1, p2)
 }
@@ -15,7 +15,7 @@ cohens_h(p1, p2)
 \code{h} The computed Cohen's h value.
 }
 \description{
-\code{cohens_h} Computes Cohen's h (Cohen, 1988) for the difference in two
+\code{cohens_h} computes Cohen's h (Cohen, 1988) for the difference in two
 proportions using \eqn{h = 2arcsin(\sqrt{p1}) - 2arcsin(\sqrt{p2})}.
 }
 \examples{

@@ -32,10 +32,11 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Suggests: 
-    testthat,
+    testthat (>= 3.0.0),
     shinytest,
     rmarkdown,
-    knitr
+    knitr,
+    lavaan
 Imports: 
     methods,
     mnormt,
@@ -46,3 +47,4 @@ Imports:
     shinyWidgets,
     roxygen2
 VignetteBuilder: knitr
+Config/testthat/edition: 3
