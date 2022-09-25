@@ -1,6 +1,8 @@
 ---
 title: "Applied examples of item deletion statistics"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
   %\VignetteIndexEntry{Applied examples}
   %\VignetteEngine{knitr::rmarkdown}
@@ -108,7 +110,7 @@ a deterioration in performance.
 # This index can be computed for the reference group  ($\Delta^{|j}\h^{\sfi,\pfi}\CAI_{\r}$) or the focal group $\Delta^{|j}\h^{\sfi,\pfi}\CAI_{\f}$.
 ```
 
-### Comparing CAI for reference (R) vs. expected focal (Ef) groups under PFI 
+### Comparing CAI for reference (R) vs. expected focal (Ef) groups 
 $\h^{\rr}\CAI$:  Cohen's h effect size quantifying the discrepancy between $\CAI_{\r}$ vs. $\ef$ for the full set of items under PFI. 
 \[
 \begin{align*}
@@ -279,7 +281,7 @@ We see from the first table that $\ov{\SP}$ is around $0.940$ for all item
 deletion scenarios and $\ov{\SR}$ and $\ov{\SE}$ are slightly lower at around 
 $0.820$, suggesting that the Depressive Affect subscale is best at not selecting 
 the individuals who should not be selected. We see that aggregate SE, aggregate
-SR, and aggregate SP  for the full item set are higher than the other item 
+SR, and aggregate SP for the full item set are higher than the other item 
 subsets, suggesting that the removal of an item will likely not improve 
 aggregate CAI. h values in the second table are mostly positive and indicate a 
 slight decrease in $\ov{\CAI}$ for each item set, which suggests a drop in 
@@ -293,7 +295,8 @@ brings $\h^{\rr}\CAI$ closer to 0, indicating an improvement that has a
 minimal-small effect size as shown in the final table. Removing any other item 
 harms CAI. 
 
-In light of the conflicting findings and the small effect size of the potential 
+Given the lack of agreement between indices on whether the deletion of an item 
+improves or harms performance and the small effect size of the potential 
 improvement, it may be best to retain all items or choose an alternative method 
 to item deletion for this subscale. 
 
