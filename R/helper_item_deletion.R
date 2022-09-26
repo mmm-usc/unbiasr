@@ -50,58 +50,33 @@ get_aggregate_CAI <- function(pmixr, store_summary) {
 #' retained.
 #' @param store_summary_del1 PartInv summary for the case where item i is
 #' excluded.
-
 err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
-  r <- store_summary_full$Reference
-  f <- store_summary_full$Focal
-  r_del1 <- store_summary_del1$Reference
-  f_del1 <- store_summary_del1$Focal
-  if(# TP_f decreases/remains unchanged and TP_r increases, and either
-     # change has Cohen's h > 0.1
-    ((r[1] < r_del1[1]) & (f[1] >= f_del1[1]) &
-     (cohens_h(r[1], r_del1[1]) > 0.1 | cohens_h(f[1], f_del1[1]) > 0.1)) |
-    # FP_r decreases and FP_f increases/remains unchanged, and either change
-    # has Cohen's h > 0.1
-    ((r[2] > r_del1[2]) & (f[2] <= f_del1[2]) &
-       (cohens_h(r[2], r_del1[2]) > 0.1 | cohens_h(f[2], f_del1[2]) > 0.1)) |
-    # TN_f decreases/remains unchanged and TN_r increases, and either change
-    # has Cohen's h > 0.1
-    ((r[3] < r_del1[3]) & (f[3] >= f_del1[3]) &
-     (cohens_h(r[3], r_del1[3]) > 0.1 | cohens_h(f[3], f_del1[3]) > 0.1)) |
-    # FN_r decreases and FN_f increases/remains unchanged, and either change
-    # has Cohen's h > 0.1
-    ((r[4] > r_del1[4]) & (f[4] <= f_del1[4]) &
-       (cohens_h(r[4], r_del1[4]) > 0.1 | cohens_h(f[4], f_del1[4]) > 0.1))
-    )
-  {
-    if((r[1] < r_del1[1]) & (f[1] > f_del1[1]) &
-      (cohens_h(r[1 ], r_del1[1]) > 0.1| cohens_h(f[1], f_del1[1]) > 0.1)){
-      cat("Increases in ACAI related to the deletion of item ", i, "may be
-          misleading due to \nthe mixing proportion. Examine TP values from
-          detailed output tables for the \nreference and focal groups before
-          proceeding.\n")
-      }
-    if((r[2] > r_del1[2]) & (f[2] < f_del1[2]) &
-       (cohens_h(r[2 ], r_del1[2]) > 0.1|cohens_h(f[2], f_del1[2]) > 0.1)){
-      cat("Increases in ACAI related to the deletion of item ", i, "may be
-          misleading due to \nthe mixing proportion. Examine FP values from
-          detailed output tables for the \nreference and focal groups before
-          proceeding.\n")
-      }
-    if((r[3] < r_del1[3]) & (f[3] > f_del1[3]) &
-       (cohens_h(r[3 ], r_del1[3]) > 0.1|cohens_h(f[3], f_del1[3]) > 0.1)){
-      cat("Increases in ACAI related to the deletion of item ", i, "may be
-          misleading due to \nthe mixing proportion. Examine TN values from
-          detailed output tables for the \nreference and focal groups before
-          proceeding.\n")
-      }
-    if((r[4] > r_del1[4]) & (f[4] < f_del1[4]) &
-      (cohens_h(r[4 ], r_del1[4]) > 0.1| cohens_h(f[4], f_del1[4]) > 0.1)){
-      cat("Increases in ACAI related to the deletion of item ", i, "may be
-          misleading due to \nthe mixing proportion. Examine FN values from
-          detailed output tables for the \nreference and focal groups before
-          proceeding.\n")
-    }
+  # Store relevant values.
+  r <- store_summary_full$Reference; f <- store_summary_full$Focal
+  r_del1 <- store_summary_del1$Reference; f_del1 <- store_summary_del1$Focal
+
+  # Compute Cohen's h for the difference between full and drop one indices.
+  h_r <- cohens_h(r, r_del1); h_f <- cohens_h(f, f_del1)
+  # Check for changes (boolean).
+  r_bool <- r < r_del1; f_bool_leq <- f <= f_del1; f_bool_geq <- f >= f_del1
+  # Check the difference for the reference or focal group has Cohen's h > 0.1.
+  h_rf.1 <- (h_r > 0.1 | h_f > 0.1)
+
+  vals <- c("TP", "FP", "TN", "FN")
+
+  # TP_f decreases/remains unchanged & TP_r increases
+  if(r_bool[1] && f_bool_geq[1] & h_rf.1[1]){ cat1(1, vals, 1) }
+  # FP_r decreases and FP_f increases/remains unchanged
+  if(!r_bool[2] && f_bool_leq[2] & h_rf.1[2]){ cat1(2, vals, 2) }
+  # TN_f decreases/remains unchanged and TN_r increases
+  if(r_bool[3] && f_bool_geq[3] & h_rf.1[3]){ cat1(3, vals, 3) }
+    # FN_r decreases and FN_f increases/remains unchanged
+  if(!r_bool[4] && f_bool_leq[4] & h_rf.1[4]){ cat1(4, vals, 4) }
+
+  cat1 <- function(i, vals, val_i) {
+    cat("Increases in aggregate CAI after deleting item ", i, "may be
+          misleading due to the \n mixing proportion. Examine ", vals[val_i],
+        "values from detailed output tables before proceeding.\n")
     }
   }
 
@@ -319,6 +294,9 @@ determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f,
     items <- as.vector(which(lambda_r != lambda_f))
     biased_lambda <- c(biased_lambda, items)
   }
+
+ # which(!apply(lambda_r == lambda_f, 1, all))
+
   # Compare uniqueness
   if(is.matrix(Theta_r) & is.matrix(Theta_f)) {
     for(i in seq_len(ncol(Theta_r))) {

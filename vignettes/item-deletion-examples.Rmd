@@ -486,7 +486,7 @@ item 15. We can repeat the process with the new item weights:
 
 ```{r}
 CESD_full_drop15 <- item_deletion_h(
-                          cut_z = 16,
+                          cut_z = 16/60*(60-3),
                           weights_item = c(rep(1,14), 0, rep(1.33333, 3), 1, 1),
                           weights_latent = c(rep(1,4)),
                           alpha_r = alpha_CESD_r,
