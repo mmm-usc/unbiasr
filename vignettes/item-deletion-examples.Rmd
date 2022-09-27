@@ -482,7 +482,7 @@ CESD_full$PartInv$partial$outputlist$`|15`
 ```
 
 Let's assume for the sake of illustration that the researcher decides to drop
-item 15. We can repeat the process with the new item weights:
+item 15 (POS 1). We can repeat the process with the new item weights:
 
 ```{r}
 CESD_full_drop15 <- item_deletion_h(

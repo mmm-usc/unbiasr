@@ -175,7 +175,8 @@ item_deletion_h <- function(propsel,
                                              lambda_f = lambda_f,
                                              nu_r = nu_r, nu_f = nu_f,
                                              Theta_r = Theta_r,
-                                             Theta_f = Theta_f, weights_item)
+                                             Theta_f = Theta_f)
+      return_items <-  setdiff(return_items, which(weights_item==0))
   } else {
     if (!all(user_specified_items == floor(user_specified_items))) {
       stop("'user_specified_items' should only contain integers corresponding

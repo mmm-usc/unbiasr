@@ -75,7 +75,7 @@ err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
 
   cat1 <- function(i, vals, val_i) {
     cat("Increases in aggregate CAI after deleting item ", i, "may be
-          misleading due to the \n mixing proportion. Examine ", vals[val_i],
+         misleading due to the \n mixing proportion. Examine ", vals[val_i],
         "values from detailed output tables before proceeding.\n")
     }
   }
@@ -278,43 +278,25 @@ acc_indices_h <- function(strict_output, partial_output) {
 #'                        nu_r = c(.225, .025, .010, .240, .125),
 #'                        nu_f = c(.225, -.05, .240, -.025, .125),
 #'                        Theta_r = diag(1, 5),
-#'                        Theta_f = diag(c(1, .95, .80, .75, 1)),
-#'                        weights = c(1/4, 1/4, 1/6, 1/6, 1/6))
+#'                        Theta_f = diag(c(1, .95, .80, .75, 1)))
 #' @export
 determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f,
-                                   Theta_r, Theta_f, weights) {
-  biased_lambda <- biased_theta <- biased_nu <- c()
-
+                                   Theta_r, Theta_f) {
+  biased_items <- c()
   # Compare factor loadings
-  if(is.matrix(lambda_r)) {
-    for(i in seq_len(ncol(lambda_r))) {
-      items <- as.vector(which(lambda_r[,i] != lambda_f[,i]))
-      biased_lambda <- c(biased_lambda, items)}
-  } else {
-    items <- as.vector(which(lambda_r != lambda_f))
-    biased_lambda <- c(biased_lambda, items)
-  }
-
- # which(!apply(lambda_r == lambda_f, 1, all))
-
+  lambda_mismatch <- !(lambda_r == lambda_f)
+  if(any(lambda_mismatch, TRUE)){
+    biased_items <- c(biased_items, which(lambda_mismatch))}
   # Compare uniqueness
-  if(is.matrix(Theta_r) & is.matrix(Theta_f)) {
-    for(i in seq_len(ncol(Theta_r))) {
-      biased_theta <- c(biased_theta,
-                        as.vector(which(Theta_r[,i] != Theta_f[,i])))}
-    } else {
-      biased_theta <- c(biased_theta, as.vector(c(which(Theta_r != Theta_f))))
-    }
-
+  theta_mismatch <- !apply(Theta_r == Theta_f, 1, all)
+  if(any(theta_mismatch, TRUE)){
+    biased_items <- c(biased_items, which(theta_mismatch)) }
   # Compare intercepts
-  if(is.matrix(nu_r)) {
-    for(i in seq_len(ncol(nu_r))) {
-      biased_nu <- c(biased_nu, as.vector(which(nu_r[,i] != nu_f[,i])))}
-    } else {
-      biased_nu <- c(biased_nu, as.vector(which(nu_r != nu_f)))
-    }
-  biased <- unique(c(biased_lambda, biased_theta, biased_nu))
-  biased <- setdiff(biased, which(weights==0))
+  nu_mismatch <- !(nu_r == nu_f)
+  if(any(nu_mismatch, TRUE)){
+    biased_items <- c(biased_items, which(nu_mismatch)) }
+
+  biased <- unique(biased_items)
   if(length(biased) == 0) { print("Strict invariance holds for all items.") }
   return(sort(biased))
   }
