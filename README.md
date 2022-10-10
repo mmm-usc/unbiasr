@@ -54,7 +54,7 @@ PartInv(
 
 ## Shiny Application
 
-Browser version: <https://partinvmmm.shinyapps.io/partinvshinyui/>
+Browser version: <https://mmmlabusc.shinyapps.io/partinvshinyui/>
 
 Or call `unbiasr::launch()` in R.
 
