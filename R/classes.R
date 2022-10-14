@@ -140,7 +140,7 @@ setClass("itemdeletion",
 )
 
 #'@export
-print.itemdeletion <- function(x, ...) {
+print.itemdeletion <- function(x, detailed = FALSE, ...) {
   item_set <- x$return_items
   # ------------------------------------------------------------------------
   # DEFAULT OUTPUT: only biased items printed
