@@ -44,7 +44,7 @@ library(lavaan)
 
 - Proportion Selected: $\PS=\text{P(TP)}+\text{P(FP)}$
 
-- Success Ratio: $\SP=\dfrac{\text{P(TP)}}{\text{P(TP)}+\text{P(FP)}}$
+- Success Ratio: $\SR=\dfrac{\text{P(TP)}}{\text{P(TP)}+\text{P(FP)}}$
 
 - Sensitivity: $\SE=\dfrac{\text{P(TP)}}{\text{P(TP)}+\text{P(FN)}}$
 
@@ -390,15 +390,15 @@ alpha_CESD_r <- as.matrix(c(alpha_SOM_r, alpha_DEP_r, alpha_POS_r, alpha_INT_r))
 alpha_CESD_f <- as.matrix(c(alpha_SOM_f, alpha_DEP_f, alpha_POS_f, alpha_INT_f))
 
 Theta_CESD_r <- diag(c(0.45, 0.37, 0.39, 0.40, 0.57, 0.51, 0.37, #SOM
-                  0.29, 0.30, 0.41, 0.31, 0.29, 0.27, 0.24, #DEP
-                  1.20, 0.81, 0.32, 0.32, #POS
-                  0.19, 0.23 #INT
-                  ))
+                       0.29, 0.30, 0.41, 0.31, 0.29, 0.27, 0.24, #DEP
+                       1.20, 0.81, 0.32, 0.32, #POS
+                       0.19, 0.23 #INT
+                       ))
 Theta_CESD_f <- diag(c(0.45, 0.37, 0.39, 0.40, 0.57, 0.51, 0.37, #SOM
-                  0.29, 0.13, 0.09, 0.14, 0.29, 0.27, 0.24, #DEP
-                  0.72, 0.81, 0.32, 0.32, #POS
-                  0.19, 0.08 #INT
-                  ))
+                       0.29, 0.13, 0.09, 0.14, 0.29, 0.27, 0.24, #DEP
+                       0.72, 0.81, 0.32, 0.32, #POS
+                       0.19, 0.08 #INT
+                       ))
 lambda_INT_r <- lambda_INT_f <- c(1.00, 0.94)
 
 nu_CESD_r <- as.matrix(c(nu_SOM_r, nu_DEP_r, nu_POS_r, nu_INT_r))
@@ -406,8 +406,10 @@ nu_CESD_f <- as.matrix(c(nu_SOM_f, nu_DEP_f, nu_POS_f, nu_INT_f))
 
 # From Miller et al. (1997) The Factor Structure of the CES-D in Two Surveys
 # of Elderly Mexican Americans p.S264; the correlation matrix of latent variables
-corr_CESD <- matrix(c(1, .93, .58, .85, .93, 1, .64, .88,
-                      .61, .61, 1, .55, .97, .93, .63, 1), 
+corr_CESD <- matrix(c(1, .93, .58, .85, 
+                      .93, 1, .64, .88,
+                      .61, .61, 1, .55, 
+                      .97, .93, .63, 1), 
                     nrow = 4, ncol = 4, byrow = TRUE)
 # Compute an estimate for the variance-covariance matrix using diag(S)^-1 C diag(S) 
 S <- as.matrix(sqrt(psi_CESD_f) * (1 - pmix_CESD_r) + 
@@ -502,7 +504,7 @@ CESD_full_drop15 <- item_deletion_h(
                           pmix_ref = pmix_CESD_r,
                           plot_contour = FALSE,
                           n_dim = 4, 
-                          n_i_per_dim = c(7, 7, 4, 2),
+                          n_i_per_dim = c(7, 7, 3, 2),
                           print_formatted = TRUE)
 CESD_full_drop15
 ```
