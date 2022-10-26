@@ -288,7 +288,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     out$summary_mi <- dat
     out$bivar_data_mi <- zf_par_mi
   }
-  class(out) <- c("PartInv", "PartInvSummary")
+  class(out) <- "PartInv"
   if (plot_contour) {
     plot(out, labels = labels, ...)
   }
