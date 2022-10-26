@@ -255,7 +255,7 @@ to do so.
 ### CES-D Depressive Affect Factor
 
 ```{r  fig.width=7, fig.height=6}
-# Items: blues, depressed, lonely, crying, sad, failure, fearful
+# Items: blues, depressed, failure, fearful, lonely, crying, sad
 CESD_dep <- item_deletion_h(cut_z = 16/60*7*3,
                             weights_item = c(rep(1,7)),
                             weights_latent = 1,  

@@ -133,8 +133,8 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     psi_r <- phi_r
     psi_f <- phi_f
   }
-  if (is.vector(Theta_r)) Theta_r <- diag(Theta_r)
-  if (is.vector(Theta_f)) Theta_f <- diag(Theta_f)
+  if (is.vector(Theta_r)) Theta_r <- diag(Theta_r, nrow = length(Theta_r))
+  if (is.vector(Theta_f)) Theta_f <- diag(Theta_f, nrow = length(Theta_f))
   if (is.null(weights_item)) weights_item <- rep(1, length(nu_r))
   if (is.null(weights_latent)) weights_latent <- rep(1, length(alpha_r))
   # convert scalars/vectors to matrices
