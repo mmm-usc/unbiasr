@@ -49,17 +49,17 @@ setClass("PartInv",
 )
 #'@export
 print.PartInv <- function(x, ...) {
+  cat("Partial invariance results:\n\n")
   cat("Proportion selected: ", round(x$propsel, 3), "\n")
   cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi, 3), "\n")
   cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z, 3), "\n")
   cat("AI ratio: ", round(x$ai_ratio, 3), "\n\n")
-  cat("Partial invariance results:\n\n")
   print_PartInvSummary(x$summary)
   if (!is.null(x$summary_mi)) {
     cat("\n\nStrict invariance results:\n\n")
     cat("Proportion selected: ", round(x$propsel_mi, 3), "\n")
     cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi_mi, 3), "\n")
-    cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z_mi, 3), "\n")
+    cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z_mi, 3), "\n\n")
     print_PartInvSummary(x$summary_mi)
   }
 }
