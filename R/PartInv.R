@@ -20,7 +20,7 @@ NULL
 #' @param psi_f (optional) A matrix of latent factor variance-covariances for
 #'     the focal group; if no input, set equal to `psi_r`.
 #' @param lambda_r A matrix of factor loadings for the reference group.
-#' @param lambda_f (optional) a matrix of factor loadings for the focal group;
+#' @param lambda_f (optional) A matrix of factor loadings for the focal group;
 #'     if no input, set equal to `lambda_r`.
 #' @param nu_r A matrix of measurement intercepts for the reference group.
 #' @param nu_f (optional) A matrix of measurement intercepts for the focal
@@ -133,8 +133,8 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     psi_r <- phi_r
     psi_f <- phi_f
   }
-  if (is.vector(Theta_r)) Theta_r <- diag(Theta_r)
-  if (is.vector(Theta_f)) Theta_f <- diag(Theta_f)
+  if (is.vector(Theta_r)) Theta_r <- diag(Theta_r, nrow = length(Theta_r))
+  if (is.vector(Theta_f)) Theta_f <- diag(Theta_f, nrow = length(Theta_f))
   if (is.null(weights_item)) weights_item <- rep(1, length(nu_r))
   if (is.null(weights_latent)) weights_latent <- rep(1, length(alpha_r))
   # convert scalars/vectors to matrices
@@ -292,6 +292,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
   if (plot_contour) {
     plot(out, labels = labels, ...)
   }
+  class(out) <- c('PartInv', 'PartInvSummary')
   out
 }
 

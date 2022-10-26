@@ -1,6 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^app.R
+^doc$
+^Meta$
 ^LICENSE\.md$
+^app.R
 ^www$
 ^rsconnect$
