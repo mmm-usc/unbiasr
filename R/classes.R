@@ -57,6 +57,9 @@ print.PartInv <- function(x, ...) {
   print_PartInvSummary(x$summary)
   if (!is.null(x$summary_mi)) {
     cat("\n\nStrict invariance results:\n\n")
+    cat("Proportion selected: ", round(x$propsel_mi, 3), "\n")
+    cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi_mi, 3), "\n")
+    cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z_mi, 3), "\n")
     print_PartInvSummary(x$summary_mi)
   }
 #  if(!is.null(obj$summary_mi)) {
