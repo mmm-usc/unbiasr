@@ -87,7 +87,7 @@ the focal group; if no input, set equal to \code{psi_r}.}
 
 \item{lambda_r}{A matrix of factor loadings for the reference group.}
 
-\item{lambda_f}{(optional) a matrix of factor loadings for the focal group;
+\item{lambda_f}{(optional) A matrix of factor loadings for the focal group;
 if no input, set equal to \code{lambda_r}.}
 
 \item{nu_r}{A matrix of measurement intercepts for the reference group.}
