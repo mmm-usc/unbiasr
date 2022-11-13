@@ -14,7 +14,7 @@
 #' under partial or strict invariance.
 #'
 #' @return A vector of length 4.
-#'          \item{PS}{Proportion selected, computed as \eqn{TP + TN}.}
+#'          \item{PS}{Proportion selected, computed as \eqn{TP + FP}.}
 #'          \item{SR}{Success ratio, computed as \eqn{TP/(TP + FP)}.}
 #'          \item{SE}{Sensitivity, computed as \eqn{TP/(TP + FN)}.}
 #'          \item{SP}{Specificity, computed as \eqn{TN/(TN + FP)}.}
@@ -22,13 +22,16 @@
 get_aggregate_CAI <- function(pmixr, store_summary) {
   r <- store_summary$Reference; f <- store_summary$Focal
   pmixf <- 1 - pmixr
-  PS <- (pmixr*r[1] + pmixf*f[1]) + (pmixr*r[2] + pmixf*f[2])
-  SR <- (pmixr*r[1] + pmixf*f[1]) /
-    (pmixr*r[1] + pmixf*f[1] + pmixr*r[2] + pmixf*f[2])
-  SE <- (pmixr*r[1] + pmixf*f[1]) /
-    (pmixr*r[1] + pmixf*f[1] + pmixr*r[4] + pmixf*f[4])
-  SP <- (pmixr*r[3] + pmixf*f[3]) /
-    (pmixr*r[3] + pmixf*f[3] + pmixr*r[2] + pmixf*f[2])
+  
+  TP <- pmixr*r[1] + pmixf*f[1]
+  FP <- pmixr*r[2] + pmixf*f[2]
+  TN <- pmixr*r[3] + pmixf*f[3]
+  FN <- pmixr*r[4] + pmixf*f[4]
+  
+  PS <- TP + FP
+  SR <- TP / (TP + FP)
+  SE <- TP / (TP + FN)
+  SP <- TN /(TN + FP)
   return(c(PS, SR, SE, SP))
 }
 
@@ -207,7 +210,7 @@ cohens_h <- function(p1, p2) {
 #' delta_h(-0.002, 0.011)
 #' @export
 delta_h <- function(h_R, h_i_del) {
-  sign(abs(h_R) - abs(h_i_del)) * abs(abs(h_i_del) - abs(h_R))
+  abs(h_R) - abs(h_i_del)
 }
 
 

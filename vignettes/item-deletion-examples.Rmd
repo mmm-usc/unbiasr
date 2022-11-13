@@ -359,57 +359,44 @@ CESD_full_drop15$PartInv$partial$outputlist$`|10`
  
  
  
- 
-### CES-D Positive Affect Factor
+### CES-D Somatic Complaints Factor
 
 ```{r }
-# Items: good (biased), hopeful, happy, enjoyed
-CESD_pos <- item_deletion_h(cut_z = 16/60*12, 
-                            weights_item = c(rep(1,4)), 
-                            weights_latent = 1,
-                            alpha_r = alpha_POS_r,
-                            alpha_f = alpha_POS_f,
-                            psi_r = psi_POS_r,
-                            psi_f = psi_POS_f,
-                            lambda_r = lambda_POS_r,
-                            lambda_f = lambda_POS_f,
-                            nu_r = nu_POS_r,
-                            nu_f = nu_POS_f,
-                            Theta_r = Theta_POS_r, 
-                            Theta_f = Theta_POS_f,
-                            pmix_ref = pmix_CESD_r, 
+# Items: bothered, appetite, mind, effort, sleep, talk, get going
+CESD_som <- item_deletion_h(cut_z = 16/60*7*3,
+                            weights_item = c(rep(1,7)), 
+                            weights_latent = 1,   
+                            alpha_r = alpha_SOM_r,
+                            alpha_f = alpha_SOM_f,
+                            psi_r = psi_SOM_r,
+                            psi_f = psi_SOM_f,
+                            lambda_r = lambda_SOM_r,
+                            lambda_f = lambda_SOM_f,
+                            nu_r = nu_SOM_r,
+                            nu_f = nu_SOM_f,
+                            Theta_r = Theta_SOM_r, 
+                            Theta_f = Theta_SOM_f,
+                            pmix_ref = pmix_CESD_r,
                             plot_contour = FALSE,
+                            n_dim = 1, 
                             print_formatted = TRUE)
-CESD_pos
+                              
+CESD_som
 ```
  
-The only biased item in the Positive Affect subscale is item 1. We see from the 
-first output table that deleting the first item increases $\ov{\SR}$ and 
-$\ov{\SE}$ from $0.883$ to $0.894$, and $\ov{\SP}$ from $0.752$ to $0.777$. The
-second output table shows that $h^{|1}\ov{\SR}=h^{|1}\ov{\SE}=-0.037$ and
-$h^{|1}\ov{\SP}=-0.059$, which suggests a slight improvement in all three 
-$\CAI$ $(h < .20)$.
+The first table illustrates that removing item 4 from the Somatic Complaints 
+subscale leads to a decreases in aggregate SR, aggregate SE, and aggregate SP, 
+suggesting worse performance if this item is dropped.
 
-The AI ratio when the full item set is used is $0.87$. Removing the first item 
-achieves an AI ratio of $1$, suggesting that the proportion selected for the 
-reference group is equal to that which would have been selected for the focal 
-group if the focal and reference groups both followed the reference group's 
-latent score distribution (i.e., if they were matched on their true (lack of) 
-positive affect). This finding shows that removing the first item eliminates
-measurement bias, and is replicated in the next table comparing $\CAI_R$ with 
-$\CAI_{Ef}$ where $h^{\rr}\SR^{|1}=h^{\rr}\SE^{|1}=h^{\rr}\SP^{|1}=0$. Put into 
-words, if item 1 is removed, PS, SR, SE, and SP for the reference group equal
-the expected PS, SR, SE, and SP for the focal group. 
-
-The final table shows that the effect size of removing the first item on the 
-difference between the reference group's CAI and the focal group's expected CAI
-is largest for SE with $\Delta^{|1}\h^{\rr}\SE=0.223$ and SR with
-$\Delta^{|1}\h^{\rr}\SP=0.368$, corresponding to small-medium effect sizes. 
-
-Taken together, these improvements and the lack of any decreases in CAI suggests 
-that the researcher may drop this item barring any domain specific reasons not 
-to do so.
+The deletion of item 4 brings the AI ratio from the already-high $0.998$ to $1$.
+Similarly, removing this item brings the already-small difference between the
+reference and Efocal groups to $0$ with a very small effect size of around
+$0.003$. These findings suggest that removing the fourth item will harm or
+lead to a negligible improvement in CAI, therefore the full item set should be
+retained.
  
+ 
+
 ### CES-D Depressive Affect Factor
 
 ```{r  fig.width=7, fig.height=6}
@@ -459,41 +446,56 @@ improvement, it may be best to retain all items or choose an alternative method
 to item deletion for this subscale. 
 
 
-### CES-D Somatic Complaints Factor
+
+### CES-D Positive Affect Factor
 
 ```{r }
-# Items: bothered, appetite, mind, effort, sleep, talk, get going
-CESD_som <- item_deletion_h(cut_z = 16/60*7*3,
-                            weights_item = c(rep(1,7)), 
-                            weights_latent = 1,   
-                            alpha_r = alpha_SOM_r,
-                            alpha_f = alpha_SOM_f,
-                            psi_r = psi_SOM_r,
-                            psi_f = psi_SOM_f,
-                            lambda_r = lambda_SOM_r,
-                            lambda_f = lambda_SOM_f,
-                            nu_r = nu_SOM_r,
-                            nu_f = nu_SOM_f,
-                            Theta_r = Theta_SOM_r, 
-                            Theta_f = Theta_SOM_f,
-                            pmix_ref = pmix_CESD_r,
+# Items: good (biased), hopeful, happy, enjoyed
+CESD_pos <- item_deletion_h(cut_z = 16/60*12, 
+                            weights_item = c(rep(1,4)), 
+                            weights_latent = 1,
+                            alpha_r = alpha_POS_r,
+                            alpha_f = alpha_POS_f,
+                            psi_r = psi_POS_r,
+                            psi_f = psi_POS_f,
+                            lambda_r = lambda_POS_r,
+                            lambda_f = lambda_POS_f,
+                            nu_r = nu_POS_r,
+                            nu_f = nu_POS_f,
+                            Theta_r = Theta_POS_r, 
+                            Theta_f = Theta_POS_f,
+                            pmix_ref = pmix_CESD_r, 
                             plot_contour = FALSE,
-                            n_dim = 1, 
                             print_formatted = TRUE)
-                              
-CESD_som
+CESD_pos
 ```
  
-The first table illustrates that reemoving item 4 from the Somatic Complaints 
-subscale leads to a decreases in aggregate SR, aggregate SE, and aggregate SP, 
-suggesting worse performance if this item is dropped.
+The only biased item in the Positive Affect subscale is item 1. We see from the 
+first output table that deleting the first item increases $\ov{\SR}$ and 
+$\ov{\SE}$ from $0.883$ to $0.894$, and $\ov{\SP}$ from $0.752$ to $0.777$. The
+second output table shows that $h^{|1}\ov{\SR}=h^{|1}\ov{\SE}=-0.037$ and
+$h^{|1}\ov{\SP}=-0.059$, which suggests a slight improvement in all three 
+$\CAI$ $(h < .20)$.
 
-The deletion of item 4 brings the AI ratio from the already-high $0.998$ to $1$.
-Similarly, removing this item brings the already-small difference between the
-reference and Efocal groups to $0$ with a very small effect size of around
-$0.003$. These findings suggest that removing the fourth item will harm or
-lead to a negligible improvement in CAI, therefore the full item set should be
-retained.
+The AI ratio when the full item set is used is $0.87$. Removing the first item 
+achieves an AI ratio of $1$, suggesting that the proportion selected for the 
+reference group is equal to that which would have been selected for the focal 
+group if the focal and reference groups both followed the reference group's 
+latent score distribution (i.e., if they were matched on their true (lack of) 
+positive affect). This finding shows that removing the first item eliminates
+measurement bias, and is replicated in the next table comparing $\CAI_R$ with 
+$\CAI_{Ef}$ where $h^{\rr}\SR^{|1}=h^{\rr}\SE^{|1}=h^{\rr}\SP^{|1}=0$. Put into 
+words, if item 1 is removed, PS, SR, SE, and SP for the reference group equal
+the expected PS, SR, SE, and SP for the focal group. 
+
+The final table shows that the effect size of removing the first item on the 
+difference between the reference group's CAI and the focal group's expected CAI
+is largest for SE with $\Delta^{|1}\h^{\rr}\SE=0.223$ and SR with
+$\Delta^{|1}\h^{\rr}\SP=0.368$, corresponding to small-medium effect sizes. 
+
+Taken together, these improvements and the lack of any decreases in CAI suggests 
+that the researcher may drop this item barring any domain specific reasons not 
+to do so.
  
 ### CES-D Interpersonal Problems Factor
 
