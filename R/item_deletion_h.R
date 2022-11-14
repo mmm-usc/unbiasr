@@ -282,7 +282,6 @@ item_deletion_h <- function(propsel,
     propsel_p <- NULL
     propsel_s <- NULL
   }
-
   # Item deletion scenarios
   for (i in seq_len(length(weights_item) + 1)[-1]) {
 

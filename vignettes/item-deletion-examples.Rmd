@@ -4,7 +4,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Applied examples}
+  %\VignetteIndexEntry{Applied examples of item deletion statistics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,7 +15,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-
 
 \newcommand{\SR}{\text{SR}}
 \newcommand{\CAI}{\text{CAI}}
@@ -32,7 +31,6 @@ knitr::opts_chunk$set(
 \newcommand{\r}{\text{r}}
 \newcommand{\f}{\text{f}}
 \newcommand{\rr}{\text{r-Ef}}
-\newcommand{\h}{\text{h}}
 \newcommand{\ov}{\overline}
 
 ## Formulas and Notation
@@ -56,13 +54,16 @@ A CAI computed on an item set excluding item $j \in \{1,\ldots,J\}$ is denoted $
 
 ### Aggregate Classification Accuracy Indices $\left(\ov{\CAI}\right)$
 
-- Aggregate PS: $\ov{\PS}  = \TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)$
+Given $p_f = 1 - p_r$,
 
-- Aggregate SR: $\ov{\SR} = \dfrac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)}$
+- Aggregate SR: 
+$$\ov{\SR} = \dfrac{\TP_{r}\times p_r + \TP_{f}\times p_f}{\TP_{r}\times p_r + \TP_{f}\times p_f + \FP_{r}\times p_r + \FP_{f}\times p_f}$$
  
-- Aggregate SE: $\ov{\SE} = \dfrac{\TP_{r}\times p_r + \TP_{f}\times (1-p_r)}{\TP_{r}\times p_r + \TP_{f}\times (1-p_r) + \FN_{r}\times p_r + \FN_{f}\times (1-p_r)}$
+- Aggregate SE: 
+$$\ov{\SE} = \dfrac{\TP_{r}\times p_r + \TP_{f}\times p_f}{\TP_{r}\times p_r + \TP_{f}\times p_f + \FN_{r}\times p_r + \FN_{f}\times p_f}$$
 
-- Aggregate SP: $\ov{\SP} = \dfrac{\TN_{r}\times p_r + \TN_{f}\times (1-p_r)}{\TN_{r}\times p_r + \TN_{f}\times (1-p_r) + \FP_{r}\times p_r + \FP_{f}\times (1-p_r)}$
+- Aggregate SP: 
+$$\ov{\SP} = \dfrac{\TN_{r}\times p_r + \TN_{f}\times p_f}{\TN_{r}\times p_r + \TN_{f}\times p_f + \FP_{r}\times p_r + \FP_{f}\times p_f}$$
 
 $\ov{\CAI}$ is only computed for the partial invariance case (hence, the only
 comparison we discuss in relation to $\ov{\CAI}$ is item deletion).
@@ -70,81 +71,52 @@ comparison we discuss in relation to $\ov{\CAI}$ is item deletion).
 ## Indices for the impact of item bias
 
 ### Impact of removing an item on $\ov{\CAI}$
-$\h^{|j}\ov{\CAI}$: Cohen's h effect size for the improvement/decrease in aggregate
-CAI under PFI when the j-th item is removed:
-$$\h^{|j}\ov{\CAI} = 2\arcsin\left(\sqrt{\ov{\CAI}}\right)-2\arcsin\left(\sqrt{\ov{\CAI}^{|j}}\right)$$
+$h^{|j}\ov{\CAI}$: Cohen's $h$ effect size for the improvement/decrease in aggregate
+CAI under PFI when the $j$-th item is removed:
+$$h^{|j}\ov{\CAI} = 2\arcsin\left(\sqrt{\ov{\CAI}}\right)-2\arcsin\left(\sqrt{\ov{\CAI}^{|j}}\right)$$
 
-A negative $\h^{|j}\ov{\CAI}$ indicates an improvement (as $h^{|j}\ov{\CAI}<0 \iff \ov{\CAI}<\ov{\CAI}^{|j}$) whereas a positive $\h^{|j}\ov{\CAI}$ indicates
+A negative $h^{|j}\ov{\CAI}$ indicates an improvement (as $h^{|j}\ov{\CAI}<0 \iff \ov{\CAI}<\ov{\CAI}^{|j}$) whereas a positive $h^{|j}\ov{\CAI}$ indicates
 a deterioration in performance.
 
-```{r include=FALSE}
-# ### Comparing CAI under strict (SFI) vs. partial (PFI) factorial invariance
-# $\h^{\sfi,\pfi}\CAI$:  Cohen's h effect sizes can be computed to quantify the discrepancy between $\CAI_{\sfi}$ vs. $\CAI$* for the full set of items. 
-# \[
-# \begin{align*}
-# \h^{\sfi,\pfi}\CAI &= 2\text{arcsin}\left(\sqrt{\CAI^{ \sfi}}\right)-2\text{arcsin}\left(\sqrt{\CAI}\right)
-# \end{align*}
-# \]
-# $\h^{\sfi,\pfi}\CAI^{|j}$:  Cohen's h effect size can quantifying the discrepancy between $\CAI_{\sfi}^{|j}$ vs. $\CAI^{|j}$* for the item set excluding the j-th item.
-# \[
-# \begin{align*}
-# \h^{\sfi,\pfi}\CAI^{|j} &= 2\text{arcsin}\left(\sqrt{\CAI^{|j,\sfi}}\right)-2\text{arcsin}\left(\sqrt{\CAI^{|j}}\right)
-# \end{align*}
-# \]
-# This index can be computed for the focal group or the reference group, e.g., $\h^{\sfi,\pfi}\CAI^{|j}_{\r}$, $\h^{\sfi,\pfi}\CAI_{\f}$ etc.
-
-# ### Impact of removing an item on the discrepancy between $\h^{\sfi,\pfi}\CAI$ vs. $\h^{\sfi,\pfi}\CAI^{|j}$
-# 
-# $\Delta^{|j}\h^{\sfi,\pfi}\CAI$: Cohen's h effect size quantifying the discrepancy between $\h^{\sfi,\pfi}\CAI$ vs. $\h^{\sfi,\pfi}\CAI^{|j}$.
-# In other words, the effect size of the change in bias when the j-th item is dropped.
-# 
-# \[
-# \begin{align*}
-# \Delta^{|j}\h^{\sfi,\pfi}\CAI&= \text{sign}\left(|\h^{\sfi,\pfi}\CAI| - |\h^{\sfi,\pfi}\CAI^{|j}| \right)\left||\h^{\sfi,\pfi}\CAI^{|j} |-|\h^{\sfi,\pfi}\CAI|\right|
-# \end{align*}
-# \]
-# 
-# This index can be computed for the reference group  ($\Delta^{|j}\h^{\sfi,\pfi}\CAI_{\r}$) or the focal group $\Delta^{|j}\h^{\sfi,\pfi}\CAI_{\f}$.
-```
-
 ### Comparing CAI for reference (R) vs. expected focal (Ef) groups 
-$\h^{\rr}\CAI$:  Cohen's h effect size quantifying the discrepancy between $\CAI_{\r}$ vs. $\ef$ for the full set of items under PFI. 
+$h^{\rr}\CAI$: Cohen's $h$ effect size quantifying the discrepancy between $\CAI_{\r}$ vs. $\ef$ for the full set of items under PFI. 
 \[
 \begin{align*}
-\h^{\rr}\CAI &= 2\text{arcsin}\left(\sqrt{\CAI_{ \r}}\right)-2\text{arcsin}\left(\sqrt{\CAI_{\ef}}\right)
+ h^{\rr}\CAI &= 2\text{arcsin}\left(\sqrt{\CAI_{ \r}}\right)-2\text{arcsin}\left(\sqrt{\CAI_{\ef}}\right)
 \end{align*}
 \]
 
-$\h^{\rr}\CAI^{|j}$:  Cohen's h effect size quantifying the discrepancy between $\CAI_{\r}^{|j}$ vs. $\CAI_{\ef}^{|j}$ for the item set excluding item j under PFI. 
+$h^{\rr}\CAI^{|j}$:  Cohen's $h$ effect size quantifying the discrepancy between $\CAI_{\r}^{|j}$ vs. $\CAI_{\ef}^{|j}$ for the item set excluding item $j$ under PFI. 
 \[
 \begin{align*}
-\h^{\rr}\CAI^{|j} &= 2\text{arcsin}\left(\sqrt{\CAI_{ \r}^{|j}}\right)-2\text{arcsin}\left(\sqrt{\CAI_{\ef}^{|j}}\right)
+ h^{\rr}\CAI^{|j} &= 2\text{arcsin}\left(\sqrt{\CAI_{ \r}^{|j}}\right)-2\text{arcsin}\left(\sqrt{\CAI_{\ef}^{|j}}\right)
 \end{align*}
 \]
 
 
-### Impact of removing an item on the discrepancy between  $\h^{\rr}\CAI$ vs. $\h^{\rr}\CAI^{|j}$
+### Impact of removing an item on the discrepancy between  $h^{\rr}\CAI$ vs. $h^{\rr}\CAI^{|j}$
 
-$\Delta^{|j}\h^{\rr}\CAI$: Cohen's h effect size quantifying the discrepancy between $\h^{\rr}\CAI$ vs. $\h^{\rr}\CAI^{|j}$.
-In other words, the effect size of the change in bias when the j-th item is dropped.
+$\Delta^{|j} h^{\rr}\CAI$: Cohen's $h$ effect size quantifying the discrepancy between $h^{\rr}\CAI$ vs. $h^{\rr}\CAI^{|j}$.
+In other words, the effect size of the change in bias when the $j$-th item is dropped.
 
 \[
 \begin{align*}
-\Delta^{|j}\h^{\rr}\CAI&= \text{sign}\left(|\h^{\rr}\CAI| - |\h^{\rr}\CAI^{|j}| \right)\left||\h^{\rr}\CAI^{|j} |-|\h^{\rr}\CAI|\right|
+\Delta^{|j} h^{\rr}\CAI&= | h^{\rr}\CAI| - | h^{\rr}\CAI^{|j}|
 \end{align*}
 \]
 
 ## Illustrative Example: CES-D 
-Example from Lai, Kwok, Yoon and Hsiao (2017), using the Center for
-Epidemiological Studies Depression (CES-D) Scale. 
+Example based on Zhang et al.'s 2011 examination of the Center for
+Epidemiological Studies Depression (CES-D) Scale (Radloff, 1977). 
 
 We first demonstrate the use of the item deletion indices and relevant
-functions for the full four dimensional CES-D Scale. Then, we demonstrate how 
-item deletion can be performed on the scale after the deletion of one item. 
-Finally, we demonstrate the use of the item deletion indices on a single 
-dimensional scale by treating each subscale of the CES-D Scale as a separate 
-factor, and assuming that classification decisions will be based on the sum of 
-the subscale scores. For all analyses, we will consider the deletion of one item
+functions on the full four dimensional CES-D Scale, assuming that selection 
+(binary classification) will be based on scores on the full scale. Then, we
+demonstrate how item deletion can be performed on the scale after the deletion 
+of one item. Finally, we demonstrate the use of the item deletion indices on a 
+single dimensional scale by treating each subscale of the CES-D Scale as a 
+separate factor, and assuming that classification decisions will be based on the
+subscale scores. For all analyses, we will consider the deletion of one item
 at a time. 
 
 ```{r setup, warning=FALSE, message=FALSE}
@@ -271,22 +243,24 @@ CESD_full
 ```
 
 Items 4, 9, 10, 11, 15, 19, and 20 are determined to be the biased items, and
-correspond to SOM 4, DEP 2, DEP 3,DEP 4, POS 1, INT 1, and INT 2. Removing any
-of these items either decreases $\ov{\CAI}$ or leads to a negligible increase.
-The second table shows negative h values for $\ov{\SR}^{|15}$ and
-$\ov{\SP}^{|15}$, suggesting a very small improvement in performance if item 15
-(POS 1) is dropped. Similarly, the largest increase in AI ratio is observed when
-item 15 is dropped: $AI=0.908$ to $AI^{|15}=0.977$, indicating that this item is
-a strong candidate for deletion. The second largest increase is achieved by the
-deletion of item 10 (DEP 3), with $AI^{|10}=0.930$.
+correspond to SOM 4, DEP 2, DEP 3, DEP 4, POS 1, INT 1, and INT 2 ($effort$, 
+$depressed$, $failure$, $fearful$, $good$, $dislike$). As can be seen in the
+first output table, removing any of these items leads to some minor decreases 
+in $\ov{\CAI}$ (lower aggregate classification accuracy), the effect size of
+which is small as illustrated in the second output table.
+The item the deletion of which brings the AI ratio closest to the ideal AI ratio 
+of 1 is item 15, $AI^{|15}=0.977$ (from $AI=0.908$), indicating that this
+item is a strong candidate for deletion. The second largest increase is 
+proximity to $AI^{|j}=1$ is achieved by the deletion of item 10 (DEP 3), with
+$AI^{|10}=0.930$.
 
 The comparison of CAI for the reference group with the expected CAI for the
 focal group in the next table shows that the discrepancy between $\CAI_r$ and
-$\CAI_{Ef}$ becomes smallest if item 15 is deleted as $\h^{\rr}\PS=0.093$ goes
-down to $\h^{\rr}\PS^{|15}=0.022$, $\h^{\rr}\SR=-0.151$ goes up to
-$\h^{\rr}\SR^{|15}=-0.044$, $\h^{\rr}\SE=0.143$ goes down to
-$\h^{\rr}\SE^{|15}=0.026$ and $\h^{\rr}\SP=-0.63$ goes up to
-$\h^{\rr}\SP^{|15}=-0.046$. Note that we judge improvement in the difference
+$\CAI_{Ef}$ becomes smallest if item 15 is deleted as $h^{\rr}\PS=0.085$ goes
+down to $h^{\rr}\PS^{|15}=0.021$, $h^{\rr}\SR=-0.151$ goes up to
+$h^{\rr}\SR^{|15}=-0.045$, $h^{\rr}\SE=0.141$ goes down to
+$h^{\rr}\SE^{|15}=0.026$ and $h^{\rr}\SP=-0.159$ goes up to
+$h^{\rr}\SP^{|15}=-0.047$. Note that we judge improvement in the difference
 between $\CAI_r$ and $\CAI_{Ef}$ by the magnitude of the difference rather than
 the direction. In the comparison between CAI for reference vs. Efocal groups,
 the direction of the difference indicates the group that is benefiting from the
@@ -300,9 +274,10 @@ the deletion of the 10-th item.
 
 Overall, the researcher may consider deleting either the 15-th or the 10-th item
 using their domain specific expertise and consulting existing literature to
-choose between the two items. The output object from item_deletion_h contains
-other tables that may aid the researcher in this process. For instance, the
-outputs of `PartInv()` may be examined for the two item deletion scenarios:
+choose between the two items. The output object from the call to
+`item_deletion_h()` contains other tables that may aid the researcher in this
+process. For instance, the outputs of `PartInv()` may be examined for the two 
+item deletion scenarios:
 
 All items retained:
 
@@ -317,12 +292,12 @@ CESD_full$PartInv$partial$outputlist$`|15`
 ```
 
 Let's assume for the sake of illustration that the researcher decides to drop
-item 15 (POS 1). We can repeat the process with the new item weights:
+item 15 ($good$). We can repeat the process with the new item weights:
 
 ```{r}
 CESD_full_drop15 <- item_deletion_h(
                           cut_z = 16/60*(60-3),
-                          weights_item = c(rep(1,14), 0, rep(1.33333, 3), 1, 1),
+                          weights_item = c(rep(1,14), 0, rep(4/3, 3), 1, 1),
                           weights_latent = c(rep(1,4)),
                           alpha_r = alpha_CESD_r,
                           alpha_f = alpha_CESD_f,
@@ -356,9 +331,7 @@ CESD_full_drop15$PartInv$partial$outputlist$`|10`
 
 
  
- 
- 
- 
+
 ### CES-D Somatic Complaints Factor
 
 ```{r }
@@ -386,15 +359,13 @@ CESD_som
  
 The first table illustrates that removing item 4 from the Somatic Complaints 
 subscale leads to a decreases in aggregate SR, aggregate SE, and aggregate SP, 
-suggesting worse performance if this item is dropped.
-
-The deletion of item 4 brings the AI ratio from the already-high $0.998$ to $1$.
-Similarly, removing this item brings the already-small difference between the
-reference and Efocal groups to $0$ with a very small effect size of around
-$0.003$. These findings suggest that removing the fourth item will harm or
-lead to a negligible improvement in CAI, therefore the full item set should be
-retained.
- 
+suggesting worse overall performance if this item is dropped. The third table
+shows that the deletion of item 4 brings the AI ratio from the
+already-high $0.998$ to $1$. Similarly, removing this item brings the
+already-small difference between the reference and Efocal groups (ranging between
+$-0.003$ and $0.003$) to $0$ with a very small effect size of $0.002$ to $0.003$.
+These findings suggest that removing the fourth item will harm or lead to a
+negligible improvement in CAI, therefore the full item set should be retained.
  
 
 ### CES-D Depressive Affect Factor
@@ -423,20 +394,19 @@ CESD_dep
 
 `item_deletion_h` has determined items 2, 3, and 4 to contain some level of bias.
 We see from the first table that $\ov{\SP}$ is around $0.940$ for all item 
-deletion scenarios and $\ov{\SR}$ and $\ov{\SE}$ are slightly lower at around 
-$0.820$, suggesting that the Depressive Affect subscale is best at not selecting 
-the individuals who should not be selected. We see that aggregate SE, aggregate
-SR, and aggregate SP for the full item set are higher than the other item 
-subsets, suggesting that the removal of an item will likely not improve 
-aggregate CAI. h values in the second table are mostly positive and indicate a 
-slight decrease in $\ov{\CAI}$ for each item set, which suggests a drop in 
-performance. 
+deletion scenarios while $\ov{\SR}$ and $\ov{\SE}$ are slightly lower at around 
+$0.815$ to $830$, suggesting that the Depressive Affect subscale is best at not
+selecting the individuals who should not be selected. We see that aggregate SE,
+aggregate SR, and aggregate SP for the full item set are higher than the other item 
+subsets, suggesting that the removal of a biased item will likely not improve 
+aggregate CAI. $h$ values in the second table range between $0.010$ to $0.045$, 
+showing that the impact of removing an item will be quite small. 
 
 The AI ratio table shows that while removing the third item increases AI from 
 $0.920$ to $0.993$, bias is not fully eliminated as $AI^{|3}<1$. The removal of
 either of item 2 or item 4 increases the discrepancy between the reference and 
 Efocal groups. The second-to-last table illustrate that the removal of item 3
-brings $\h^{\rr}\CAI$ closer to 0, indicating an improvement that has a
+brings $h^{\rr}\CAI$ closer to 0, indicating an improvement that has a
 minimal-small effect size as shown in the final table. Removing any other item 
 harms CAI. 
 
@@ -444,7 +414,6 @@ Given the lack of agreement between indices on whether the deletion of an item
 improves or harms performance and the small effect size of the potential 
 improvement, it may be best to retain all items or choose an alternative method 
 to item deletion for this subscale. 
-
 
 
 ### CES-D Positive Affect Factor
@@ -474,8 +443,8 @@ The only biased item in the Positive Affect subscale is item 1. We see from the
 first output table that deleting the first item increases $\ov{\SR}$ and 
 $\ov{\SE}$ from $0.883$ to $0.894$, and $\ov{\SP}$ from $0.752$ to $0.777$. The
 second output table shows that $h^{|1}\ov{\SR}=h^{|1}\ov{\SE}=-0.037$ and
-$h^{|1}\ov{\SP}=-0.059$, which suggests a slight improvement in all three 
-$\CAI$ $(h < .20)$.
+$h^{|1}\ov{\SP}=-0.059$, which suggests that the improvement in all three 
+$\CAI$ have a small effect size $(h < .20)$.
 
 The AI ratio when the full item set is used is $0.87$. Removing the first item 
 achieves an AI ratio of $1$, suggesting that the proportion selected for the 
@@ -490,8 +459,8 @@ the expected PS, SR, SE, and SP for the focal group.
 
 The final table shows that the effect size of removing the first item on the 
 difference between the reference group's CAI and the focal group's expected CAI
-is largest for SE with $\Delta^{|1}\h^{\rr}\SE=0.223$ and SR with
-$\Delta^{|1}\h^{\rr}\SP=0.368$, corresponding to small-medium effect sizes. 
+is largest for SE with $\Delta^{|1} h^{\rr}\SE=0.223$ and SR with
+$\Delta^{|1} h^{\rr}\SP=0.368$, corresponding to small-medium effect sizes. 
 
 Taken together, these improvements and the lack of any decreases in CAI suggests 
 that the researcher may drop this item barring any domain specific reasons not 
@@ -522,23 +491,23 @@ CESD_int
 ```
  
 Removing the second item in this 2-item subscale leads to lower $\ov{\CAI}$, and 
-the effect size of this decrease is $\h^{|2} \ov{\SR}=\h^{|2}\ov{\SE}=0.173$, which
-is approximately a small effect size. The adverse impact ratio goes up to $1$
-from $0.966$ and $\h^{\rr}\CAI^{|2}=0$ for all indices. The effect size of the
-improvement in the discrepancy between the reference and Efocal groups on SR when 
-item 2 is deleted is $\Delta^{|2}\h^{\rr}\SR=0.132$,
-$\Delta^{|2}\h^{\rr}\SE=0.062$, and $\Delta^{|2}\h^{\rr}\SE=0.086$.
+the effect size of this decrease is $h^{|2} \ov{\SR}= h^{|2}\ov{\SE}=0.173$, which
+corresponds to a worsening performance with a small effect size. The adverse 
+impact ratio goes up to $1$ from $0.966$ and $h^{\rr}\CAI^{|2}=0$ for all
+indices. The effect size of the improvement in the discrepancy between the
+reference and Efocal groups on SR whenitem 2 is deleted is
+$\Delta^{|2} h^{\rr}\SR=0.132$, $\Delta^{|2} h^{\rr}\SE=0.062$, and 
+$\Delta^{|2} h^{\rr}\SE=0.086$.
 Given these conflicting findings and the fact that this subscale only has two
-items, it may be best to retain both items if the subscale will be used on its 
+items, it would be best to retain both items if the subscale will be used on its 
 own to make classification decisions.
-
 
 
 Now to illustrate `print_formatted=FALSE`:
 
 ```{r }
 CESD_pos <- item_deletion_h(cut_z = 16/60*12, 
-                            weights_item = c(rep(1,4)), 
+                            weights_item = c(rep(1, 4)), 
                             weights_latent = 1,
                             alpha_r = alpha_POS_r,
                             alpha_f = alpha_POS_f,
@@ -560,7 +529,7 @@ Now to illustrate the use of `user_specified_items`:
 
 ```{r }
 CESD_pos <- item_deletion_h(cut_z = 16/60*12, 
-                            weights_item = c(rep(1,4)), 
+                            weights_item = c(rep(1, 4)), 
                             weights_latent = 1,
                             alpha_r = alpha_POS_r,
                             alpha_f = alpha_POS_f,
