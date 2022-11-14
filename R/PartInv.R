@@ -106,7 +106,7 @@ NULL
 #'                 labels = c("female", "male"),
 #'                 show_mi_result = TRUE)
 #' @export
-PartInvMulti_we <- function(propsel, cut_z = NULL,
+PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
                             weights_item = NULL,
                             weights_latent = NULL,
                             kappa_r = NULL, kappa_f = kappa_r,
@@ -160,7 +160,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
   zeta_r <- c(crossprod(weights_latent, alpha_r))
   zeta_f <- c(crossprod(weights_latent, alpha_f))
   # if there is an input for selection proportion
-  if (!missing(propsel)) {
+  if (!is.null(propsel)) {
     # and if there is an input for cut score
     if (!is.null(cut_z)) {
       warning("Input to `cut_z` is ignored.")
@@ -170,7 +170,7 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
     fixed_cut_z <- FALSE
     cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf,
                       pmix_ref, lower.tail = FALSE)
-  } else if (!is.null(cut_z) & missing(propsel)) {
+  } else if (!is.null(cut_z) & is.null(propsel)) {
     # if missing selection proportion but has a cut score
     fixed_cut_z <- TRUE
     propsel <- pnormmix(cut_z, mean_zr, sd_zr, mean_zf, sd_zf,
@@ -218,13 +218,13 @@ PartInvMulti_we <- function(propsel, cut_z = NULL,
                                   "Proportion selected", "Success ratio",
                                   "Sensitivity", "Specificity"))
   colnames(dat) <- c(labels, paste0("E_R(", labels[2], ")"))
-
+  
   out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
               summary = dat,
               bivar_data = zf_par,
               ai_ratio = dat["Proportion selected", 3] /
                 dat["Proportion selected", 1])
-
+  
   if (show_mi_result) {  # Need to be updated
     # Strict
     pop_weights <- c(pmix_ref, 1 - pmix_ref)

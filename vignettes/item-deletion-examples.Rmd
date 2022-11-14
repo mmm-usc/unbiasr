@@ -291,6 +291,34 @@ Subset excluding item 15:
 CESD_full$PartInv$partial$outputlist$`|15`
 ```
 
+
+The user can also supply a cut-off score for the delete-one scenarios instead
+of letting the function compute the proportions selected under partial and 
+strict invariance and using these proportions in the delete-one scenarios:
+
+```{r}
+CESD_full_with_cutoff <- item_deletion_h(cut_z = 16,
+                                         weights_item = c(rep(1, 20)),
+                                         weights_latent = c(rep(1,4)),
+                                         alpha_r = alpha_CESD_r,
+                                         alpha_f = alpha_CESD_f,
+                                         psi_r = psi_CESD_r,
+                                         psi_f = psi_CESD_f,
+                                         lambda_r = lambda_CESD_r,
+                                         lambda_f = lambda_CESD_f,
+                                         nu_r = nu_CESD_r,
+                                         nu_f = nu_CESD_f,
+                                         Theta_r = Theta_CESD_r,
+                                         Theta_f = Theta_CESD_f,
+                                         plot_contour = FALSE,
+                                         n_dim = 4,
+                                         n_i_per_dim = c(7, 7, 4, 2),
+                                         pmix_ref = pmix_CESD_r,
+                                         print_formatted = TRUE,
+                                         delete_one_cutoff = 16/60*(60-3))
+CESD_full_with_cutoff
+```
+
 Let's assume for the sake of illustration that the researcher decides to drop
 item 15 ($good$). We can repeat the process with the new item weights:
 
@@ -329,8 +357,6 @@ Subset excluding item 10:
 CESD_full_drop15$PartInv$partial$outputlist$`|10`
 ```
 
-
- 
 
 ### CES-D Somatic Complaints Factor
 
