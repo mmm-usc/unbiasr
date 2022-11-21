@@ -142,7 +142,7 @@
 #'                                n_dim = 1, plot_contour = TRUE,
 #'                                print_formatted = TRUE)
 #' @export
-item_deletion_h <- function(propsel,
+item_deletion_h <- function(propsel = NULL,
                             cut_z = NULL,
                             weights_item,
                             weights_latent,
@@ -205,7 +205,7 @@ item_deletion_h <- function(propsel,
   AI_ratios <- as.data.frame(matrix(nrow = 2, ncol = N + 1))
 
   # Call PartInv with the full item set under strict invariance
-  store_str[[1]] <- PartInv(propsel,
+  store_str[[1]] <- PartInv(propsel = propsel,
                             cut_z = cut_z,
                             weights_item, weights_latent,
                             alpha_r = alpha_r,
@@ -225,7 +225,7 @@ item_deletion_h <- function(propsel,
   class(store_str[[1]]) <- "PartInv"
 
   # Call PartInv with the full item set under partial invariance
-  store_par[[1]] <- PartInv(propsel,
+  store_par[[1]] <- PartInv(propsel = propsel,
                             cut_z = cut_z,
                             weights_item,
                             weights_latent,
@@ -282,7 +282,6 @@ item_deletion_h <- function(propsel,
     propsel_p <- NULL
     propsel_s <- NULL
   }
-
   # Item deletion scenarios
   for (i in seq_len(length(weights_item) + 1)[-1]) {
 
@@ -292,7 +291,7 @@ item_deletion_h <- function(propsel,
                                          n_i_per_dim = n_i_per_dim,
                                          del_i = i - 1)
     # Call PartInv with the new weights under strict invariance
-    store_str[[i]] <- PartInv(propsel_s,
+    store_str[[i]] <- PartInv(propsel = propsel_s,
                               cut_z = cut_z,
                               take_one_out,
                               weights_latent,
@@ -312,7 +311,7 @@ item_deletion_h <- function(propsel,
                               show_mi_result = show_mi_result)
     class(store_str[[i]]) <- "PartInv"
     # Call PartInv with the new weights under partial invariance
-    store_par[[i]] <- PartInv(propsel_p,
+    store_par[[i]] <- PartInv(propsel = propsel_p,
                               cut_z = cut_z,
                               take_one_out,
                               weights_latent,

@@ -172,7 +172,7 @@ lambda_matrix[3:5, 2] <- c(.398, .745, .543)
 
 multi_dim <- item_deletion_h(propsel = .05, n_dim = 5,
                              weights_item = c(1/4, 1/4, 1/6, 1/6, 1/6),
-                             weights_latent = c(0.5, 0.5), 
+                             weights_latent = c(0.5, 0.5),
                              alpha_r = c(0, 0),
                              alpha_f = c(-0.3, 0.1),
                              psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
