@@ -237,8 +237,7 @@ CESD_full <- item_deletion_h(cut_z = 16,
                              plot_contour = FALSE,
                              n_dim = 4,
                              n_i_per_dim = c(7, 7, 4, 2),
-                             pmix_ref = pmix_CESD_r,
-                             print_formatted = TRUE)
+                             pmix_ref = pmix_CESD_r)
 CESD_full
 ```
 
@@ -314,7 +313,6 @@ CESD_full_with_cutoff <- item_deletion_h(cut_z = 16,
                                          n_dim = 4,
                                          n_i_per_dim = c(7, 7, 4, 2),
                                          pmix_ref = pmix_CESD_r,
-                                         print_formatted = TRUE,
                                          delete_one_cutoff = 16/60*(60-3))
 CESD_full_with_cutoff
 ```
@@ -340,8 +338,7 @@ CESD_full_drop15 <- item_deletion_h(
                           pmix_ref = pmix_CESD_r,
                           plot_contour = FALSE,
                           n_dim = 4,
-                          n_i_per_dim = c(7, 7, 3, 2),
-                          print_formatted = TRUE)
+                          n_i_per_dim = c(7, 7, 3, 2))
 CESD_full_drop15
 ```
 
@@ -377,8 +374,7 @@ CESD_som <- item_deletion_h(cut_z = 16/60*7*3,
                             Theta_f = Theta_SOM_f,
                             pmix_ref = pmix_CESD_r,
                             plot_contour = FALSE,
-                            n_dim = 1, 
-                            print_formatted = TRUE)
+                            n_dim = 1)
                               
 CESD_som
 ```
@@ -413,8 +409,7 @@ CESD_dep <- item_deletion_h(cut_z = 16/60*7*3,
                             Theta_f = Theta_DEP_f,
                             pmix_ref = pmix_CESD_r,  
                             plot_contour = FALSE,
-                            n_dim = 1,
-                            print_formatted = TRUE)
+                            n_dim = 1)
 CESD_dep
 ```
 
@@ -460,8 +455,7 @@ CESD_pos <- item_deletion_h(cut_z = 16/60*12,
                             Theta_r = Theta_POS_r, 
                             Theta_f = Theta_POS_f,
                             pmix_ref = pmix_CESD_r, 
-                            plot_contour = FALSE,
-                            print_formatted = TRUE)
+                            plot_contour = FALSE)
 CESD_pos
 ```
  
@@ -511,8 +505,7 @@ CESD_int <- item_deletion_h(cut_z = 16/60*2*3,
                             Theta_f = Theta_INT_f,
                             pmix_ref = pmix_CESD_r,
                             plot_contour = FALSE,
-                            n_dim = 1,
-                            print_formatted = TRUE)
+                            n_dim = 1)
 CESD_int
 ```
  
@@ -527,29 +520,6 @@ $\Delta^{|2} h^{\rr}\SE=0.086$.
 Given these conflicting findings and the fact that this subscale only has two
 items, it would be best to retain both items if the subscale will be used on its 
 own to make classification decisions.
-
-
-Now to illustrate `print_formatted=FALSE`:
-
-```{r }
-CESD_pos <- item_deletion_h(cut_z = 16/60*12, 
-                            weights_item = c(rep(1, 4)), 
-                            weights_latent = 1,
-                            alpha_r = alpha_POS_r,
-                            alpha_f = alpha_POS_f,
-                            psi_r = psi_POS_r,
-                            psi_f = psi_POS_f,
-                            lambda_r = lambda_POS_r,
-                            lambda_f = lambda_POS_f,
-                            nu_r = nu_POS_r,
-                            nu_f = nu_POS_f,
-                            Theta_r = Theta_POS_r, 
-                            Theta_f = Theta_POS_f,
-                            pmix_ref = pmix_CESD_r, 
-                            plot_contour = FALSE,
-                            print_formatted = FALSE)
-CESD_pos
-```
 
 Now to illustrate the use of `user_specified_items`:
 
@@ -569,7 +539,6 @@ CESD_pos <- item_deletion_h(cut_z = 16/60*12,
                             Theta_f = Theta_POS_f,
                             pmix_ref = pmix_CESD_r, 
                             plot_contour = FALSE,
-                            print_formatted = TRUE,
                             user_specified_items = c(1:3))
 CESD_pos
 ```
@@ -591,6 +560,27 @@ CESD_pos <- item_deletion_h(cut_z = 16/60*12,
                             Theta_r = Theta_POS_r, 
                             Theta_f = Theta_POS_f,
                             pmix_ref = pmix_CESD_r, 
-                            plot_contour = TRUE,
-                            print_formatted = TRUE)
+                            plot_contour = TRUE)
+```
+
+Using the `summary()` function:
+
+
+```{r }
+CESD_pos <- item_deletion_h(cut_z = 16/60*12, 
+                            weights_item = c(rep(1, 4)), 
+                            weights_latent = 1,
+                            alpha_r = alpha_POS_r,
+                            alpha_f = alpha_POS_f,
+                            psi_r = psi_POS_r,
+                            psi_f = psi_POS_f,
+                            lambda_r = lambda_POS_r,
+                            lambda_f = lambda_POS_f,
+                            nu_r = nu_POS_r,
+                            nu_f = nu_POS_f,
+                            Theta_r = Theta_POS_r, 
+                            Theta_f = Theta_POS_f,
+                            pmix_ref = pmix_CESD_r, 
+                            plot_contour = FALSE)
+summary(CESD_pos)
 ```

@@ -53,14 +53,6 @@
 #' @param user_specified_items A vector; default to `NULL`. If the user does not
 #'        input a vector of items, only the items determined to contain bias will
 #'        be considered for deletion.
-#' @param print_formatted Logical; default to `TRUE`. By default, prints five
-#'        formatted summary tables for biased (or user-specified) items: `ACAI`,
-#'        `h ACAI (deletion)`, `AI Ratio`, `h CAI Ref-EF`, and
-#'        `delta h CAI Ref-EF (deletion)`. The formatted print output is separate
-#'        from the returned object. The function always returns an object with
-#'        detailed elements that can be accessed if the function output is stored
-#'        in a variable. If `print_formatted==FALSE`, all elements in the
-#'        returned object are printed without formatting.
 #' @param delete_one_cutoff (optional) User-specified cutoff to use in
 #'        delete-one scenarios. `NULL` by default; if `NULL`, proportion
 #'        selected under SFI and PFI when the full item set is used is passed
@@ -126,8 +118,7 @@
 #'                              nu_f = c(.225, -.05, .240, -.025, .125),
 #'                              Theta_r = diag(1, 5),
 #'                              Theta_f = diag(c(1, .95, .80, .75, 1)),
-#'                              plot_contour = TRUE,
-#'                              print_formatted = TRUE)
+#'                              plot_contour = TRUE)
 #' # Single dimension example
 #' single_dim <- item_deletion_h(propsel = .10,
 #'                                weights_item = c(1, 0.9, 0.8, 1),
@@ -139,8 +130,7 @@
 #'                                nu_r = c(.225, .025, .010, .240),
 #'                                nu_f = c(.225, -.05, .240, -.025),
 #'                                Theta_r = diag(.96, 4),
-#'                                n_dim = 1, plot_contour = TRUE,
-#'                                print_formatted = TRUE)
+#'                                n_dim = 1, plot_contour = TRUE)
 #' @export
 item_deletion_h <- function(propsel = NULL,
                             cut_z = NULL,
@@ -162,7 +152,6 @@ item_deletion_h <- function(propsel = NULL,
                             labels = c("Reference", "Focal"),
                             n_dim = 1,
                             n_i_per_dim = NULL,
-                            print_formatted = TRUE,
                             user_specified_items = NULL,
                             delete_one_cutoff = NULL,
                             ...) {
@@ -398,7 +387,7 @@ item_deletion_h <- function(propsel = NULL,
     c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)")
   rownames(aggregate_par) <- c("PS*", "SR*", "SE*", "SP*")
   rownames(delta_h_str_par_aggregate) <-
-    paste0("\u0394h(", c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)"), ")")
+    paste0("\u0394h(", c("PS*", "SR*", "SE*", "SP*"), ")")
   rownames(delta_h_str_vs_par_ref) <- rownames(delta_h_str_vs_par_foc) <-
     rownames(delta_h_R_vs_Ef) <-
     paste0("\u0394h(", c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP"), ")")
@@ -448,7 +437,6 @@ item_deletion_h <- function(propsel = NULL,
                      "focal" = h_str_vs_par_list_foc),
     "PartInv" = list("strict" = store_str,
                      "partial" = store_par),
-    "formatted" = print_formatted,
     "return_items" = return_items)
   class(returned) <- "itemdeletion"
 
