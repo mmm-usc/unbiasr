@@ -44,7 +44,6 @@ Imports:
     shinydashboard,
     shinyjs,
     shinyMatrix,
-    shinyWidgets,
-    roxygen2
+    shinyWidgets
 VignetteBuilder: knitr
 Config/testthat/edition: 3
