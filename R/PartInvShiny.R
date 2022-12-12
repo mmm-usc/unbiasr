@@ -187,34 +187,25 @@ partinvUI <- function(id) {
         ),
       ),
       box(
-        title = "Output",
+        title = "Output option",
         status = "primary",
         solidHeader = FALSE,
         width = 12,
-        materialSwitch(ns("tab_strict"),
-                       label = "Show strict invariance output?", 
-                       status = "primary"),
+        checkboxInput(ns("tab_strict"),
+                      label = "Show strict invariance"),
       ),
     ),
     
     # Output
+    h3("Results Under Partial Invariance"),
     box(
       id = "outputPlot",
       title = "Relationship Between True Latent Construct Scores
-               and Observed Test Scores for Partial Invariance",
+               and Observed Test Scores",
       status = "primary",
       solidHeader = FALSE,
       width = 8,
       plotOutput(ns("distPlot"))
-    ),
-    box(
-      id = "outputPlot_strict",
-      title = "Relationship Between True Latent Construct Scores
-               and Observed Test Scores for Strict Invariance",
-      status = "primary",
-      solidHeader = FALSE,
-      width = 8,
-      plotOutput(ns("distPlotstrict"))
     ),
     box(
       id = "outputTable",
@@ -224,6 +215,16 @@ partinvUI <- function(id) {
       solidHeader = FALSE,
       width = 8,
       tableOutput(ns("table"))
+    ),
+    h3("Results Under Strict Invariance"),
+    box(
+      id = "outputPlot_strict",
+      title = "Relationship Between True Latent Construct Scores
+               and Observed Test Scores for Strict Invariance",
+      status = "primary",
+      solidHeader = FALSE,
+      width = 8,
+      plotOutput(ns("distPlotstrict"))
     ),
     box(
       id = "outputTable_strict",
@@ -640,19 +641,19 @@ myApp <- function(...) {
   is also provided in results. Further details are provided in 
   Lai & Zhang (2022)."
   ui <- dashboardPage(
-    dashboardHeader(title = "Selection Accuracy Indexes",
+    dashboardHeader(title = "unbiasr",
                     titleWidth = 400),
     dashboardSidebar(width = 150,
                      sidebarMenu(
                        menuItem(
-                         "Instruction",
-                         tabName = "Direction_page",
-                         icon = icon("dashboard")
-                       ),
-                       menuItem(
                          "Single dimension",
                          tabName = "Single",
-                         icon = icon("dashboard")
+                         icon = icon("chart-simple")
+                       ),
+                       menuItem(
+                         "Instruction",
+                         tabName = "Direction_page",
+                         icon = icon("circle-info")
                        )
                      )),
     dashboardBody(
