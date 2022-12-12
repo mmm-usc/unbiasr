@@ -3,6 +3,7 @@ partinvUI <- function(id) {
   fluidRow(
     # Input column (width 4/12 of the page)
     column(
+      id = ns("inp"),
       width = 4,
       box(
         title = "Inputs",
@@ -13,13 +14,13 @@ partinvUI <- function(id) {
         #HTML styling to increase bottom padding of reset button
         div(style = "padding-bottom: 10px;",
             #reset button
-            actionButton("resetButton", label = "reset inputs")),
+            actionButton(ns("resetButton"), label = "reset inputs")),
         #text inputs for graph labels
-        textInput("legend_r",
+        textInput(ns("legend_r"),
                   label = "Input reference group label",
                   # default value
                   value = "Reference group"),
-        textInput("legend_f",
+        textInput(ns("legend_f"),
                   label = "Input focal group label",
                   value = "Focal group")
       ),
@@ -34,26 +35,26 @@ partinvUI <- function(id) {
           label = "Reference group factor loadings \\( \\lambda \\)",
           placeholder = "1.00, 1.66, 2.30, 2.29"
         ),
+        # materialSwitch button using shinyWidgets
+        materialSwitch(ns("uselambda_f"), label = "Focal group?",
+                       status = "primary"),
         textInput(
           ns("lambda_f"),
           label = "Focal group factor loadings \\( \\lambda \\)",
           placeholder = "1.00, 1.66, 2.30, 2.29"
         ),
-        # materialSwitch button using shinyWidgets
-        materialSwitch(ns("uselambda_f"), label = "Focal group?",
-                       status = "primary"),
         textInput(
           ns("tau_r"),
           label = "Reference group measurement intercepts \\( \\tau \\)",
           placeholder = "1.54, 1.36, 1.16, 1.08"
         ),
+        materialSwitch(ns("usetau_f"), label = "Focal group?",
+                       status = "primary"),
         textInput(
           ns("tau_f"),
           label = "Focal group measurement intercepts \\( \\tau \\)",
           placeholder = "0.68, 1.36, 1.16, 1.08"
         ),
-        materialSwitch(ns("usetau_f"), label = "Focal group?",
-                       status = "primary"),
       ),
       # Unique factor
       box(
@@ -64,7 +65,7 @@ partinvUI <- function(id) {
         # HTML style buttons side by side
         div(style = "display:inline-block, float:right",
             materialSwitch(
-              ns("use_mat_theta_f"),
+              ns("use_mat_theta"),
               "Matrix input?",
               status = "primary",
               inline = TRUE
@@ -74,40 +75,54 @@ partinvUI <- function(id) {
               label = "Focal group?",
               status = "primary",
               inline = TRUE
-            ),
-            sliderInput(
-              ns("mat_size_theta_f"),
-              label = "Matrix Size",
-              min = 2,
-              max = 10,
-              value = 4
             )
         ),
-        textInput(
-          ns("theta_r"),
-          label = "Reference group uniqueness \\( \\theta \\)",
-          placeholder = "1.20, 0.81, 0.32, 0.32"
+        conditionalPanel(
+          "input.use_mat_theta==0",
+          textInput(
+            ns("theta_r"),
+            label = "Reference group uniqueness \\( \\theta \\)",
+            placeholder = "1.20, 0.81, 0.32, 0.32"
+          ),
+          ns = ns
         ),
-        textInput(
-          ns("theta_f"),
-          label = "Focal group uniqueness \\( \\theta \\)",
-          placeholder = "0.72, 0.81, 0.32, 0.32"
+        conditionalPanel(
+          "input.use_mat_theta==0 & input.usetheta_f==1",
+          textInput(
+            ns("theta_f"),
+            label = "Focal group uniqueness \\( \\theta \\)",
+            placeholder = "0.72, 0.81, 0.32, 0.32"
+          ),
+          ns = ns
         ),
-        # strong is a text output in bold
-        strong(
-          ns("ins_mat_theta_r"),
-          "Input the unique factor variance-covariance matrix 
+        conditionalPanel(
+          "input.use_mat_theta==1",
+          sliderInput(
+            ns("mat_size_theta"),
+            label = "Matrix Size",
+            min = 2,
+            max = 10,
+            value = 4
+          ),
+          # strong is a text output in bold
+          strong(
+            "Input the unique factor variance-covariance matrix 
                          \\( \\Theta \\) for the referance group"
+          ),
+          #uiOutput used for dynamic inputs, in this case matrices with variable size
+          #logic defined in renderUI in pageOneServer.R
+          uiOutput(ns("ins_mat_theta_rUI")),
+          ns = ns
         ),
-        #uiOutput used for dynamic inputs, in this case matrices with variable size
-        #logic defined in renderUI in pageOneServer.R
-        uiOutput(ns("ins_mat_theta_rUI")),
-        strong(
-          ns("ins_mat_theta_f"),
-          "Input the unique factor variance-covariance matrix 
+        conditionalPanel(
+          "input.use_mat_theta==1 & input.usetheta_f==1",
+          strong(
+            "Input the unique factor variance-covariance matrix 
                          \\( \\Theta \\) for the focal group"
-        ),
-        uiOutput("ins_mat_theta_fUI")
+          ),
+          uiOutput(ns("ins_mat_theta_fUI")),
+          ns = ns
+        )
       ),
       # Latent means and variances
       box(
@@ -191,7 +206,7 @@ partinvUI <- function(id) {
         status = "primary",
         solidHeader = FALSE,
         width = 12,
-        checkboxInput(ns("tab_strict"),
+        checkboxInput(ns("showstrict"),
                       label = "Show strict invariance"),
       ),
     ),
@@ -216,25 +231,29 @@ partinvUI <- function(id) {
       width = 8,
       tableOutput(ns("table"))
     ),
-    h3("Results Under Strict Invariance"),
-    box(
-      id = "outputPlot_strict",
-      title = "Relationship Between True Latent Construct Scores
+    conditionalPanel(
+      "input.showstrict==1",
+      h3("Results Under Strict Invariance"),
+      box(
+        id = "outputPlot_strict",
+        title = "Relationship Between True Latent Construct Scores
                and Observed Test Scores for Strict Invariance",
-      status = "primary",
-      solidHeader = FALSE,
-      width = 8,
-      plotOutput(ns("distPlotstrict"))
-    ),
-    box(
-      id = "outputTable_strict",
-      title = "Impact of Item Bias on Selection Accuracy Indices 
+        status = "primary",
+        solidHeader = FALSE,
+        width = 8,
+        plotOutput(ns("distPlotstrict"))
+      ),
+      box(
+        id = "outputTable_strict",
+        title = "Impact of Item Bias on Selection Accuracy Indices 
                 for Strict Invariance",
-      status = "primary",
-      solidHeader = FALSE,
-      width = 8,
-      tableOutput(ns("tablestrict"))
-    )
+        status = "primary",
+        solidHeader = FALSE,
+        width = 8,
+        tableOutput(ns("tablestrict"))
+      ),
+      ns = ns
+    ),
   )
 }
 
@@ -250,8 +269,8 @@ partinvServer <- function(id) {
         matrixInput(
           ns("ins_mat_theta_fInput"),
           #use slider value to determine dimensions of matrix input
-          value = matrix("0", nrow = input$mat_size_theta_f,
-                         ncol = input$mat_size_theta_f),
+          value = matrix("0", nrow = input$mat_size_theta,
+                         ncol = input$mat_size_theta),
           rows = list(names = FALSE),
           cols = list(names = FALSE),
           class = "numeric",
@@ -264,8 +283,8 @@ partinvServer <- function(id) {
         # matrixInput for referance
         matrixInput(
           ns("ins_mat_theta_rInput"),
-          value = matrix("0", nrow = input$mat_size_theta_f,
-                         ncol = input$mat_size_theta_f),
+          value = matrix("0", nrow = input$mat_size_theta,
+                         ncol = input$mat_size_theta),
           rows = list(names = FALSE),
           cols = list(names = FALSE),
           class = "numeric"
@@ -291,153 +310,71 @@ partinvServer <- function(id) {
       observeEvent(input$usekappa_f, shinyjs::toggle("kappa_f"))
       observeEvent(input$usephi_f, shinyjs::toggle("phi_f"))
       
-      
-      #if either button press is observed
-      observeEvent(list(input$usetheta_f, input$use_mat_theta_f), {
-        #for every combination of the two buttons, show/hide the appropriate inputs
-        if (input$use_mat_theta_f == FALSE & input$usetheta_f == TRUE) {
-          shinyjs::show("theta_f")
-          shinyjs::show("theta_r")
-          shinyjs::hide("ins_mat_theta_r")
-          shinyjs::hide("ins_mat_theta_rUI")
-          shinyjs::hide("ins_mat_theta_f")
-          shinyjs::hide("ins_mat_theta_fUI")
-          shinyjs::hide("mat_size_theta_f")
-        }
-        else if (input$use_mat_theta_f == FALSE & input$usetheta_f == FALSE) {
-          shinyjs::hide("theta_f")
-          shinyjs::show("theta_r")
-          shinyjs::hide("ins_mat_theta_r")
-          shinyjs::hide("ins_mat_theta_rUI")
-          shinyjs::hide("ins_mat_theta_f")
-          shinyjs::hide("ins_mat_theta_fUI")
-          shinyjs::hide("mat_size_theta_f")
-        }
-        else if (input$use_mat_theta_f == TRUE & input$usetheta_f == FALSE) {
-          shinyjs::hide("theta_f")
-          shinyjs::hide("theta_r")
-          shinyjs::show("ins_mat_theta_r")
-          shinyjs::show("ins_mat_theta_rUI")
-          shinyjs::hide("ins_mat_theta_f")
-          shinyjs::hide("ins_mat_theta_fUI")
-          shinyjs::show("mat_size_theta_f")
-        }
-        else{
-          shinyjs::hide("theta_f")
-          shinyjs::hide("theta_r")
-          shinyjs::show("ins_mat_theta_r")
-          shinyjs::show("ins_mat_theta_rUI")
-          shinyjs::show("ins_mat_theta_f")
-          shinyjs::show("ins_mat_theta_fUI")
-          shinyjs::show("mat_size_theta_f")
-        }
+      # if resetButton is pressed
+      observeEvent(input$resetButton, {
+        # reset all
+        reset("inp")
       })
       
-      observeEvent(input$tab_strict, {
-        shinyjs::toggle("outputTable_strict")
-        shinyjs::toggle("outputPlot_strict")
-      })
-      # 
-      #if resetButton is pressed
-      # observeEvent(input$resetButton, {
-      #   #reset all
-      #   reset("mat_size_theta_f")
-      #   reset("usepropsel")
-      #   reset("tab_strict")
-      #   reset("uselambda_f")
-      #   reset("usetau_f")
-      #   reset("usetheta_f")
-      #   reset("usekappa_f")
-      #   reset("usephi_f")
-      #   reset("use_mat_theta_f")
-      #   reset("prop")
-      #   reset("cut_z")
-      #   reset("pmix")
-      #   reset("lambda_f")
-      #   reset("lambda_r")
-      #   reset("tau_f")
-      #   reset("tau_r")
-      #   reset("theta_f")
-      #   reset("theta_r")
-      #   reset("kappa_f")
-      #   reset("kappa_r")
-      #   reset("phi_f")
-      #   reset("phi_r")
-      #   reset("legend_r")
-      #   reset("legend_f")
-      # })
       #turn every textInput into a numeric list
       #reactive allows these values to be defined outside of the output render
-      lambda_rNumeric <- reactive({
+      lambda_r <- reactive({
         as.numeric(unlist(strsplit(input$lambda_r, ",")))
       })
-      lambda_fNumeric <- reactive({
-        as.numeric(unlist(strsplit(input$lambda_f, ",")))
-      })
-      tau_rNumeric <- reactive({
-        as.numeric(unlist(strsplit(input$tau_r, ",")))
-      })
-      tau_fNumeric <- reactive({
-        as.numeric(unlist(strsplit(input$tau_f, ",")))
-      })
-      theta_rNumeric <- reactive({
-        as.numeric(unlist(strsplit(input$theta_r, ",")))
-      })
-      theta_fNumeric <- reactive({
-        as.numeric(unlist(strsplit(input$theta_f, ",")))
-      })
-      
-      # set lambda_f to lambda_r input or lambda_f input depending on button press
+      # set lambda_f to lambda_r input or lambda_f input depending on 
+      # button press
       lambda_f <- reactive({
         if (input$uselambda_f == FALSE) {
-          lambda_f = lambda_rNumeric()
+          lambda_r()
         }
-        else{
-          lambda_f = lambda_fNumeric()
+        else {
+          as.numeric(unlist(strsplit(input$lambda_f, ",")))
         }
+      })
+      
+      tau_r <- reactive({
+        as.numeric(unlist(strsplit(input$tau_r, ",")))
       })
       tau_f <- reactive({
         if (input$usetau_f == FALSE) {
-          tau_f = tau_rNumeric()
+          tau_f = tau_r()
         }
-        else{
-          tau_f = tau_fNumeric()
-        }
-      })
-      
-      #set theta_f output to either the diagonal inputs or matrix inputs
-      #for theta_r and theta_f depending on button presses
-      theta_f <- reactive({
-        if (input$usetheta_f == FALSE & input$use_mat_theta_f == FALSE) {
-          theta_f = diag(theta_rNumeric())
-        }
-        else if (input$usetheta_f == TRUE & input$use_mat_theta_f == FALSE) {
-          theta_f = diag(theta_fNumeric())
-        }
-        else if (input$usetheta_f == TRUE & input$use_mat_theta_f == TRUE) {
-          theta_f = input$ins_mat_theta_fInput
-        }
-        else{
-          theta_f = input$ins_mat_theta_rInput
+        else {
+          tau_f = as.numeric(unlist(strsplit(input$tau_f, ",")))
         }
       })
       
       theta_r <- reactive({
-        if (input$use_mat_theta_f == TRUE) {
+        if (input$use_mat_theta == TRUE) {
           theta_r = input$ins_mat_theta_rInput
         }
-        else{
-          theta_r = diag(theta_rNumeric())
+        else {
+          theta_r = diag(as.numeric(unlist(strsplit(input$theta_r, ","))))
         }
       })
+      # set theta_f output to either the diagonal inputs or matrix inputs
+      # for theta_r and theta_f depending on button presses
+      theta_f <- reactive({
+        if (input$usetheta_f == FALSE) {
+          theta_f = theta_r()
+        }
+        else if (input$usetheta_f == TRUE & input$use_mat_theta == FALSE) {
+          theta_f = diag(as.numeric(unlist(strsplit(input$theta_f, ","))))
+        }
+        else if (input$usetheta_f == TRUE & input$use_mat_theta == TRUE) {
+          theta_f = input$ins_mat_theta_fInput
+        }
+      })
+      
       kappa_f <- reactive({
         if (input$usekappa_f == FALSE) {
-          kappa_f = input$kappa_r
+          input$kappa_r
         }
         else{
-          kappa_f = input$kappa_f
+          input$kappa_f
         }
       })
+      
       phi_f <- reactive({
         if (input$usephi_f == FALSE) {
           phi_f = input$phi_r
@@ -447,84 +384,81 @@ partinvServer <- function(id) {
         }
       })
       
-      
-      #distribution plot output
-      
-      # validations <- reactive({
-      #   validate(
-      #     need(
-      #       input$lambda_r,
-      #       "Input for factor loadings of reference group is missing\n"
-      #     ),
-      #     need(
-      #       input$tau_r,
-      #       "Input for factor variance-covariance matrix of reference group is missing\n"
-      #     ),
-      #     need(
-      #       length(lambda_rNumeric()) == length(tau_rNumeric()),
-      #       "Factor loadings and intercepts need to have the same value\n"
-      #     ),
-      #     need(
-      #       input$usepropsel || !is.na(input$cut_z),
-      #       "Input for cutoff score is missing\n"
-      #     ),
-      #     if (input$uselambda_f == TRUE) {
-      #       need(
-      #         length(lambda_rNumeric()) == length(lambda_fNumeric()),
-      #         "factor loadings for referance and focal groups need to have the same number of values\n"
-      #       )
-      #     },
-      #     if (input$usetau_f == TRUE) {
-      #       need(
-      #         length(tau_rNumeric()) == length(tau_fNumeric()),
-      #         "intercepts for referance and focal groups need to have the same number of values\n"
-      #       )
-      #     },
-      #     if (input$use_mat_theta_f == FALSE && input$usetheta_f == TRUE) {
-      #       need(
-      #         length(theta_rNumeric()) == length(theta_fNumeric()),
-      #         "(placeholder) diagonals of referance and focal groups must match"
-      #       )
-      #     },
-      #     #only checks for numeric input of theta_r when matrix is not being used as input
-      #     if (input$use_mat_theta_f == FALSE) {
-      #       need(
-      #         input$theta_r,
-      #         "Input for unique variance-covariance matrix of reference group is missing\n"
-      #       )
-      #     },
-      #     if (input$use_mat_theta_f == FALSE && length(theta_rNumeric()) > 0) {
-      #       need(
-      #         length(theta_rNumeric()) == length(lambda_rNumeric()),
-      #         "number of inputs for measurement intercepts must match factor loadings"
-      #       )
-      #     },
-      #     if (input$use_mat_theta_f == TRUE) {
-      #       need(
-      #         input$mat_size_theta_f == length(lambda_rNumeric()),
-      #         "Matrix dimensions must match # loadings and intercepts\n"
-      #       )
-      #     },
-      #     if (input$use_mat_theta_f == TRUE) {
-      #       need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
-      #            "reference matrix empty")
-      #     },
-      #     if (input$use_mat_theta_f == TRUE && input$usetheta_f == TRUE) {
-      #       need(length(unique(theta_f())) / length(lambda_rNumeric())[1] != 1,
-      #            "focal matrix empty")
-      #     },
-      #     if (input$use_mat_theta_f == TRUE) {
-      #       need(isSymmetric(input$ins_mat_theta_rInput) &&
-      #              is_symmetric_posdef(input$ins_mat_theta_rInput),
-      #            "reference Theta matrix not positive definite")
-      #     },
-      #     if (input$use_mat_theta_f == TRUE && input$usetheta_f == TRUE) {
-      #       need(isSymmetric(input$ins_mat_theta_fInput) &&
-      #              is_symmetric_posdef(input$ins_mat_theta_fInput),
-      #            "focal Theta matrix not positive definite")
-      #     }
-      #     
-      #   )})
+      validations <- reactive({
+        validate(
+          need(
+            input$lambda_r,
+            "Input for factor loadings of reference group is missing\n"
+          ),
+          need(
+            input$tau_r,
+            "Input for factor variance-covariance matrix of reference group is missing\n"
+          ),
+          need(
+            length(lambda_r()) == length(tau_r()),
+            "Factor loadings and intercepts need to have the same value\n"
+          ),
+          need(
+            input$usepropsel || !is.na(input$cut_z),
+            "Input for cutoff score is missing\n"
+          ),
+          if (input$uselambda_f == TRUE) {
+            need(
+              length(lambda_r()) == length(lambda_f()),
+              "factor loadings for referance and focal groups need to have the same number of values\n"
+            )
+          },
+          if (input$usetau_f == TRUE) {
+            need(
+              length(tau_r()) == length(tau_f()),
+              "intercepts for referance and focal groups need to have the same number of values\n"
+            )
+          },
+          if (input$use_mat_theta == FALSE && input$usetheta_f == TRUE) {
+            need(
+              length(theta_r()) == length(theta_f()),
+              "(placeholder) diagonals of referance and focal groups must match"
+            )
+          },
+          #only checks for numeric input of theta_r when matrix is not being used as input
+          if (input$use_mat_theta == FALSE) {
+            need(
+              input$theta_r,
+              "Input for unique variance-covariance matrix of reference group is missing\n"
+            )
+          },
+          if (input$use_mat_theta == FALSE && length(theta_r()) > 0) {
+            need(
+              nrow(theta_r()) == length(lambda_r()),
+              "dimension of unique covariance matrix must match factor loadings"
+            )
+          },
+          if (input$use_mat_theta == TRUE) {
+            need(
+              input$mat_size_theta == length(lambda_r()),
+              "Matrix dimensions must match # loadings and intercepts\n"
+            )
+          },
+          if (input$use_mat_theta == TRUE) {
+            need(length(unique(theta_r())) / length(lambda_r())[1] != 1,
+                 "reference matrix empty")
+          },
+          if (input$use_mat_theta == TRUE && input$usetheta_f == TRUE) {
+            need(length(unique(theta_f())) / length(lambda_r())[1] != 1,
+                 "focal matrix empty")
+          },
+          if (input$use_mat_theta == TRUE) {
+            need(isSymmetric(input$ins_mat_theta_rInput) &&
+                   is_symmetric_posdef(input$ins_mat_theta_rInput),
+                 "reference Theta matrix not positive definite")
+          },
+          if (input$use_mat_theta == TRUE && input$usetheta_f == TRUE) {
+            need(isSymmetric(input$ins_mat_theta_fInput) &&
+                   is_symmetric_posdef(input$ins_mat_theta_fInput),
+                 "focal Theta matrix not positive definite")
+          }
+
+        )})
       
       partInvOutput <- reactive({
         if (input$usepropsel == FALSE) {
@@ -538,14 +472,14 @@ partinvServer <- function(id) {
             kappa_f = kappa_f(),
             phi_r = input$phi_r,
             phi_f = phi_f(),
-            lambda_r = lambda_rNumeric(),
+            lambda_r = lambda_r(),
             lambda_f = lambda_f(),
             tau_f = tau_f(),
             Theta_f = theta_f(),
-            tau_r = tau_rNumeric(),
+            tau_r = tau_r(),
             Theta_r = theta_r(),
             labels = c(input$legend_r, input$legend_f),
-            show_mi_result = input$tab_strict
+            show_mi_result = input$showstrict
           )
         } else if (input$usepropsel == TRUE) {
           PartInv(
@@ -558,35 +492,35 @@ partinvServer <- function(id) {
             kappa_f = kappa_f(),
             phi_r = input$phi_r,
             phi_f = phi_f(),
-            lambda_r = lambda_rNumeric(),
+            lambda_r = lambda_r(),
             lambda_f = lambda_f(),
             tau_f = tau_f(),
             Theta_f = theta_f(),
-            tau_r = tau_rNumeric(),
+            tau_r = tau_r(),
             Theta_r = theta_r(),
             labels = c(input$legend_r, input$legend_f),
-            show_mi_result = input$tab_strict
+            show_mi_result = input$showstrict
           )
         }
       })
       
       output$distPlot <- renderPlot({
-        # validations()
+        validations()
         plot(partInvOutput(), which_result = "pi")
       })
       
       output$distPlotstrict <- renderPlot({
-        # validations()
+        validations()
         plot(partInvOutput(), which_result = "mi")
       })
       
       output$table <- renderTable(rownames = TRUE, {
-        # validations()
+        validations()
         partInvOutput()$summary
       })
       
       output$tablestrict <- renderTable(rownames = TRUE, {
-        # validations()
+        validations()
         partInvOutput()$summary_mi
       })
     }
