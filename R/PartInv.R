@@ -1,5 +1,6 @@
 #' @importFrom stats qchisq pnorm qnorm nlminb
 #' @importFrom mnormt pmnorm
+#' @import zeallot
 NULL
 
 #' Evaluating selection accuracy based on the MCAA Framework
@@ -120,99 +121,86 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
                             pmix_ref = 0.5, plot_contour = FALSE,
                             show_mi_result = FALSE,
                             labels = c("Reference", "Focal"), ...) {
-  # For backward compatibility with different input names
+  
+  # for backward compatibility with different input names
   if (missing(nu_r) && !is.null(tau_r)) {
-    nu_r <- tau_r
-    nu_f <- tau_f
+    nu_r <- tau_r; nu_f <- tau_f
   }
   if (missing(alpha_r) && !is.null(kappa_r)) {
-    alpha_r <- kappa_r
-    alpha_f <- kappa_f
+    alpha_r <- kappa_r; alpha_f <- kappa_f
   }
   if (missing(psi_r) && !is.null(phi_r)) {
-    psi_r <- phi_r
-    psi_f <- phi_f
+    psi_r <- phi_r; psi_f <- phi_f
   }
+  # formatting; convert scalars/vectors to matrices
   if (is.vector(Theta_r)) Theta_r <- diag(Theta_r, nrow = length(Theta_r))
   if (is.vector(Theta_f)) Theta_f <- diag(Theta_f, nrow = length(Theta_f))
   if (is.null(weights_item)) weights_item <- rep(1, length(nu_r))
   if (is.null(weights_latent)) weights_latent <- rep(1, length(alpha_r))
-  # convert scalars/vectors to matrices
-  alpha_r <- as.matrix(alpha_r)
-  alpha_f <- as.matrix(alpha_f)
-  psi_r <- as.matrix(psi_r)
-  psi_f <- as.matrix(psi_f)
+  alpha_r <- as.matrix(alpha_r); alpha_f <- as.matrix(alpha_f)
+  psi_r <- as.matrix(psi_r); psi_f <- as.matrix(psi_f)
+  
   # check the dimensions of input parameters
   stopifnot(nrow(alpha_r) == ncol(as.matrix(lambda_r)),
             nrow(psi_r) == ncol(as.matrix(lambda_r)))
-  mean_zr <- c(crossprod(weights_item, nu_r + lambda_r %*% alpha_r))
-  mean_zf <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_f))
-  sd_zr <- c(sqrt(crossprod(weights_item,
-                            lambda_r %*% psi_r %*% t(lambda_r) + Theta_r) %*%
-                    weights_item))
-  sd_zf <- c(sqrt(crossprod(weights_item,
-                            lambda_f %*% psi_f %*% t(lambda_f) + Theta_f) %*%
-                    weights_item))
-  cov_z_xir <- c(crossprod(weights_item, lambda_r %*% psi_r) %*% weights_latent)
-  cov_z_xif <- c(crossprod(weights_item, lambda_f %*% psi_f) %*% weights_latent)
-  sd_xir <- c(sqrt(crossprod(weights_latent, psi_r) %*% weights_latent))
-  sd_xif <- c(sqrt(crossprod(weights_latent, psi_f) %*% weights_latent))
-  zeta_r <- c(crossprod(weights_latent, alpha_r))
-  zeta_f <- c(crossprod(weights_latent, alpha_f))
+  
+  mn_z_r <- mn_z_f <- sd_z_r <- sd_z_f <- mn_xi_r <- mn_xi_f <- sd_xi_r <- 
+    sd_xi_f <- cov_z_xi_r <- cov_z_xi_f <- NULL
+  # compute the mean, sd, cov for latent and observed variables 
+  c(mn_z_r, mn_z_f, sd_z_r, sd_z_f, mn_xi_r, mn_xi_f, sd_xi_r, sd_xi_f, 
+    cov_z_xi_r, cov_z_xi_f) %<-% mn_sd_cov(weights_item, weights_latent, alpha_r, 
+                                           alpha_f, psi_r, psi_f, lambda_r, 
+                                           lambda_f, nu_r, nu_f, Theta_r, Theta_f)
+  
   # if there is an input for selection proportion
   if (!is.null(propsel)) {
-    # and if there is an input for cut score
-    if (!is.null(cut_z)) {
-      warning("Input to `cut_z` is ignored.")
-    }
-    # compute the cut score using helper function qnormmix based on input selection
-    # proportion
+    if (!is.null(cut_z))  warning("Input to `cut_z` is ignored.")
+    
+    # compute the cut score using qnormmix based on input selection proportion
     fixed_cut_z <- FALSE
-    cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf,
-                      pmix_ref, lower.tail = FALSE)
+    cut_z <- qnormmix(propsel, mn_z_r, sd_z_r, mn_z_f, sd_z_f, pmix_ref, 
+                      lower.tail = FALSE)
   } else if (!is.null(cut_z) & is.null(propsel)) {
-    # if missing selection proportion but has a cut score
+    # if selection proportion is missing but a cut score was provided
     fixed_cut_z <- TRUE
-    propsel <- pnormmix(cut_z, mean_zr, sd_zr, mean_zf, sd_zf,
-                        pmix_ref, lower.tail = FALSE)
+    # compute the selection proportion using pnormmix based on the cutoff value
+    propsel <- pnormmix(cut_z, mn_z_r, sd_z_r, mn_z_f, sd_z_f, pmix_ref, 
+                        lower.tail = FALSE)
   }
-  cut_xi <- qnormmix(propsel, zeta_r, sd_xir, zeta_f, sd_xif,
-                     pmix_ref, lower.tail = FALSE)
+  
+  # compute the threshold for the latent variable based on the selection 
+  # proportion provided by the user/computed using cut_z
+  cut_xi <- qnormmix(propsel, mn_xi_r, sd_xi_r, mn_xi_f, sd_xi_f, pmix_ref, 
+                     lower.tail = FALSE)
+  
   # print warning message if propsel is too small
-  if (propsel <= 0.01) {
-    warning("Proportion selected is 1% or less.")
-  }
-  # computing summary statistics using helper function .partit_bvnorm
-  partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr,
-                             cov12 = cov_z_xir)
-  partit_2 <- .partit_bvnorm(cut_xi, cut_z, zeta_f, sd_xif, mean_zf, sd_zf,
-                             cov12 = cov_z_xif)
-  # selection indices for the focal group if latent dist matches the reference
-  mean_zref <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_r))
-  sd_zref <- c(sqrt(crossprod(weights_item,
-                              lambda_f %*% psi_r %*% t(lambda_f) + Theta_f) %*%
-                      weights_item))
-  cov_z_xiref <- c(crossprod(weights_item, lambda_f %*% psi_r) %*%
+  if (propsel <= 0.01) warning("Proportion selected is 1% or less.")
+  
+  # computing summary statistics using .partit_bvnorm
+  CAI_r <- .partit_bvnorm(cut_xi, cut_z, mn_xi_r, sd_xi_r, mn_z_r, sd_z_r,
+                             cov12 = cov_z_xi_r)
+  CAI_f <- .partit_bvnorm(cut_xi, cut_z, mn_xi_f, sd_xi_f, mn_z_f, sd_z_f,
+                             cov12 = cov_z_xi_f)
+  
+  # Store mean, sd, cov values for the obs/latent variables; ref/focal groups
+  zf_par <- list(mn_xi_r = mn_xi_r, mn_xi_f = mn_xi_f, 
+                 sd_xi_r = sd_xi_r, sd_xi_f = sd_xi_f, 
+                 mn_z_r = mn_z_r, mn_z_f = mn_z_f,
+                 sd_z_r = sd_z_r, sd_z_f = sd_z_f,
+                 cov_z_xi_r = cov_z_xi_r, cov_z_xi_f = cov_z_xi_f)
+  
+  # selection indices for the focal group if its distribution matches the
+  # distribution of the reference group (Efocal)
+  mn_z_Ef <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_r))
+  sd_z_Ef <- c(sqrt(crossprod(weights_item, lambda_f %*% psi_r %*% t(lambda_f) 
+                              + Theta_f) %*% weights_item))
+  cov_z_xi_Ef <- c(crossprod(weights_item, lambda_f %*% psi_r) %*%
                      weights_latent)
-  partit_1e2 <- .partit_bvnorm(cut_xi, cut_z,
-                               zeta_r, sd_xir, mean_zref,
-                               sd_zref,
-                               cov12 = cov_z_xiref)
-  zf_par <- list(
-    zeta_r = zeta_r,
-    zeta_f = zeta_f,
-    sd_xir = sd_xir,
-    sd_xif = sd_xif,
-    mean_zr = mean_zr,
-    mean_zf = mean_zf,
-    sd_zr = sd_zr,
-    sd_zf = sd_zf,
-    cov_z_xir = cov_z_xir,
-    cov_z_xif = cov_z_xif
-  )
+  CAI_Ef <- .partit_bvnorm(cut_xi, cut_z, mn_xi_r, sd_xi_r, mn_z_Ef, sd_z_Ef,
+                           cov12 = cov_z_xi_Ef)
+
   # result table
-  dat <- data.frame("Reference" = partit_1, "Focal" = partit_2,
-                    "E_R(Focal)" = partit_1e2,
+  dat <- data.frame("Reference" = CAI_r, "Focal" = CAI_f, "E_R(Focal)" = CAI_Ef,
                     row.names = c("A (true positive)", "B (false positive)",
                                   "C (true negative)", "D (false negative)",
                                   "Proportion selected", "Success ratio",
@@ -220,8 +208,7 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
   colnames(dat) <- c(labels, paste0("E_R(", labels[2], ")"))
   
   out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
-              summary = dat,
-              bivar_data = zf_par,
+              summary = dat, bivar_data = zf_par,
               ai_ratio = dat["Proportion selected", 3] /
                 dat["Proportion selected", 1])
   
@@ -229,54 +216,40 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
     # Strict
     pop_weights <- c(pmix_ref, 1 - pmix_ref)
     lambda_r <- lambda_f <-
-      .weighted_average_list(list(lambda_r, lambda_f),
-                             weights = pop_weights)
+      .weighted_average_list(list(lambda_r, lambda_f), weights = pop_weights)
     nu_r <- nu_f <-
-      .weighted_average_list(list(nu_r, nu_f),
-                             weights = pop_weights)
+      .weighted_average_list(list(nu_r, nu_f), weights = pop_weights)
     Theta_r <- Theta_f <-
-      .weighted_average_list(list(Theta_r, Theta_f),
-                             weights = pop_weights)
-    mean_zr <- c(crossprod(weights_item, nu_r + lambda_r %*% alpha_r))
-    mean_zf <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_f))
-    sd_zr <- c(sqrt(crossprod(weights_item,
-                              lambda_r %*% psi_r %*% t(lambda_r) + Theta_r) %*%
-                      weights_item))
-    sd_zf <- c(sqrt(crossprod(weights_item,
-                              lambda_f %*% psi_f %*% t(lambda_f) + Theta_f) %*%
-                      weights_item))
-    cov_z_xir <- c(crossprod(weights_item, lambda_r %*% psi_r) %*% weights_latent)
-    cov_z_xif <- c(crossprod(weights_item, lambda_f %*% psi_f) %*% weights_latent)
-    sd_xir <- c(sqrt(crossprod(weights_latent, psi_r) %*% weights_latent))
-    sd_xif <- c(sqrt(crossprod(weights_latent, psi_f) %*% weights_latent))
-    zeta_r <- c(crossprod(weights_latent, alpha_r))
-    zeta_f <- c(crossprod(weights_latent, alpha_f))
+      .weighted_average_list(list(Theta_r, Theta_f), weights = pop_weights)
+    
+    # compute the mean, sd, cov for latent and observed variables
+    c(mn_z_r, mn_z_f, sd_z_r, sd_z_f, mn_xi_r, mn_xi_f, sd_xi_r, sd_xi_f, 
+      cov_z_xi_r, cov_z_xi_f) %<-% mn_sd_cov(weights_item, weights_latent,
+                                             alpha_r, alpha_f, psi_r, psi_f, 
+                                             lambda_r, lambda_f, nu_r, nu_f, 
+                                             Theta_r, Theta_f)
     if (fixed_cut_z) {
-      propsel <- pnormmix(cut_z, mean_zr, sd_zr, mean_zf, sd_zf,
-                          pmix_ref, lower.tail = FALSE)
+      propsel <- pnormmix(cut_z, mn_z_r, sd_z_r, mn_z_f, sd_z_f, pmix_ref, 
+                          lower.tail = FALSE)
     } else {
-      cut_z <- qnormmix(propsel, mean_zr, sd_zr, mean_zf, sd_zf,
-                        pmix_ref, lower.tail = FALSE)
+      cut_z <- qnormmix(propsel, mn_z_r, sd_z_r, mn_z_f, sd_z_f, pmix_ref, 
+                        lower.tail = FALSE)
     }
-    cut_xi <- qnormmix(propsel, zeta_r, sd_xir, zeta_f, sd_xif,
-                       pmix_ref, lower.tail = FALSE)
-    zf_par_mi <- list(
-      zeta_r = zeta_r,
-      zeta_f = zeta_f,
-      sd_xir = sd_xir,
-      sd_xif = sd_xif,
-      mean_zr = mean_zr,
-      mean_zf = mean_zf,
-      sd_zr = sd_zr,
-      sd_zf = sd_zf,
-      cov_z_xir = cov_z_xir,
-      cov_z_xif = cov_z_xif
-    )
-    partit_1 <- .partit_bvnorm(cut_xi, cut_z, zeta_r, sd_xir, mean_zr, sd_zr,
-                               cov12 = cov_z_xir)
-    partit_2 <- .partit_bvnorm(cut_xi, cut_z, zeta_f, sd_xif, mean_zf, sd_zf,
-                               cov12 = cov_z_xif)
-    dat <- data.frame("Reference" = partit_1, "Focal" = partit_2,
+    cut_xi <- qnormmix(propsel, mn_xi_r, sd_xi_r, mn_xi_f, sd_xi_f, pmix_ref, 
+                       lower.tail = FALSE)
+    
+    CAI_r <- .partit_bvnorm(cut_xi, cut_z, mn_xi_r, sd_xi_r, mn_z_r, sd_z_r,
+                               cov12 = cov_z_xi_r)
+    CAI_f <- .partit_bvnorm(cut_xi, cut_z, mn_xi_f, sd_xi_f, mn_z_f, sd_z_f,
+                               cov12 = cov_z_xi_f)
+    
+    zf_par_mi <- list(mn_xi_r = mn_xi_r, mn_xi_f = mn_xi_f,
+                      sd_xi_r = sd_xi_r, sd_xi_f = sd_xi_f,
+                      mn_z_r = mn_z_r, mn_z_f = mn_z_f,
+                      sd_z_r = sd_z_r, sd_z_f = sd_z_f,
+                      cov_z_xi_r = cov_z_xi_r, cov_z_xi_f = cov_z_xi_f) 
+    
+    dat <- data.frame("Reference" = CAI_r, "Focal" = CAI_f,
                       row.names = c("A (true positive)", "B (false positive)",
                                     "C (true negative)", "D (false negative)",
                                     "Proportion selected", "Success ratio",
@@ -288,7 +261,8 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
     out$summary_mi <- dat
     out$bivar_data_mi <- zf_par_mi
   }
-  class(out) <- c("PartInv", "PartInvSummary")
+  
+  class(out) <- "PartInv"
   if (plot_contour) {
     plot(out, labels = labels, ...)
   }

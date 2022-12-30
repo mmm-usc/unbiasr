@@ -175,19 +175,15 @@ item_deletion_h <- function(propsel = NULL,
              length.")}
     return_items <- user_specified_items
   }
-  # Start with pre-allocating space:
+  
   store_str <- store_par <- str_par_ref_list <- str_par_foc_list <-
     vector(mode = "list", N + 1)
-
   delta_h_str_vs_par_ref <- delta_h_str_vs_par_foc <- delta_h_R_vs_Ef <-
     as.data.frame(matrix(nrow = 8, ncol = N))
-
   h_R_Ef <- h_str_vs_par_ref <- h_str_vs_par_foc <-
     as.data.frame(matrix(nrow = 8, ncol = N + 1))
-
   aggregate_par <- aggregate_str <- h_aggregate_str_par <-
     as.data.frame(matrix(nrow = 4, ncol = N + 1))
-
   h_aggregate_par <-  delta_h_str_par_aggregate <-
     as.data.frame(matrix(nrow = 4, ncol = N))
 

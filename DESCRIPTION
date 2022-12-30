@@ -44,6 +44,7 @@ Imports:
     shinydashboard,
     shinyjs,
     shinyMatrix,
-    shinyWidgets
+    shinyWidgets,
+    zeallot
 VignetteBuilder: knitr
 Config/testthat/edition: 3

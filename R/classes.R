@@ -6,19 +6,19 @@ stars <-
 dashes <-
   "-----------------------------------------------------------------------"
 
-setClass("PartInvSummary",
-         representation(
-           summary = "data.frame"
-         )
-)
-#'@export
-print.PartInvSummary <- function(x, ...) {
+# setClass("PartInvSummary",
+#          representation(
+#            summary = "data.frame"
+#          )
+# )
+
+print_PartInvSummary <- function(x, ...) {
   cat("Classification Accuracy Indices:\n")
   rownames(x) <- c("True Positive", "False Positive", "True Negative",
                         "False Negative",  "Proportion Selected",
                         "Success Ratio", "Sensitivity", "Specificity")
  # c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
-  print(round(x, 3))
+  print(round(x, digits = 3))
 }
 
 setClass("PartInv_groups",
@@ -38,26 +38,29 @@ setClass("PartInv",
          representation(
            propsel = "numeric",
            cutpt_xi = "numeric", cutpt_z = "numeric",
-           summary = "PartInvSummary",
+           summary = "data.frame",
            bivar_data = "list",
            ai_ratio = "numeric",
-           plot = "recordedplot",
            propsel_mi = "numeric",
            cutpt_xi_mi = "numeric", cutpt_z_mi = "numeric",
            bivar_data_mi = "list",
-           summary_mi = "PartInvSummary",
-           p_mi = "recordedplot"
+           summary_mi = "data.frame"
          )
 )
 #'@export
 print.PartInv <- function(x, ...) {
+  cat("Partial invariance results:\n\n")
   cat("Proportion selected: ", round(x$propsel, 3), "\n")
   cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi, 3), "\n")
   cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z, 3), "\n")
   cat("AI ratio: ", round(x$ai_ratio, 3), "\n\n")
-  print.PartInvSummary(x$summary)
-  if (!is.null(x$plot)) {
-    print(x$plot)
+  print_PartInvSummary(x$summary)
+  if (!is.null(x$summary_mi)) {
+    cat("\n\nStrict invariance results:\n\n")
+    cat("Proportion selected: ", round(x$propsel_mi, 3), "\n")
+    cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi_mi, 3), "\n")
+    cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z_mi, 3), "\n\n")
+    print_PartInvSummary(x$summary_mi)
   }
 }
 

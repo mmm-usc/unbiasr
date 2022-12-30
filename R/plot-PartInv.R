@@ -68,26 +68,26 @@ plot.PartInv <- function(x, labels,
     if (missing(labels)) {
         labels <- colnames(summ)[1:2]
     }
-    x_lim <- range(c(plot_dat$zeta_r + c(-3, 3) * plot_dat$sd_xir,
-                     plot_dat$zeta_f + c(-3, 3) * plot_dat$sd_xif))
-    y_lim <- range(c(plot_dat$mean_zr + c(-3, 3) * plot_dat$sd_zr,
-                     plot_dat$mean_zf + c(-3, 3) * plot_dat$sd_zf))
-    contour_bvnorm(plot_dat$zeta_r, plot_dat$sd_xir,
-                   plot_dat$mean_zr, plot_dat$sd_zr,
-                   cov12 = plot_dat$cov_z_xir,
+    x_lim <- range(c(plot_dat$mn_xi_r + c(-3, 3) * plot_dat$sd_xi_r,
+                     plot_dat$mn_xi_f + c(-3, 3) * plot_dat$sd_xi_f))
+    y_lim <- range(c(plot_dat$mn_z_r + c(-3, 3) * plot_dat$sd_z_r,
+                     plot_dat$mn_z_f + c(-3, 3) * plot_dat$sd_z_f))
+    contour_bvnorm(plot_dat$mn_xi_r, plot_dat$sd_xi_r,
+                   plot_dat$mn_z_r, plot_dat$sd_z_r,
+                   cov12 = plot_dat$cov_z_xi_r,
                    xlab = bquote("Latent Composite" ~ (zeta)),
                    ylab = bquote("Observed Composite" ~ (italic(Z))),
                    lwd = 2, col = "red", xlim = x_lim, ylim = y_lim,
                    ...)
-    contour_bvnorm(plot_dat$zeta_f, plot_dat$sd_xif,
-                   plot_dat$mean_zf, plot_dat$sd_zf,
-                   cov12 = plot_dat$cov_z_xif,
+    contour_bvnorm(plot_dat$mn_xi_f, plot_dat$sd_xi_f,
+                   plot_dat$mn_z_f, plot_dat$sd_z_f,
+                   cov12 = plot_dat$cov_z_xi_f,
                    add = TRUE, lty = "dashed", lwd = 2, col = "blue",
                    ...)
     legend("topleft", labels,
            lty = c("solid", "dashed"), col = c("red", "blue"))
     abline(h = cut_z, v = cut_xi)
-    x_cord <- rep(cut_xi + c(.25, -.25) * plot_dat$sd_xir, 2)
-    y_cord <- rep(cut_z + c(.25, -.25) * plot_dat$sd_zr, each = 2)
+    x_cord <- rep(cut_xi + c(.25, -.25) * plot_dat$sd_xi_r, 2)
+    y_cord <- rep(cut_z + c(.25, -.25) * plot_dat$sd_z_r, each = 2)
     text(x_cord, y_cord, c("A", "B", "D", "C"))
 }
