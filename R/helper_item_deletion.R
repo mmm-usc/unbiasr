@@ -1,3 +1,54 @@
+
+#formatting
+
+format_item_del <- function(N, AI_ratios, h_R_Ef, delta_s_p_ref, delta_s_p_foc, 
+                            store_str, store_par, s_p_ref_list, s_p_foc_list, 
+                            acai_p, h_acai_s_p, h_acai_p, delta_h_s_p_acai, 
+                            delta_h_R_Ef, h_s_p_ref, h_s_p_foc, return_items) {
+  # Format stored variables
+  names(AI_ratios) <- c("full", paste0("|", c(1:N)))
+  rownames(AI_ratios) <- c("AI_SFI", "AI_PFI")
+  names(h_R_Ef) <-  c("r-Ef", paste0("r-Ef|", c(1:N)))
+  names(delta_s_p_ref) <- names(delta_s_p_foc) <- paste0("SFI, PFI|", c(1:N))
+  names(store_str) <- names(store_par) <- names(s_p_ref_list) <-
+    names(s_p_foc_list) <- c("full", paste0("|", c(1:N)))
+  names(acai_p) <- c("full", paste0("|", c(1:N)))
+  names(h_acai_p) <- paste0("|", c(1:N))
+  rownames(h_acai_p) <- rownames(h_acai_s_p) <-
+    c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)")
+  rownames(acai_p) <- c("PS*", "SR*", "SE*", "SP*")
+  rownames(delta_h_s_p_acai) <-
+    paste0("\u0394h(", c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)"), ")")
+  rownames(delta_s_p_ref) <- rownames(delta_s_p_foc) <- rownames(delta_h_R_Ef) <-
+    paste0("\u0394h(", c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP"), ")")
+  rownames(h_R_Ef) <- rownames(h_s_p_ref) <- rownames(h_s_p_foc) <-
+    c("h(TP)", "h(FP)", "h(TN)", "h(FN)", "h(PS)", "h(SR)", "h(SE)", "h(SP)")
+  
+  store_par <- list(outputlist = store_par, condition = "partial",
+                    itemset = return_items)
+  store_str <- list(outputlist = store_str, condition = "strict",
+                    itemset = return_items)
+  h_s_p_list_ref <- list(outputlist = s_p_ref_list, condition="ref",
+                                itemset = return_items)
+  h_s_p_list_foc <- list(outputlist = s_p_foc_list, condition="foc",
+                                itemset = return_items)
+  names(h_s_p_ref) <- names(h_s_p_foc) <- c("SFI, PFI", 
+                                            paste0("SFI, PFI|", c(1:N)))
+  
+  names(delta_h_R_Ef) <- paste0("r-Ef|", c(1:N))
+  names(delta_h_s_p_acai) <- paste0( "SFI, PFI|", c(1:N))
+  names(h_acai_s_p) <- c("SFI, PFI", paste0("SFI, PFI|", c(1:N)))
+  
+  acai_p <- as.data.frame(cbind(acai_p))
+  h_acai_p <- as.data.frame(h_acai_p)
+  
+  return(list(acai_p, h_acai_p, h_acai_s_p, delta_h_s_p_acai, AI_ratios, h_R_Ef, 
+              delta_h_R_Ef, h_s_p_ref, h_s_p_foc, delta_s_p_ref, delta_s_p_foc, 
+              h_s_p_list_ref, h_s_p_list_foc, store_str, store_par))
+}
+
+
+
 #' @title
 #' Compute PS, SR, SE, SP weighted by group proportions
 #'
