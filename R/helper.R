@@ -65,6 +65,25 @@ mn_sd_cov <- function(weights_item, weights_latent, alpha_r, alpha_f, psi_r,
               cov_z_xi_r, cov_z_xi_f))
 }
 
+
+mn_sd_cov_mult <- function(num_g, weights_item, weights_latent, alpha, psi, lambda, 
+                           nu, Theta){
+  mn_z <- sd_z <- mn_xi <- sd_xi <- cov_z_xi <- NULL
+  for(i in 1:num_g) {
+    mn_z[i] <- c(crossprod(weights_item, nu[[i]] + lambda[[i]] %*% alpha[[i]]))
+    sd_z[i] <- c(sqrt(crossprod(weights_item, lambda[[i]] %*% psi[[i]] %*% 
+                                  t(lambda[[i]]) + Theta[[i]]) %*% weights_item))
+    mn_xi <- c(crossprod(weights_latent, alpha[[i]]))
+    sd_xi <- c(sqrt(crossprod(weights_latent, psi[[i]]) %*% weights_latent))
+    cov_z_xi <- c(crossprod(weights_item, lambda[[i]] %*% psi[[i]]) %*% 
+                    weights_latent)
+  } 
+  return(list(mn_z, sd_z, mn_xi, sd_xi, cov_z_xi))
+}
+
+
+
+
 #' Distribution function (pdf) of a mixture of two normal distributions. 
 #' 
 #' \code{pnormmix} returns the cumulative probability of q or \eqn{1 - q} on the
