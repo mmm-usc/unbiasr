@@ -1,6 +1,6 @@
 
-#formatting
-
+# Function that performs formatting for various variables to be returned in
+# item_deletion_h
 format_item_del <- function(N, AI_ratios, h_R_Ef, delta_s_p_ref, delta_s_p_foc, 
                             store_str, store_par, s_p_ref_list, s_p_foc_list, 
                             acai_p, h_acai_s_p, h_acai_p, delta_h_s_p_acai, 
@@ -42,8 +42,9 @@ format_item_del <- function(N, AI_ratios, h_R_Ef, delta_s_p_ref, delta_s_p_foc,
   acai_p <- as.data.frame(cbind(acai_p))
   h_acai_p <- as.data.frame(h_acai_p)
   
-  return(list(acai_p, h_acai_p, h_acai_s_p, delta_h_s_p_acai, AI_ratios, h_R_Ef, 
-              delta_h_R_Ef, h_s_p_ref, h_s_p_foc, delta_s_p_ref, delta_s_p_foc, 
+  return(list(t(acai_p), t(h_acai_p), t(h_acai_s_p), t(delta_h_s_p_acai), 
+              t(AI_ratios), t(h_R_Ef), t(delta_h_R_Ef), t(h_s_p_ref), 
+              t(h_s_p_foc), t(delta_s_p_ref), (delta_s_p_foc), 
               h_s_p_list_ref, h_s_p_list_foc, store_str, store_par))
 }
 

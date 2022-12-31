@@ -6,12 +6,6 @@ stars <-
 dashes <-
   "-----------------------------------------------------------------------"
 
-# setClass("PartInvSummary",
-#          representation(
-#            summary = "data.frame"
-#          )
-# )
-
 print_PartInvSummary <- function(x, ...) {
   cat("Classification Accuracy Indices:\n")
   rownames(x) <- c("True Positive", "False Positive", "True Negative",
@@ -21,11 +15,8 @@ print_PartInvSummary <- function(x, ...) {
   print(round(x, digits = 3))
 }
 
-setClass("PartInv_groups",
-         representation(
-           tab = "data.frame"
-         )
-)
+setClass("PartInv_groups", representation(tab = "data.frame"))
+
 #'@export
 print.PartInv_groups <- function(x, ...) {
   rownames(x) <- c("True Positive", "False Positive", "True Negative",
@@ -68,8 +59,7 @@ setClass("PartInvList",
          representation(
            outputlist = "list",
            condition = "character",
-           itemset = "vector"
-         )
+           itemset = "vector")
 )
 
 #'@export
@@ -187,8 +177,8 @@ summary.itemdeletion <- function(object, ...) {
   print(round(object$`delta h SFI-PFI (deletion)`[[1]][c(item_set), , drop = FALSE], 3))
   cat("\nImpact of deleting an item on the discrepancy between CAI under SFI \nvs. PFI for the focal group:\n")
   print(round(object$`delta h SFI-PFI (deletion)`[[2]][c(item_set), , drop = FALSE], 3))
-  print(object$`PartInv by groups`$reference)
-  print(object$`PartInv by groups`$focal)
+  print(object$`h SFI-PFI by groups`$reference)
+  print(object$`h SFI-PFI by groups`$focal)
   print(object$PartInv$strict)
   print(object$PartInv$partial)
 }
