@@ -73,9 +73,10 @@ mn_sd_cov_mult <- function(num_g, weights_item, weights_latent, alpha, psi, lamb
     mn_z[i] <- c(crossprod(weights_item, nu[[i]] + lambda[[i]] %*% alpha[[i]]))
     sd_z[i] <- c(sqrt(crossprod(weights_item, lambda[[i]] %*% psi[[i]] %*% 
                                   t(lambda[[i]]) + Theta[[i]]) %*% weights_item))
-    mn_xi <- c(crossprod(weights_latent, alpha[[i]]))
-    sd_xi <- c(sqrt(crossprod(weights_latent, psi[[i]]) %*% weights_latent))
-    cov_z_xi <- c(crossprod(weights_item, lambda[[i]] %*% psi[[i]]) %*% 
+    names(alpha) <- names(psi) <- NULL
+    mn_xi[i] <- c(crossprod(weights_latent, alpha[[i]]))
+    sd_xi[i] <- c(sqrt(crossprod(weights_latent, psi[[i]]) %*% weights_latent))
+    cov_z_xi[i] <- c(crossprod(weights_item, lambda[[i]] %*% psi[[i]]) %*% 
                     weights_latent)
   } 
   return(list(mn_z, sd_z, mn_xi, sd_xi, cov_z_xi))
@@ -105,12 +106,21 @@ mn_sd_cov_mult <- function(num_g, weights_item, weights_latent, alpha, psi, lamb
 #' pnormmix(1, 0, 3.1, 1.7, 3.1, lower.tail = FALSE)
 #' }
 
-pnormmix <- function(q, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5, 
+pnormmix <- function(q, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5,
                      lower.tail = TRUE) {
   stopifnot(pmix1 > 0, pmix1 < 1)
-  as.vector(c(pmix1, 1 - pmix1) %*% 
-              sapply(q, pnorm, mean = c(mean1, mean2), sd = c(sd1, sd2), 
+  as.vector(c(pmix1, 1 - pmix1) %*%
+              sapply(q, pnorm, mean = c(mean1, mean2), sd = c(sd1, sd2),
                      lower.tail = lower.tail))
+}
+
+
+pnormmix_mult <- function(q, means = 0, sds = 1, pmix = NULL, 
+                          lower.tail = TRUE) {
+
+  stopifnot("Provide mixing proportions between 0 and 1." = all(pmix > 0, pmix < 1))
+  as.vector(pmix %*% 
+              sapply(q, pnorm, mean = means, sd = sds, lower.tail = lower.tail))
 }
 
 # pnormmix(, mean1 = 1.53, sd1 = 0.89, mean2 = 1.32, sd2 = 0.88, pmix1 = 0.5, lower.tail = FALSE)
@@ -136,14 +146,26 @@ pnormmix <- function(q, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5,
 #' qnormmix(0.8, 0, 3.1, 1.7, 0.5, lower.tail = FALSE)
 #' }
 
-qnormmix <- function(p, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5, 
+qnormmix <- function(p, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5,
                      lower.tail = TRUE) {
-  
   stopifnot(pmix1 > 0, pmix1 < 1, p >= 0, p <= 1)
-  f <- function(x) (pnormmix(x, mean1, sd1, mean2, sd2, pmix1, 
+  f <- function(x) (pnormmix(x, mean1, sd1, mean2, sd2, pmix1,
                              lower.tail) - p)^2
-  start <- as.vector(c(pmix1, 1 - pmix1) %*% 
-                       sapply(p, qnorm, c(mean1, mean2), c(sd1, sd2), 
+  start <- as.vector(c(pmix1, 1 - pmix1) %*%
+                       sapply(p, qnorm, c(mean1, mean2), c(sd1, sd2),
+                              lower.tail = lower.tail))
+  nlminb(start, f)$par
+} D
+
+qnormmix_mult <- function(p, means = c(0), sds = 1, pmix = NULL, 
+                          lower.tail = TRUE) {
+  
+  stopifnot("Provide mixing proportions between 0 and 1." = 
+              all(pmix > 0, pmix < 1,p >= 0, p <= 1))
+  
+  f <- function(x) (pnormmix_mult(x, means, sds, pmix, lower.tail) - p)^2
+  
+  start <- as.vector(pmix %*% sapply(p, qnorm, means, sds, 
                               lower.tail = lower.tail))
   nlminb(start, f)$par
 }
@@ -211,6 +233,7 @@ qnormmix <- function(p, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5,
   specificity <- C / (C + B)
   c(A, B, C, D, propsel, success_ratio, sensitivity, specificity)
 }
+
 
 is_symmetric_posdef <- function(x, tol = 1e-08) {
   # Borrow from matrixcalc::is.positive.definite()

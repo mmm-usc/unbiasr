@@ -30,14 +30,14 @@ NULL
 #'     for the reference group.
 #' @param Theta_f (optional) A matrix of the unique factor variances and
 #'     covariances for the focal group; if no input, set equal to `Theta_r`.
-#' @param pmix_ref Proportion of the reference group; default to 0.5 (i.e., two
+#' @param pmix Proportion of the reference group; default to 0.5 (i.e., two
 #'     populations have equal size).
 #' @param plot_contour Logical; whether the contour of the two populations
 #'     should be plotted; default to `TRUE`.
 #' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
 #'     for both the input parameters and the implied parameters based on a
 #'     strict invariance model, with common parameter values as weighted
-#'     averages of the input values using `pmix_ref`.
+#'     averages of the input values using `pmix`.
 #' @param labels A character vector with two elements to label the reference
 #'     and the focal group on the graph.
 #' @param ... Other arguments passed to the \code{\link[graphics]{contour}}
@@ -61,7 +61,7 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL,
                             weights_item = NULL,
                             weights_latent = NULL,
                             alpha, psi, lambda, nu, Theta,
-                            pmix_ref = 0.5, plot_contour = FALSE,
+                            pmix = NULL, plot_contour = FALSE,
                             show_mi_result = FALSE,
                             labels = c("Reference", "Focal"), ...) {
   
@@ -69,9 +69,15 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL,
             match." = length(alpha) == lengths(list(psi, lambda, nu, Theta)))
   stopifnot("Number of dimensions must match." = 
               any(lengths(alpha) == unlist(lapply(lambda, ncol))))
+  stopifnot("Provide the correct number of mixing proportions." = 
+              length(pmix) == length(alpha))
+  
   num_g <- length(alpha); n <- length(nu[[1]]); d <- length(alpha[[1]])
   
-  g <- c("r", paste0("f", 1:(num_g-1)))
+  if(is.null(pmix)) pmix <- as.matrix(c(rep(1/num_g, num_g)), ncol = num_g)
+  pmix <- as.vector(pmix)
+  
+  g <- c("r", paste0("f", 1:(num_g - 1)))
 
   names(alpha) <- paste("alpha", g, sep = "_")
   names(nu) <- paste("nu", g, sep = "_")
@@ -90,14 +96,76 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL,
   c(mn_z, sd_z, mn_xi, sd_xi, cov_z_xi) %<-% 
     mn_sd_cov_mult(num_g, weights_item, weights_latent, alpha, psi, lambda, nu,
                    Theta)
-   
+  
   # if there is an input for selection proportion
   if (!is.null(propsel)) {
     if (!is.null(cut_z))  warning("Input to `cut_z` is ignored.")
     
     # compute the cut score using qnormmix based on input selection proportion
     fixed_cut_z <- FALSE
+    cut_z <- qnormmix_mult(propsel, means = mn_z, sds = sd_z, pmix = pmix, lower.tail = FALSE)
+
+  } else if (!is.null(cut_z) & is.null(propsel)) {
+
+    # if selection proportion is missing but a cut score was provided
+    fixed_cut_z <- TRUE
+    # compute the selection proportion using pnormmix based on the cutoff value
+    propsel <- pnormmix_mult(cut_z, means = mn_z, sds = sd_z, pmix = pmix, 
+                             lower.tail = FALSE)
   }
+
+  # compute the threshold for the latent variable based on the selection 
+  # proportion provided by the user/computed using cut_z
+  cut_xi <- qnormmix_mult(propsel, means = mn_xi, sds = sd_xi, pmix = pmix, 
+                          lower.tail = FALSE)
   
-  return(list(mn_z, sd_z, mn_xi, sd_xi, cov_z_xi))
+  # print warning message if propsel is too small
+  if (propsel <= 0.01) warning("Proportion selected is 1% or less.")
+  
+ CAIs <- matrix(ncol = num_g + num_g - 1, nrow = 8) 
+ 
+ for (i in 1:num_g) {
+   CAIs[,i] <- .partit_bvnorm(cut_xi, cut_z, mn_xi[[i]], sd_xi[[i]],
+                              mn_z[[i]], sd_z[[i]], cov12 = cov_z_xi[[i]])
+ }
+ 
+ # Store mean, sd, cov values for the obs/latent variables 
+ zf_par <- list(mn_xi = mn_xi, sd_xi = sd_xi, mn_z = mn_z, sd_z = sd_z,
+                cov_z_xi = cov_z_xi)
+
+ # selection indices for the focal group if its distribution matches the
+ # distribution of the reference group (Efocal)
+ mn_z_Ef <- sd_z_Ef <- mn_xi_Ef <- sd_xi_Ef <- cov_z_xi_Ef <- CAI_Ef <- c()
+ 
+ for (i in 2:num_g) {
+   mn_z_Ef[i - 1] <- c(crossprod(weights_item, nu[[i]] + lambda[[i]]
+                                   %*% alpha[[1]]))
+   sd_z_Ef[i - 1] <- c(sqrt(crossprod(weights_item, lambda[[i]] %*% psi[[1]]
+                                        %*% t(lambda[[i]]) + Theta[[i]])
+                              %*% weights_item))
+   cov_z_xi_Ef[i - 1] <- c(crossprod(weights_item, lambda[[i]] %*% psi[[1]]) 
+                             %*% weights_latent)
+ 
+   CAIs[, i + num_g - 1] <- .partit_bvnorm(cut_xi, cut_z, mn_xi[[1]], sd_xi[[1]],
+                                      mn_z_Ef[[i - 1]], sd_z_Ef[[i - 1]],
+                                      cov12 = cov_z_xi_Ef[[i - 1]])
+ }
+
+
+ dat <- data.frame(CAIs, row.names = c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP"))
+                  # row.names = c("A (true positive)", "B (false positive)",
+                  #               "C (true negative)", "D (false negative)",
+                  #               "Proportion selected", "Success ratio",
+                  #               "Sensitivity", "Specificity"))
+ names(dat) <- c("Reference", paste0("Focal_", 1:(num_g - 1)),
+                 paste0("E_R(Focal)_", 1:(num_g - 1)))
+ 
+ ai_ratio <-  dat[5, (num_g + 1):(num_g + num_g - 1)] / dat[5, 1]
+ names(ai_ratio) <- paste0("Focal_", 1:(num_g - 1))
+ row.names(ai_ratio) <- c("AI")
+ out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
+             summary = dat, bivar_data = zf_par, ai_ratio = ai_ratio)
+ 
+ #class(out) <- c('PartInv', 'PartInvSummary')
+  return(out)
 }
