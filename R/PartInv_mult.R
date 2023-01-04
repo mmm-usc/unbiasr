@@ -1,7 +1,6 @@
 #' @importFrom stats qchisq pnorm qnorm nlminb
 #' @importFrom mnormt pmnorm
 #' @import zeallot
-NULL
 
 #' Evaluating selection accuracy based on the MCAA Framework
 #'
@@ -162,10 +161,62 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL,
  
  ai_ratio <-  dat[5, (num_g + 1):(num_g + num_g - 1)] / dat[5, 1]
  names(ai_ratio) <- paste0("Focal_", 1:(num_g - 1))
- row.names(ai_ratio) <- c("AI")
+ row.names(ai_ratio) <- c("")
  out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
              summary = dat, bivar_data = zf_par, ai_ratio = ai_ratio)
  
- #class(out) <- c('PartInv', 'PartInvSummary')
+ if (show_mi_result) { 
+   pop_weights <- pmix
+   lambda_average <-
+     .weighted_average_list(lambda, weights = pop_weights)
+   nu_average <-
+     .weighted_average_list(nu, weights = pop_weights)
+   Theta_average <- 
+     .weighted_average_list(Theta, weights = pop_weights)
+   
+   #SHOULD WE BE GETTING WEIGHTED AVERAGES FOR PSI, ALPHA AS WELL?
+   
+   lambda_average_g <- nu_average_g <- Theta_average_g <- vector(mode = "list",
+                                                                 length = num_g)
+   for (i in 1:num_g) {
+     lambda_average_g[[i]] <- lambda_average
+     nu_average_g[[i]] <- nu_average
+     Theta_average_g[[i]] <- Theta_average
+   }
+   c(mn_z, sd_z, mn_xi, sd_xi, cov_z_xi) %<-% 
+     mn_sd_cov_mult(num_g, weights_item, weights_latent, alpha, psi,
+                    lambda_average_g, nu_average_g, Theta_average_g)
+
+   if (fixed_cut_z) {
+     propsel <- pnormmix_mult(cut_z, mn_z, sd_z, pmix, lower.tail = FALSE)
+   } else {
+     cut_z <- qnormmix_mult(propsel, mn_z, sd_z, pmix, lower.tail = FALSE)
+   }
+   cut_xi <- qnormmix_mult(propsel, mn_xi, sd_xi, pmix, lower.tail = FALSE)
+
+   for (i in 1:num_g) {
+     CAIs[ ,i] <- .partit_bvnorm(cut_xi, cut_z, mn_xi[[i]], sd_xi[[i]],
+                                mn_z[[i]], sd_z[[i]], cov12 = cov_z_xi[[i]])
+   }
+   
+   # Store mean, sd, cov values for the obs/latent variables 
+   zf_par_mi <- list(mn_xi = mn_xi, sd_xi = sd_xi, mn_z = mn_z, sd_z = sd_z,
+                  cov_z_xi = cov_z_xi)
+   dat <- data.frame(CAIs, row.names = c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP"))
+   
+   names(dat) <- c("Reference", paste0("Focal_", 1:(num_g - 1)),
+                   paste0("E_R(Focal)_", 1:(num_g - 1)))
+
+   out$propsel_mi <- propsel
+   out$cutpt_xi_mi <- cut_xi
+   out$cutpt_z_mi <- cut_z
+   out$summary_mi <- dat
+   out$bivar_data_mi <- zf_par_mi
+   }
+ class(out) <- c('PartInv', 'PartInvSummary')
+ 
+ #if (plot_contour) {
+  # plot(out, labels = labels, ...)
+ #}
   return(out)
 }

@@ -44,7 +44,13 @@ print.PartInv <- function(x, ...) {
   cat("Proportion selected: ", round(x$propsel, 3), "\n")
   cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi, 3), "\n")
   cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z, 3), "\n")
-  cat("AI ratio: ", round(x$ai_ratio, 3), "\n\n")
+  if(length(x$ai_ratio)==1) {
+    cat("AI ratio: ", round(x$ai_ratio, 3), "\n\n")
+  } else {
+    cat("AI ratio: \n")
+    print(round(x$ai_ratio, 3))
+    cat("\n")
+  }
   print_PartInvSummary(x$summary)
   if (!is.null(x$summary_mi)) {
     cat("\n\nStrict invariance results:\n\n")

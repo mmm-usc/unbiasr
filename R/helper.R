@@ -155,7 +155,7 @@ qnormmix <- function(p, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5,
                        sapply(p, qnorm, c(mean1, mean2), c(sd1, sd2),
                               lower.tail = lower.tail))
   nlminb(start, f)$par
-} D
+}
 
 qnormmix_mult <- function(p, means = c(0), sds = 1, pmix = NULL, 
                           lower.tail = TRUE) {
