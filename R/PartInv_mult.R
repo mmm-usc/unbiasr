@@ -1,10 +1,11 @@
 #' @importFrom stats qchisq pnorm qnorm nlminb
 #' @importFrom mnormt pmnorm
 #' @import zeallot
+NULL
 
-#' Evaluating selection accuracy based on the MCAA Framework
+#' Evaluating selection accuracy based on the MCAA Framework with 3+ groups
 #'
-#' \code{PartInv, PartInvMulti_we} evaluate partial measurement invariance using
+#' \code{PartInv_mult} evaluates partial measurement invariance using
 #' an extension of Millsap & Kwok's (2004) approach
 #'
 #' @param propsel Proportion of selection. If missing, computed using `cut_z`.
@@ -12,57 +13,78 @@
 #'     argument is ignored when `propsel` has input.
 #' @param weights_item A vector of item weights.
 #' @param weights_latent A vector of latent factor weights.
-#' @param alpha_r A vector of latent factor means for the reference group.
-#' @param alpha_f (optional) A vector of latent factor means for the focal group;
-#'     if no input, set equal to `alpha_r`.
-#' @param psi_r A matrix of latent factor variance-covariances for the
-#'     reference group.
-#' @param psi_f (optional) A matrix of latent factor variance-covariances for
-#'     the focal group; if no input, set equal to `psi_r`.
-#' @param lambda_r A matrix of factor loadings for the reference group.
-#' @param lambda_f (optional) A matrix of factor loadings for the focal group;
-#'     if no input, set equal to `lambda_r`.
-#' @param nu_r A matrix of measurement intercepts for the reference group.
-#' @param nu_f (optional) A matrix of measurement intercepts for the focal
-#'     group; if no input, set equal to `nu_r`.
-#' @param Theta_r A matrix of the unique factor variances and covariances
-#'     for the reference group.
-#' @param Theta_f (optional) A matrix of the unique factor variances and
-#'     covariances for the focal group; if no input, set equal to `Theta_r`.
-#' @param pmix Proportion of the reference group; default to 0.5 (i.e., two
-#'     populations have equal size).
-#' @param plot_contour Logical; whether the contour of the two populations
+#' @param alpha A list of length `g` containing `1 x d` latent factor mean 
+#'     vectors where `g` is the number of groups and `d` is the number of latent 
+#'     dimensions. The first element is assumed to belong to the reference group.
+#' @param psi A list of length `g` containing `d x d` latent factor 
+#'     variance-covariance matrices where `g` is the number of groups and `d` is 
+#'     the number of latent dimensions. The first element is assumed to belong 
+#'     to the reference group.
+#' @param lambda A list of length `g` containing `n x d` factor loading matrices 
+#'     where `g` is the number of groups, `d` is the number of latent dimensions, 
+#'     and `n` is the number of items in the scale. The first element is assumed 
+#'     to belong to the reference group.
+#' @param nu A list of length `g` containing `1 x n` measurement intercept
+#'     vectors where `g` is the number of groups and `n` is the number of items 
+#'     in the scale. The first element is assumed to belong to the reference 
+#'     group.
+#' @param Theta A list of length `g` containing `1 x n` vectors or `n x n` 
+#'     matrices of unique factor variances and covariances, where `g` is the 
+#'     number of groups and `n` is the number of items in the scale. The first 
+#'     element is assumed to belong to the reference group.
+#' @param pmix List of length `g` containing the mixing proportions of each 
+#'     group. If `NULL`, defaults to `1/g` for each group (i.e., the populations 
+#'     have equal size).
+#' @param plot_contour Logical; whether contours of the populations
 #'     should be plotted; default to `TRUE`.
 #' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
 #'     for both the input parameters and the implied parameters based on a
 #'     strict invariance model, with common parameter values as weighted
 #'     averages of the input values using `pmix`.
-#' @param labels A character vector with two elements to label the reference
-#'     and the focal group on the graph.
+#' @param labels A character vector with `g` elements to label the reference
+#'     and focal groups on the plot, where `g` is the number of groups.
 #' @param ... Other arguments passed to the \code{\link[graphics]{contour}}
 #'     function.
-#' @param phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f Deprecated; included
-#'     only for backward compatibility.
-#' @return The output will be a list of four elements and a plot if
+#' @return The output will be a list of six elements and a plot if
 #'     \code{plot_contour == TRUE}:
 #'         \item{propsel}{Echo the same argument as input.}
 #'         \item{cutpt_xi}{Cut point on the latent scale (xi).}
 #'         \item{cutpt_z}{Cut point on the observed scale (Z).}
-#'         \item{summary}{A 8 x 3 table, with columns representing the reference,
-#'             the focal, and the expected results if the latent distribution of
-#'             focal group matches the reference group. The rows represent
-#'             probabilities of true positive (A), false positive (B),
-#'             true negative (C), false negative (D); proportion selected,
+#'         \item{summary}{A `8 x (g + g - 1)` table, with columns representing 
+#'             the reference and `g - 1` focal groups and the expected results 
+#'             if the latent distributions of `g - 1` focal groups match the 
+#'             reference group. The rows represent probabilities of true
+#'             positive (A), false positive (B), true negative (C), false 
+#'             negative (D); proportion selected, success ratio, sensitivity, 
+#'             and specificity.}
+#'          \item{bivardata}{List of length `5` containing `1 x g` vectors of 
+#'             latent and observed means, standard deviations, and covariances 
+#'             computed for each group.}
+#'         \item{ai_ratio}{A list of length `g - 1` containing the AI ratio 
+#'             computed for each focal group}
+#'      If \code{show_mi_result = TRUE}, the returned list will have the 
+#'      additional elements below: 
+#'          \item{propsel_mi}{Proportion selected under strict invariance.}
+#'          \item{cutpt_xi_mi}{Cut point on the latent scale (xi) under strict
+#'             invariance.}
+#'          \item{cutpt_z_mi}{Cut point on the observed scale (Z) under strict 
+#'             invariance.}
+#'         \item{summary_mi}{A `8 x (g + g - 1)` table, with columns 
+#'             representing the reference and `g - 1` focal groups and the 
+#'             expected results if the latent distributions of `g - 1` focal 
+#'             groups match the reference group, under strict invariance. The 
+#'             rows represent probabilities of true positive (A), false positive 
+#'             (B), true negative (C), false negative (D); proportion selected,
 #'             success ratio, sensitivity, and specificity.}
+#'          \item{bivardata_mi}{List of length `5` containing `1 x g` vectors of 
+#'             latent and observed means, standard deviations, and covariances 
+#'             computed for each group under strict invariance.}
 #'
 #' @export
-PartInv_mult <- function(propsel = NULL, cut_z = NULL,
-                            weights_item = NULL,
-                            weights_latent = NULL,
-                            alpha, psi, lambda, nu, Theta,
-                            pmix = NULL, plot_contour = FALSE,
-                            show_mi_result = FALSE,
-                            labels = c("Reference", "Focal"), ...) {
+PartInv_mult <- function(propsel = NULL, cut_z = NULL, weights_item = NULL,
+                         weights_latent = NULL, alpha, psi, lambda, nu, Theta,
+                         pmix = NULL, plot_contour = FALSE, show_mi_result = FALSE,
+                         labels = c("Reference", "Focal"), ...) {
   
   stopifnot("Number of groups as indicated in the lengths of parameters must
             match." = length(alpha) == lengths(list(psi, lambda, nu, Theta)))
@@ -164,7 +186,7 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL,
  row.names(ai_ratio) <- c("")
  out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
              summary = dat, bivar_data = zf_par, ai_ratio = ai_ratio)
- 
+
  if (show_mi_result) { 
    pop_weights <- pmix
    lambda_average <-
@@ -173,8 +195,6 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL,
      .weighted_average_list(nu, weights = pop_weights)
    Theta_average <- 
      .weighted_average_list(Theta, weights = pop_weights)
-   
-   #SHOULD WE BE GETTING WEIGHTED AVERAGES FOR PSI, ALPHA AS WELL?
    
    lambda_average_g <- nu_average_g <- Theta_average_g <- vector(mode = "list",
                                                                  length = num_g)

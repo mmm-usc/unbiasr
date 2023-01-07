@@ -44,9 +44,9 @@ NULL
 #'     function.
 #' @param phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f Deprecated; included
 #'     only for backward compatibility.
-#' @return The output will be a list of four elements and a plot if
+#' @return The output will be a list of six elements and a plot if
 #'     \code{plot_contour == TRUE}:
-#'         \item{propsel}{Echo the same argument as input.}
+#'         \item{propsel}{Proportion selected.}
 #'         \item{cutpt_xi}{Cut point on the latent scale (xi).}
 #'         \item{cutpt_z}{Cut point on the observed scale (Z).}
 #'         \item{summary}{A 8 x 3 table, with columns representing the reference,
@@ -55,6 +55,10 @@ NULL
 #'             probabilities of true positive (A), false positive (B),
 #'             true negative (C), false negative (D); proportion selected,
 #'             success ratio, sensitivity, and specificity.}
+#'         \item{bivardata}{List of length `10` containing scalars of 
+#'             latent and observed means, standard deviations, and covariances 
+#'             computed for the reference and focal groups.}
+#'         \item{ai_ratio}{The AI ratio.}
 #'
 #' @examples
 #' # Single dimension
