@@ -25,7 +25,6 @@ item_deletion_h(
   labels = c("Reference", "Focal"),
   n_dim = 1,
   n_i_per_dim = NULL,
-  print_formatted = TRUE,
   user_specified_items = NULL,
   delete_one_cutoff = NULL,
   ...
@@ -91,15 +90,6 @@ unidimensional.}
 dimension; \code{NULL} by default. If the user provides a value for \code{n_dim}
 that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that
 the subscales have an equal number of items.}
-
-\item{print_formatted}{Logical; default to \code{TRUE}. By default, prints five
-formatted summary tables for biased (or user-specified) items: \code{ACAI},
-\verb{h ACAI (deletion)}, \verb{AI Ratio}, \verb{h CAI Ref-EF}, and
-\verb{delta h CAI Ref-EF (deletion)}. The formatted print output is separate
-from the returned object. The function always returns an object with
-detailed elements that can be accessed if the function output is stored
-in a variable. If \code{print_formatted==FALSE}, all elements in the
-returned object are printed without formatting.}
 
 \item{user_specified_items}{A vector; default to \code{NULL}. If the user does not
 input a vector of items, only the items determined to contain bias will
@@ -181,8 +171,7 @@ multi_dim <- item_deletion_h(propsel = .05, n_dim = 5,
                              nu_f = c(.225, -.05, .240, -.025, .125),
                              Theta_r = diag(1, 5),
                              Theta_f = diag(c(1, .95, .80, .75, 1)),
-                             plot_contour = TRUE,
-                             print_formatted = TRUE)
+                             plot_contour = TRUE)
 # Single dimension example
 single_dim <- item_deletion_h(propsel = .10,
                                weights_item = c(1, 0.9, 0.8, 1),
@@ -194,6 +183,5 @@ single_dim <- item_deletion_h(propsel = .10,
                                nu_r = c(.225, .025, .010, .240),
                                nu_f = c(.225, -.05, .240, -.025),
                                Theta_r = diag(.96, 4),
-                               n_dim = 1, plot_contour = TRUE,
-                               print_formatted = TRUE)
+                               n_dim = 1, plot_contour = TRUE)
 }
