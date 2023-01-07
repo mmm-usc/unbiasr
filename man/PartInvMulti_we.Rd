@@ -6,7 +6,7 @@
 \title{Evaluating selection accuracy based on the MCAA Framework}
 \usage{
 PartInvMulti_we(
-  propsel,
+  propsel = NULL,
   cut_z = NULL,
   weights_item = NULL,
   weights_latent = NULL,
@@ -34,7 +34,7 @@ PartInvMulti_we(
 )
 
 PartInv(
-  propsel,
+  propsel = NULL,
   cut_z = NULL,
   weights_item = NULL,
   weights_latent = NULL,

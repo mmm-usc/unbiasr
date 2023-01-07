@@ -221,9 +221,13 @@ S_r <- diag(as.vector(sqrt(psi_CESD_r)))
 psi_CESD_f <- S_f %*% corr_CESD %*% S_f
 psi_CESD_r <- S_r %*% corr_CESD %*% S_r
 
+
+# The latent weights are specified to be proportional to the number of items
+# in each subscale.
+
 CESD_full <- item_deletion_h(cut_z = 16,
                              weights_item = c(rep(1, 20)),
-                             weights_latent = c(rep(1,4)),
+                             weights_latent = c(7, 7, 4, 2),
                              alpha_r = alpha_CESD_r,
                              alpha_f = alpha_CESD_f,
                              psi_r = psi_CESD_r,
@@ -237,10 +241,12 @@ CESD_full <- item_deletion_h(cut_z = 16,
                              plot_contour = FALSE,
                              n_dim = 4,
                              n_i_per_dim = c(7, 7, 4, 2),
-                             pmix_ref = pmix_CESD_r,
-                             print_formatted = TRUE)
+                             pmix_ref = pmix_CESD_r)
 CESD_full
 ```
+
+
+
 
 Items 4, 9, 10, 11, 15, 19, and 20 are determined to be the biased items, and
 correspond to SOM 4, DEP 2, DEP 3, DEP 4, POS 1, INT 1, and INT 2 ($effort$, 
@@ -257,10 +263,10 @@ $AI^{|10}=0.930$.
 The comparison of CAI for the reference group with the expected CAI for the
 focal group in the next table shows that the discrepancy between $\CAI_r$ and
 $\CAI_{Ef}$ becomes smallest if item 15 is deleted as $h^{\rr}\PS=0.085$ goes
-down to $h^{\rr}\PS^{|15}=0.021$, $h^{\rr}\SR=-0.151$ goes up to
-$h^{\rr}\SR^{|15}=-0.045$, $h^{\rr}\SE=0.141$ goes down to
-$h^{\rr}\SE^{|15}=0.026$ and $h^{\rr}\SP=-0.159$ goes up to
-$h^{\rr}\SP^{|15}=-0.047$. Note that we judge improvement in the difference
+down to $h^{\rr}\PS^{|15}=0.021$, $h^{\rr}\SR=-0.157$ goes up to
+$h^{\rr}\SR^{|15}=-0.047$, $h^{\rr}\SE=0.141$ goes down to
+$h^{\rr}\SE^{|15}=0.026$ and $h^{\rr}\SP=-0.164$ goes up to
+$h^{\rr}\SP^{|15}=-0.048$. Note that we judge improvement in the difference
 between $\CAI_r$ and $\CAI_{Ef}$ by the magnitude of the difference rather than
 the direction. In the comparison between CAI for reference vs. Efocal groups,
 the direction of the difference indicates the group that is benefiting from the
@@ -299,7 +305,7 @@ strict invariance and using these proportions in the delete-one scenarios:
 ```{r}
 CESD_full_with_cutoff <- item_deletion_h(cut_z = 16,
                                          weights_item = c(rep(1, 20)),
-                                         weights_latent = c(rep(1,4)),
+                                         weights_latent = c(7, 7, 4, 2),
                                          alpha_r = alpha_CESD_r,
                                          alpha_f = alpha_CESD_f,
                                          psi_r = psi_CESD_r,
@@ -314,7 +320,6 @@ CESD_full_with_cutoff <- item_deletion_h(cut_z = 16,
                                          n_dim = 4,
                                          n_i_per_dim = c(7, 7, 4, 2),
                                          pmix_ref = pmix_CESD_r,
-                                         print_formatted = TRUE,
                                          delete_one_cutoff = 16/60*(60-3))
 CESD_full_with_cutoff
 ```
@@ -326,7 +331,7 @@ item 15 ($good$). We can repeat the process with the new item weights:
 CESD_full_drop15 <- item_deletion_h(
                           cut_z = 16/60*(60-3),
                           weights_item = c(rep(1,14), 0, rep(4/3, 3), 1, 1),
-                          weights_latent = c(rep(1,4)),
+                          weights_latent = c(7, 7, 3, 2),
                           alpha_r = alpha_CESD_r,
                           alpha_f = alpha_CESD_f,
                           psi_r = psi_CESD_r,
@@ -340,8 +345,7 @@ CESD_full_drop15 <- item_deletion_h(
                           pmix_ref = pmix_CESD_r,
                           plot_contour = FALSE,
                           n_dim = 4,
-                          n_i_per_dim = c(7, 7, 3, 2),
-                          print_formatted = TRUE)
+                          n_i_per_dim = c(7, 7, 3, 2))
 CESD_full_drop15
 ```
 
@@ -377,8 +381,7 @@ CESD_som <- item_deletion_h(cut_z = 16/60*7*3,
                             Theta_f = Theta_SOM_f,
                             pmix_ref = pmix_CESD_r,
                             plot_contour = FALSE,
-                            n_dim = 1, 
-                            print_formatted = TRUE)
+                            n_dim = 1)
                               
 CESD_som
 ```
@@ -413,8 +416,7 @@ CESD_dep <- item_deletion_h(cut_z = 16/60*7*3,
                             Theta_f = Theta_DEP_f,
                             pmix_ref = pmix_CESD_r,  
                             plot_contour = FALSE,
-                            n_dim = 1,
-                            print_formatted = TRUE)
+                            n_dim = 1)
 CESD_dep
 ```
 
@@ -461,7 +463,7 @@ CESD_pos <- item_deletion_h(cut_z = 16/60*12,
                             Theta_f = Theta_POS_f,
                             pmix_ref = pmix_CESD_r, 
                             plot_contour = FALSE,
-                            print_formatted = TRUE)
+                            user_specified_items = c(1:4))
 CESD_pos
 ```
  
@@ -511,8 +513,7 @@ CESD_int <- item_deletion_h(cut_z = 16/60*2*3,
                             Theta_f = Theta_INT_f,
                             pmix_ref = pmix_CESD_r,
                             plot_contour = FALSE,
-                            n_dim = 1,
-                            print_formatted = TRUE)
+                            n_dim = 1)
 CESD_int
 ```
  
@@ -527,29 +528,6 @@ $\Delta^{|2} h^{\rr}\SE=0.086$.
 Given these conflicting findings and the fact that this subscale only has two
 items, it would be best to retain both items if the subscale will be used on its 
 own to make classification decisions.
-
-
-Now to illustrate `print_formatted=FALSE`:
-
-```{r }
-CESD_pos <- item_deletion_h(cut_z = 16/60*12, 
-                            weights_item = c(rep(1, 4)), 
-                            weights_latent = 1,
-                            alpha_r = alpha_POS_r,
-                            alpha_f = alpha_POS_f,
-                            psi_r = psi_POS_r,
-                            psi_f = psi_POS_f,
-                            lambda_r = lambda_POS_r,
-                            lambda_f = lambda_POS_f,
-                            nu_r = nu_POS_r,
-                            nu_f = nu_POS_f,
-                            Theta_r = Theta_POS_r, 
-                            Theta_f = Theta_POS_f,
-                            pmix_ref = pmix_CESD_r, 
-                            plot_contour = FALSE,
-                            print_formatted = FALSE)
-CESD_pos
-```
 
 Now to illustrate the use of `user_specified_items`:
 
@@ -569,7 +547,6 @@ CESD_pos <- item_deletion_h(cut_z = 16/60*12,
                             Theta_f = Theta_POS_f,
                             pmix_ref = pmix_CESD_r, 
                             plot_contour = FALSE,
-                            print_formatted = TRUE,
                             user_specified_items = c(1:3))
 CESD_pos
 ```
@@ -591,6 +568,27 @@ CESD_pos <- item_deletion_h(cut_z = 16/60*12,
                             Theta_r = Theta_POS_r, 
                             Theta_f = Theta_POS_f,
                             pmix_ref = pmix_CESD_r, 
-                            plot_contour = TRUE,
-                            print_formatted = TRUE)
+                            plot_contour = TRUE)
+```
+
+Using the `summary()` function:
+
+
+```{r }
+CESD_pos <- item_deletion_h(cut_z = 16/60*12, 
+                            weights_item = c(rep(1, 4)), 
+                            weights_latent = 1,
+                            alpha_r = alpha_POS_r,
+                            alpha_f = alpha_POS_f,
+                            psi_r = psi_POS_r,
+                            psi_f = psi_POS_f,
+                            lambda_r = lambda_POS_r,
+                            lambda_f = lambda_POS_f,
+                            nu_r = nu_POS_r,
+                            nu_f = nu_POS_f,
+                            Theta_r = Theta_POS_r, 
+                            Theta_f = Theta_POS_f,
+                            pmix_ref = pmix_CESD_r, 
+                            plot_contour = FALSE)
+summary(CESD_pos)
 ```

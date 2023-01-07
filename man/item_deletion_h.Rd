@@ -5,7 +5,7 @@
 \title{Impact of deleting biased item(s) on classification accuracy indices}
 \usage{
 item_deletion_h(
-  propsel,
+  propsel = NULL,
   cut_z = NULL,
   weights_item,
   weights_latent,

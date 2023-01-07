@@ -1,3 +1,70 @@
+#' Compute the mean, standard deviation, and covariance of latent and observed
+#' variables.
+#'
+#' \code{mn_sd_cov} is a helper function that computes the mean, 
+#' standard deviation, and covariance of latent and observed variables for the
+#' focal and reference groups.
+#' @param weights_item A vector of item weights.
+#' @param weights_latent A vector of latent factor weights.
+#' @param alpha_r A vector of latent factor means for the reference group.
+#' @param alpha_f A vector of latent factor means for the focal group.
+#' @param psi_r A matrix of latent factor variance-covariances for the
+#'     reference group.
+#' @param psi_f A matrix of latent factor variance-covariances for
+#'     the focal group.
+#' @param lambda_r A matrix of factor loadings for the reference group.
+#' @param lambda_f A matrix of factor loadings for the focal group.
+#' @param nu_r A matrix of measurement intercepts for the reference group.
+#' @param nu_f A matrix of measurement intercepts for the focal
+#'     group.
+#' @param Theta_r A matrix of the unique factor variances and covariances
+#'     for the reference group.
+#' @param Theta_f A matrix of the unique factor variances and
+#'     covariances for the focal group.
+#' @return The output will be a list of 10 elements:
+#'     \item{mn_z_r}{Mean of the observed variable for the reference group.}
+#'     \item{mn_z_f}{Mean of the observed variable for the focal group.}
+#'     \item{sd_z_r}{Standard deviation of the observed variable for the 
+#'     reference group.}
+#'     \item{sd_z_f}{Standard deviation of the observed variable for the focal 
+#'     group.}
+#'     \item{mn_xi_r}{Mean of the latent variable for the reference group.}
+#'     \item{mn_xi_f}{Mean of the latent variable for the focal group.}
+#'     \item{sd_xi_r}{Standard deviation of the latent variable for the reference
+#'     group.}
+#'     \item{sd_xi_f}{Standard deviation of the latent variable for the focal 
+#'     group.}
+#'     \item{cov_z_xi_r}{Covariance of the latent and observed variables for the 
+#'     reference group.}
+#'     \item{cov_z_xi_f}{Covariance of the latent and observed variables for the 
+#'     focal group.}
+mn_sd_cov <- function(weights_item, weights_latent, alpha_r, alpha_f, psi_r, 
+                      psi_f, lambda_r, lambda_f, nu_r, nu_f, Theta_r, Theta_f) {
+  
+  # compute mean, sd for the observed variable for reference, focal groups
+  mn_z_r <- c(crossprod(weights_item, nu_r + lambda_r %*% alpha_r))
+  mn_z_f <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_f))
+  sd_z_r <- c(sqrt(crossprod(weights_item,
+                             lambda_r %*% psi_r %*% t(lambda_r) + Theta_r) %*%
+                     weights_item))
+  sd_z_f <- c(sqrt(crossprod(weights_item,
+                             lambda_f %*% psi_f %*% t(lambda_f) + Theta_f) %*%
+                     weights_item))
+  
+  # compute mean, sd for the latent variable for reference, focal groups
+  mn_xi_r <- c(crossprod(weights_latent, alpha_r))
+  mn_xi_f <- c(crossprod(weights_latent, alpha_f))
+  sd_xi_r <- c(sqrt(crossprod(weights_latent, psi_r) %*% weights_latent))
+  sd_xi_f <- c(sqrt(crossprod(weights_latent, psi_f) %*% weights_latent))
+  
+  # compute covariance for the latent and observed variables
+  cov_z_xi_r <- c(crossprod(weights_item, lambda_r %*% psi_r) %*% weights_latent)
+  cov_z_xi_f <- c(crossprod(weights_item, lambda_f %*% psi_f) %*% weights_latent)
+  return(list(mn_z_r, mn_z_f, sd_z_r, sd_z_f, 
+              mn_xi_r, mn_xi_f, sd_xi_r, sd_xi_f, 
+              cov_z_xi_r, cov_z_xi_f))
+}
+
 #' Distribution function (pdf) of a mixture of two normal distributions. 
 #' 
 #' \code{pnormmix} returns the cumulative probability of q or \eqn{1 - q} on the

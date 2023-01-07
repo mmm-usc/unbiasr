@@ -267,10 +267,6 @@ acc_indices_h <- function(strict_output, partial_output) {
 #' @param nu_f Measurement intercepts for the focal group.
 #' @param Theta_r Uniqueness for the reference group.
 #' @param Theta_f Uniqueness for the focal group.
-#' @param weights Vector of item weights. If an item weight is assigned to be 0,
-#' it won't be returned as a biased item.
-#'
-#'
 #' @return A vector containing the indices of the biased items.
 #' @examples
 #' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
