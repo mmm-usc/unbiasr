@@ -79,7 +79,20 @@ NULL
 #'          \item{bivardata_mi}{List of length `5` containing `1 x g` vectors of 
 #'             latent and observed means, standard deviations, and covariances 
 #'             computed for each group under strict invariance.}
-#'
+#' @examples 
+#' lambda_matrix <- lambda_matrix1 <- lambda_matrix2 <- matrix(0, nrow = 5, ncol = 2)
+#' lambda_matrix[1:2, 1] <-  c(.322, .655); lambda_matrix[3:5, 2] <- c(.398, .745, .543)
+#' lambda_matrix1[1:2, 1] <-  c(.392, .665); lambda_matrix1[3:5, 2] <- c(.388, .725, .523)
+#' lambda_matrix2[1:2, 1] <-  c(.372, .650); lambda_matrix2[3:5, 2] <- c(.368, .7, .543)
+#' # 2 dimensions, 5 items (2,3), 3 groups
+#' PartInv_mult(propsel = 0.25, cut_z = 2, pmix = c(1/3, 1/3, 1/3),
+#'              alpha = list(c(1,1), c(0,0), c(.5, .5)), 
+#'              psi = list(c(1, 0.2, 0.2, 1), c(1, 0.3, 0.3, 1), c(1, 0.4, 0.4, 1)), 
+#'              nu = list(c(rep(1,5)), c(rep(1.5,5)),c(rep(1.2,5))), 
+#'              lambda = list(lambda_matrix, lambda_matrix1, lambda_matrix2), 
+#'              Theta = list(c(rep(.1,5)), c(rep(.4,5)), c(rep(.3,5))), 
+#'              plot_contour = TRUE, labels = c("Group 1", "Group 2", "Group 3"),
+#'              custom_colors = c("red", "purple", "orange"))
 #' @export
 PartInv_mult <- function(propsel = NULL, cut_z = NULL, weights_item = NULL,
                          weights_latent = NULL, alpha, psi, lambda, nu, Theta,
@@ -98,8 +111,13 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL, weights_item = NULL,
   if(is.null(pmix)) pmix <- as.matrix(c(rep(1/num_g, num_g)), ncol = num_g)
   pmix <- as.vector(pmix)
   
+  
   g <- c("r", paste0("f", 1:(num_g - 1)))
 
+  if(is.null(labels) | (length(labels) != num_g)) {
+    labels <- c("Reference", paste0("Focal_", 1:(num_g - 1)))
+  }
+    
   names(alpha) <- paste("alpha", g, sep = "_")
   names(nu) <- paste("nu", g, sep = "_")
   names(lambda) <- paste("lambda", g, sep = "_")
@@ -124,7 +142,8 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL, weights_item = NULL,
     
     # compute the cut score using qnormmix based on input selection proportion
     fixed_cut_z <- FALSE
-    cut_z <- qnormmix_mult(propsel, means = mn_z, sds = sd_z, pmix = pmix, lower.tail = FALSE)
+    cut_z <- qnormmix_mult(propsel, means = mn_z, sds = sd_z, pmix = pmix, 
+                           lower.tail = FALSE)
 
   } else if (!is.null(cut_z) & is.null(propsel)) {
 
@@ -224,7 +243,7 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL, weights_item = NULL,
                   cov_z_xi = cov_z_xi)
    dat <- data.frame(CAIs, row.names = c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP"))
    
-   names(dat) <- c("Reference", paste0("Focal_", 1:(num_g - 1)),
+   names(dat) <- c(labels,
                    paste0("E_R(Focal)_", 1:(num_g - 1)))
 
    out$propsel_mi <- propsel
@@ -235,8 +254,11 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL, weights_item = NULL,
    }
  class(out) <- c('PartInv', 'PartInvSummary')
  
- #if (plot_contour) {
-  # plot(out, labels = labels, ...)
- #}
+ if (plot_contour) {
+   plot.PartInv_mult(out, labels = labels, which_result = "pi", ...)
+   if(show_mi_result == TRUE) {
+     plot.PartInv_mult(out, labels = labels, which_result = "mi", ...)
+   }
+ }
   return(out)
 }

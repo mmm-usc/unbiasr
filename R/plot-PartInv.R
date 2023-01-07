@@ -45,49 +45,127 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
           bty = bty, ...)
 }
 
+#' Contour plots for multiple groups.
+#' 
+#' \code{plot.PartInv_mult} plots the contours for 3+ groups.
+#' 
+#' @param x PartInv_mult output.
+#' @param labels By default, c("Reference", "Focal_1", ..., "Focal_g") where `g`
+#'     is the number of groups.
+#' @param which_result Whether to plot the partial or the strict invariance plot.
+#' @param custom_colors Optional argument for specifying the colors of the 
+#'     ellipses. 
+#' @param ... Additional arguments.
 #'@export
-plot.PartInv <- function(x, labels,
-                         which_result = c("pi", "mi"), ...) {
+plot.PartInv_mult <- function(x, labels, which_result = c("pi", "mi"), 
+                              custom_colors = NULL,  ...) {
     which_result <- match.arg(which_result)
     if (which_result == "pi") {
         plot_dat <- x$bivar_data
         cut_xi <- x$cutpt_xi
         cut_z <- x$cutpt_z
         summ <- x$summary
+        title <- c("Partial Measurement Invariance")
     } else if (which_result == "mi") {
         summ <- x$summary_mi
         if (is.null(summ)) {
             stop("Strict invariance results not found. ",
-                 "Please include `show_mi_result = TRUE` ",
-                 "when running `PartInv()`")
+                 "Please include `show_mi_result = TRUE` when running `PartInv()`.")
         }
         plot_dat <- x$bivar_data_mi
         cut_xi <- x$cutpt_xi_mi
         cut_z <- x$cutpt_z_mi
+        title <- c("Strict Measurement Invariance")
     }
-    if (missing(labels)) {
-        labels <- colnames(summ)[1:2]
+
+    # Determine the ranges of the y and x axis 
+    x_lim <- y_lim <- c()
+    n_g <- length(plot_dat$mn_xi) # number of groups
+    
+    for (i in seq_along(1:n_g)) {
+      x_lim <- c(x_lim, c(plot_dat$mn_xi[i] + c(-3, 3) * plot_dat$sd_xi[i]))
+      y_lim <- c(y_lim,plot_dat$mn_z[i] + c(-3, 3) * plot_dat$sd_z[i])
     }
-    x_lim <- range(c(plot_dat$mn_xi_r + c(-3, 3) * plot_dat$sd_xi_r,
-                     plot_dat$mn_xi_f + c(-3, 3) * plot_dat$sd_xi_f))
-    y_lim <- range(c(plot_dat$mn_z_r + c(-3, 3) * plot_dat$sd_z_r,
-                     plot_dat$mn_z_f + c(-3, 3) * plot_dat$sd_z_f))
-    contour_bvnorm(plot_dat$mn_xi_r, plot_dat$sd_xi_r,
-                   plot_dat$mn_z_r, plot_dat$sd_z_r,
-                   cov12 = plot_dat$cov_z_xi_r,
+    x_lim <- range(x_lim); y_lim <- range(y_lim)
+    
+    colorlist <-  c('#e6194b', '#4363d8', '#3cb44b', '#ffe119', '#f58231', 
+                    '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', 
+                    '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', 
+                    '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', 
+                    '#ffffff', '#000000') #https://sashamaps.net/docs/resources/20-colors/
+    if(!is.null(custom_colors)) { colorlist <- custom_colors }
+
+    # Plot the ellipse for the reference group
+    contour_bvnorm(plot_dat$mn_xi[1], plot_dat$sd_xi[1],
+                   plot_dat$mn_z[1], plot_dat$sd_z[1],
+                   cov12 = plot_dat$cov_z_xi[1],
                    xlab = bquote("Latent Composite" ~ (zeta)),
                    ylab = bquote("Observed Composite" ~ (italic(Z))),
-                   lwd = 2, col = "red", xlim = x_lim, ylim = y_lim,
-                   ...)
-    contour_bvnorm(plot_dat$mn_xi_f, plot_dat$sd_xi_f,
-                   plot_dat$mn_z_f, plot_dat$sd_z_f,
-                   cov12 = plot_dat$cov_z_xi_f,
-                   add = TRUE, lty = "dashed", lwd = 2, col = "blue",
-                   ...)
-    legend("topleft", labels,
-           lty = c("solid", "dashed"), col = c("red", "blue"))
-    abline(h = cut_z, v = cut_xi)
-    x_cord <- rep(cut_xi + c(.25, -.25) * plot_dat$sd_xi_r, 2)
-    y_cord <- rep(cut_z + c(.25, -.25) * plot_dat$sd_z_r, each = 2)
-    text(x_cord, y_cord, c("A", "B", "D", "C"))
+                   lwd = 2, col = colorlist[1], xlim = x_lim, ylim = y_lim,
+                   main = title, ...)
+    # Add on the ellipses for the focal groups
+    for (i in 2:n_g) {
+      contour_bvnorm(plot_dat$mn_xi[i], plot_dat$sd_xi[i],
+                     plot_dat$mn_z[i], plot_dat$sd_z[i],
+                     cov12 = plot_dat$cov_z_xi[i],
+                     add = TRUE, lty = "dashed", lwd = 2, col = colorlist[i],
+                     ...)
+      }
+     legend("topleft", labels, lty = c("solid", rep("dashed", n_g - 1)), 
+            col = colorlist[1:n_g])
+     abline(h = cut_z, v = cut_xi)
+     x_cord <- rep(cut_xi + c(.25, -.25) * plot_dat$sd_xi[1], 2)
+     y_cord <- rep(cut_z + c(.25, -.25) * plot_dat$sd_z[1], each = 2)
+     text(x_cord, y_cord, c("A", "B", "D", "C"))
+     
+     if(n_g > 20) {
+       warning("If you would like to plot the contours of more than 20 groups, 
+               please provide a list of 20 color names.")
+     }
+}
+
+#'@export
+plot.PartInv <- function(x, labels,
+                         which_result = c("pi", "mi"), ...) {
+  which_result <- match.arg(which_result)
+  if (which_result == "pi") {
+    plot_dat <- x$bivar_data
+    cut_xi <- x$cutpt_xi
+    cut_z <- x$cutpt_z
+    summ <- x$summary
+  } else if (which_result == "mi") {
+    summ <- x$summary_mi
+    if (is.null(summ)) {
+      stop("Strict invariance results not found. ",
+           "Please include `show_mi_result = TRUE` ",
+           "when running `PartInv()`")
+    }
+    plot_dat <- x$bivar_data_mi
+    cut_xi <- x$cutpt_xi_mi
+    cut_z <- x$cutpt_z_mi
+  }
+  if (missing(labels)) {
+    labels <- colnames(summ)[1:2]
+  }
+  x_lim <- range(c(plot_dat$mn_xi_r + c(-3, 3) * plot_dat$sd_xi_r,
+                   plot_dat$mn_xi_f + c(-3, 3) * plot_dat$sd_xi_f))
+  y_lim <- range(c(plot_dat$mn_z_r + c(-3, 3) * plot_dat$sd_z_r,
+                   plot_dat$mn_z_f + c(-3, 3) * plot_dat$sd_z_f))
+  contour_bvnorm(plot_dat$mn_xi_r, plot_dat$sd_xi_r,
+                 plot_dat$mn_z_r, plot_dat$sd_z_r,
+                 cov12 = plot_dat$cov_z_xi_r,
+                 xlab = bquote("Latent Composite" ~ (zeta)),
+                 ylab = bquote("Observed Composite" ~ (italic(Z))),
+                 lwd = 2, col = "red", xlim = x_lim, ylim = y_lim, ...)
+  contour_bvnorm(plot_dat$mn_xi_f, plot_dat$sd_xi_f,
+                 plot_dat$mn_z_f, plot_dat$sd_z_f,
+                 cov12 = plot_dat$cov_z_xi_f,
+                 add = TRUE, lty = "dashed", lwd = 2, col = "blue",
+                 ...)
+  legend("topleft", labels,
+         lty = c("solid", "dashed"), col = c("red", "blue"))
+  abline(h = cut_z, v = cut_xi)
+  x_cord <- rep(cut_xi + c(.25, -.25) * plot_dat$sd_xi, 2)
+  y_cord <- rep(cut_z + c(.25, -.25) * plot_dat$sd_z_r, each = 2)
+  text(x_cord, y_cord, c("A", "B", "D", "C"))
 }
