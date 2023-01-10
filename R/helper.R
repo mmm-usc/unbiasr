@@ -85,6 +85,90 @@ mn_sd_cov_mult <- function(num_g, weights_item, weights_latent, alpha, psi, lamb
 
 
 
+mn_sd_cov_new <- function(weights_item, weights_latent,
+                          alpha, psi, lambda, nu, Theta) {
+  # compute mean, sd for the observed variable for reference, focal groups
+  mn_z <- c(crossprod(weights_item, nu + lambda %*% alpha))
+  sd_z <- c(sqrt(crossprod(weights_item,
+                           lambda %*% psi %*% t(lambda) + Theta) %*%
+                   weights_item))
+  
+  # compute mean, sd for the latent variable for reference, focal groups
+  mn_xi <- c(crossprod(weights_latent, alpha))
+  sd_xi <- c(sqrt(crossprod(weights_latent, psi) %*% weights_latent))
+  
+  # compute covariance for the latent and observed variables
+  cov_z_xi <- c(crossprod(weights_item, lambda %*% psi) %*% weights_latent)
+  return(list(mn_z = mn_z, sd_z = sd_z, mn_xi = mn_xi, sd_xi = sd_xi,
+              cov_z_xi = cov_z_xi))
+}
+
+compute_cai <- function(weights_item, weights_latent,
+                        alpha_r, alpha_f, psi_r, psi_f,
+                        lambda_r, lambda_f, nu_r, nu_f, Theta_r, Theta_f,
+                        pmix_ref, propsel, cut_z = NULL,
+                        is_mi = FALSE) {
+  lst_r <- mn_sd_cov_new(weights_item, weights_latent, alpha_r, 
+                         psi_r, lambda_r, nu_r, Theta_r)
+  lst_f <- mn_sd_cov_new(weights_item, weights_latent, alpha_f, 
+                         psi_f, lambda_f, nu_f, Theta_f)
+  
+  # if there is an input for selection proportion
+  if (!is.null(propsel)) {
+    # compute the cut score using qnormmix based on input selection proportion
+    cut_z <- qnormmix(propsel,
+                      lst_r$mn_z, lst_r$sd_z, lst_f$mn_z, lst_f$sd_z,
+                      pmix_ref, lower.tail = FALSE)
+  } else if (!is.null(cut_z) & is.null(propsel)) {
+    # compute the selection proportion using pnormmix based on the cutoff value
+    propsel <- pnormmix(cut_z,
+                        lst_r$mn_z, lst_r$sd_z, lst_f$mn_z, lst_f$sd_z,
+                        pmix_ref, lower.tail = FALSE)
+  }
+  
+  # compute the threshold for the latent variable based on the selection 
+  # proportion provided by the user/computed using cut_z
+  cut_xi <- qnormmix(propsel,
+                     lst_r$mn_xi, lst_r$sd_xi, lst_f$mn_xi, lst_f$sd_xi,
+                     pmix_ref, lower.tail = FALSE)
+  
+  # computing summary statistics using .partit_bvnorm
+  CAI_r <- .partit_bvnorm(cut_xi, cut_z,
+                          lst_r$mn_xi, lst_r$sd_xi, lst_r$mn_z, lst_r$sd_z,
+                          cov12 = lst_r$cov_z_xi)
+  CAI_f <- .partit_bvnorm(cut_xi, cut_z,
+                          lst_f$mn_xi, lst_f$sd_xi, lst_f$mn_z, lst_f$sd_z,
+                          cov12 = lst_f$cov_z_xi)
+  
+  # Store mean, sd, cov values for the obs/latent variables; ref/focal groups
+  zf_par <- list(mn_xi_r = lst_r$mn_xi, mn_xi_f = lst_f$mn_xi, 
+                 sd_xi_r = lst_r$sd_xi, sd_xi_f = lst_f$sd_xi, 
+                 mn_z_r = lst_r$mn_z, mn_z_f = lst_f$mn_z,
+                 sd_z_r = lst_r$sd_z, sd_z_f = lst_f$sd_z,
+                 cov_z_xi_r = lst_r$cov_z_xi, cov_z_xi_f = lst_f$cov_z_xi)
+  dat <- data.frame("Reference" = CAI_r, "Focal" = CAI_f,
+                    row.names = c("A (true positive)", "B (false positive)",
+                                  "C (true negative)", "D (false negative)",
+                                  "Proportion selected", "Success ratio",
+                                  "Sensitivity", "Specificity"))
+  
+  if (!is_mi) {
+    # selection indices for the focal group if its distribution matches the
+    # distribution of the reference group (Efocal)
+    mn_z_Ef <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_r))
+    sd_z_Ef <- c(sqrt(crossprod(weights_item, lambda_f %*% psi_r %*% t(lambda_f) 
+                                + Theta_f) %*% weights_item))
+    cov_z_xi_Ef <- c(crossprod(weights_item, lambda_f %*% psi_r) %*%
+                       weights_latent)
+    CAI_Ef <- .partit_bvnorm(cut_xi, cut_z,
+                             lst_r$mn_xi, lst_r$sd_xi, mn_z_Ef, sd_z_Ef,
+                             cov12 = cov_z_xi_Ef)
+    dat <- cbind(dat, "E_R(Focal)" = CAI_Ef)
+  }
+  list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
+       summary = dat, bivar_data = zf_par)
+}
+
 #' Distribution function (pdf) of a mixture of two normal distributions. 
 #' 
 #' \code{pnormmix} returns the cumulative probability of q or \eqn{1 - q} on the
