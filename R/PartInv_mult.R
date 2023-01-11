@@ -131,33 +131,33 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL, weights_item = NULL,
   if (is.null(weights_item)) weights_item <- rep(1, n)
   if (is.null(weights_latent)) weights_latent <- rep(1, d)
 
-  mn_z <- sd_z <- mn_xi <- sd_xi <- cov_z_xi <- NULL
-  c(mn_z, sd_z, mn_xi, sd_xi, cov_z_xi) %<-% 
-    mn_sd_cov_mult(num_g, weights_item, weights_latent, alpha, psi, lambda, nu,
-                   Theta)
-  
-  # if there is an input for selection proportion
-  if (!is.null(propsel)) {
-    if (!is.null(cut_z))  warning("Input to `cut_z` is ignored.")
-    
-    # compute the cut score using qnormmix based on input selection proportion
-    fixed_cut_z <- FALSE
-    cut_z <- qnormmix_mult(propsel, means = mn_z, sds = sd_z, pmix = pmix, 
-                           lower.tail = FALSE)
-
-  } else if (!is.null(cut_z) & is.null(propsel)) {
-
-    # if selection proportion is missing but a cut score was provided
-    fixed_cut_z <- TRUE
-    # compute the selection proportion using pnormmix based on the cutoff value
-    propsel <- pnormmix_mult(cut_z, means = mn_z, sds = sd_z, pmix = pmix, 
-                             lower.tail = FALSE)
-  }
-
-  # compute the threshold for the latent variable based on the selection 
-  # proportion provided by the user/computed using cut_z
-  cut_xi <- qnormmix_mult(propsel, means = mn_xi, sds = sd_xi, pmix = pmix, 
-                          lower.tail = FALSE)
+  # mn_z <- sd_z <- mn_xi <- sd_xi <- cov_z_xi <- NULL
+  # c(mn_z, sd_z, mn_xi, sd_xi, cov_z_xi) %<-% 
+  #   mn_sd_cov_mult(num_g, weights_item, weights_latent, alpha, psi, lambda, nu,
+  #                  Theta)
+  # 
+  # # if there is an input for selection proportion
+  # if (!is.null(propsel)) {
+  #   if (!is.null(cut_z))  warning("Input to `cut_z` is ignored.")
+  #   
+  #   # compute the cut score using qnormmix based on input selection proportion
+  #   fixed_cut_z <- FALSE
+  #   cut_z <- qnormmix_mult(propsel, means = mn_z, sds = sd_z, pmix = pmix, 
+  #                          lower.tail = FALSE)
+  # 
+  # } else if (!is.null(cut_z) & is.null(propsel)) {
+  # 
+  #   # if selection proportion is missing but a cut score was provided
+  #   fixed_cut_z <- TRUE
+  #   # compute the selection proportion using pnormmix based on the cutoff value
+  #   propsel <- pnormmix_mult(cut_z, means = mn_z, sds = sd_z, pmix = pmix, 
+  #                            lower.tail = FALSE)
+  # }
+  # 
+  # # compute the threshold for the latent variable based on the selection 
+  # # proportion provided by the user/computed using cut_z
+  # cut_xi <- qnormmix_mult(propsel, means = mn_xi, sds = sd_xi, pmix = pmix, 
+  #                         lower.tail = FALSE)
   
   # print warning message if propsel is too small
   if (propsel <= 0.01) warning("Proportion selected is 1% or less.")

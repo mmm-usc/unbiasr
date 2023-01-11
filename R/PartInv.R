@@ -113,82 +113,160 @@ NULL
 PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
                             weights_item = NULL,
                             weights_latent = NULL,
+                            alpha, psi, lambda, Theta, nu,
                             kappa_r = NULL, kappa_f = kappa_r,
-                            alpha_r, alpha_f = alpha_r,
+                            alpha_r = NULL, alpha_f = alpha_r,
                             phi_r = NULL, phi_f = phi_r,
-                            psi_r, psi_f = psi_r,
-                            lambda_r, lambda_f = lambda_r,
+                            psi_r = NULL, psi_f = psi_r,
+                            lambda_r = NULL, lambda_f = lambda_r,
                             tau_r = NULL, tau_f = tau_r,
-                            nu_r, nu_f = nu_r,
-                            Theta_r, Theta_f = Theta_r,
+                            nu_r = NULL, nu_f = nu_r,
+                            Theta_r = NULL, Theta_f = Theta_r,
+                            pmix = 0.5,
                             pmix_ref = 0.5, plot_contour = FALSE,
                             show_mi_result = FALSE,
                             labels = c("Reference", "Focal"), ...) {
-  
   # for backward compatibility with different input names
-  if (missing(nu_r) && !is.null(tau_r)) {
-    nu_r <- tau_r; nu_f <- tau_f
+  if (missing(nu) && !is.null(nu_r)) {
+    nu <- vector(2, mode = "list" )
+    nu[[1]] <- nu_r; nu[[2]] <- nu_f
+    }
+  if (missing(nu) && !is.null(tau_r)) {
+    nu <- vector(2, mode = "list" )
+    nu[[1]] <- tau_r; nu[[2]] <- tau_f
+    }
+  if (missing(alpha) && !is.null(kappa_r)) {
+    alpha <- vector(2, mode = "list" )
+    alpha[[1]] <- kappa_r; alpha[[2]] <- kappa_f
+    }
+  if (missing(alpha) && !is.null(alpha_r)) {
+    alpha <- vector(2, mode = "list" )
+      alpha[[1]] <- alpha_r; alpha[[2]] <- alpha_f
+    }
+  if (missing(psi) && !is.null(phi_r)) {
+    psi <- vector(2, mode = "list" )
+    psi[[1]] <- phi_r; psi[[2]] <- phi_f
+    }
+  if (missing(psi) && !is.null(psi_r)) {
+    psi <- vector(2, mode = "list" )
+      psi[[1]] <- psi_r; psi[[2]] <- psi_f
   }
-  if (missing(alpha_r) && !is.null(kappa_r)) {
-    alpha_r <- kappa_r; alpha_f <- kappa_f
+  if (missing(lambda) && !is.null(lambda_r)) {
+    lambda <- vector(2, mode = "list" )
+    lambda[[1]] <- lambda_r; lambda[[2]] <- lambda_f
   }
-  if (missing(psi_r) && !is.null(phi_r)) {
-    psi_r <- phi_r; psi_f <- phi_f
+  if (missing(Theta) && !is.null(Theta_r)) {
+    Theta <- vector(2, mode = "list" )
+    Theta[[1]] <- Theta_r; Theta[[2]] <- Theta_f
   }
-  # formatting; convert scalars/vectors to matrices
-  if (is.vector(Theta_r)) Theta_r <- diag(Theta_r, nrow = length(Theta_r))
-  if (is.vector(Theta_f)) Theta_f <- diag(Theta_f, nrow = length(Theta_f))
-  if (is.null(weights_item)) weights_item <- rep(1, length(nu_r))
-  if (is.null(weights_latent)) weights_latent <- rep(1, length(alpha_r))
-  alpha_r <- as.matrix(alpha_r); alpha_f <- as.matrix(alpha_f)
-  psi_r <- as.matrix(psi_r); psi_f <- as.matrix(psi_f)
-  
-  # check the dimensions of input parameters
-  stopifnot(nrow(alpha_r) == ncol(as.matrix(lambda_r)),
-            nrow(psi_r) == ncol(as.matrix(lambda_r)))
-  
-  if (!is.null(propsel)) {
-    if (!is.null(cut_z))  warning("Input to `cut_z` is ignored.")
-  } else if (!is.null(cut_z) & is.null(propsel)) {
-    # if selection proportion is missing but a cut score was provided
+  if (missing(pmix) && !is.null(pmix_ref)) {
+    pmix <- c(pmix_ref, 1 - pmix_ref)
+    # assuming two groups
   }
+  # # formatting; convert scalars/vectors to matrices
+  # if (is.vector(Theta_r)) Theta_r <- diag(Theta_r, nrow = length(Theta_r))
+  # if (is.vector(Theta_f)) Theta_f <- diag(Theta_f, nrow = length(Theta_f))
+  # if (is.null(weights_item)) weights_item <- rep(1, length(nu_r))
+  # if (is.null(weights_latent)) weights_latent <- rep(1, length(alpha_r))
+  # alpha_r <- as.matrix(alpha_r); alpha_f <- as.matrix(alpha_f)
+  # psi_r <- as.matrix(psi_r); psi_f <- as.matrix(psi_f)
   
-  out <- compute_cai(weights_item, weights_latent, 
-                     alpha_r, alpha_f, psi_r, psi_f,
-                     lambda_r, lambda_f, nu_r, nu_f, Theta_r, Theta_f,
-                     pmix_ref, propsel, cut_z, is_mi = FALSE)
-  colnames(out$summary) <- c(labels, paste0("E_R(", labels[2], ")"))
+  # # check the dimensions of input parameters
+  # stopifnot(nrow(alpha_r) == ncol(as.matrix(lambda_r)),
+  #           nrow(psi_r) == ncol(as.matrix(lambda_r)))
+  stopifnot("Number of groups as indicated in the lengths of parameters must
+              match." = length(alpha) == lengths(list(psi, lambda, nu, Theta)))
+  stopifnot("Number of dimensions must match." = 
+              any(lengths(alpha) == unlist(lapply(lambda, ncol))))
+  stopifnot("Provide the correct number of mixing proportions." = 
+              length(pmix) == length(alpha))
   
-  if (out$propsel <= 0.01) warning("Proportion selected is 1% or less.")
+  num_g <- length(alpha); n <- length(nu[[1]]); d <- length(alpha[[1]])
+
+  if(is.null(pmix)) pmix <- as.matrix(c(rep(1/num_g, num_g)), ncol = num_g)
+  pmix <- as.vector(pmix)
   
-  out$ai_ratio <- out$summary["Proportion selected", 3] /
-    out$summary["Proportion selected", 1]
   
-  if (show_mi_result) {  # Need to be updated
-    # Strict
-    pop_weights <- c(pmix_ref, 1 - pmix_ref)
-    lambda_r <- lambda_f <-
-      .weighted_average_list(list(lambda_r, lambda_f), weights = pop_weights)
-    nu_r <- nu_f <-
-      .weighted_average_list(list(nu_r, nu_f), weights = pop_weights)
-    Theta_r <- Theta_f <-
-      .weighted_average_list(list(Theta_r, Theta_f), weights = pop_weights)
-    
-    out_mi <- compute_cai(weights_item, weights_latent, 
-                          alpha_r, alpha_f, psi_r, psi_f,
-                          lambda_r, lambda_f, nu_r, nu_f, Theta_r, Theta_f,
-                          pmix_ref, propsel, cut_z, is_mi = TRUE)
-    colnames(out_mi$summary) <- labels
-    names(out_mi) <- paste0(names(out_mi), "_mi")
-    
-    out <- c(out, out_mi)
+  g <- c("r", paste0("f", 1:(num_g - 1)))
+  
+  if(is.null(labels) | (length(labels) != num_g)) {
+    labels <- c("Reference", paste0("Focal_", 1:(num_g - 1)))
   }
   
-  class(out) <- "PartInv"
-  if (plot_contour) {
-    plot(out, labels = labels, ...)
-  }
-  out
+  names(alpha) <- paste("alpha", g, sep = "_")
+  names(nu) <- paste("nu", g, sep = "_")
+  names(lambda) <- paste("lambda", g, sep = "_")
+  names(psi) <- paste("psi", g, sep = "_")
+  names(Theta) <- paste("Theta", g, sep = "_")
+
+  Theta <-  lapply(1:length(Theta), function(x) {
+    if(is.vector(Theta[[x]])) {
+      Theta[[x]]  <- diag(Theta[[x]]) 
+    } else { 
+      Theta[[x]] <- Theta[[x]]
+        }
+    })
+  alpha <- lapply(alpha, as.matrix)
+  psi <- lapply(psi, matrix, nrow = d, ncol = d)
+  
+  if (is.null(weights_item)) weights_item <- rep(1, n)
+  if (is.null(weights_latent)) weights_latent <- rep(1, d)
+  
+#   ### here 
+   out <- compute_cai(weights_item, weights_latent, 
+                      alpha, psi, lambda, nu, Theta,
+                      pmix, propsel, cut_z, is_mi = FALSE)
+   colnames(out$summary) <- c(labels, paste0("E_R(", labels[2], ")"))
+#   
+#   if (out$propsel <= 0.01) warning("Proportion selected is 1% or less.")
+#   
+#  # out$ai_ratio <- out$summary["Proportion selected", 3] /
+# #    out$summary["Proportion selected", 1]
+#   
+#   ai_ratio <-  out$summary[5, (num_g + 1):(num_g + num_g - 1)] / out$summary[5, 1]
+#   names(ai_ratio) <- paste0("Focal_", 1:(num_g - 1))
+#   row.names(ai_ratio) <- c("")
+#   
+#   if (show_mi_result) {  # Need to be updated
+#     # # Strict
+#     # pop_weights <- c(pmix_ref, 1 - pmix_ref)
+#     # lambda_r <- lambda_f <-
+#     #   .weighted_average_list(list(lambda_r, lambda_f), weights = pop_weights)
+#     # nu_r <- nu_f <-
+#     #   .weighted_average_list(list(nu_r, nu_f), weights = pop_weights)
+#     # Theta_r <- Theta_f <-
+#     #   .weighted_average_list(list(Theta_r, Theta_f), weights = pop_weights)
+#     # 
+#     pop_weights <- pmix
+#     lambda_average <-
+#       .weighted_average_list(lambda, weights = pop_weights)
+#     nu_average <-
+#       .weighted_average_list(nu, weights = pop_weights)
+#     Theta_average <- 
+#       .weighted_average_list(Theta, weights = pop_weights)
+#     
+#     lambda_average_g <- nu_average_g <- Theta_average_g <- vector(mode = "list",
+#                                                                   length = num_g)
+#     for (i in 1:num_g) {
+#       lambda_average_g[[i]] <- lambda_average
+#       nu_average_g[[i]] <- nu_average
+#       Theta_average_g[[i]] <- Theta_average
+#     }
+#     
+#     out_mi <- compute_cai(weights_item, weights_latent, 
+#                           alpha, psi, lambda, nu, Theta,
+#                           pmix, propsel, cut_z, is_mi = TRUE)
+#     colnames(out_mi$summary) <- labels
+#     names(out_mi) <- paste0(names(out_mi), "_mi")
+#     
+#     out <- c(out, out_mi)
+#   }
+#   
+#   class(out) <- "PartInv"
+#   if (plot_contour) {
+#     plot(out, labels = labels, ...)
+#   }
+   out
 }
 
 #' @rdname PartInvMulti_we

@@ -66,10 +66,10 @@ mn_sd_cov <- function(weights_item, weights_latent, alpha_r, alpha_f, psi_r,
 }
 
 
-mn_sd_cov_mult <- function(num_g, weights_item, weights_latent, alpha, psi, lambda, 
+mn_sd_cov_mult <- function(weights_item, weights_latent, alpha, psi, lambda, 
                            nu, Theta){
   mn_z <- sd_z <- mn_xi <- sd_xi <- cov_z_xi <- NULL
-  for(i in 1:num_g) {
+  for(i in seq_along(1:length(alpha))) {
     mn_z[i] <- c(crossprod(weights_item, nu[[i]] + lambda[[i]] %*% alpha[[i]]))
     sd_z[i] <- c(sqrt(crossprod(weights_item, lambda[[i]] %*% psi[[i]] %*% 
                                   t(lambda[[i]]) + Theta[[i]]) %*% weights_item))
@@ -79,7 +79,8 @@ mn_sd_cov_mult <- function(num_g, weights_item, weights_latent, alpha, psi, lamb
     cov_z_xi[i] <- c(crossprod(weights_item, lambda[[i]] %*% psi[[i]]) %*% 
                     weights_latent)
   } 
-  return(list(mn_z, sd_z, mn_xi, sd_xi, cov_z_xi))
+  return(list(mn_z = mn_z, sd_z = sd_z, mn_xi = mn_xi, sd_xi = sd_xi,
+              cov_z_xi = cov_z_xi))
 }
 
 
@@ -104,69 +105,101 @@ mn_sd_cov_new <- function(weights_item, weights_latent,
 }
 
 compute_cai <- function(weights_item, weights_latent,
-                        alpha_r, alpha_f, psi_r, psi_f,
-                        lambda_r, lambda_f, nu_r, nu_f, Theta_r, Theta_f,
-                        pmix_ref, propsel, cut_z = NULL,
-                        is_mi = FALSE) {
-  lst_r <- mn_sd_cov_new(weights_item, weights_latent, alpha_r, 
-                         psi_r, lambda_r, nu_r, Theta_r)
-  lst_f <- mn_sd_cov_new(weights_item, weights_latent, alpha_f, 
-                         psi_f, lambda_f, nu_f, Theta_f)
-  
+                        alpha, psi,
+                        lambda, nu, Theta,
+                        pmix, propsel, cut_z = NULL,
+                         is_mi = FALSE) {
+  # lst_r <- mn_sd_cov_new(weights_item, weights_latent, alpha_r,
+  #                        psi_r, lambda_r, nu_r, Theta_r)
+  # lst_f <- mn_sd_cov_new(weights_item, weights_latent, alpha_f,
+  #                        psi_f, lambda_f, nu_f, Theta_f)
+  num_g <- length(alpha)
+  lst <- mn_sd_cov_mult(weights_item, weights_latent, alpha, 
+                       psi, lambda, nu, Theta)
   # if there is an input for selection proportion
   if (!is.null(propsel)) {
     # compute the cut score using qnormmix based on input selection proportion
-    cut_z <- qnormmix(propsel,
-                      lst_r$mn_z, lst_r$sd_z, lst_f$mn_z, lst_f$sd_z,
-                      pmix_ref, lower.tail = FALSE)
+    cut_z <- qnormmix_mult(propsel, means = lst$mn_z, sds = lst$sd_z, pmix = pmix, 
+                  lower.tail = FALSE)
   } else if (!is.null(cut_z) & is.null(propsel)) {
     # compute the selection proportion using pnormmix based on the cutoff value
-    propsel <- pnormmix(cut_z,
-                        lst_r$mn_z, lst_r$sd_z, lst_f$mn_z, lst_f$sd_z,
-                        pmix_ref, lower.tail = FALSE)
+    propsel <- pnormmix_mult(cut_z, lst$mn_z, lst$sd_z, pmix = pmix, lower.tail = FALSE)
   }
   
   # compute the threshold for the latent variable based on the selection 
   # proportion provided by the user/computed using cut_z
-  cut_xi <- qnormmix(propsel,
-                     lst_r$mn_xi, lst_r$sd_xi, lst_f$mn_xi, lst_f$sd_xi,
-                     pmix_ref, lower.tail = FALSE)
+  cut_xi <- qnormmix_mult(propsel, lst$mn_xi, lst$sd_xi, pmix = pmix, lower.tail = FALSE)
   
   # computing summary statistics using .partit_bvnorm
-  CAI_r <- .partit_bvnorm(cut_xi, cut_z,
-                          lst_r$mn_xi, lst_r$sd_xi, lst_r$mn_z, lst_r$sd_z,
-                          cov12 = lst_r$cov_z_xi)
-  CAI_f <- .partit_bvnorm(cut_xi, cut_z,
-                          lst_f$mn_xi, lst_f$sd_xi, lst_f$mn_z, lst_f$sd_z,
-                          cov12 = lst_f$cov_z_xi)
+  # CAI_r <- .partit_bvnorm(cut_xi, cut_z,
+  #                         lst_r$mn_xi, lst_r$sd_xi, lst_r$mn_z, lst_r$sd_z,
+  #                         cov12 = lst_r$cov_z_xi)
+  # CAI_f <- .partit_bvnorm(cut_xi, cut_z,
+  #                         lst_f$mn_xi, lst_f$sd_xi, lst_f$mn_z, lst_f$sd_z,
+  #                         cov12 = lst_f$cov_z_xi)
+  CAIs <- matrix(ncol = num_g + num_g - 1, nrow = 8) 
   
-  # Store mean, sd, cov values for the obs/latent variables; ref/focal groups
-  zf_par <- list(mn_xi_r = lst_r$mn_xi, mn_xi_f = lst_f$mn_xi, 
-                 sd_xi_r = lst_r$sd_xi, sd_xi_f = lst_f$sd_xi, 
-                 mn_z_r = lst_r$mn_z, mn_z_f = lst_f$mn_z,
-                 sd_z_r = lst_r$sd_z, sd_z_f = lst_f$sd_z,
-                 cov_z_xi_r = lst_r$cov_z_xi, cov_z_xi_f = lst_f$cov_z_xi)
-  dat <- data.frame("Reference" = CAI_r, "Focal" = CAI_f,
+  for (i in seq_along(1:num_g)) {
+    CAIs[,i] <- .partit_bvnorm(cut_xi, cut_z, lst$mn_xi[[i]], lst$sd_xi[[i]],
+                               lst$mn_z[[i]], lst$sd_z[[i]], cov12 = lst$cov_z_xi[[i]])
+  }
+  
+  # Store mean, sd, cov values for the obs/latent variables
+  zf_par <- list(mn_xi = lst$mn_xi, sd_xi = lst$sd_xi, mn_z = lst$mn_z, sd_z = lst$sd_z,
+                 cov_z_xi = lst$cov_z_xi)
+  # zf_par <- list(mn_xi_r = lst_r$mn_xi, mn_xi_f = lst_f$mn_xi, 
+  #                sd_xi_r = lst_r$sd_xi, sd_xi_f = lst_f$sd_xi, 
+  #                mn_z_r = lst_r$mn_z, mn_z_f = lst_f$mn_z,
+  #                sd_z_r = lst_r$sd_z, sd_z_f = lst_f$sd_z,
+  #                cov_z_xi_r = lst_r$cov_z_xi, cov_z_xi_f = lst_f$cov_z_xi)
+ 
+  
+   dat <- data.frame(CAIs,
                     row.names = c("A (true positive)", "B (false positive)",
                                   "C (true negative)", "D (false negative)",
                                   "Proportion selected", "Success ratio",
                                   "Sensitivity", "Specificity"))
-  
+   nms <- c("Reference", paste0("Focal_", 1:(num_g - 1)))
+   
   if (!is_mi) {
     # selection indices for the focal group if its distribution matches the
     # distribution of the reference group (Efocal)
-    mn_z_Ef <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_r))
-    sd_z_Ef <- c(sqrt(crossprod(weights_item, lambda_f %*% psi_r %*% t(lambda_f) 
-                                + Theta_f) %*% weights_item))
-    cov_z_xi_Ef <- c(crossprod(weights_item, lambda_f %*% psi_r) %*%
-                       weights_latent)
-    CAI_Ef <- .partit_bvnorm(cut_xi, cut_z,
-                             lst_r$mn_xi, lst_r$sd_xi, mn_z_Ef, sd_z_Ef,
-                             cov12 = cov_z_xi_Ef)
-    dat <- cbind(dat, "E_R(Focal)" = CAI_Ef)
+    # mn_z_Ef <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_r))
+    # sd_z_Ef <- c(sqrt(crossprod(weights_item, lambda_f %*% psi_r %*% t(lambda_f) 
+    #                             + Theta_f) %*% weights_item))
+    # cov_z_xi_Ef <- c(crossprod(weights_item, lambda_f %*% psi_r) %*%
+    #                    weights_latent)
+    # CAI_Ef <- .partit_bvnorm(cut_xi, cut_z,
+    #                          lst_r$mn_xi, lst_r$sd_xi, mn_z_Ef, sd_z_Ef,
+    #                          cov12 = cov_z_xi_Ef)
+    # dat <- cbind(dat, "E_R(Focal)" = CAI_Ef)
+    mn_z_Ef <- sd_z_Ef <- mn_xi_Ef <- sd_xi_Ef <- cov_z_xi_Ef <- CAI_Ef <- vector(mode = "list")
+    
+    for (i in 2:num_g) {
+      mn_z_Ef[i - 1] <- c(crossprod(weights_item, nu[[i]] + lambda[[i]]
+                                    %*% alpha[[1]]))
+      sd_z_Ef[i - 1] <- c(sqrt(crossprod(weights_item, lambda[[i]] %*% psi[[1]]
+                                         %*% t(lambda[[i]]) + Theta[[i]])
+                               %*% weights_item))
+      cov_z_xi_Ef[i - 1] <- c(crossprod(weights_item, lambda[[i]] %*% psi[[1]]) 
+                              %*% weights_latent)
+      
+      CAIs[, i + num_g - 1] <- .partit_bvnorm(cut_xi, cut_z, lst$mn_xi[[1]], lst$sd_xi[[1]],
+                                              mn_z_Ef[[i - 1]], sd_z_Ef[[i - 1]],
+                                              cov12 = cov_z_xi_Ef[[i - 1]])
+      nms <- c("Reference", paste0("Focal_", 1:(num_g - 1)),
+               paste0("E_R(Focal)_", 1:(num_g - 1)))
+    }
   }
-  list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
-       summary = dat, bivar_data = zf_par)
+   dat <- data.frame(CAIs, 
+                     row.names = c("A (true positive)", "B (false positive)",
+                                   "C (true negative)", "D (false negative)",
+                                   "Proportion selected", "Success ratio",
+                                   "Sensitivity", "Specificity"))
+   names(dat) <- nms
+   
+   out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
+           summary = dat, bivar_data = zf_par)
 }
 
 #' Distribution function (pdf) of a mixture of two normal distributions. 
