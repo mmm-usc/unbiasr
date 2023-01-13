@@ -185,7 +185,8 @@ item_deletion_h <- function(propsel = NULL,
   # Call PartInv with the full item set under strict invariance
   store_str[[1]] <- 
     PartInv(propsel = propsel, cut_z = cut_z, weights_item, weights_latent,
-            alpha_r = alpha_r, alpha_f = alpha_f, psi_r = psi_r, psi_f = psi_f,
+            alpha_r = as.numeric(alpha_r), alpha_f = as.numeric(alpha_f), 
+            psi_r = psi_r, psi_f = psi_f,
             lambda_r = lambda_f * pmix_f + lambda_r * pmix_ref,
             nu_r = nu_f * pmix_f + nu_r * pmix_ref,
             Theta_r = Theta_f * pmix_f + Theta_r * pmix_ref,
@@ -196,7 +197,7 @@ item_deletion_h <- function(propsel = NULL,
   # Call PartInv with the full item set under partial invariance
   store_par[[1]] <- 
     PartInv(propsel = propsel, cut_z = cut_z, weights_item, weights_latent,
-            alpha_r = alpha_r, alpha_f = alpha_f, psi_r = psi_r, psi_f = psi_f,
+            alpha_r = as.numeric(alpha_r), alpha_f = as.numeric(alpha_f), psi_r = psi_r, psi_f = psi_f,
             lambda_r = lambda_r, lambda_f = lambda_f, nu_r = nu_r, nu_f = nu_f,
             Theta_r = Theta_r, Theta_f = Theta_f, pmix_ref = pmix_ref,
             plot_contour = plot_contour, labels = c("Reference", "Focal"),
@@ -320,34 +321,32 @@ item_deletion_h <- function(propsel = NULL,
     AI_ratios[, i] <- c(store_str[[i]]$ai_ratio, store_par[[i]]$ai_ratio)
   }
   
-  # Format stored variables
-  c(acai_p, h_acai_p, h_acai_s_p, delta_h_s_p_acai, AI_ratios, h_R_Ef, 
-    delta_h_R_Ef, h_s_p_ref, h_s_p_foc, delta_s_p_ref, delta_s_p_foc, 
-    h_s_p_list_ref, h_s_p_list_foc, store_str, store_par) %<-% 
-    format_item_del(N, AI_ratios, h_R_Ef, delta_s_p_ref, delta_s_p_foc, 
-                    store_str, store_par, s_p_ref_list, s_p_foc_list, acai_p, 
-                    h_acai_s_p, h_acai_p, delta_h_s_p_acai, delta_h_R_Ef,
-                    h_s_p_ref, h_s_p_foc, return_items)
+  # Format stored variablesa
+    vars <- c(AI_ratios, h_R_Ef, delta_s_p_ref, delta_s_p_foc, store_str, 
+              store_par, s_p_ref_list, s_p_foc_list, acai_p, h_acai_s_p, 
+              h_acai_p, delta_h_s_p_acai, delta_h_R_Ef, h_s_p_ref, h_s_p_foc, 
+              return_items)
+   vlist <- format_item_del(N, l = vars)
 
   # Declare classes
-   class(store_par) <- class(store_str) <-  c("PartInvList", "PartInv")
-   class(h_s_p_list_ref) <- class(h_s_p_list_foc) <-  
+   class(vlist$store_par) <- class(vlist$store_str) <-  c("PartInvList", "PartInv")
+   class(vlist$h_s_p_list_ref) <- class(vlist$h_s_p_list_foc) <-  
      c("PartInvList", "PartInv", "PartInv_groups")
  
   returned <- list(
-    "ACAI" = acai_p,
-    "h ACAI (deletion)" = h_acai_p,
-    "h ACAI SFI-PFI" = h_acai_s_p,
-    "delta h ACAI SFI-PFI (deletion)" = delta_h_s_p_acai,
-    "AI Ratio" = AI_ratios,
-    "h CAI Ref-EF" = h_R_Ef,
-    "delta h CAI Ref-EF (deletion)" = delta_h_R_Ef,
-    "h CAI SFI-PFI" = list("ref"= h_s_p_ref, "foc" = h_s_p_foc),
-    "delta h SFI-PFI (deletion)" = list("ref" = delta_s_p_ref,
-                                        "foc" = delta_s_p_foc),
-    "h SFI-PFI by groups" = list("reference" = h_s_p_list_ref, 
-                               "focal" = h_s_p_list_foc),
-    "PartInv" = list("strict" = store_str, "partial" = store_par),
+    "ACAI" = vlist$acai_p,
+    "h ACAI (deletion)" = vlist$h_acai_p,
+    "h ACAI SFI-PFI" = vlist$h_acai_s_p,
+    "delta h ACAI SFI-PFI (deletion)" = vlist$delta_h_s_p_acai,
+    "AI Ratio" = vlist$AI_ratios,
+    "h CAI Ref-EF" = vlist$h_R_Ef,
+    "delta h CAI Ref-EF (deletion)" = vlist$delta_h_R_Ef,
+    "h CAI SFI-PFI" = list("ref"= vlist$h_s_p_ref, "foc" = vlist$h_s_p_foc),
+    "delta h SFI-PFI (deletion)" = list("ref" = vlist$delta_s_p_ref,
+                                        "foc" = vlist$delta_s_p_foc),
+    "h SFI-PFI by groups" = list("reference" = vlist$h_s_p_list_ref, 
+                               "focal" = vlist$h_s_p_list_foc),
+    "PartInv" = list("strict" = vlist$store_str, "partial" = vlist$store_par),
     "return_items" = return_items)
   class(returned) <- "itemdeletion"
 

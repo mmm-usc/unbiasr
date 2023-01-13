@@ -1,51 +1,48 @@
 
 # Function that performs formatting for various variables to be returned in
 # item_deletion_h
-format_item_del <- function(N, AI_ratios, h_R_Ef, delta_s_p_ref, delta_s_p_foc, 
-                            store_str, store_par, s_p_ref_list, s_p_foc_list, 
-                            acai_p, h_acai_s_p, h_acai_p, delta_h_s_p_acai, 
-                            delta_h_R_Ef, h_s_p_ref, h_s_p_foc, return_items) {
+format_item_del <- function(N, l) {
   # Format stored variables
-  names(AI_ratios) <- c("full", paste0("|", c(1:N)))
-  rownames(AI_ratios) <- c("AI_SFI", "AI_PFI")
-  names(h_R_Ef) <-  c("r-Ef", paste0("r-Ef|", c(1:N)))
-  names(delta_s_p_ref) <- names(delta_s_p_foc) <- paste0("SFI, PFI|", c(1:N))
-  names(store_str) <- names(store_par) <- names(s_p_ref_list) <-
-    names(s_p_foc_list) <- c("full", paste0("|", c(1:N)))
-  names(acai_p) <- c("full", paste0("|", c(1:N)))
-  names(h_acai_p) <- paste0("|", c(1:N))
-  rownames(h_acai_p) <- rownames(h_acai_s_p) <-
+  names(l$AI_ratios) <- c("full", paste0("|", c(1:N)))
+  rownames(l$AI_ratios) <- c("AI_SFI", "AI_PFI")
+  names(l$h_R_Ef) <-  c("r-Ef", paste0("r-Ef|", c(1:N)))
+  names(l$delta_s_p_ref) <- names(l$delta_s_p_foc) <- paste0("SFI, PFI|", c(1:N))
+  names(l$store_str) <- names(l$store_par) <- names(l$s_p_ref_list) <-
+    names(l$s_p_foc_list) <- c("full", paste0("|", c(1:N)))
+  names(l$acai_p) <- c("full", paste0("|", c(1:N)))
+  names(l$h_acai_p) <- paste0("|", c(1:N))
+  rownames(l$h_acai_p) <- rownames(l$h_acai_s_p) <-
     c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)")
-  rownames(acai_p) <- c("PS*", "SR*", "SE*", "SP*")
-  rownames(delta_h_s_p_acai) <-
+  rownames(l$acai_p) <- c("PS*", "SR*", "SE*", "SP*")
+  rownames(l$delta_h_s_p_acai) <-
     paste0("\u0394h(", c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)"), ")")
-  rownames(delta_s_p_ref) <- rownames(delta_s_p_foc) <- rownames(delta_h_R_Ef) <-
+  rownames(l$delta_s_p_ref) <- rownames(l$delta_s_p_foc) <- rownames(l$delta_h_R_Ef) <-
     paste0("\u0394h(", c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP"), ")")
-  rownames(h_R_Ef) <- rownames(h_s_p_ref) <- rownames(h_s_p_foc) <-
+  rownames(l$h_R_Ef) <- rownames(l$h_s_p_ref) <- rownames(l$h_s_p_foc) <-
     c("h(TP)", "h(FP)", "h(TN)", "h(FN)", "h(PS)", "h(SR)", "h(SE)", "h(SP)")
   
-  store_par <- list(outputlist = store_par, condition = "partial",
-                    itemset = return_items)
-  store_str <- list(outputlist = store_str, condition = "strict",
-                    itemset = return_items)
-  h_s_p_list_ref <- list(outputlist = s_p_ref_list, condition="ref",
+  store_par <- list(outputlist = l$store_par, condition = "partial",
+                    itemset = l$return_items)
+  store_str <- list(outputlist = l$store_str, condition = "strict",
+                    itemset = l$return_items)
+  h_s_p_list_ref <- list(outputlist = l$s_p_ref_list, condition="ref",
                                 itemset = return_items)
-  h_s_p_list_foc <- list(outputlist = s_p_foc_list, condition="foc",
-                                itemset = return_items)
-  names(h_s_p_ref) <- names(h_s_p_foc) <- c("SFI, PFI", 
+  h_s_p_list_foc <- list(outputlist = l$s_p_foc_list, condition="foc",
+                                itemset = l$return_items)
+  names(l$h_s_p_ref) <- names(l$h_s_p_foc) <- c("SFI, PFI", 
                                             paste0("SFI, PFI|", c(1:N)))
   
-  names(delta_h_R_Ef) <- paste0("r-Ef|", c(1:N))
-  names(delta_h_s_p_acai) <- paste0( "SFI, PFI|", c(1:N))
-  names(h_acai_s_p) <- c("SFI, PFI", paste0("SFI, PFI|", c(1:N)))
+  names(l$delta_h_R_Ef) <- paste0("r-Ef|", c(1:N))
+  names(l$delta_h_s_p_acai) <- paste0( "SFI, PFI|", c(1:N))
+  names(l$h_acai_s_p) <- c("SFI, PFI", paste0("SFI, PFI|", c(1:N)))
   
   acai_p <- as.data.frame(cbind(acai_p))
   h_acai_p <- as.data.frame(h_acai_p)
   
-  return(list(t(acai_p), t(h_acai_p), t(h_acai_s_p), t(delta_h_s_p_acai), 
-              t(AI_ratios), t(h_R_Ef), t(delta_h_R_Ef), t(h_s_p_ref), 
-              t(h_s_p_foc), t(delta_s_p_ref), (delta_s_p_foc), 
-              h_s_p_list_ref, h_s_p_list_foc, store_str, store_par))
+  return(list(t(acai_p), t(h_acai_p), t(l$h_acai_s_p), t(l$delta_h_s_p_acai), 
+              t(l$AI_ratios), t(l$h_R_Ef), t(l$delta_h_R_Ef), t(l$h_s_p_ref), 
+              t(l$h_s_p_foc), t(l$delta_s_p_ref), (l$delta_s_p_foc), 
+              l$h_s_p_list_ref, l$h_s_p_list_foc, l$store_str, l$store_par))
 }
 
 

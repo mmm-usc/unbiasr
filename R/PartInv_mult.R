@@ -86,13 +86,13 @@ NULL
 #' lambda_matrix2[1:2, 1] <-  c(.372, .650); lambda_matrix2[3:5, 2] <- c(.368, .7, .543)
 #' # 2 dimensions, 5 items (2,3), 3 groups
 #' PartInv_mult(propsel = 0.25, cut_z = 2, pmix = c(1/3, 1/3, 1/3),
-#'              alpha = list(c(1,1), c(0,0), c(.5, .5)), 
-#'              psi = list(c(1, 0.2, 0.2, 1), c(1, 0.3, 0.3, 1), c(1, 0.4, 0.4, 1)), 
-#'              nu = list(c(rep(1,5)), c(rep(1.5,5)),c(rep(1.2,5))), 
-#'              lambda = list(lambda_matrix, lambda_matrix1, lambda_matrix2), 
-#'              Theta = list(c(rep(.1,5)), c(rep(.4,5)), c(rep(.3,5))), 
+#'              alpha = list(c(1,1), c(0,0), c(.5, .5)),
+#'              psi = list(c(1, 0.2, 0.2, 1), c(1, 0.3, 0.3, 1), c(1, 0.4, 0.4, 1)),
+#'              nu = list(c(rep(1,5)), c(rep(1.5,5)),c(rep(1.2,5))),
+#'              lambda = list(lambda_matrix, lambda_matrix1, lambda_matrix2),
+#'              Theta = list(c(rep(.1,5)), c(rep(.4,5)), c(rep(.3,5))),
 #'              plot_contour = TRUE, labels = c("Group 1", "Group 2", "Group 3"),
-#'              custom_colors = c("red", "purple", "orange"))
+#'              custom_colors = c("salmon1", "lightgreen", "skyblue1"))
 #' @export
 PartInv_mult <- function(propsel = NULL, cut_z = NULL, weights_item = NULL,
                          weights_latent = NULL, alpha, psi, lambda, nu, Theta,
@@ -251,7 +251,8 @@ PartInv_mult <- function(propsel = NULL, cut_z = NULL, weights_item = NULL,
    out$cutpt_z_mi <- cut_z
    out$summary_mi <- dat
    out$bivar_data_mi <- zf_par_mi
-   }
+ }
+ 
  class(out) <- c('PartInv', 'PartInvSummary')
  
  if (plot_contour) {
