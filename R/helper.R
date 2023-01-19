@@ -2,72 +2,37 @@
 #' variables.
 #'
 #' \code{mn_sd_cov} is a helper function that computes the mean, 
-#' standard deviation, and covariance of latent and observed variables for the
-#' focal and reference groups.
+#' standard deviation, and covariance of latent and observed variables for each 
+#' group.
 #' @param weights_item A vector of item weights.
 #' @param weights_latent A vector of latent factor weights.
-#' @param alpha_r A vector of latent factor means for the reference group.
-#' @param alpha_f A vector of latent factor means for the focal group.
-#' @param psi_r A matrix of latent factor variance-covariances for the
-#'     reference group.
-#' @param psi_f A matrix of latent factor variance-covariances for
-#'     the focal group.
-#' @param lambda_r A matrix of factor loadings for the reference group.
-#' @param lambda_f A matrix of factor loadings for the focal group.
-#' @param nu_r A matrix of measurement intercepts for the reference group.
-#' @param nu_f A matrix of measurement intercepts for the focal
+#' @param alpha A list of length `g` containing `1 x d` latent factor mean 
+#'     vectors where `g` is the number of groups and `d` is the number of latent 
+#'     dimensions. The first element is assumed to belong to the reference group.
+#' @param psi A list of length `g` containing `d x d` latent factor 
+#'     variance-covariance matrices where `g` is the number of groups and `d` is 
+#'     the number of latent dimensions. The first element is assumed to belong 
+#'     to the reference group.
+#' @param lambda A list of length `g` containing `n x d` factor loading matrices 
+#'     where `g` is the number of groups, `d` is the number of latent dimensions, 
+#'     and `n` is the number of items in the scale. The first element is assumed 
+#'     to belong to the reference group.
+#' @param nu A list of length `g` containing `1 x n` measurement intercept
+#'     vectors where `g` is the number of groups and `n` is the number of items 
+#'     in the scale. The first element is assumed to belong to the reference 
 #'     group.
-#' @param Theta_r A matrix of the unique factor variances and covariances
-#'     for the reference group.
-#' @param Theta_f A matrix of the unique factor variances and
-#'     covariances for the focal group.
-#' @return The output will be a list of 10 elements:
-#'     \item{mn_z_r}{Mean of the observed variable for the reference group.}
-#'     \item{mn_z_f}{Mean of the observed variable for the focal group.}
-#'     \item{sd_z_r}{Standard deviation of the observed variable for the 
-#'     reference group.}
-#'     \item{sd_z_f}{Standard deviation of the observed variable for the focal 
-#'     group.}
-#'     \item{mn_xi_r}{Mean of the latent variable for the reference group.}
-#'     \item{mn_xi_f}{Mean of the latent variable for the focal group.}
-#'     \item{sd_xi_r}{Standard deviation of the latent variable for the reference
-#'     group.}
-#'     \item{sd_xi_f}{Standard deviation of the latent variable for the focal 
-#'     group.}
-#'     \item{cov_z_xi_r}{Covariance of the latent and observed variables for the 
-#'     reference group.}
-#'     \item{cov_z_xi_f}{Covariance of the latent and observed variables for the 
-#'     focal group.}
-# mn_sd_cov <- function(weights_item, weights_latent, alpha_r, alpha_f, psi_r, 
-#                       psi_f, lambda_r, lambda_f, nu_r, nu_f, Theta_r, Theta_f) {
-#   
-#   # compute mean, sd for the observed variable for reference, focal groups
-#   mn_z_r <- c(crossprod(weights_item, nu_r + lambda_r %*% alpha_r))
-#   mn_z_f <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_f))
-#   sd_z_r <- c(sqrt(crossprod(weights_item,
-#                              lambda_r %*% psi_r %*% t(lambda_r) + Theta_r) %*%
-#                      weights_item))
-#   sd_z_f <- c(sqrt(crossprod(weights_item,
-#                              lambda_f %*% psi_f %*% t(lambda_f) + Theta_f) %*%
-#                      weights_item))
-#   
-#   # compute mean, sd for the latent variable for reference, focal groups
-#   mn_xi_r <- c(crossprod(weights_latent, alpha_r))
-#   mn_xi_f <- c(crossprod(weights_latent, alpha_f))
-#   sd_xi_r <- c(sqrt(crossprod(weights_latent, psi_r) %*% weights_latent))
-#   sd_xi_f <- c(sqrt(crossprod(weights_latent, psi_f) %*% weights_latent))
-#   
-#   # compute covariance for the latent and observed variables
-#   cov_z_xi_r <- c(crossprod(weights_item, lambda_r %*% psi_r) %*% weights_latent)
-#   cov_z_xi_f <- c(crossprod(weights_item, lambda_f %*% psi_f) %*% weights_latent)
-#   return(list(mn_z_r, mn_z_f, sd_z_r, sd_z_f, 
-#               mn_xi_r, mn_xi_f, sd_xi_r, sd_xi_f, 
-#               cov_z_xi_r, cov_z_xi_f))
-# }
-
-
-mn_sd_cov_mult <- function(weights_item, weights_latent, alpha, psi, lambda, 
-                           nu, Theta){
+#' @param Theta A list of length `g` containing `1 x n` vectors or `n x n` 
+#'     matrices of unique factor variances and covariances, where `g` is the 
+#'     number of groups and `n` is the number of items in the scale. The first 
+#'     element is assumed to belong to the reference group.
+#' @return The output will be a list of 5 elements:
+#'     \item{mn_z}{Mean of the observed variable.}
+#'     \item{sd_z}{Standard deviation of the observed variable.}
+#'     \item{mn_xi}{Mean of the latent variable.}
+#'     \item{sd_xi}{Standard deviation of the latent variable.}
+#'     \item{cov_z_xi}{Covariance of the latent and observed variables.}
+mn_sd_cov <- function(weights_item, weights_latent, alpha, psi, lambda, nu, 
+                      Theta){
   mn_z <- sd_z <- mn_xi <- sd_xi <- cov_z_xi <- NULL
   for(i in seq_along(1:length(alpha))) {
     mn_z[i] <- c(crossprod(weights_item, nu[[i]] + lambda[[i]] %*% alpha[[i]]))
@@ -82,30 +47,51 @@ mn_sd_cov_mult <- function(weights_item, weights_latent, alpha, psi, lambda,
   return(list(mn_z = mn_z, sd_z = sd_z, mn_xi = mn_xi, sd_xi = sd_xi,
               cov_z_xi = cov_z_xi))
 }
-
-# mn_sd_cov_new <- function(weights_item, weights_latent,
-#                           alpha, psi, lambda, nu, Theta) {
-#   # compute mean, sd for the observed variable for reference, focal groups
-#   mn_z <- c(crossprod(weights_item, nu + lambda %*% alpha))
-#   sd_z <- c(sqrt(crossprod(weights_item,
-#                            lambda %*% psi %*% t(lambda) + Theta) %*%
-#                    weights_item))
-#   
-#   # compute mean, sd for the latent variable for reference, focal groups
-#   mn_xi <- c(crossprod(weights_latent, alpha))
-#   sd_xi <- c(sqrt(crossprod(weights_latent, psi) %*% weights_latent))
-#   
-#   # compute covariance for the latent and observed variables
-#   cov_z_xi <- c(crossprod(weights_item, lambda %*% psi) %*% weights_latent)
-#   return(list(mn_z = mn_z, sd_z = sd_z, mn_xi = mn_xi, sd_xi = sd_xi,
-#               cov_z_xi = cov_z_xi))
-# }
-
+#' Compute summary statistics.
+#'
+#' \code{compute_cai} computes summary statistics/classification accuracy indices.
+#' @param weights_item A vector of item weights.
+#' @param weights_latent A vector of latent factor weights.
+#' @param alpha A list of length `g` containing `1 x d` latent factor mean 
+#'     vectors where `g` is the number of groups and `d` is the number of latent 
+#'     dimensions. The first element is assumed to belong to the reference group.
+#' @param psi A list of length `g` containing `d x d` latent factor 
+#'     variance-covariance matrices where `g` is the number of groups and `d` is 
+#'     the number of latent dimensions. The first element is assumed to belong 
+#'     to the reference group.
+#' @param lambda A list of length `g` containing `n x d` factor loading matrices 
+#'     where `g` is the number of groups, `d` is the number of latent dimensions, 
+#'     and `n` is the number of items in the scale. The first element is assumed 
+#'     to belong to the reference group.
+#' @param nu A list of length `g` containing `1 x n` measurement intercept
+#'     vectors where `g` is the number of groups and `n` is the number of items 
+#'     in the scale. The first element is assumed to belong to the reference 
+#'     group.
+#' @param Theta A list of length `g` containing `1 x n` vectors or `n x n` 
+#'     matrices of unique factor variances and covariances, where `g` is the 
+#'     number of groups and `n` is the number of items in the scale. The first 
+#'     element is assumed to belong to the reference group.
+#' @param pmix List of length `g` containing the mixing proportions of each 
+#'     group.
+#' @param propsel Proportion of selection. If missing, computed using `cut_z`.
+#' @param labels A character vector with `g` elements to label the reference
+#'     and focal groups on the plot, where `g` is the number of groups.
+#' @param cut_z Pre-specified cutoff score on the observed composite. This
+#'     argument is ignored when `propsel` has input.
+#' @param is_mi Whether summary statistics should be computed for strict vs. 
+#'     partial measurement invariance. `FALSE` by default (partial).
+#' @return The output will be a list of 5 elements:
+#'     \item{propsel}{Proportion selected.}
+#'     \item{cutpt_xi}{Cut point on the latent variable.}
+#'     \item{cutpt_z}{Cut point on the observed variable.}
+#'     \item{summary}{Summary statistics.}
+#'     \item{bivar_data}{The mean, standard deviation, and covariance of latent 
+#'     and observed variables for each group.}
 compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu, 
-                        Theta, pmix, propsel, labels, cut_z = NULL, is_mi = FALSE) {
+                        Theta, pmix, propsel, labels, cut_z = NULL, 
+                        is_mi = FALSE) {
   num_g <- length(alpha)
-  lst <- mn_sd_cov_mult(weights_item, weights_latent, alpha, psi, lambda, nu, 
-                        Theta)
+  lst <- mn_sd_cov(weights_item, weights_latent, alpha, psi, lambda, nu, Theta)
 
   if (!is.null(propsel)) {  # if there is an input for selection proportion
     # compute the cut score using qnormmix based on input selection proportion
@@ -128,8 +114,8 @@ compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
   }
   
   # Store mean, sd, cov values for the obs/latent variables
-  zf_par <- list(mn_xi = lst$mn_xi, sd_xi = lst$sd_xi, mn_z = lst$mn_z, sd_z = lst$sd_z,
-                 cov_z_xi = lst$cov_z_xi)
+  zf_par <- list(mn_xi = lst$mn_xi, sd_xi = lst$sd_xi, mn_z = lst$mn_z, 
+                 sd_z = lst$sd_z, cov_z_xi = lst$cov_z_xi)
    dat <- data.frame(CAIs,
                     row.names = c("A (true positive)", "B (false positive)",
                                   "C (true negative)", "D (false negative)",
@@ -155,15 +141,14 @@ compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
                                               lst$sd_xi[[1]], mn_z_Ef[[i - 1]],
                                               sd_z_Ef[[i - 1]],
                                               cov12 = cov_z_xi_Ef[[i - 1]])
-      nms <- c(labels,
-               paste0("E_R(", labels[2:length(labels)], ")"))
+      nms <- c(labels, paste0("E_R(", labels[2:length(labels)], ")"))
     }
   }
-   dat <- data.frame(CAIs, 
-                     row.names = c("A (true positive)", "B (false positive)",
-                                   "C (true negative)", "D (false negative)",
-                                   "Proportion selected", "Success ratio",
-                                   "Sensitivity", "Specificity"))
+   dat <- 
+     data.frame(CAIs, row.names = c("A (true positive)", "B (false positive)",
+                                    "C (true negative)", "D (false negative)",
+                                    "Proportion selected", "Success ratio",
+                                    "Sensitivity", "Specificity"))
    names(dat) <- nms
    
    out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,

@@ -26,7 +26,7 @@ format_item_del <- function(N, l) {
   store_str <- list(outputlist = l$store_str, condition = "strict",
                     itemset = l$return_items)
   h_s_p_list_ref <- list(outputlist = l$s_p_ref_list, condition="ref",
-                                itemset = return_items)
+                                itemset = l$return_items)
   h_s_p_list_foc <- list(outputlist = l$s_p_foc_list, condition="foc",
                                 itemset = l$return_items)
   names(l$h_s_p_ref) <- names(l$h_s_p_foc) <- c("SFI, PFI", 
@@ -36,13 +36,19 @@ format_item_del <- function(N, l) {
   names(l$delta_h_s_p_acai) <- paste0( "SFI, PFI|", c(1:N))
   names(l$h_acai_s_p) <- c("SFI, PFI", paste0("SFI, PFI|", c(1:N)))
   
-  acai_p <- as.data.frame(cbind(acai_p))
-  h_acai_p <- as.data.frame(h_acai_p)
+  acai_p <- as.data.frame(cbind(l$acai_p))
+  h_acai_p <- as.data.frame(l$h_acai_p)
   
-  return(list(t(acai_p), t(h_acai_p), t(l$h_acai_s_p), t(l$delta_h_s_p_acai), 
-              t(l$AI_ratios), t(l$h_R_Ef), t(l$delta_h_R_Ef), t(l$h_s_p_ref), 
-              t(l$h_s_p_foc), t(l$delta_s_p_ref), (l$delta_s_p_foc), 
-              l$h_s_p_list_ref, l$h_s_p_list_foc, l$store_str, l$store_par))
+  return(list("acai_p" = t(acai_p), "h_acai_p" = t(h_acai_p), 
+              "h_acai_s_p" = t(l$h_acai_s_p), 
+              "delta_h_s_p_acai" = t(l$delta_h_s_p_acai), 
+              "AI_ratios" = t(l$AI_ratios), "h_R_Ef" = t(l$h_R_Ef), 
+              "delta_h_R_Ef" = t(l$delta_h_R_Ef), "h_s_p_ref" = t(l$h_s_p_ref), 
+              "h_s_p_foc" = t(l$h_s_p_foc), "delta_s_p_ref" = t(l$delta_s_p_ref), 
+              "delta_s_p_foc" = t(l$delta_s_p_foc), 
+              "h_s_p_list_ref" = h_s_p_list_ref, 
+              "h_s_p_list_foc" = h_s_p_list_foc, 
+              "store_str" = store_str, "store_par" = store_par))
 }
 
 

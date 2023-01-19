@@ -5,72 +5,47 @@
 \title{Compute the mean, standard deviation, and covariance of latent and observed
 variables.}
 \usage{
-mn_sd_cov(
-  weights_item,
-  weights_latent,
-  alpha_r,
-  alpha_f,
-  psi_r,
-  psi_f,
-  lambda_r,
-  lambda_f,
-  nu_r,
-  nu_f,
-  Theta_r,
-  Theta_f
-)
+mn_sd_cov(weights_item, weights_latent, alpha, psi, lambda, nu, Theta)
 }
 \arguments{
 \item{weights_item}{A vector of item weights.}
 
 \item{weights_latent}{A vector of latent factor weights.}
 
-\item{alpha_r}{A vector of latent factor means for the reference group.}
+\item{alpha}{A list of length \code{g} containing \verb{1 x d} latent factor mean
+vectors where \code{g} is the number of groups and \code{d} is the number of latent
+dimensions. The first element is assumed to belong to the reference group.}
 
-\item{alpha_f}{A vector of latent factor means for the focal group.}
+\item{psi}{A list of length \code{g} containing \verb{d x d} latent factor
+variance-covariance matrices where \code{g} is the number of groups and \code{d} is
+the number of latent dimensions. The first element is assumed to belong
+to the reference group.}
 
-\item{psi_r}{A matrix of latent factor variance-covariances for the
-reference group.}
+\item{lambda}{A list of length \code{g} containing \verb{n x d} factor loading matrices
+where \code{g} is the number of groups, \code{d} is the number of latent dimensions,
+and \code{n} is the number of items in the scale. The first element is assumed
+to belong to the reference group.}
 
-\item{psi_f}{A matrix of latent factor variance-covariances for
-the focal group.}
-
-\item{lambda_r}{A matrix of factor loadings for the reference group.}
-
-\item{lambda_f}{A matrix of factor loadings for the focal group.}
-
-\item{nu_r}{A matrix of measurement intercepts for the reference group.}
-
-\item{nu_f}{A matrix of measurement intercepts for the focal
+\item{nu}{A list of length \code{g} containing \verb{1 x n} measurement intercept
+vectors where \code{g} is the number of groups and \code{n} is the number of items
+in the scale. The first element is assumed to belong to the reference
 group.}
 
-\item{Theta_r}{A matrix of the unique factor variances and covariances
-for the reference group.}
-
-\item{Theta_f}{A matrix of the unique factor variances and
-covariances for the focal group.}
+\item{Theta}{A list of length \code{g} containing \verb{1 x n} vectors or \verb{n x n}
+matrices of unique factor variances and covariances, where \code{g} is the
+number of groups and \code{n} is the number of items in the scale. The first
+element is assumed to belong to the reference group.}
 }
 \value{
-The output will be a list of 10 elements:
-\item{mn_z_r}{Mean of the observed variable for the reference group.}
-\item{mn_z_f}{Mean of the observed variable for the focal group.}
-\item{sd_z_r}{Standard deviation of the observed variable for the
-reference group.}
-\item{sd_z_f}{Standard deviation of the observed variable for the focal
-group.}
-\item{mn_xi_r}{Mean of the latent variable for the reference group.}
-\item{mn_xi_f}{Mean of the latent variable for the focal group.}
-\item{sd_xi_r}{Standard deviation of the latent variable for the reference
-group.}
-\item{sd_xi_f}{Standard deviation of the latent variable for the focal
-group.}
-\item{cov_z_xi_r}{Covariance of the latent and observed variables for the
-reference group.}
-\item{cov_z_xi_f}{Covariance of the latent and observed variables for the
-focal group.}
+The output will be a list of 5 elements:
+\item{mn_z}{Mean of the observed variable.}
+\item{sd_z}{Standard deviation of the observed variable.}
+\item{mn_xi}{Mean of the latent variable.}
+\item{sd_xi}{Standard deviation of the latent variable.}
+\item{cov_z_xi}{Covariance of the latent and observed variables.}
 }
 \description{
 \code{mn_sd_cov} is a helper function that computes the mean,
-standard deviation, and covariance of latent and observed variables for the
-focal and reference groups.
+standard deviation, and covariance of latent and observed variables for each
+group.
 }

@@ -226,7 +226,8 @@ item_deletion_h <- function(propsel = NULL,
   # Compute h for the difference between strict and partial invariance for
   # aggregate SE, SR, SP
   h_acai_s_p[1] <- cohens_h(acai_s[1], acai_p[1])
-  AI_ratios[, 1] <- c(store_str[[1]]$ai_ratio, store_par[[1]]$ai_ratio)
+  AI_ratios[, 1] <- as.vector(c(store_str[[1]]$ai_ratio, 
+                                store_par[[1]]$ai_ratio), mode = "double")
 
   # If the user supplied a new cutoff, set cut_z to that and set propsels to NULL.
   # If no cutoff was inputted, set propsel based on PartInv output with all items
@@ -318,14 +319,19 @@ item_deletion_h <- function(propsel = NULL,
 
     delta_h_s_p_acai[i - 1] <- delta_h(h_acai_s_p[1], h_acai_s_p[i])
 
-    AI_ratios[, i] <- c(store_str[[i]]$ai_ratio, store_par[[i]]$ai_ratio)
+    AI_ratios[, i] <- as.vector(c(store_str[[i]]$ai_ratio, 
+                                  store_par[[i]]$ai_ratio), mode = "double")
   }
   
   # Format stored variablesa
-    vars <- c(AI_ratios, h_R_Ef, delta_s_p_ref, delta_s_p_foc, store_str, 
-              store_par, s_p_ref_list, s_p_foc_list, acai_p, h_acai_s_p, 
-              h_acai_p, delta_h_s_p_acai, delta_h_R_Ef, h_s_p_ref, h_s_p_foc, 
-              return_items)
+    vars <- list("AI_ratios" = AI_ratios, "h_R_Ef" = h_R_Ef, 
+                 "delta_s_p_ref" = delta_s_p_ref, "delta_s_p_foc" = delta_s_p_foc,
+                 "store_str" = store_str, "store_par" = store_par,
+                 "s_p_ref_list" = s_p_ref_list, "s_p_foc_list" = s_p_foc_list, 
+                 "acai_p" = acai_p, "h_acai_s_p" = h_acai_s_p, 
+                 "h_acai_p" = h_acai_p, "delta_h_s_p_acai" = delta_h_s_p_acai, 
+                 "delta_h_R_Ef" = delta_h_R_Ef, "h_s_p_ref" = h_s_p_ref, 
+                 "h_s_p_foc" = h_s_p_foc, "return_items" = return_items)
    vlist <- format_item_del(N, l = vars)
 
   # Declare classes
