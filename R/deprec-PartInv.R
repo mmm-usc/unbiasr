@@ -9,29 +9,29 @@ NULL
 #'              This argument is ignored when `propsel` has input.
 #' @param kappa_r latent factor mean for the reference group.
 #' @param kappa_f (optional) latent factor mean for the focal group; 
-#'                if no input, set equal to `kappa_r`.
+#'               if no input, set equal to `kappa_r`.
 #' @param phi_r latent factor variance for the reference group.
 #' @param phi_f (optional) latent factor variance for the focal group; 
 #'              if no input, set equal to `phi_r`.
 #' @param lambda_r a vector of factor loadings for the reference group.
 #' @param lambda_f (optional) a vector of factor loadings for the focal group; 
-#'                 if no input, set equal to `lambda_r`.
+#'              if no input, set equal to `lambda_r`.
 #' @param tau_r a vector of measurement intercepts for the reference group.
-#' @param tau_f (optional) a vector of measurement intercepts for the focal group; 
-#'              if no input, set equal to `tau_r`.
-#' @param Theta_r a matrix of the unique factor variances and covariances 
-#'                for the reference group.
+#' @param tau_f (optional) a vector of measurement intercepts for the focal
+#'              group; if no input, set equal to `tau_r`.
+#' @param Theta_r a matrix of the unique factor variances and covariances for
+#'              the reference group.
 #' @param Theta_f (optional) a matrix of the unique factor variances and 
-#'                covariances for the focal group; if no input, set equal to 
-#'                `Theta_r`.
-#' @param pmix_ref Proportion of the reference group; default to 0.5 
-#'                 (i.e., two populations have equal size).
+#'              covariances for the focal group; if no input, set equal to 
+#'              `Theta_r`.
+#' @param pmix_ref Proportion of the reference group; default to 0.5 (i.e., two 
+#'              populations have equal size).
 #' @param plot_contour logical; whether the contour of the two populations 
-#'                     should be plotted; default to `TRUE`.
+#'              should be plotted; default to `TRUE`.
 #' @param labels a character vector with two elements to label the reference
-#'            and the focal group on the graph.
+#'              and the focal group on the graph.
 #' @param ... other arguments passed to the \code{\link[graphics]{contour}} 
-#'            function.
+#'              function.
 #' @return a list of four elements and a plot if \code{plot_contour == TRUE}.
 #'   The four elements are
 #' \describe{

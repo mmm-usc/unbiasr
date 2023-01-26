@@ -337,7 +337,7 @@ item_deletion_h <- function(propsel = NULL,
   # Declare classes
    class(vlist$store_par) <- class(vlist$store_str) <-  c("PartInvList", "PartInv")
    class(vlist$h_s_p_list_ref) <- class(vlist$h_s_p_list_foc) <-  
-     c("PartInvList", "PartInv", "PartInv_groups")
+     c("PartInvList", "PartInv", "PartInvGroups")
  
   returned <- list(
     "ACAI" = vlist$acai_p,
