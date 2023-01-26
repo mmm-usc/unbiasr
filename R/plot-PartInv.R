@@ -31,10 +31,11 @@ NULL
 contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
                            cor12 = 0, cov12 = NULL,
                            density = .95, length_out = 101,
-                           bty = "L",
-                           ...) {
+                           bty = "L", ...) {
   # Error handling
   stopifnot(cor12 >= -1, cor12 <= 1)
+  
+  
   if (is.null(cov12)) cov12 <- cor12 * sd1 * sd2
   x_seq <- mean1 + seq(-3, 3, length.out = length_out) * sd1
   y_seq <- mean2 + seq(-3, 3, length.out = length_out) * sd2
@@ -91,7 +92,8 @@ plot.PartInv <- function(x, labels, which_result = c("pi", "mi"),
                     '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', 
                     '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', 
                     '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', 
-                    '#ffffff', '#000000') #https://sashamaps.net/docs/resources/20-colors/
+                    '#ffffff', '#000000') 
+                    #https://sashamaps.net/docs/resources/20-colors/
     if(!is.null(custom_colors)) { colorlist <- custom_colors }
 
     # Plot the ellipse for the reference group
@@ -101,14 +103,14 @@ plot.PartInv <- function(x, labels, which_result = c("pi", "mi"),
                    xlab = bquote("Latent Composite" ~ (zeta)),
                    ylab = bquote("Observed Composite" ~ (italic(Z))),
                    lwd = 2, col = colorlist[1], xlim = x_lim, ylim = y_lim,
-                   main = title, ...)
+                   main = title)
     # Add on the ellipses for the focal groups
     for (i in 2:n_g) {
       contour_bvnorm(plot_dat$mn_xi[i], plot_dat$sd_xi[i],
                      plot_dat$mn_z[i], plot_dat$sd_z[i],
                      cov12 = plot_dat$cov_z_xi[i],
-                     add = TRUE, lty = "dashed", lwd = 2, col = colorlist[i],
-                     ...)
+                     add = TRUE, lty = "dashed", lwd = 2, col = colorlist[i]
+                     )
       }
      legend("topleft", labels, lty = c("solid", rep("dashed", n_g - 1)), 
             col = colorlist[1:n_g])

@@ -139,7 +139,7 @@ NULL
 #'        Theta = list(c(rep(.1,5)), c(rep(.4,5)), c(rep(.3,5))),
 #'        plot_contour = TRUE, labels = c("Group 1", "Group 2", "Group 3"),
 #'        custom_colors = c("salmon1", "lightgreen", "skyblue1"), 
-#'        show_mi_results = TRUE)
+#'        show_mi_result = TRUE)
 #' @export
 PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
                             weights_item = NULL,
@@ -246,7 +246,7 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
    ai_ratio <-  as.data.frame(out$summary[5, (num_g + 1):(num_g + num_g - 1)] /
                              out$summary[5, 1])
   
-   names(ai_ratio) <- paste0("Focal_", 1:(num_g - 1))
+   names(ai_ratio) <- labels[-1]
    row.names(ai_ratio) <- c("")
    out[["ai_ratio" ]] <- ai_ratio
   
@@ -273,13 +273,14 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
      out <- c(out, out_mi)
    }
    
-    class(out) <- "PartInv"
+  
     if (plot_contour) {
       plot.PartInv(out, labels = labels, which_result = "pi", ...)
       if(show_mi_result == TRUE) {
         plot.PartInv(out, labels = labels, which_result = "mi", ...)
       }
     }
+   class(out) <- "PartInv"
    out
 }
 

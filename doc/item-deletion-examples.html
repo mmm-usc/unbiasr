@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Applied examples</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Applied examples</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(PartInvShinyUI)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span></code></pre></div>
+<div id="some-notes-on-notation-and-examples-of-notation-use" class="section level2">
+<h2>Some notes on notation and examples of notation use</h2>
+<p>Selection accuracy indices (SAI) will be referred to by a two letter acronym e.g., <span class="math inline">\(\text{SE}\)</span>, and ‘overall’ accuracy indices will be denoted with a tilde over the acronym, (e.g., <span class="math inline">\(\tilde{\text{SE}}\)</span>, <span class="math inline">\(\tilde{\text{SR}}\)</span>). Unless otherwise indicated, we will assume that the full item set is used and that partial factorial invariance (PFI) holds.</p>
+<p>If multiple operations are performed and multiple properties need to be indicated the outermost superscript indicates the current operation, and innermost superscript refers to constant properties. In other words, the superscript of <span class="math inline">\(h\)</span> or <span class="math inline">\(\Delta h\)</span> indicates the current comparison (e.g., full vs. modified item set, strict vs. partial invariance, reference vs. focal groups). The superscript of an SAI refers to properties that are constant in in both groups being compared, and the subscript (if any) indicates that <span class="math inline">\(h\)</span> was computed on this SAI to compare the conditions indicated in the subscript.</p>
+<div id="indicating-the-set-of-items" class="section level4">
+<h4>Indicating the set of items</h4>
+<ul>
+<li>Let <span class="math inline">\(I\)</span> denote a set of items in a p-element scale, <span class="math inline">\(I = \{i_1, i_2,\ldots,i_p\}\)</span>. Then, we can denote the modified set of items after removing the k-th item as <span class="math inline">\(I^{|k}=\{i_1, i_2, ..., i_{k-1},i_{k+1}, ..., i_p\}\)</span>. Using this notation, we can refer to a selection accuracy index (SAI) computed using the full set of items as ‘SAI’ (e.g., SE), and the SAI computed using the modified set of items excluding item k as <span class="math inline">\(\text{SAI}^{|k}\)</span> (e.g., <span class="math inline">\(\text{SE}^{|2}\)</span> if the modified item set excludes the second item).</li>
+</ul>
+</div>
+<div id="operations-comparing-the-full-vs.-modified-item-sets" class="section level4">
+<h4>Operations comparing the full vs. modified item sets</h4>
+<ul>
+<li><p><span class="math inline">\(h(\text{SAI},\text{SAI}^{|k})\)</span> is denoted as <span class="math inline">\(h^{|k}(\text{SAI})\)</span>, and the resulting h values are indicated as <span class="math inline">\(\text{SAI}_{|k}\)</span>.</p></li>
+<li><p><span class="math inline">\(\Delta h(\text{SAI},\text{SAI}^{|k})\)</span> is denoted as <span class="math inline">\(\Delta h^{|k}(\text{SAI})\)</span>, and the resulting <span class="math inline">\(\Delta h\)</span> values as <span class="math inline">\(\Delta h^{|k}\text{SAI}\)</span>.</p></li>
+<li><p>Note: <span class="math inline">\(\Delta h\)</span> is computed only for the comparison between the full and modified item sets (not for group or invariance condition comparisons).</p></li>
+<li><p>e.g., <span class="math inline">\(\Delta h^{\text{|2}}(\text{SAI}_{\text{r-Ef}})\)</span> for quantifying the impact of dropping the second item on the comparison between SAI for the r and Ef groups under PFI: <span class="math inline">\(\Delta h^{|2}\text{SAI}_{\text{r-Ef}}\)</span>.</p></li>
+<li><p>e.g., for the reference group, <span class="math inline">\(h\)</span> comparing SAI under SFI vs. PFI followed by <span class="math inline">\(\Delta h\)</span> comparing these h values computed for the full item set and for the modified item set excluding the 4th item: <span class="math inline">\(\Delta h^{|4}\text{SAI}^{r}_{\text{str, par}}\)</span>.</p></li>
+<li><p>e.g. <span class="math inline">\(h^{|3}(\tilde{\text{SAI}})\)</span> for comparing the overall SAI under PFI: <span class="math inline">\(\tilde{\text{SAI}}_{|3}\)</span>.</p></li>
+</ul>
+</div>
+<div id="h-comparing-the-sai-of-groups" class="section level4">
+<h4>h comparing the SAI of groups</h4>
+<ul>
+<li><p>Reference group (r) can be compared with the focal group (f) or Efocal (Ef).</p></li>
+<li><p><span class="math inline">\(h^{\text{r-Ef}}(\text{SAI}) = \text{SAI}_{\text{r-Ef}}\)</span> for h comparing the SAI of r and Ef groups under PFI, for the full item set.</p></li>
+<li><p><span class="math inline">\(h^{\text{r-Ef}}(\text{SAI}^{|2})=\text{SAI}_{\text{r-Ef}}^{|2}\)</span> for h comparing the SAI of r and Ef groups for modified item set excluding the second item.</p></li>
+<li><p><span class="math inline">\(h^{\text{r-f}}(\text{SAI}^{\text{str}}) = \text{SAI}_{\text{r-f}}^{\text{str}}\)</span> for h comparing the SAI of r and f groups under SFI, for the full item set.</p></li>
+<li><p><span class="math inline">\(h^{\text{r-f}}(\text{SAI}^{|2;\text{str}}) = \text{SAI}_{\text{r-f}}^{|2; \text{str}}\)</span> for h comparing the SAI of r and f groups under SFI, for the modified item set excluding the second item.</p></li>
+</ul>
+</div>
+<div id="h-comparing-the-sai-under-sfi-vs.-pfi" class="section level4">
+<h4>h comparing the SAI under SFI vs. PFI</h4>
+<ul>
+<li><span class="math inline">\(h^{\text{str, par}}(\text{SAI}^r)=\text{SE}_{\text{str, par}}^r\)</span> for h comparing the SAI under SFI vs. PFI (for the reference group).</li>
+<li><span class="math inline">\(h^{\text{str, par}}(\text{SAI}^{|2; r})=\text{SE}_{\text{str, par}}^{|2; r}\)</span> for h comparing the SAI of r and Ef groups for modified item set excluding the second item.</li>
+</ul>
+</div>
+</div>
+<div id="example-from-lai-kwok-yoon-and-hsiao-2017" class="section level2">
+<h2>Example from Lai, Kwok, Yoon and Hsiao (2017)</h2>
+<p>Center for Epidemiological Studies Depression (CES-D) Scale</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Zhang et al. (2011) BMC Medical Research Methodology, Tables 3-4 on page 7</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Reference group: Chinese, Focal group: Dutch</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 5:2 ratio, mixing proportion of 5/7</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>pmix_CESD_r <span class="ot">&lt;-</span> <span class="dv">5</span><span class="sc">/</span><span class="dv">7</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Unstandardized factor loadings</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>lambda_SOM_r <span class="ot">&lt;-</span> lambda_SOM_f <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.00</span>, <span class="fl">1.03</span>, <span class="fl">1.18</span>, <span class="fl">1.29</span>, <span class="fl">1.07</span>, <span class="fl">1.02</span>, <span class="fl">1.26</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>lambda_DEP_r <span class="ot">&lt;-</span> lambda_DEP_f <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.00</span>, <span class="fl">1.13</span>, <span class="fl">0.82</span>, <span class="fl">0.91</span>, <span class="fl">1.11</span>, <span class="fl">0.92</span>, <span class="fl">1.06</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>lambda_POS_r <span class="ot">&lt;-</span> lambda_POS_f <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.00</span>, <span class="fl">1.66</span>, <span class="fl">2.30</span>, <span class="fl">2.29</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>lambda_INT_r <span class="ot">&lt;-</span> lambda_INT_f <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.00</span>, <span class="fl">0.94</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Unstandardized intercepts</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>nu_SOM_r <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.69</span>, <span class="fl">0.56</span>, <span class="fl">0.78</span>, <span class="fl">0.81</span>, <span class="fl">0.88</span>, <span class="fl">0.74</span>, <span class="fl">0.70</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>nu_SOM_f <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.69</span>, <span class="fl">0.56</span>, <span class="fl">0.78</span>, <span class="fl">0.80</span>, <span class="fl">0.88</span>, <span class="fl">0.74</span>, <span class="fl">0.70</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>nu_DEP_r <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.52</span>, <span class="fl">0.55</span>, <span class="fl">0.57</span>, <span class="fl">0.42</span>, <span class="fl">0.57</span>, <span class="fl">0.50</span>, <span class="fl">0.56</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>nu_DEP_f <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.52</span>, <span class="fl">0.55</span>, <span class="fl">0.30</span>, <span class="fl">0.42</span>, <span class="fl">0.57</span>, <span class="fl">0.50</span>, <span class="fl">0.56</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>nu_POS_r <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.54</span>, <span class="fl">1.36</span>, <span class="fl">1.16</span>, <span class="fl">1.08</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>nu_POS_f <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.68</span>, <span class="fl">1.36</span>, <span class="fl">1.16</span>, <span class="fl">1.08</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>nu_INT_r <span class="ot">&lt;-</span> nu_INT_f <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.44</span>, <span class="fl">0.41</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Unstandardized uniqueness</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>Theta_SOM_r <span class="ot">&lt;-</span> Theta_SOM_f <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">c</span>(<span class="fl">0.45</span>, <span class="fl">0.37</span>, <span class="fl">0.39</span>, <span class="fl">0.40</span>, <span class="fl">0.57</span>, <span class="fl">0.51</span>, <span class="fl">0.37</span>))</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>Theta_DEP_r <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">c</span>(<span class="fl">0.29</span>, <span class="fl">0.30</span>, <span class="fl">0.41</span>, <span class="fl">0.31</span>, <span class="fl">0.29</span>, <span class="fl">0.27</span>, <span class="fl">0.24</span>))</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>Theta_DEP_f <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">c</span>(<span class="fl">0.29</span>, <span class="fl">0.13</span>, <span class="fl">0.09</span>, <span class="fl">0.14</span>, <span class="fl">0.29</span>, <span class="fl">0.27</span>, <span class="fl">0.24</span>))</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>Theta_POS_r <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">c</span>(<span class="fl">1.20</span>, <span class="fl">0.81</span>, <span class="fl">0.32</span>, <span class="fl">0.32</span>))</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>Theta_POS_f <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">c</span>(<span class="fl">0.72</span>, <span class="fl">0.81</span>, <span class="fl">0.32</span>, <span class="fl">0.32</span>))</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>Theta_INT_r <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">c</span>(<span class="fl">0.19</span>, <span class="fl">0.23</span>))</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>Theta_INT_f <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">c</span>(<span class="fl">0.19</span>, <span class="fl">0.08</span>))</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Latent mean differences</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>alpha_SOM_r <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>alpha_DEP_r <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>alpha_POS_r <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>alpha_INT_r <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>alpha_SOM_f <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.261</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>alpha_DEP_f <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.259</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>alpha_POS_f <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.125</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>alpha_INT_f <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.323</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Latent mean variances</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>psi_SOM_r <span class="ot">&lt;-</span> <span class="fl">0.482</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>psi_SOM_f <span class="ot">&lt;-</span> <span class="fl">0.324</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>psi_DEP_r <span class="ot">&lt;-</span> <span class="fl">0.570</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>psi_DEP_f <span class="ot">&lt;-</span> <span class="fl">0.318</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>psi_POS_r <span class="ot">&lt;-</span> <span class="fl">0.354</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>psi_POS_f <span class="ot">&lt;-</span> <span class="fl">0.329</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>psi_INT_r <span class="ot">&lt;-</span> <span class="fl">0.574</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>psi_INT_f <span class="ot">&lt;-</span> <span class="fl">0.184</span><span class="sc">^</span><span class="dv">2</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Positive Affect Factor</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Items: good (biased), hopeful, happy, enjoyed</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>CESD_pos <span class="ot">&lt;-</span> <span class="fu">item_deletion_h</span>(<span class="at">weights_item =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">4</span>)), </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                              <span class="at">propsel =</span> .<span class="dv">14</span>, <span class="at">n_dim =</span> <span class="dv">1</span>,  </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                              <span class="at">alpha_r =</span> alpha_POS_r,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                              <span class="at">alpha_f =</span> alpha_POS_f,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                              <span class="at">psi_r =</span> psi_POS_r,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                              <span class="at">psi_f =</span> psi_POS_f,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                              <span class="at">lambda_r =</span> lambda_POS_r,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                              <span class="at">lambda_f =</span> lambda_POS_f,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                              <span class="at">nu_r =</span> nu_POS_r,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                              <span class="at">nu_f =</span> nu_POS_f,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>                              <span class="at">Theta_r =</span> Theta_POS_r, </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                              <span class="at">Theta_f =</span> Theta_POS_f,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                              <span class="at">weights_latent =</span> <span class="dv">1</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                              <span class="at">plot_contour =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                              <span class="at">return_detailed =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                              <span class="at">pmix_ref =</span> pmix_CESD_r, </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>                            <span class="at">biased_items_only=</span><span class="cn">TRUE</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                           <span class="co"># user_specified_items = c(1,2)</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                           )</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>CESD_pos </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; OVERALL SELECTION ACCURACY INDICES (SAI*)</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SAI* under PFI computed for item subsets:</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         PS*   SR*   SE*   SP*</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI   0.903 0.653 0.654 0.944</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|1 0.913 0.689 0.689 0.949</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on SAI* under PFI:</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    PS*    SR*    SE*    SP* </span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.035 -0.076 -0.076 -0.026 </span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI* under SFI vs. PFI: </span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               PS*    SR*    SE* SP*</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)     0 -0.001 -0.002   0</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|1)   0  0.000  0.000   0</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI* </span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; under SFI vs. SAI* under PFI:</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   PS*   SR*   SE*   SP* </span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.000 0.001 0.002 0.000 </span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adverse Impact (AI) ratio for item subsets:</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI     1 0.604</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|1   1 1.000</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS</span></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI of reference vs. Efocal groups under PFI:</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              TP    FP     TN     FN    PS     SR    SE     SP</span></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef)   0.097 0.212 -0.101 -0.118 0.203 -0.353 0.354 -0.233</span></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|1) 0.000 0.000  0.000  0.000 0.000  0.000 0.000  0.000</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI of</span></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reference vs. Efocal groups under PFI:</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    TP    FP    TN    FN    PS    SR    SE    SP </span></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.097 0.212 0.101 0.118 0.203 0.353 0.354 0.233 </span></span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE</span></span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the reference group:</span></span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   TP     FP    TN    FN    PS    SR     SE    SP</span></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)   -0.016 -0.043 0.024 0.022 -0.04 0.066 -0.058 0.048</span></span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|1)  0.000  0.000 0.000 0.000  0.00 0.000  0.000 0.000</span></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the focal group:</span></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                  TP    FP     TN     FN    PS     SR    SE     SP</span></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)   0.061 0.157 -0.082 -0.065 0.143 -0.317 0.318 -0.156</span></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|1) 0.000 0.000  0.000  0.000 0.000  0.000 0.000  0.000</span></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the reference group:</span></span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    TP    FP    TN    FN    PS    SR    SE    SP </span></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.016 0.043 0.024 0.022 0.040 0.066 0.058 0.048 </span></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the focal group:</span></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    TP    FP    TN    FN    PS    SR    SE    SP </span></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.061 0.157 0.082 0.065 0.143 0.317 0.318 0.156</span></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a><span class="co"># Depressive Affect Factor </span></span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a><span class="co"># Items: blues, depressed, lonely, crying, sad, failure, fearful</span></span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>CESD_dep <span class="ot">&lt;-</span> <span class="fu">item_deletion_h</span>(<span class="at">weights_item =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">7</span>)), </span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>                              <span class="at">propsel =</span> .<span class="dv">14</span>, <span class="at">n_dim =</span> <span class="dv">1</span>,  </span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>                              <span class="at">alpha_r =</span> alpha_DEP_r,</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>                              <span class="at">alpha_f =</span> alpha_DEP_f,</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>                              <span class="at">psi_r =</span> psi_DEP_r,</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>                              <span class="at">psi_f =</span> psi_DEP_f,</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>                              <span class="at">lambda_r =</span> lambda_DEP_r,</span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>                              <span class="at">lambda_f =</span> lambda_DEP_f,</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>                              <span class="at">nu_r =</span> nu_DEP_r,</span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>                              <span class="at">nu_f =</span> nu_DEP_f,</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>                              <span class="at">Theta_r =</span> Theta_DEP_r, </span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>                              <span class="at">Theta_f =</span> Theta_DEP_f,</span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>                              <span class="at">weights_latent =</span> <span class="dv">1</span>,</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>                              <span class="at">plot_contour =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>                              <span class="at">return_detailed =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>                              <span class="at">pmix_ref =</span> pmix_CESD_r, </span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>                            <span class="at">biased_items_only =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>CESD_dep <span class="co"># items 2, 3, 4 are biased</span></span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; OVERALL SELECTION ACCURACY INDICES (SAI*)</span></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SAI* under PFI computed for item subsets:</span></span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         PS*   SR*   SE*   SP*</span></span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI   0.943 0.794 0.793 0.966</span></span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|2 0.937 0.775 0.777 0.963</span></span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|3 0.940 0.788 0.789 0.966</span></span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|4 0.940 0.783 0.783 0.964</span></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on SAI* under PFI:</span></span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            PS*   SR*   SE*   SP*</span></span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|2) 0.025 0.048 0.040 0.017</span></span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|3) 0.011 0.015 0.011 0.005</span></span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|4) 0.013 0.029 0.025 0.011</span></span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI* under SFI vs. PFI: </span></span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 PS*   SR*   SE*   SP*</span></span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)   0.002 0.006 0.014 0.003</span></span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|2) 0.004 0.006 0.000 0.003</span></span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|3) 0.005 0.005 0.013 0.001</span></span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|4) 0.002 0.006 0.000 0.003</span></span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI* </span></span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; under SFI vs. SAI* under PFI:</span></span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   PS*   SR*   SE*   SP*</span></span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|2) -0.002 0.000 0.014 0.000</span></span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|3) -0.004 0.001 0.002 0.002</span></span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|4)  0.000 0.000 0.014 0.000</span></span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adverse Impact (AI) ratio for item subsets:</span></span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI</span></span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI     1 0.888</span></span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|2   1 0.871</span></span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|3   1 0.984</span></span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|4   1 0.876</span></span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS</span></span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI of reference vs. Efocal groups under PFI:</span></span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               TP    FP     TN     FN    PS     SR     SE     SP</span></span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef)    0.014 0.102 -0.041 -0.020 0.057 -0.203  0.061 -0.113</span></span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|2)  0.020 0.103 -0.043 -0.034 0.063 -0.197  0.082 -0.113</span></span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|3) -0.008 0.027 -0.014  0.010 0.008 -0.065 -0.030 -0.035</span></span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|4)  0.020 0.105 -0.041 -0.029 0.060 -0.198  0.081 -0.110</span></span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI of</span></span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reference vs. Efocal groups under PFI:</span></span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                TP     FP     TN     FN     PS    SR     SE    SP</span></span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|2) -0.006 -0.001 -0.002 -0.014 -0.006 0.006 -0.021 0.000</span></span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|3)  0.006  0.075  0.027  0.010  0.049 0.138  0.031 0.078</span></span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|4) -0.006 -0.003  0.000 -0.009 -0.003 0.005 -0.020 0.003</span></span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE</span></span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the reference group:</span></span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                  TP     FP    TN     FN     PS    SR    SE    SP</span></span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)   0.000 -0.016 0.007 -0.005 -0.008 0.033 0.008 0.019</span></span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|2) 0.000 -0.015 0.009  0.000 -0.008 0.032 0.000 0.019</span></span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|3) 0.003 -0.005 0.005 -0.005 -0.003 0.018 0.007 0.010</span></span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|4) 0.000 -0.016 0.007  0.000 -0.005 0.032 0.002 0.019</span></span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the focal group:</span></span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               TP    FP     TN     FN    PS     SR     SE     SP</span></span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)    0 0.064 -0.045 -0.017 0.059 -0.267  0.122 -0.064</span></span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|2)  0 0.058 -0.051  0.000 0.064 -0.240  0.139 -0.058</span></span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|3)  0 0.018 -0.021  0.000 0.015 -0.090 -0.014 -0.018</span></span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|4)  0 0.061 -0.044  0.000 0.057 -0.245  0.137 -0.070</span></span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the reference group:</span></span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    TP    FP     TN    FN    PS    SR    SE    SP</span></span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|2)  0.000 0.001 -0.002 0.005 0.000 0.001 0.008 0.000</span></span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|3) -0.003 0.011  0.002 0.000 0.005 0.015 0.001 0.009</span></span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|4)  0.000 0.000  0.000 0.005 0.003 0.001 0.006 0.000</span></span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the focal group:</span></span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                TP    FP     TN    FN     PS    SR     SE     SP</span></span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|2)  0 0.006 -0.006 0.017 -0.005 0.027 -0.017  0.006</span></span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|3)  0 0.046  0.024 0.017  0.044 0.177  0.108  0.046</span></span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|4)  0 0.003  0.001 0.017  0.002 0.022 -0.015 -0.006</span></span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a><span class="co"># Somatic Complaints </span></span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a><span class="co"># Items: bothered, appetite, mind, effort, sleep, talk, get going</span></span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a>CESD_som <span class="ot">&lt;-</span> <span class="fu">item_deletion_h</span>(<span class="at">weights_item =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">7</span>)), </span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>                              <span class="at">propsel =</span> .<span class="dv">14</span>, <span class="at">n_dim =</span> <span class="dv">1</span>,  </span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>                              <span class="at">alpha_r =</span> alpha_SOM_r,</span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a>                              <span class="at">alpha_f =</span> alpha_SOM_f,</span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a>                              <span class="at">psi_r =</span> psi_SOM_r,</span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>                              <span class="at">psi_f =</span> psi_SOM_f,</span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>                              <span class="at">lambda_r =</span> lambda_SOM_r,</span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>                              <span class="at">lambda_f =</span> lambda_SOM_f,</span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>                              <span class="at">nu_r =</span> nu_SOM_r,</span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a>                              <span class="at">nu_f =</span> nu_SOM_f,</span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>                              <span class="at">Theta_r =</span> Theta_SOM_r, </span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a>                              <span class="at">Theta_f =</span> Theta_SOM_f,</span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>                              <span class="at">weights_latent =</span> <span class="dv">1</span>,</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>                              <span class="at">plot_contour =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a>                              <span class="at">return_detailed =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a>                              <span class="at">pmix_ref =</span> pmix_CESD_r)</span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a>CESD_som <span class="co">#  item 4 is biased (?)</span></span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; OVERALL SELECTION ACCURACY INDICES (SAI*)</span></span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SAI* under PFI computed for item subsets:</span></span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         PS*   SR*   SE*   SP*</span></span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI   0.926 0.735 0.735 0.957</span></span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|4 0.919 0.712 0.710 0.953</span></span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on SAI* under PFI:</span></span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   PS*   SR*   SE*   SP* </span></span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.027 0.051 0.057 0.017 </span></span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI* under SFI vs. PFI: </span></span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               PS* SR* SE* SP*</span></span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)     0   0   0   0</span></span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|4)   0   0   0   0</span></span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI* </span></span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; under SFI vs. SAI* under PFI:</span></span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PS* SR* SE* SP* </span></span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0   0   0   0 </span></span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adverse Impact (AI) ratio for item subsets:</span></span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI</span></span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI     1 0.997</span></span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|4   1 1.000</span></span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS</span></span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI of reference vs. Efocal groups under PFI:</span></span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           TP    FP     TN FN    PS     SR    SE     SP</span></span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef)    0 0.005 -0.002  0 0.003 -0.002 0.005 -0.004</span></span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|4)  0 0.000  0.000  0 0.000  0.000 0.000  0.000</span></span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI of</span></span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reference vs. Efocal groups under PFI:</span></span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    TP    FP    TN    FN    PS    SR    SE    SP </span></span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.000 0.005 0.002 0.000 0.003 0.002 0.005 0.004 </span></span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE</span></span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the reference group:</span></span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               TP FP TN FN PS SR SE SP</span></span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)    0  0  0  0  0  0  0  0</span></span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|4)  0  0  0  0  0  0  0  0</span></span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the focal group:</span></span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               TP FP TN FN PS     SR    SE SP</span></span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)    0  0  0  0  0 -0.004 0.004  0</span></span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|4)  0  0  0  0  0  0.000 0.000  0</span></span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the reference group:</span></span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TP FP TN FN PS SR SE SP </span></span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0  0  0  0  0  0  0  0 </span></span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the focal group:</span></span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    TP    FP    TN    FN    PS    SR    SE    SP </span></span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.000 0.000 0.000 0.000 0.000 0.004 0.004 0.000 </span></span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` `</span></span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI h</span></span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TP 0.140 0.140 0</span></span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FP 0.044 0.044 0</span></span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TN 0.767 0.767 0</span></span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FN 0.049 0.049 0</span></span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PS 0.184 0.184 0</span></span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SR 0.763 0.763 0</span></span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SE 0.743 0.743 0</span></span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SP 0.946 0.946 0</span></span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` |4`</span></span>
+<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI h</span></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TP 0.135 0.135 0</span></span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FP 0.047 0.047 0</span></span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TN 0.763 0.763 0</span></span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FN 0.054 0.054 0</span></span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PS 0.183 0.183 0</span></span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SR 0.741 0.741 0</span></span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SE 0.716 0.716 0</span></span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SP 0.942 0.942 0</span></span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` `</span></span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI      h</span></span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TP 0.010 0.010  0.000</span></span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FP 0.020 0.020  0.000</span></span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TN 0.963 0.963  0.000</span></span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FN 0.007 0.007  0.000</span></span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PS 0.030 0.030  0.000</span></span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SR 0.339 0.341 -0.004</span></span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SE 0.595 0.593  0.004</span></span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SP 0.980 0.980  0.000</span></span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` |4`</span></span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI h</span></span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TP 0.010 0.010 0</span></span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FP 0.023 0.023 0</span></span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TN 0.960 0.960 0</span></span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FN 0.007 0.007 0</span></span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PS 0.033 0.033 0</span></span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SR 0.297 0.297 0</span></span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SE 0.570 0.570 0</span></span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SP 0.977 0.977 0</span></span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` `</span></span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Proportion selected:  0.14 </span></span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the latent scale (xi):  0.425 </span></span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the observed scale (Z):  8.91 </span></span>
+<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI ratio:  1 </span></span>
+<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Selection Accuracy Indices:</span></span>
+<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                Reference Focal E_R(Focal)</span></span>
+<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Positive      0.140 0.010      0.140</span></span>
+<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Positive     0.044 0.020      0.044</span></span>
+<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Negative      0.767 0.963      0.767</span></span>
+<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Negative     0.049 0.007      0.049</span></span>
+<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Prop. Selected     0.184 0.030      0.184</span></span>
+<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Success Ratio      0.763 0.339      0.763</span></span>
+<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Sensitivity        0.743 0.595      0.743</span></span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Specificity        0.946 0.980      0.946</span></span>
+<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` |4`</span></span>
+<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Proportion selected:  0.14 </span></span>
+<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the latent scale (xi):  0.425 </span></span>
+<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the observed scale (Z):  8.829 </span></span>
+<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI ratio:  1 </span></span>
+<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Selection Accuracy Indices:</span></span>
+<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                Reference Focal E_R(Focal)</span></span>
+<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Positive      0.135 0.010      0.135</span></span>
+<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Positive     0.047 0.023      0.047</span></span>
+<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Negative      0.763 0.960      0.763</span></span>
+<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Negative     0.054 0.007      0.054</span></span>
+<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Prop. Selected     0.183 0.033      0.183</span></span>
+<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Success Ratio      0.741 0.297      0.741</span></span>
+<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Sensitivity        0.716 0.570      0.716</span></span>
+<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Specificity        0.942 0.977      0.942</span></span>
+<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` `</span></span>
+<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Proportion selected:  0.14 </span></span>
+<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the latent scale (xi):  0.425 </span></span>
+<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the observed scale (Z):  8.912 </span></span>
+<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI ratio:  0.997 </span></span>
+<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Selection Accuracy Indices:</span></span>
+<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                Reference Focal E_R(Focal)</span></span>
+<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Positive      0.140 0.010      0.140</span></span>
+<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Positive     0.044 0.020      0.043</span></span>
+<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Negative      0.767 0.963      0.768</span></span>
+<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Negative     0.049 0.007      0.049</span></span>
+<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Prop. Selected     0.184 0.030      0.183</span></span>
+<span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Success Ratio      0.763 0.341      0.764</span></span>
+<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Sensitivity        0.743 0.593      0.741</span></span>
+<span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Specificity        0.946 0.980      0.947</span></span>
+<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-374"><a href="#cb3-374" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` |4`</span></span>
+<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Proportion selected:  0.14 </span></span>
+<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the latent scale (xi):  0.425 </span></span>
+<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the observed scale (Z):  8.829 </span></span>
+<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI ratio:  1 </span></span>
+<span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Selection Accuracy Indices:</span></span>
+<span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                Reference Focal E_R(Focal)</span></span>
+<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Positive      0.135 0.010      0.135</span></span>
+<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Positive     0.047 0.023      0.047</span></span>
+<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Negative      0.763 0.960      0.763</span></span>
+<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Negative     0.054 0.007      0.054</span></span>
+<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Prop. Selected     0.183 0.033      0.183</span></span>
+<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Success Ratio      0.741 0.297      0.741</span></span>
+<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Sensitivity        0.716 0.570      0.716</span></span>
+<span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Specificity        0.942 0.977      0.942</span></span>
+<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a><span class="co"># Interpersonal Problems</span></span>
+<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a><span class="co"># Items: unfriendly, dislike</span></span>
+<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a>CESD_int <span class="ot">&lt;-</span> <span class="fu">item_deletion_h</span>(<span class="at">weights_item =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">2</span>)), </span>
+<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a>                              <span class="at">propsel =</span> .<span class="dv">14</span>, <span class="at">n_dim =</span> <span class="dv">1</span>,  </span>
+<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a>                              <span class="at">alpha_r =</span> alpha_INT_r,</span>
+<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a>                              <span class="at">alpha_f =</span> alpha_INT_f,</span>
+<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a>                              <span class="at">psi_r =</span> psi_INT_r,</span>
+<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a>                              <span class="at">psi_f =</span> psi_INT_f,</span>
+<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a>                              <span class="at">lambda_r =</span> lambda_INT_r,</span>
+<span id="cb3-400"><a href="#cb3-400" aria-hidden="true" tabindex="-1"></a>                              <span class="at">lambda_f =</span> lambda_INT_f,</span>
+<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a>                              <span class="at">nu_r =</span> nu_INT_r,</span>
+<span id="cb3-402"><a href="#cb3-402" aria-hidden="true" tabindex="-1"></a>                              <span class="at">nu_f =</span> nu_INT_f,</span>
+<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a>                              <span class="at">Theta_r =</span> Theta_INT_r, </span>
+<span id="cb3-404"><a href="#cb3-404" aria-hidden="true" tabindex="-1"></a>                              <span class="at">Theta_f =</span> Theta_INT_f,</span>
+<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a>                              <span class="at">weights_latent =</span> <span class="dv">1</span>,</span>
+<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a>                              <span class="at">plot_contour =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a>                              <span class="at">return_detailed =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a>                              <span class="at">pmix_ref =</span> pmix_CESD_r)</span>
+<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a>CESD_int <span class="co">#item 2 is biased</span></span>
+<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; OVERALL SELECTION ACCURACY INDICES (SAI*)</span></span>
+<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SAI* under PFI computed for item subsets:</span></span>
+<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         PS*   SR*   SE*   SP*</span></span>
+<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI   0.917 0.703 0.704 0.952</span></span>
+<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|2 0.894 0.621 0.622 0.938</span></span>
+<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on SAI* under PFI:</span></span>
+<span id="cb3-419"><a href="#cb3-419" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   PS*   SR*   SE*   SP* </span></span>
+<span id="cb3-420"><a href="#cb3-420" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.079 0.174 0.173 0.059 </span></span>
+<span id="cb3-421"><a href="#cb3-421" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-422"><a href="#cb3-422" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI* under SFI vs. PFI: </span></span>
+<span id="cb3-423"><a href="#cb3-423" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 PS*   SR*   SE*   SP*</span></span>
+<span id="cb3-424"><a href="#cb3-424" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)   0.011 0.026 0.022 0.009</span></span>
+<span id="cb3-425"><a href="#cb3-425" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|2) 0.000 0.000 0.000 0.000</span></span>
+<span id="cb3-426"><a href="#cb3-426" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-427"><a href="#cb3-427" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI* </span></span>
+<span id="cb3-428"><a href="#cb3-428" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; under SFI vs. SAI* under PFI:</span></span>
+<span id="cb3-429"><a href="#cb3-429" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   PS*   SR*   SE*   SP* </span></span>
+<span id="cb3-430"><a href="#cb3-430" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.011 0.026 0.022 0.009 </span></span>
+<span id="cb3-431"><a href="#cb3-431" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-432"><a href="#cb3-432" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-433"><a href="#cb3-433" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adverse Impact (AI) ratio for item subsets:</span></span>
+<span id="cb3-434"><a href="#cb3-434" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-435"><a href="#cb3-435" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI</span></span>
+<span id="cb3-436"><a href="#cb3-436" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI     1 0.942</span></span>
+<span id="cb3-437"><a href="#cb3-437" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|2   1 1.000</span></span>
+<span id="cb3-438"><a href="#cb3-438" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-439"><a href="#cb3-439" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-440"><a href="#cb3-440" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS</span></span>
+<span id="cb3-441"><a href="#cb3-441" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-442"><a href="#cb3-442" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI of reference vs. Efocal groups under PFI:</span></span>
+<span id="cb3-443"><a href="#cb3-443" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               TP    FP     TN    FN    PS     SR     SE     SP</span></span>
+<span id="cb3-444"><a href="#cb3-444" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef)   -0.014 0.074 -0.037 0.022 0.028 -0.158 -0.053 -0.084</span></span>
+<span id="cb3-445"><a href="#cb3-445" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|2)  0.000 0.000  0.000 0.000 0.000  0.000  0.000  0.000</span></span>
+<span id="cb3-446"><a href="#cb3-446" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-447"><a href="#cb3-447" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI of</span></span>
+<span id="cb3-448"><a href="#cb3-448" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reference vs. Efocal groups under PFI:</span></span>
+<span id="cb3-449"><a href="#cb3-449" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    TP    FP    TN    FN    PS    SR    SE    SP </span></span>
+<span id="cb3-450"><a href="#cb3-450" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.014 0.074 0.037 0.022 0.028 0.158 0.053 0.084 </span></span>
+<span id="cb3-451"><a href="#cb3-451" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-452"><a href="#cb3-452" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-453"><a href="#cb3-453" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE</span></span>
+<span id="cb3-454"><a href="#cb3-454" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb3-455"><a href="#cb3-455" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the reference group:</span></span>
+<span id="cb3-456"><a href="#cb3-456" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                  TP     FP    TN     FN     PS    SR   SE   SP</span></span>
+<span id="cb3-457"><a href="#cb3-457" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)   0.006 -0.018 0.009 -0.009 -0.005 0.033 0.02 0.02</span></span>
+<span id="cb3-458"><a href="#cb3-458" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|2) 0.000  0.000 0.000  0.000  0.000 0.000 0.00 0.00</span></span>
+<span id="cb3-459"><a href="#cb3-459" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-460"><a href="#cb3-460" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the focal group:</span></span>
+<span id="cb3-461"><a href="#cb3-461" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               TP    FP     TN FN    PS     SR    SE     SP</span></span>
+<span id="cb3-462"><a href="#cb3-462" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)    0 0.058 -0.058  0 0.058 -0.063 0.026 -0.058</span></span>
+<span id="cb3-463"><a href="#cb3-463" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|2)  0 0.000  0.000  0 0.000  0.000 0.000  0.000</span></span>
+<span id="cb3-464"><a href="#cb3-464" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb3-465"><a href="#cb3-465" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb3-466"><a href="#cb3-466" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the reference group:</span></span>
+<span id="cb3-467"><a href="#cb3-467" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    TP    FP    TN    FN    PS    SR    SE    SP </span></span>
+<span id="cb3-468"><a href="#cb3-468" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.006 0.018 0.009 0.009 0.005 0.033 0.020 0.020 </span></span>
+<span id="cb3-469"><a href="#cb3-469" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-470"><a href="#cb3-470" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb3-471"><a href="#cb3-471" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the focal group:</span></span>
+<span id="cb3-472"><a href="#cb3-472" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    TP    FP    TN    FN    PS    SR    SE    SP </span></span>
+<span id="cb3-473"><a href="#cb3-473" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.000 0.058 0.058 0.000 0.058 0.063 0.026 0.058 </span></span>
+<span id="cb3-474"><a href="#cb3-474" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` `</span></span>
+<span id="cb3-475"><a href="#cb3-475" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI      h</span></span>
+<span id="cb3-476"><a href="#cb3-476" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TP 0.140 0.138  0.006</span></span>
+<span id="cb3-477"><a href="#cb3-477" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FP 0.053 0.057 -0.018</span></span>
+<span id="cb3-478"><a href="#cb3-478" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TN 0.751 0.747  0.009</span></span>
+<span id="cb3-479"><a href="#cb3-479" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FN 0.056 0.058 -0.009</span></span>
+<span id="cb3-480"><a href="#cb3-480" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PS 0.193 0.195 -0.005</span></span>
+<span id="cb3-481"><a href="#cb3-481" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SR 0.723 0.708  0.033</span></span>
+<span id="cb3-482"><a href="#cb3-482" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SE 0.712 0.703  0.020</span></span>
+<span id="cb3-483"><a href="#cb3-483" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SP 0.934 0.929  0.020</span></span>
+<span id="cb3-484"><a href="#cb3-484" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-485"><a href="#cb3-485" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` |2`</span></span>
+<span id="cb3-486"><a href="#cb3-486" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI h</span></span>
+<span id="cb3-487"><a href="#cb3-487" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TP 0.122 0.122 0</span></span>
+<span id="cb3-488"><a href="#cb3-488" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FP 0.066 0.066 0</span></span>
+<span id="cb3-489"><a href="#cb3-489" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TN 0.738 0.738 0</span></span>
+<span id="cb3-490"><a href="#cb3-490" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FN 0.074 0.074 0</span></span>
+<span id="cb3-491"><a href="#cb3-491" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PS 0.188 0.188 0</span></span>
+<span id="cb3-492"><a href="#cb3-492" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SR 0.650 0.650 0</span></span>
+<span id="cb3-493"><a href="#cb3-493" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SE 0.622 0.622 0</span></span>
+<span id="cb3-494"><a href="#cb3-494" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SP 0.918 0.918 0</span></span>
+<span id="cb3-495"><a href="#cb3-495" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-496"><a href="#cb3-496" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` `</span></span>
+<span id="cb3-497"><a href="#cb3-497" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI      h</span></span>
+<span id="cb3-498"><a href="#cb3-498" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TP 0.000 0.000  0.000</span></span>
+<span id="cb3-499"><a href="#cb3-499" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FP 0.007 0.003  0.058</span></span>
+<span id="cb3-500"><a href="#cb3-500" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TN 0.993 0.997 -0.058</span></span>
+<span id="cb3-501"><a href="#cb3-501" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FN 0.000 0.000  0.000</span></span>
+<span id="cb3-502"><a href="#cb3-502" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PS 0.007 0.003  0.058</span></span>
+<span id="cb3-503"><a href="#cb3-503" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SR 0.000 0.001 -0.063</span></span>
+<span id="cb3-504"><a href="#cb3-504" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SE 0.451 0.438  0.026</span></span>
+<span id="cb3-505"><a href="#cb3-505" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SP 0.993 0.997 -0.058</span></span>
+<span id="cb3-506"><a href="#cb3-506" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-507"><a href="#cb3-507" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` |2`</span></span>
+<span id="cb3-508"><a href="#cb3-508" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI h</span></span>
+<span id="cb3-509"><a href="#cb3-509" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TP 0.000 0.000 0</span></span>
+<span id="cb3-510"><a href="#cb3-510" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FP 0.021 0.021 0</span></span>
+<span id="cb3-511"><a href="#cb3-511" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TN 0.979 0.979 0</span></span>
+<span id="cb3-512"><a href="#cb3-512" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FN 0.000 0.000 0</span></span>
+<span id="cb3-513"><a href="#cb3-513" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PS 0.021 0.021 0</span></span>
+<span id="cb3-514"><a href="#cb3-514" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SR 0.000 0.000 0</span></span>
+<span id="cb3-515"><a href="#cb3-515" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SE 0.401 0.401 0</span></span>
+<span id="cb3-516"><a href="#cb3-516" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SP 0.979 0.979 0</span></span>
+<span id="cb3-517"><a href="#cb3-517" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-518"><a href="#cb3-518" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` `</span></span>
+<span id="cb3-519"><a href="#cb3-519" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Proportion selected:  0.14 </span></span>
+<span id="cb3-520"><a href="#cb3-520" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the latent scale (xi):  0.491 </span></span>
+<span id="cb3-521"><a href="#cb3-521" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the observed scale (Z):  1.952 </span></span>
+<span id="cb3-522"><a href="#cb3-522" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI ratio:  1 </span></span>
+<span id="cb3-523"><a href="#cb3-523" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-524"><a href="#cb3-524" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Selection Accuracy Indices:</span></span>
+<span id="cb3-525"><a href="#cb3-525" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                Reference Focal E_R(Focal)</span></span>
+<span id="cb3-526"><a href="#cb3-526" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Positive      0.140 0.000      0.140</span></span>
+<span id="cb3-527"><a href="#cb3-527" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Positive     0.053 0.007      0.053</span></span>
+<span id="cb3-528"><a href="#cb3-528" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Negative      0.751 0.993      0.751</span></span>
+<span id="cb3-529"><a href="#cb3-529" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Negative     0.056 0.000      0.056</span></span>
+<span id="cb3-530"><a href="#cb3-530" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Prop. Selected     0.193 0.007      0.193</span></span>
+<span id="cb3-531"><a href="#cb3-531" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Success Ratio      0.723 0.000      0.723</span></span>
+<span id="cb3-532"><a href="#cb3-532" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Sensitivity        0.712 0.451      0.712</span></span>
+<span id="cb3-533"><a href="#cb3-533" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Specificity        0.934 0.993      0.934</span></span>
+<span id="cb3-534"><a href="#cb3-534" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-535"><a href="#cb3-535" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` |2`</span></span>
+<span id="cb3-536"><a href="#cb3-536" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Proportion selected:  0.14 </span></span>
+<span id="cb3-537"><a href="#cb3-537" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the latent scale (xi):  0.491 </span></span>
+<span id="cb3-538"><a href="#cb3-538" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the observed scale (Z):  2.158 </span></span>
+<span id="cb3-539"><a href="#cb3-539" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI ratio:  1 </span></span>
+<span id="cb3-540"><a href="#cb3-540" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-541"><a href="#cb3-541" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Selection Accuracy Indices:</span></span>
+<span id="cb3-542"><a href="#cb3-542" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                Reference Focal E_R(Focal)</span></span>
+<span id="cb3-543"><a href="#cb3-543" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Positive      0.122 0.000      0.122</span></span>
+<span id="cb3-544"><a href="#cb3-544" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Positive     0.066 0.021      0.066</span></span>
+<span id="cb3-545"><a href="#cb3-545" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Negative      0.738 0.979      0.738</span></span>
+<span id="cb3-546"><a href="#cb3-546" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Negative     0.074 0.000      0.074</span></span>
+<span id="cb3-547"><a href="#cb3-547" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Prop. Selected     0.188 0.021      0.188</span></span>
+<span id="cb3-548"><a href="#cb3-548" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Success Ratio      0.650 0.000      0.650</span></span>
+<span id="cb3-549"><a href="#cb3-549" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Sensitivity        0.622 0.401      0.622</span></span>
+<span id="cb3-550"><a href="#cb3-550" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Specificity        0.918 0.979      0.918</span></span>
+<span id="cb3-551"><a href="#cb3-551" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-552"><a href="#cb3-552" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` `</span></span>
+<span id="cb3-553"><a href="#cb3-553" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Proportion selected:  0.14 </span></span>
+<span id="cb3-554"><a href="#cb3-554" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the latent scale (xi):  0.491 </span></span>
+<span id="cb3-555"><a href="#cb3-555" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the observed scale (Z):  1.958 </span></span>
+<span id="cb3-556"><a href="#cb3-556" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI ratio:  0.942 </span></span>
+<span id="cb3-557"><a href="#cb3-557" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-558"><a href="#cb3-558" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Selection Accuracy Indices:</span></span>
+<span id="cb3-559"><a href="#cb3-559" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                Reference Focal E_R(Focal)</span></span>
+<span id="cb3-560"><a href="#cb3-560" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Positive      0.138 0.000      0.143</span></span>
+<span id="cb3-561"><a href="#cb3-561" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Positive     0.057 0.003      0.041</span></span>
+<span id="cb3-562"><a href="#cb3-562" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Negative      0.747 0.997      0.763</span></span>
+<span id="cb3-563"><a href="#cb3-563" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Negative     0.058 0.000      0.053</span></span>
+<span id="cb3-564"><a href="#cb3-564" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Prop. Selected     0.195 0.003      0.184</span></span>
+<span id="cb3-565"><a href="#cb3-565" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Success Ratio      0.708 0.001      0.777</span></span>
+<span id="cb3-566"><a href="#cb3-566" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Sensitivity        0.703 0.438      0.727</span></span>
+<span id="cb3-567"><a href="#cb3-567" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Specificity        0.929 0.997      0.949</span></span>
+<span id="cb3-568"><a href="#cb3-568" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-569"><a href="#cb3-569" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $` |2`</span></span>
+<span id="cb3-570"><a href="#cb3-570" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Proportion selected:  0.14 </span></span>
+<span id="cb3-571"><a href="#cb3-571" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the latent scale (xi):  0.491 </span></span>
+<span id="cb3-572"><a href="#cb3-572" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cutpoint on the observed scale (Z):  2.158 </span></span>
+<span id="cb3-573"><a href="#cb3-573" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI ratio:  1 </span></span>
+<span id="cb3-574"><a href="#cb3-574" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-575"><a href="#cb3-575" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Selection Accuracy Indices:</span></span>
+<span id="cb3-576"><a href="#cb3-576" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                Reference Focal E_R(Focal)</span></span>
+<span id="cb3-577"><a href="#cb3-577" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Positive      0.122 0.000      0.122</span></span>
+<span id="cb3-578"><a href="#cb3-578" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Positive     0.066 0.021      0.066</span></span>
+<span id="cb3-579"><a href="#cb3-579" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; True Negative      0.738 0.979      0.738</span></span>
+<span id="cb3-580"><a href="#cb3-580" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; False Negative     0.074 0.000      0.074</span></span>
+<span id="cb3-581"><a href="#cb3-581" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Prop. Selected     0.188 0.021      0.188</span></span>
+<span id="cb3-582"><a href="#cb3-582" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Success Ratio      0.650 0.000      0.650</span></span>
+<span id="cb3-583"><a href="#cb3-583" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Sensitivity        0.622 0.401      0.622</span></span>
+<span id="cb3-584"><a href="#cb3-584" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Specificity        0.918 0.979      0.918</span></span></code></pre></div>
+<div id="h_overall_par" class="section level6">
+<h6><code>h_overall_par</code></h6>
+<p><span class="math inline">\(h^{|k}(\tilde{\text{SAI}})\)</span>: Cohen’s h effect size for the improvement/drop in overall SAI under PFI when the k-th item is removed. ‘Overall’ refers to the averaging of accuracy indices across focal and reference groups by group proportions to arrive at a weighted average for each SAI (regularly computed as <span class="math inline">\(\text{SR}=\frac{\text{TP}}{\text{TP}+\text{FP}}\)</span>, <span class="math inline">\(\text{SE}=\frac{\text{TP}}{\text{TP}+\text{FN}}\)</span>, <span class="math inline">\(\text{SR}=\frac{\text{TN}}{\text{TN}+\text{FP}}\)</span>). Letting <span class="math inline">\(p_r\)</span> denote the weight for the reference group,</p>
+<p><span class="math display">\[\tilde{\text{SR}} = \frac{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r)}{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r) + \text{FP}_{r}\times p_r + \text{FP}_{f}\times (1-p_r)}\]</span> <span class="math display">\[\tilde{\text{SE}} = \frac{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r)}{\text{TP}_{r}\times p_r + \text{TP}_{f}\times (1-p_r) + \text{FN}_{r}\times p_r + \text{FN}_{f}\times (1-p_r)}\]</span> <span class="math display">\[\tilde{\text{SP}} = \frac{\text{TN}_{r}\times p_r + \text{TN}_{f}\times (1-p_r)}{\text{TN}_{r}\times p_r + \text{TN}_{f}\times (1-p_r) + \text{FP}_{r}\times p_r + \text{FP}_{f}\times (1-p_r)}\]</span></p>
+<p>Then, the change in overall SAI after dropping the k-th item can be computed as <span class="math display">\[h^{|k}\tilde{\text{SAI}} = 2\arcsin\left(\sqrt{\tilde{\text{SAI}}}\right)-2\arcsin\left(\sqrt{\tilde{\text{SAI}}^{|k}}\right)\]</span></p>
+<p>A negative <code>h_overall_sai_par</code> indicates an improvement (as <span class="math inline">\(h^{|k}\tilde{\text{SAI}}&lt;0 \iff \tilde{\text{SAI}}&lt;\tilde{\text{SAI}}^{|k}\)</span>) whereas a positive <code>h_overall_sai_par</code> indicates a deterioration in performance.</p>
+<p>For the 4-item CES-D scale, the negative <span class="math inline">\(h^{|1}(\tilde{\text{SR}})\)</span>, <span class="math inline">\(h^{|1}(\tilde{\text{SE}})\)</span>, and <span class="math inline">\(h^{|1}(\tilde{\text{SP}})\)</span> values indicate that removing the first item would lead to an improvement in SR, SE, and SP. On the other hand, the positive <span class="math inline">\(h\)</span> values for modified item sets excluding items 2, 3, or 4 suggest that SR, SE, and SP decreases if any of these items are dropped.</p>
+</div>
+<div id="delta_h" class="section level5">
+<h5><code>delta_h</code></h5>
+<p><span class="math inline">\(\Delta h\)</span> is computed using the following formula to compare the effect size of the change in an SAI when the k=th item is dropped: <span class="math display">\[\Delta h^{|k}(\text{SAI})=\text{sign}\left(| h^{(.)}({\text{SAI})}|-|h^{(.)}(\text{SAI}^{|k})|\right)\left||h^{(.)}(\text{SAI}^{|k})|-|h^{(.)}(\text{SAI})|\right|\]</span> ‘(.)’ in the superscript of h is a placeholder for the comparison performed in the previous step.</p>
+<p><code>delta_h</code> contains two elements: <code>delta_h$h_R_vs_Ef.par</code> and <code>delta_h$h_str_vs_par</code>, with the latter containing two tables (one for reference and the second for focal group comparisons).</p>
+</div>
+<div id="delta_hh_r_vs_ef.par" class="section level4">
+<h4><code>delta_h$h_R_vs_Ef.par</code></h4>
+<p><span class="math inline">\(\Delta h^{|k}({\text{SAI}_{\text{r-Ef}}})\)</span>: Effect size of the change in <span class="math inline">\(\text{SAI}_{\text{r-Ef}}\)</span> (stored in <code>h$R_vs_Ef.par</code>) when the k-th item is dropped, under PFI. <span class="math inline">\(\text{SAI}_{\text{r-Ef}}\)</span> refers to the Cohen’s effect size for the comparison in SAI for the reference group vs. the focal group if it followed the same distribution as the reference group.</p>
+<p>HL: # (I would suggest separating out PS from SR, SE, and SP here, as PS is more a fairness index whereas SR, SE, SP are more about accuracy. We may only need delta h for PS. )</p>
+<p><span class="math display">\[\Delta h^{|k}(\text{SAI}_{\text{r-Ef}})=\text{sign}\left(| h^{\text{r-Ef}}({\text{SAI})}|-|h^{\text{r-Ef}}(\text{SAI}^{|k})|\right)\left||h^{\text{r-Ef}}(\text{SAI}^{|k})|-|h^{\text{r-Ef}}(\text{SAI})|\right|\]</span> Equivalently, substituting <span class="math inline">\(\text{SAI}_{\text{r-Ef}}\)</span> for <span class="math inline">\(h^{\text{r-Ef}}({\text{SAI})}\)</span>,</p>
+<p><span class="math display">\[\Delta h^{|k}(\text{SAI}_{\text{r-Ef}})=\text{sign}\left(| \text{SAI}_{\text{r-Ef}}|-|\text{SAI}^{|k}_{\text{r-Ef}}|\right)\left||\text{SAI}^{|k}_{\text{r-Ef}}|-|\text{SAI}_{\text{r-Ef}}|\right|\]</span></p>
+<p>Looking at PS, Delta h is only positive for the comparison between the full item set and the set where item 1 is deleted. As we know that item 1 is biased, this indicates that seeing a positive delta h in PS is an indication that that item should be removed. We see the opposite patterns for item 1 vs. items 2-4 where removing any of item 2, 3, or 4 would harm the accuracy indices.</p>
+</div>
+<div id="delta_hh_str_vs_par-ref-and-foc" class="section level4">
+<h4><code>delta_h$h_str_vs_par</code>: <code>ref</code> and <code>foc</code></h4>
+<ul>
+<li><span class="math inline">\(\Delta h^{|k}(\text{SAI}^{r}_{\text{str},\text{par}})\)</span>, stored in <code>delta_h$h_str_vs_par.ref</code>, refers to the effect size of the change in <span class="math inline">\(\text{SAI}^{r}_{\text{str},\text{par}}\)</span> when the k-th item is dropped. <span class="math inline">\(\text{SAI}^{r}_{\text{str},\text{par}}\)</span> (stored in <code>h$str_vs_par$ref</code>) refers to the Cohen’s effect size for the comparison in selection accuracy indices under SFI vs.  PFI, for a given set of items for the reference group.</li>
+</ul>
+<p><span class="math display">\[
+\begin{align*}
+\Delta h^{|k}(\text{SAI}^{r}_{\text{str},\text{par}})&amp;= \text{sign}\left(|\text{SAI}^{r}_{\text{str},\text{par}}| - |\text{SAI}^{|k,r}_{\text{str},\text{par}}| \right)\left||\text{SAI}^{|k,r}_{\text{str},\text{par}} |-|\text{SAI}^{r}_{\text{str},\text{par}}|\right|
+\end{align*}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\Delta h^{|k}(\text{SAI}^{f}_{\text{str},\text{par}})\)</span>, stored in <code>delta_h$h_str_vs_par.foc</code>, refers to the effect size of the change in <span class="math inline">\(\text{SAI}^{f}_{\text{str},\text{par}}\)</span> when the k-th item is dropped. <span class="math inline">\(\text{SAI}^{f}_{\text{str},\text{par}}\)</span> (stored in <code>h$str_vs_par$foc</code>) refers to the Cohen’s effect size for the comparison in selection accuracy indices under SFI vs.  PFI, for a given set of items for the focal group. <span class="math display">\[
+\begin{align*}
+\Delta h^{|k}(\text{SAI}^{f}_{\text{str},\text{par}})&amp;= \text{sign}\left(|\text{SAI}^{f}_{\text{str},\text{par}}| - |\text{SAI}^{|k,f}_{\text{str},\text{par}}| \right)\left||\text{SAI}^{|k,f}_{\text{str},\text{par}} |-|\text{SAI}^{f}_{\text{str},\text{par}}|\right|\\
+\end{align*}
+\]</span></li>
+</ul>
+</div>
+<div id="hr_vs_ef.par" class="section level4">
+<h4><code>h$R_vs_Ef.par</code></h4>
+<p><span class="math inline">\(h^{\text{r- Ef}}(\text{SAI})\)</span>: is the effect size of the comparison between SAI of the reference group vs. the expected SAI for the focal group if it followed the same distribution as the reference group under PFI. Note that <span class="math inline">\(h^{\text{r- Ef}}(\text{SAI})=0\)</span> under SFI.</p>
+<p><span class="math display">\[
+\begin{align*}
+h^{\text{r-Ef}}(\text{SAI}) &amp;= 2\text{arcsin}\left(\sqrt{\text{SAI}^r}\right)-2\text{arcsin}\left(\sqrt{\text{SAI}^{Ef}}\right)=\text{SAI}_{\text{r-Ef}}\\
+h^{\text{r-Ef}}(\text{SAI}^{|k}) &amp;= 2\text{arcsin}\left(\sqrt{\text{SAI}^{|k,r}}\right)-2\text{arcsin}\left(\sqrt{\text{SAI}^{|k,Ef}}\right)=\text{SAI}^{|k}_{\text{r-Ef}}
+\end{align*}
+\]</span></p>
+<p><span class="math inline">\(\text{PS}^{|1}_{\text{r-Ef}}=0\)</span>,<span class="math inline">\(\text{SR}^{|1}_{\text{r-Ef}}=0\)</span>, <span class="math inline">\(\text{SE}^{|1}_{\text{r-Ef}=0}\)</span>, <span class="math inline">\(\text{SP}^{|1}_{\text{r-Ef}}=0\)</span> suggest that if we delete the first item, the accuracy indices for the Efocal group under PFI will be equal to that of the reference group under PFI, <em>thus removing bias</em>.</p>
+<p><span class="math inline">\(\text{PS}_{\text{r-Ef}}=0.203\)</span> indicates the proportion selected in the reference group is larger than the proportion selected in Efocal. In other words, <em>the reference group is favored when the full set of items are used</em>. Under the expected distribution for the reference group, the focal group would have a higher success ratio and a higher specificity than the reference group when for item sets <span class="math inline">\(\{I, I^{|2}, I^{|3}, I^{|4}\}\)</span> but would have a lower proportion selected and a lower sensitivity. Dropping any item other than the first item would lead to a similar situation where a greater proportion is selected from the reference group than the focal group and is not advisable despite leading to an increase in SE.</p>
+</div>
+<div id="hstr_vs_par-ref-and-foc" class="section level4">
+<h4><code>h$str_vs_par</code>: <code>ref</code> and <code>foc</code></h4>
+<p><code>h$str_vs_par$ref</code> and <code>h$str_vs_par$foc</code> compare SAI under SFI vs. PFI for a given set of items for the reference and focal groups respectively.</p>
+<p><code>h$str_vs_par$ref</code>: <span class="math display">\[
+\begin{align*}
+h^{\text{str},\text{par}}(\text{SAI}^{r}) &amp;= 2\text{arcsin}\left(\sqrt{\text{SAI}^{r, \text{str}}}\right)-2\text{arcsin}\left(\sqrt{\text{SAI}^{r,\text{par}}}\right)\\
+h^{\text{str},\text{par}}(\text{SAI}^{|k,r}) &amp;= 2\text{arcsin}\left(\sqrt{\text{SAI}^{|k,r,\text{str}}}\right)-2\text{arcsin}\left(\sqrt{\text{SAI}^{|k,r,\text{par}}}\right)
+\end{align*}
+\]</span></p>
+<p><code>h$str_vs_par$foc</code>:</p>
+<p><span class="math display">\[
+\begin{align*}
+h^{\text{str},\text{par}}(\text{SAI}^{f}) &amp;= 2\text{arcsin}\left(\sqrt{\text{SAI}^{f, \text{str}}}\right)-2\text{arcsin}\left(\sqrt{\text{SAI}^{f,\text{par}}}\right)\\
+h^{\text{str},\text{par}}(\text{SAI}^{|k,f}) &amp;= 2\text{arcsin}\left(\sqrt{\text{SAI}^{|k,f,\text{str}}}\right)-2\text{arcsin}\left(\sqrt{\text{SAI}^{|k,f,\text{par}}}\right)
+\end{align*}
+\]</span></p>
+<p><span class="math inline">\(\text{PS}^{r}_{\text{str},\text{par}}=-0.040\)</span> indicates that PS was slightly higher under PFI compared to under SFI for the full item set and when any of items 2-4 was deleted. Deleting item 1 brought the effect size of the difference between SFI and PFI conditions to 0 for all accuracy indices.</p>
+</div>
+</div>
+<div id="example-from-millsap-kwok-2004" class="section level2">
+<h2>Example from Millsap, Kwok (2004)</h2>
+<p>‘Evaluating the Impact of Partial Factorial Invariance on Selection in Two Populations’</p>
+<p>Biased items: 3, 4</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Worry subscale of the test anxiety inventory</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ex2 <span class="ot">&lt;-</span> <span class="fu">item_deletion_h</span>(<span class="at">weights_item =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>), </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                              <span class="at">propsel =</span> <span class="fl">0.1000001</span>,<span class="co">#&quot;90% cutpoint&quot;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                              <span class="co">#cut_z= 23.29952,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                             <span class="at">n_dim =</span> <span class="dv">1</span>,  </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                             <span class="at">alpha_r =</span> <span class="dv">0</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                             <span class="at">alpha_f =</span><span class="sc">-</span><span class="fl">0.126</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                             <span class="at">psi_r =</span> <span class="fl">0.544</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                             <span class="at">psi_f =</span> <span class="fl">0.477</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                             <span class="at">lambda_r =</span> <span class="fu">c</span>(<span class="fl">0.836</span>, <span class="dv">1</span>, <span class="fl">0.904</span>, <span class="fl">0.808</span>, <span class="fl">0.903</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                                             <span class="fl">0.960</span>, <span class="fl">0.934</span>, <span class="fl">0.934</span>),</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                             <span class="at">lambda_f =</span> <span class="fu">c</span>(<span class="fl">0.836</span>, <span class="dv">1</span>, <span class="fl">1.111</span>, <span class="fl">1.001</span>, <span class="fl">0.903</span>, </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                                             <span class="fl">0.960</span>, <span class="fl">0.934</span>, <span class="fl">0.934</span>),</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                             <span class="at">nu_r =</span> <span class="fu">c</span>(<span class="fl">2.114</span>, <span class="fl">2.064</span>, <span class="fl">1.901</span>, <span class="fl">2.004</span>, <span class="fl">2.144</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>                                        <span class="fl">1.985</span>, <span class="fl">2.179</span>, <span class="fl">2.230</span>),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                             <span class="at">nu_f=</span> <span class="fu">c</span>(<span class="fl">2.114</span>, <span class="fl">2.064</span>, <span class="fl">1.880</span>, <span class="fl">1.985</span>, <span class="fl">2.144</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                                        <span class="fl">1.985</span>, <span class="fl">2.179</span>, <span class="fl">2.230</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>                             <span class="at">Theta_r =</span> <span class="fu">diag</span>(<span class="fu">c</span>(.<span class="dv">517</span>, .<span class="dv">523</span>, .<span class="dv">631</span>, .<span class="dv">585</span>, .<span class="dv">481</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                                                .<span class="dv">469</span>,.<span class="dv">551</span>,.<span class="dv">572</span>)),</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>                             <span class="at">Theta_f =</span> <span class="fu">diag</span>(<span class="fu">c</span>(.<span class="dv">514</span>, .<span class="dv">407</span>, .<span class="dv">371</span>, .<span class="dv">475</span>, .<span class="dv">392</span>,</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>                                                .<span class="dv">335</span>,.<span class="dv">454</span>,.<span class="dv">457</span>)),</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                             <span class="at">weights_latent =</span> <span class="dv">1</span>,</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>                             <span class="at">plot_contour =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>                             <span class="at">return_detailed =</span> <span class="cn">FALSE</span>, <span class="at">pmix_ref =</span> <span class="fl">0.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ex2</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; OVERALL SELECTION ACCURACY INDICES (SAI*)</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SAI* under PFI computed for item subsets:</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         PS*   SR*   SE*   SP*</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI   0.951 0.755 0.755 0.973</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|1 0.948 0.740 0.740 0.971</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|2 0.946 0.734 0.730 0.971</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|3 0.947 0.735 0.739 0.971</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|4 0.948 0.740 0.740 0.971</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|5 0.947 0.735 0.731 0.971</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|6 0.946 0.730 0.730 0.970</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|7 0.947 0.735 0.735 0.971</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|8 0.948 0.735 0.735 0.971</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on SAI* under PFI:</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            PS*   SR*   SE*   SP*</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|1) 0.014 0.035 0.035 0.010</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|2) 0.023 0.049 0.057 0.013</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|3) 0.018 0.046 0.038 0.013</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|4) 0.014 0.035 0.035 0.010</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|5) 0.020 0.046 0.054 0.013</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|6) 0.023 0.057 0.057 0.017</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|7) 0.018 0.046 0.046 0.013</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|8) 0.016 0.046 0.046 0.013</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI* under SFI vs. PFI: </span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 PS*   SR*   SE*   SP*</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)   0.002 0.000 0.009 0.000</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|1) 0.007 0.011 0.011 0.003</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|2) 0.009 0.014 0.023 0.003</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|3) 0.004 0.020 0.011 0.007</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|4) 0.007 0.011 0.011 0.003</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|5) 0.007 0.020 0.028 0.007</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|6) 0.009 0.023 0.014 0.007</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|7) 0.007 0.023 0.023 0.007</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|8) 0.005 0.023 0.023 0.006</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI* </span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; under SFI vs. SAI* under PFI:</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   PS*    SR*    SE*    SP*</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|1) -0.004 -0.011 -0.003 -0.003</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|2) -0.007 -0.014 -0.014 -0.003</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|3) -0.002 -0.020 -0.003 -0.006</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|4) -0.004 -0.011 -0.003 -0.003</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|5) -0.004 -0.020 -0.019 -0.007</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|6) -0.007 -0.023 -0.005 -0.006</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|7) -0.004 -0.023 -0.014 -0.006</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|8) -0.002 -0.023 -0.014 -0.006</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adverse Impact (AI) ratio for item subsets:</span></span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SFI   PFI</span></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI     1 1.056</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|1   1 0.953</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|2   1 0.956</span></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|3   1 0.969</span></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|4   1 0.963</span></span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|5   1 0.956</span></span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|6   1 0.957</span></span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|7   1 0.956</span></span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|8   1 0.956</span></span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS</span></span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI of reference vs. Efocal groups under PFI:</span></span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               TP    FP     TN    FN     PS     SR     SE     SP</span></span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef)   -0.024 0.000 -0.003 0.049 -0.021 -0.039 -0.141 -0.006</span></span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|1) -0.003 0.042 -0.020 0.006  0.015 -0.109 -0.023 -0.046</span></span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|2) -0.003 0.036 -0.017 0.006  0.015 -0.098 -0.018 -0.039</span></span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|3) -0.003 0.030 -0.014 0.006  0.009 -0.078 -0.018 -0.028</span></span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|4) -0.003 0.036 -0.017 0.006  0.015 -0.095 -0.026 -0.034</span></span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|5) -0.003 0.036 -0.020 0.006  0.015 -0.099 -0.018 -0.040</span></span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|6) -0.003 0.036 -0.017 0.006  0.015 -0.093 -0.016 -0.039</span></span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|7) -0.003 0.042 -0.020 0.006  0.015 -0.099 -0.018 -0.040</span></span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|8) -0.003 0.036 -0.017 0.006  0.015 -0.096 -0.018 -0.040</span></span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI of</span></span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reference vs. Efocal groups under PFI:</span></span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               TP     FP     TN    FN    PS     SR    SE     SP</span></span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|1) 0.021 -0.042 -0.017 0.043 0.006 -0.070 0.118 -0.040</span></span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|2) 0.021 -0.036 -0.014 0.043 0.006 -0.059 0.123 -0.033</span></span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|3) 0.021 -0.030 -0.011 0.043 0.012 -0.039 0.123 -0.022</span></span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|4) 0.021 -0.036 -0.014 0.043 0.006 -0.056 0.115 -0.028</span></span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|5) 0.021 -0.036 -0.017 0.043 0.006 -0.060 0.123 -0.034</span></span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|6) 0.021 -0.036 -0.014 0.043 0.006 -0.054 0.125 -0.033</span></span>
+<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|7) 0.021 -0.042 -0.017 0.043 0.006 -0.060 0.123 -0.034</span></span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|8) 0.021 -0.036 -0.014 0.043 0.006 -0.057 0.123 -0.034</span></span>
+<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE</span></span>
+<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the reference group:</span></span>
+<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                  TP     FP    TN     FN     PS    SR    SE    SP</span></span>
+<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)   0.010  0.000 0.003 -0.023  0.009 0.024 0.063 0.006</span></span>
+<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|1) 0.003 -0.023 0.011 -0.006 -0.006 0.065 0.028 0.022</span></span>
+<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|2) 0.003 -0.023 0.011 -0.012 -0.006 0.060 0.025 0.027</span></span>
+<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|3) 0.003 -0.018 0.008 -0.006 -0.003 0.044 0.016 0.017</span></span>
+<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|4) 0.003 -0.018 0.011 -0.006 -0.006 0.051 0.021 0.017</span></span>
+<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|5) 0.003 -0.023 0.011 -0.012 -0.006 0.063 0.025 0.022</span></span>
+<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|6) 0.003 -0.023 0.011 -0.006 -0.006 0.060 0.025 0.027</span></span>
+<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|7) 0.007 -0.023 0.011 -0.006 -0.006 0.063 0.025 0.022</span></span>
+<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|8) 0.007 -0.023 0.008 -0.006 -0.006 0.060 0.025 0.022</span></span>
+<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the focal group:</span></span>
+<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   TP    FP     TN     FN     PS     SR     SE     SP</span></span>
+<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)   -0.013 0.000  0.000  0.022 -0.011 -0.020 -0.079  0.000</span></span>
+<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|1)  0.000 0.021 -0.007  0.000  0.007 -0.049  0.004 -0.020</span></span>
+<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|2)  0.004 0.020 -0.007  0.000  0.007 -0.040  0.011 -0.019</span></span>
+<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|3)  0.000 0.007 -0.007  0.000  0.004 -0.038  0.000 -0.013</span></span>
+<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|4)  0.000 0.014 -0.007  0.000  0.007 -0.047 -0.004 -0.013</span></span>
+<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|5)  0.000 0.014 -0.007 -0.007  0.007 -0.042  0.009 -0.013</span></span>
+<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|6)  0.004 0.013 -0.007  0.000  0.007 -0.040  0.011 -0.019</span></span>
+<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|7)  0.000 0.014 -0.010 -0.007  0.007 -0.042  0.007 -0.013</span></span>
+<span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|8)  0.000 0.014 -0.010 -0.007  0.007 -0.040  0.009 -0.013</span></span>
+<span id="cb5-119"><a href="#cb5-119" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb5-120"><a href="#cb5-120" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb5-121"><a href="#cb5-121" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the reference group:</span></span>
+<span id="cb5-122"><a href="#cb5-122" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   TP     FP     TN    FN    PS     SR    SE     SP</span></span>
+<span id="cb5-123"><a href="#cb5-123" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|1) 0.007 -0.023 -0.008 0.017 0.003 -0.041 0.035 -0.016</span></span>
+<span id="cb5-124"><a href="#cb5-124" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|2) 0.007 -0.023 -0.008 0.011 0.003 -0.036 0.038 -0.021</span></span>
+<span id="cb5-125"><a href="#cb5-125" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|3) 0.007 -0.018 -0.005 0.017 0.006 -0.020 0.047 -0.011</span></span>
+<span id="cb5-126"><a href="#cb5-126" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|4) 0.007 -0.018 -0.008 0.017 0.003 -0.027 0.042 -0.011</span></span>
+<span id="cb5-127"><a href="#cb5-127" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|5) 0.007 -0.023 -0.008 0.011 0.003 -0.039 0.038 -0.016</span></span>
+<span id="cb5-128"><a href="#cb5-128" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|6) 0.007 -0.023 -0.008 0.017 0.003 -0.036 0.038 -0.021</span></span>
+<span id="cb5-129"><a href="#cb5-129" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|7) 0.003 -0.023 -0.008 0.017 0.003 -0.039 0.038 -0.016</span></span>
+<span id="cb5-130"><a href="#cb5-130" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|8) 0.003 -0.023 -0.005 0.017 0.003 -0.036 0.038 -0.016</span></span>
+<span id="cb5-131"><a href="#cb5-131" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-132"><a href="#cb5-132" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb5-133"><a href="#cb5-133" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the focal group:</span></span>
+<span id="cb5-134"><a href="#cb5-134" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   TP     FP     TN    FN    PS     SR    SE     SP</span></span>
+<span id="cb5-135"><a href="#cb5-135" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|1) 0.013 -0.021 -0.007 0.022 0.004 -0.029 0.075 -0.020</span></span>
+<span id="cb5-136"><a href="#cb5-136" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|2) 0.009 -0.020 -0.007 0.022 0.004 -0.020 0.068 -0.019</span></span>
+<span id="cb5-137"><a href="#cb5-137" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|3) 0.013 -0.007 -0.007 0.022 0.007 -0.018 0.079 -0.013</span></span>
+<span id="cb5-138"><a href="#cb5-138" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|4) 0.013 -0.014 -0.007 0.022 0.004 -0.027 0.075 -0.013</span></span>
+<span id="cb5-139"><a href="#cb5-139" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|5) 0.013 -0.014 -0.007 0.015 0.004 -0.022 0.070 -0.013</span></span>
+<span id="cb5-140"><a href="#cb5-140" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|6) 0.009 -0.013 -0.007 0.022 0.004 -0.020 0.068 -0.019</span></span>
+<span id="cb5-141"><a href="#cb5-141" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|7) 0.013 -0.014 -0.010 0.015 0.004 -0.022 0.072 -0.013</span></span>
+<span id="cb5-142"><a href="#cb5-142" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|8) 0.013 -0.014 -0.010 0.015 0.004 -0.020 0.070 -0.013</span></span></code></pre></div>
+<p>The positive h values in h_overall_sai_par suggest that no item should be dropped, as dropping any of the items would lead to a lower success ratio, lower sensitivity, and lower specificity.</p>
+<p><code>h$R_vs_Ef.par</code></p>
+<p>If the focal group followed the same distribution as the reference group, a larger proportion would be selected for the focal group compared to the reference group (indicated by the negative PS) when all items are used. If any one item is dropped there would be an increase in PS for the reference group, leading to a positive h.</p>
+<p>A greater proportion is selected under SFI compared to PFI when all items are used, but when any of the 8 items are dropped, a greater proportion is selected under PFI. SR, SE, SP are always positive, indicating that regardless of item drop condition, SR, SE, SP under SFI is always larger than SR, SE, SP under PFI.</p>
+</div>
+<div id="example-from-ock-mcabee-mulfinger-and-oswald-2020" class="section level2">
+<h2>Example from Ock, McAbee, Mulfinger, and Oswald (2020)</h2>
+<p>‘The Practical Effects of Measurement Invariance: Gender Invariance in Two Big Five Personality Measures’ Biased items: 1, 7, 11, 13, 14</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&#39;A =~  a2 + a5  + a7 + a9</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="st">          C =~  c3 + c4 + c8 + c9</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="st">          E =~ e1 + e4 + e6 + e7</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="st">          N =~ n1 + n2 + n6 + n8</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="st">          O =~ i2 + i8 + i9 + i10</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="st">          a2 ~~ a5</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="st">          e4 ~~ e7  </span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="st">          i2 ~~ i10</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="st">          i8 ~~ i9</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="st">          a9 ~~ i9</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="st">          c3 ~~ e6</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="st">          a2 ~~ e7</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="st">          e7 ~~ n2&#39;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>fit_strict <span class="ot">&lt;-</span> <span class="fu">cfa</span>(model, <span class="at">data =</span> data, <span class="at">group =</span> <span class="st">&quot;sex&quot;</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                  <span class="at">group.equal =</span> <span class="fu">c</span>(<span class="st">&quot;loadings&quot;</span>, <span class="st">&quot;Intercepts&quot;</span>, <span class="st">&quot;residuals&quot;</span>),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">group.partial =</span> <span class="fu">c</span>(<span class="st">&quot;e6 ~ 1&quot;</span>, <span class="st">&quot;n1 ~ 1&quot;</span>, <span class="st">&quot;n2 ~ 1&quot;</span>, <span class="st">&quot;a2 ~ 1&quot;</span>, </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                                    <span class="co">#items  1 (A2), 7 (C8), 11 (E6), 13 (N1), 14 (N2)</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>                                    <span class="st">&quot;n2 ~~ n2&quot;</span>, <span class="st">&quot;n1 ~~ n1&quot;</span>, <span class="st">&quot;c8 ~~ c8&quot;</span>),</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                  <span class="at">estimator =</span> <span class="st">&quot;MLR&quot;</span>, <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">lavInspect</span>(fit_strict, <span class="at">what =</span> <span class="st">&quot;est&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ex3 <span class="ot">&lt;-</span> <span class="fu">item_deletion_h</span>(<span class="at">propsel=</span><span class="fl">0.25</span>,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">weights_item =</span> <span class="fu">c</span>(<span class="fl">3.1385</span>, <span class="fl">3.1385</span>, <span class="fl">3.1385</span>, <span class="fl">3.1385</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                                <span class="fl">8.3203</span>, <span class="fl">8.3203</span>, <span class="fl">8.3203</span>, <span class="fl">8.3203</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                                <span class="fl">5.1586</span>, <span class="fl">5.1586</span>, <span class="fl">5.1586</span>, <span class="fl">5.1586</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                                <span class="sc">-</span><span class="fl">6.5870</span>, <span class="sc">-</span><span class="fl">6.5870</span>, <span class="sc">-</span><span class="fl">6.5870</span>, <span class="sc">-</span><span class="fl">6.5870</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                                <span class="fl">1.7957</span>, <span class="fl">1.7957</span>, <span class="fl">1.7957</span>, <span class="fl">1.7957</span>), </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">n_dim =</span> <span class="dv">5</span>, </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">alpha_r =</span> result[[<span class="dv">2</span>]]<span class="sc">$</span>alpha,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">alpha_f =</span> result[[<span class="dv">1</span>]]<span class="sc">$</span>alpha,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">psi_r =</span> result[[<span class="dv">2</span>]]<span class="sc">$</span>psi,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>              <span class="at">psi_f =</span> result[[<span class="dv">1</span>]]<span class="sc">$</span>psi,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>              <span class="at">lambda_r =</span> result[[<span class="dv">2</span>]]<span class="sc">$</span>lambda,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>              <span class="at">lambda_f =</span> result[[<span class="dv">1</span>]]<span class="sc">$</span>lambda,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">nu_r =</span> result[[<span class="dv">2</span>]]<span class="sc">$</span>nu,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">nu_f =</span> result[[<span class="dv">1</span>]]<span class="sc">$</span>nu,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>              <span class="at">Theta_r =</span> result[[<span class="dv">2</span>]]<span class="sc">$</span>theta,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>              <span class="at">Theta_f =</span> result[[<span class="dv">1</span>]]<span class="sc">$</span>theta,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>              <span class="at">weights_latent =</span> <span class="fu">c</span>(<span class="fl">0.12553907</span>, <span class="fl">0.33281060</span>, <span class="fl">0.20634298</span>, </span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                                 <span class="sc">-</span><span class="fl">0.26347936</span>, <span class="fl">0.07182799</span>),</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>              <span class="at">plot_contour =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>              <span class="at">return_detailed =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>              <span class="at">user_specified_items =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">7</span>,<span class="dv">11</span>,<span class="dv">13</span>,<span class="dv">14</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ex3</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; OVERALL SELECTION ACCURACY INDICES (SAI*)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SAI* under PFI computed for item subsets:</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          PS*   SR*   SE*   SP*</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI    0.870 0.739 0.738 0.913</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|1  0.870 0.740 0.740 0.913</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|7  0.865 0.730 0.729 0.910</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|11 0.865 0.728 0.729 0.909</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|13 0.867 0.735 0.735 0.912</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PFI|14 0.864 0.728 0.728 0.909</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on SAI* under PFI:</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              PS*    SR*    SE*   SP*</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|1)  -0.001 -0.001 -0.005 0.000</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|7)   0.013  0.021  0.021 0.012</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|11)  0.015  0.026  0.019 0.014</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|13)  0.006  0.009  0.006 0.005</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(PFI|14)  0.016  0.026  0.023 0.014</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI* under SFI vs. PFI: </span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   PS*    SR*    SE*   SP*</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)     0.001  0.001  0.005 0.000</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|1)   0.003  0.001  0.005 0.000</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|7)   0.000  0.000  0.003 0.000</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|11)  0.003  0.004  0.005 0.002</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|13)  0.000  0.000  0.000 0.000</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|14) -0.001 -0.001 -0.001 0.000</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI* </span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; under SFI vs. SAI* under PFI:</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    PS*    SR*   SE*    SP*</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|1)  -0.001  0.000 0.000  0.000</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|7)   0.001  0.001 0.001  0.000</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|11) -0.001 -0.003 0.000 -0.002</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|13)  0.001  0.001 0.005  0.000</span></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|14)  0.000  0.000 0.003  0.000</span></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adverse Impact (AI) ratio for item subsets:</span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       SFI   PFI</span></span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI      1 1.015</span></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|1    1 1.027</span></span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|7    1 1.016</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|11   1 1.078</span></span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|13   1 0.975</span></span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AI|14   1 0.993</span></span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS</span></span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI of reference vs. Efocal groups under PFI:</span></span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                TP     FP     TN    FN     PS     SR     SE     SP</span></span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef)    -0.015  0.004 -0.004 0.023 -0.011 -0.021 -0.046 -0.007</span></span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|1)  -0.019  0.000  0.000 0.031 -0.018 -0.014 -0.060  0.000</span></span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|7)  -0.012  0.000 -0.002 0.019 -0.011 -0.014 -0.041  0.000</span></span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|11) -0.032 -0.032  0.019 0.046 -0.047  0.031 -0.101  0.041</span></span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|13) -0.002  0.028 -0.017 0.000  0.016 -0.052 -0.007 -0.035</span></span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(r-Ef|14) -0.005  0.012 -0.008 0.008  0.004 -0.028 -0.016 -0.020</span></span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the discrepancy between SAI of</span></span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reference vs. Efocal groups under PFI:</span></span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 TP     FP     TN     FN     PS     SR     SE     SP</span></span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|1)  -0.004  0.004  0.004 -0.008 -0.007  0.007 -0.014  0.007</span></span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|7)   0.003  0.004  0.002  0.004  0.000  0.007  0.005  0.007</span></span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|11) -0.017 -0.028 -0.015 -0.023 -0.036 -0.010 -0.055 -0.034</span></span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|13)  0.013 -0.024 -0.013  0.023 -0.005 -0.031  0.039 -0.028</span></span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(r-Ef|14)  0.010 -0.008 -0.004  0.015  0.007 -0.007  0.030 -0.013</span></span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; COMPARING SAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE</span></span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ***********************************************************************</span></span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the reference group:</span></span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   TP     FP     TN     FN     PS     SR    SE     SP</span></span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)    0.007 -0.004  0.002 -0.011  0.004  0.012 0.023  0.003</span></span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|1)  0.010  0.000  0.002 -0.015  0.009  0.007 0.030  0.000</span></span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|7)  0.005  0.000  0.000 -0.011  0.004  0.007 0.018  0.000</span></span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|11) 0.015  0.016 -0.008 -0.023  0.022 -0.014 0.050 -0.021</span></span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|13) 0.000 -0.016  0.008  0.000 -0.009  0.026 0.002  0.017</span></span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|14) 0.000 -0.008  0.004 -0.004 -0.002  0.014 0.007  0.010</span></span>
+<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Discrepancy between SAI under SFI vs. PFI for the focal group:</span></span>
+<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    TP     FP     TN    FN     PS     SR     SE     SP</span></span>
+<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI)    -0.006  0.004 -0.002 0.009 -0.002 -0.013 -0.025 -0.004</span></span>
+<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|1)  -0.008  0.000  0.000 0.013 -0.007 -0.011 -0.034  0.000</span></span>
+<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|7)  -0.006  0.000  0.000 0.008 -0.005 -0.006 -0.022  0.000</span></span>
+<span id="cb8-89"><a href="#cb8-89" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|11) -0.014 -0.020  0.011 0.021 -0.024  0.015 -0.054  0.021</span></span>
+<span id="cb8-90"><a href="#cb8-90" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|13)  0.000  0.016 -0.009 0.000  0.010 -0.028 -0.002 -0.018</span></span>
+<span id="cb8-91"><a href="#cb8-91" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; h(SFI, PFI|14) -0.003  0.008 -0.004 0.004  0.002 -0.015 -0.009 -0.007</span></span>
+<span id="cb8-92"><a href="#cb8-92" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -----------------------------------------------------------------------</span></span>
+<span id="cb8-93"><a href="#cb8-93" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb8-94"><a href="#cb8-94" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the reference group:</span></span>
+<span id="cb8-95"><a href="#cb8-95" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                     TP     FP     TN     FN     PS     SR     SE     SP</span></span>
+<span id="cb8-96"><a href="#cb8-96" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|1)  -0.003  0.004  0.000 -0.004 -0.005  0.005 -0.007  0.003</span></span>
+<span id="cb8-97"><a href="#cb8-97" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|7)   0.002  0.004  0.002  0.000  0.000  0.005  0.005  0.003</span></span>
+<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|11) -0.008 -0.012 -0.006 -0.012 -0.018 -0.002 -0.027 -0.018</span></span>
+<span id="cb8-99"><a href="#cb8-99" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|13)  0.007 -0.012 -0.006  0.011 -0.005 -0.014  0.021 -0.014</span></span>
+<span id="cb8-100"><a href="#cb8-100" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|14)  0.007 -0.004 -0.002  0.007  0.002 -0.002  0.016 -0.007</span></span>
+<span id="cb8-101"><a href="#cb8-101" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-102"><a href="#cb8-102" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Impact of deleting an item on the difference between SAI under </span></span>
+<span id="cb8-103"><a href="#cb8-103" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SFI vs. PFI for the focal group:</span></span>
+<span id="cb8-104"><a href="#cb8-104" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                     TP     FP     TN     FN     PS     SR     SE     SP</span></span>
+<span id="cb8-105"><a href="#cb8-105" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|1)  -0.002  0.004  0.002 -0.004 -0.005  0.002 -0.009  0.004</span></span>
+<span id="cb8-106"><a href="#cb8-106" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|7)   0.000  0.004  0.002  0.001 -0.003  0.007  0.003  0.004</span></span>
+<span id="cb8-107"><a href="#cb8-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|11) -0.008 -0.016 -0.009 -0.012 -0.022 -0.002 -0.029 -0.017</span></span>
+<span id="cb8-108"><a href="#cb8-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|13)  0.006 -0.012 -0.007  0.009 -0.008 -0.015  0.023 -0.014</span></span>
+<span id="cb8-109"><a href="#cb8-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Δh(SFI, PFI|14)  0.003 -0.004 -0.002  0.005  0.000 -0.002  0.016 -0.003</span></span></code></pre></div>
+<p>Looking at <code>h_overall_par</code>, we see that dropping item 1 would lead to a marginal improvement in SR and SP, while SE would be unaffected. We see a similar pattern with item 18.</p>
+<p>Item 12 appears to be a bad item to drop as dropping this item produces the highest h values (i.e., the largest decrease in SR, SE, and SP) in this example, followed by items 10 and 11. Conversely, removing item 4 would not harm SR, SP, or SE.</p>
+<p>Out of the biased items (1, 7, 11, 13, and 14), we should consider dropping item 1 and retaining item 11.</p>
+<p>When item 11 is dropped, h for PS is negative (a higher proportion is selected under Efocal than the reference group). For all other item drop conditions, h for PS is positive.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
