@@ -3,7 +3,8 @@
 \name{PartInvMulti_we}
 \alias{PartInvMulti_we}
 \alias{PartInv}
-\title{Evaluating selection accuracy for two or more groups based on the MCAA Framework}
+\title{Evaluating selection accuracy for two or more groups based on the MCAA
+Framework}
 \usage{
 PartInvMulti_we(
   propsel = NULL,
@@ -149,7 +150,8 @@ and specificity.}
 latent and observed means, standard deviations, and covariances
 computed for each groups.}
 \item{ai_ratio}{A list of length \code{g - 1} containing the Adverse
-Impact (AI) ratio computed for each focal group.}
+Impact (AI) ratio computed for each focal group. A result less
+than 80\% may be considered evidence of adverse impact.}
 If \code{show_mi_result = TRUE}, the returned list will have the
 additional elements below:
 \item{propsel_mi}{Proportion selected under strict invariance.}
@@ -169,8 +171,10 @@ latent and observed means, standard deviations, and covariances
 computed for each group under strict invariance.}
 }
 \description{
-\code{PartInv, PartInvMulti_we} evaluates partial measurement invariance using
-an extension of Millsap & Kwok's (2004) approach.
+\code{PartInv, PartInvMulti_we} evaluates partial measurement invariance
+using the multidimensional classification accuracy analysis
+(Lai & Zhang, 2022), which is an extension of Millsap & Kwok's (2004)
+approach.
 }
 \examples{
 # Two groups, single dimension
@@ -218,13 +222,15 @@ lambda_matrix[1:2, 1] <-  c(.322, .655); lambda_matrix[3:5, 2] <- c(.398, .745, 
 lambda_matrix1[1:2, 1] <-  c(.392, .665); lambda_matrix1[3:5, 2] <- c(.388, .725, .523)
 lambda_matrix2[1:2, 1] <-  c(.372, .650); lambda_matrix2[3:5, 2] <- c(.368, .7, .543)
 # 2 dimensions, 5 items (2,3), 3 groups
-PartInv(propsel = 0.25, cut_z = 2, pmix = c(1/3, 1/3, 1/3),
-       alpha = list(c(1,1), c(0,0), c(.5, .5)),
-       psi = list(c(1, 0.2, 0.2, 1), c(1, 0.3, 0.3, 1), c(1, 0.4, 0.4, 1)),
-       nu = list(c(rep(1,5)), c(rep(1.5,5)),c(rep(1.2,5))),
-       lambda = list(lambda_matrix, lambda_matrix1, lambda_matrix2),
-       Theta = list(c(rep(.1,5)), c(rep(.4,5)), c(rep(.3,5))),
-       plot_contour = TRUE, labels = c("Group 1", "Group 2", "Group 3"),
-       custom_colors = c("salmon1", "lightgreen", "skyblue1"), 
-       show_mi_result = TRUE)
+PartInv(
+  propsel = 0.25, cut_z = 2, pmix = c(1 / 3, 1 / 3, 1 / 3),
+  alpha = list(c(1, 1), c(0, 0), c(.5, .5)),
+  psi = list(c(1, 0.2, 0.2, 1), c(1, 0.3, 0.3, 1), c(1, 0.4, 0.4, 1)),
+  nu = list(c(rep(1, 5)), c(rep(1.5, 5)), c(rep(1.2, 5))),
+  lambda = list(lambda_matrix, lambda_matrix1, lambda_matrix2),
+  Theta = list(c(rep(.1, 5)), c(rep(.4, 5)), c(rep(.3, 5))),
+  plot_contour = TRUE, labels = c("Group 1", "Group 2", "Group 3"),
+  custom_colors = c("salmon1", "lightgreen", "skyblue1"),
+  show_mi_result = TRUE
+)
 }

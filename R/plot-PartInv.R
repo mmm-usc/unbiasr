@@ -84,7 +84,7 @@ plot.PartInv <- function(x, labels, which_result = c("pi", "mi"),
     
     for (i in seq_along(1:n_g)) {
       x_lim <- c(x_lim, c(plot_dat$mn_xi[i] + c(-3, 3) * plot_dat$sd_xi[i]))
-      y_lim <- c(y_lim,plot_dat$mn_z[i] + c(-3, 3) * plot_dat$sd_z[i])
+      y_lim <- c(y_lim, plot_dat$mn_z[i] + c(-3, 3) * plot_dat$sd_z[i])
     }
     x_lim <- range(x_lim); y_lim <- range(y_lim)
     
@@ -94,7 +94,7 @@ plot.PartInv <- function(x, labels, which_result = c("pi", "mi"),
                     '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', 
                     '#ffffff', '#000000') 
                     #https://sashamaps.net/docs/resources/20-colors/
-    if(!is.null(custom_colors)) { colorlist <- custom_colors }
+    if (!is.null(custom_colors)) { colorlist <- custom_colors }
 
     # Plot the ellipse for the reference group
     contour_bvnorm(plot_dat$mn_xi[1], plot_dat$sd_xi[1],
@@ -119,7 +119,7 @@ plot.PartInv <- function(x, labels, which_result = c("pi", "mi"),
      y_cord <- rep(cut_z + c(.25, -.25) * plot_dat$sd_z[1], each = 2)
      text(x_cord, y_cord, c("A", "B", "D", "C"))
      
-     if(n_g > 20) {
+     if (n_g > 20) {
        warning("If you would like to plot the contours of more than 20 groups, 
                please provide a list of 20 color names.")
      }

@@ -36,8 +36,8 @@ The output will be the cumulative probability of q or \eqn{1 - q} on
 the mixture normal distribution.
 }
 \description{
-\code{pnormmix} returns the cumulative probability of q or \eqn{1 - q} on the
-mixture normal distribution.
+\code{pnormmix} returns the cumulative probability of q or \eqn{1 - q} on
+the mixture normal distribution.
 }
 \examples{
 \dontrun{

@@ -98,7 +98,7 @@ compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
     # compute the cut score using qnormmix based on input selection proportion
     cut_z <- qnormmix_mult(propsel, means = lst$mn_z, sds = lst$sd_z,
                            pmix = pmix, lower.tail = FALSE)
-  } else if (!is.null(cut_z) & is.null(propsel)) {
+  } else if (!is.null(cut_z) && is.null(propsel)) {
     # compute the selection proportion using pnormmix based on the cutoff value
     propsel <- pnormmix_mult(cut_z, lst$mn_z, lst$sd_z, pmix = pmix,
                              lower.tail = FALSE)
@@ -112,9 +112,9 @@ compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
   # computing summary statistics
   CAIs <- matrix(ncol = ifelse(is_mi, num_g, num_g + num_g - 1) , nrow = 8) 
   for (i in seq_along(1:num_g)) {
-    CAIs[,i] <- .partit_bvnorm(cut_xi, cut_z, lst$mn_xi[[i]], lst$sd_xi[[i]],
-                               lst$mn_z[[i]], lst$sd_z[[i]],
-                               cov12 = lst$cov_z_xi[[i]])
+    CAIs[, i] <- .partit_bvnorm(cut_xi, cut_z, lst$mn_xi[[i]], lst$sd_xi[[i]],
+                                lst$mn_z[[i]], lst$sd_z[[i]],
+                                cov12 = lst$cov_z_xi[[i]])
   }
   
   # Store mean, sd, cov values for the obs/latent variables
@@ -192,9 +192,9 @@ pnormmix <- function(q, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5,
 pnormmix_mult <- function(q, means = 0, sds = 1, pmix = NULL, 
                           lower.tail = TRUE) {
 
-  stopifnot("Provide mixing proportions between 0 and 1." = all(pmix > 0, 
+  stopifnot("Provide mixing proportions between 0 and 1." = all(pmix > 0,
                                                                 pmix < 1))
-  as.vector(pmix %*% 
+  as.vector(pmix %*%
               sapply(q, pnorm, mean = means, sd = sds, lower.tail = lower.tail))
 }
 
@@ -233,12 +233,9 @@ qnormmix <- function(p, mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1, pmix1 = 0.5,
 
 qnormmix_mult <- function(p, means = c(0), sds = 1, pmix = NULL, 
                           lower.tail = TRUE) {
-  
   stopifnot("Provide mixing proportions between 0 and 1." = 
               all(pmix > 0, pmix < 1,p >= 0, p <= 1))
-  
   f <- function(x) (pnormmix_mult(x, means, sds, pmix, lower.tail) - p)^2
-  
   start <- as.vector(pmix %*% sapply(p, qnorm, means, sds, 
                               lower.tail = lower.tail))
   nlminb(start, f)$par

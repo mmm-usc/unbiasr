@@ -213,7 +213,7 @@ item_deletion_h <- function(propsel = NULL,
 
   s_p_ref_list[[1]] <- acc$Reference; s_p_foc_list[[1]] <- acc$Focal
 
-  h_s_p_ref[1] <-acc$Reference$h; h_s_p_foc[1] <-acc$Focal$h
+  h_s_p_ref[1] <- acc$Reference$h; h_s_p_foc[1] <- acc$Focal$h
 
   h_R_Ef[1] <- cohens_h(partial$Reference, partial$`E_R(Focal)`)
 

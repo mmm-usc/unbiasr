@@ -43,9 +43,9 @@ test_that("plot.PartInv() works successfully", {
     labels = c("female", "male"),
     show_mi_result = TRUE
   )
-  expect_error(plot(piout_with_mi, labels = c("female", "male"), 
+  expect_error(plot(piout_with_mi, labels = c("female", "male"),
                     which_result = "mi"),
-               regexp = NA) 
+               regexp = NA)
 })
 
 test_that("Identical selection with the same parameters", {

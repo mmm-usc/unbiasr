@@ -132,19 +132,19 @@ err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
   vals <- c("TP", "FP", "TN", "FN")
 
   # TP_f decreases/remains unchanged & TP_r increases
-  if(r_bool[1] && f_bool_geq[1] & h_rf.1[1]) {
+  if(r_bool[1] && f_bool_geq[1] && h_rf.1[1]) {
     cat1(1, vals, 1)
     }
   # FP_r decreases and FP_f increases/remains unchanged
-  if(!r_bool[2] && f_bool_leq[2] & h_rf.1[2]) {
+  if(!r_bool[2] && f_bool_leq[2] && h_rf.1[2]) {
     cat1(2, vals, 2)
     }
   # TN_f decreases/remains unchanged and TN_r increases
-  if(r_bool[3] && f_bool_geq[3] & h_rf.1[3]) {
+  if(r_bool[3] && f_bool_geq[3] && h_rf.1[3]) {
     cat1(3, vals, 3)
     }
     # FN_r decreases and FN_f increases/remains unchanged
-  if(!r_bool[4] && f_bool_leq[4] & h_rf.1[4]) {
+  if(!r_bool[4] && f_bool_leq[4] && h_rf.1[4]) {
     cat1(4, vals, 4)
     }
 
@@ -202,25 +202,25 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
   del_weight <- weights_item[del_i] # the weight to be redistributed
 
   # Unidimensional
-  if ((n_dim == 1) & (is.null(n_i_per_dim) | length(n_i_per_dim) == 1)) {
+  if ((n_dim == 1) && (is.null(n_i_per_dim) || length(n_i_per_dim) == 1)) {
     # Increase each non-zero item in the vector by the weight to be distributed
     # proportional to the original weighting of the items.
     new_w[new_w != 0] <- new_w[new_w != 0] +
       new_w[new_w != 0] * del_weight / sum(new_w[new_w != 0])
 
   # Multidimensional, equal n
-  } else if ((n_dim > 1) & is.null(n_i_per_dim) & n_items %% n_dim != 0) {
+  } else if ((n_dim > 1) && is.null(n_i_per_dim) && n_items %% n_dim != 0) {
     stop("Please pass a vector of subscale lengths to n_i_per_dim.")
 
   # Multidimensional, number of items per dimension is not specified
-  } else if ((n_dim > 1) & is.null(n_i_per_dim)) {
+  } else if ((n_dim > 1) && is.null(n_i_per_dim)) {
     # Split indices into dimensions assuming dimensions have the same length.
     i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), n_dim, 
                                      labels = FALSE))
     new_w <- multidim_redist(n_dim, del_i, i_by_dim, new_w, del_weight)
 
   # Multidimensional, unequal n
-  } else if ((n_dim > 1) & !is.null(n_i_per_dim)) {
+  } else if ((n_dim > 1) && !is.null(n_i_per_dim)) {
     # Split indices into dimensions
     i_by_dim <- split(1:n_items, cut(seq_along(1:n_items),
                                      breaks = cumsum(c(0, n_i_per_dim)),
