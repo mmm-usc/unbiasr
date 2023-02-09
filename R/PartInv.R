@@ -2,10 +2,13 @@
 #' @importFrom mnormt pmnorm
 NULL
 
-#' Evaluating selection accuracy for two or more groups based on the MCAA Framework
+#' Evaluating selection accuracy for two or more groups based on the MCAA 
+#' Framework
 #' 
-#' \code{PartInv, PartInvMulti_we} evaluates partial measurement invariance using
-#' an extension of Millsap & Kwok's (2004) approach.
+#' \code{PartInv, PartInvMulti_we} evaluates partial measurement invariance 
+#' using the multidimensional classification accuracy analysis 
+#' (Lai & Zhang, 2022), which is an extension of Millsap & Kwok's (2004) 
+#' approach.
 #'
 #' @param propsel Proportion of selection. If missing, computed using `cut_z`.
 #' @param cut_z Pre-specified cutoff score on the observed composite. This
@@ -248,7 +251,7 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
   
    names(ai_ratio) <- paste0("Focal_", 1:(num_g - 1))
    row.names(ai_ratio) <- c("")
-   out[["ai_ratio" ]] <- ai_ratio
+   out[["ai_ratio"]] <- ai_ratio
   
    if (show_mi_result) { 
      pop_weights <- pmix
