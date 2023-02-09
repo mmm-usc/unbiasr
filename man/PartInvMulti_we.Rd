@@ -226,5 +226,5 @@ PartInv(propsel = 0.25, cut_z = 2, pmix = c(1/3, 1/3, 1/3),
        Theta = list(c(rep(.1,5)), c(rep(.4,5)), c(rep(.3,5))),
        plot_contour = TRUE, labels = c("Group 1", "Group 2", "Group 3"),
        custom_colors = c("salmon1", "lightgreen", "skyblue1"), 
-       show_mi_results = TRUE)
+       show_mi_result = TRUE)
 }
