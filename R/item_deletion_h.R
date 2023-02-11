@@ -185,7 +185,7 @@ item_deletion_h <- function(propsel = NULL,
   # Call PartInv with the full item set under strict invariance
   store_str[[1]] <- 
     PartInv(propsel = propsel, cut_z = cut_z, weights_item, weights_latent,
-            alpha_r = as.numeric(alpha_r), alpha_f = as.numeric(alpha_f), 
+            alpha_r = alpha_r, alpha_f = alpha_f, 
             psi_r = psi_r, psi_f = psi_f,
             lambda_r = lambda_f * pmix_f + lambda_r * pmix_ref,
             nu_r = nu_f * pmix_f + nu_r * pmix_ref,
@@ -197,7 +197,7 @@ item_deletion_h <- function(propsel = NULL,
   # Call PartInv with the full item set under partial invariance
   store_par[[1]] <- 
     PartInv(propsel = propsel, cut_z = cut_z, weights_item, weights_latent,
-            alpha_r = as.numeric(alpha_r), alpha_f = as.numeric(alpha_f), psi_r = psi_r, psi_f = psi_f,
+            alpha_r = alpha_r, alpha_f = alpha_f, psi_r = psi_r, psi_f = psi_f,
             lambda_r = lambda_r, lambda_f = lambda_f, nu_r = nu_r, nu_f = nu_f,
             Theta_r = Theta_r, Theta_f = Theta_f, pmix_ref = pmix_ref,
             plot_contour = plot_contour, labels = c("Reference", "Focal"),

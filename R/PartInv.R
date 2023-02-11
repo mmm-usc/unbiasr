@@ -94,13 +94,11 @@ NULL
 #' PartInv(propsel = .30,
 #'         weights_item = c(1, 1, 1, 1),
 #'         weights_latent = 1,
-#'         alpha_r = 0,
-#'         alpha_f = 0,
-#'         psi_r = 1,
-#'         lambda_r = c(1, 1, 1, 1),
-#'         nu_r = c(1, 1, 1, 2),
-#'         nu_f = c(1, 1, 1, 1),
-#'         Theta_r = diag(1, 4),
+#'         alpha = list(0, 0),
+#'         psi = list(1, 1),
+#'         lambda = list(c(1, 1, 1, 1), c(1, 1, 1, 1)),
+#'         nu = list(c(1, 1, 1, 2), c(1, 1, 1, 1)),
+#'         Theta = list(diag(1, 4), diag(1, 4)),
 #'         labels = c("Female", "Male"),
 #'         show_mi_result = TRUE)
 #' # Two groups, multiple dimensions
@@ -109,24 +107,21 @@ NULL
 #' lambda_matrix[3:5, 2] <- c(.398, .745, .543)
 #' PartInv(propsel = .05,
 #'         weights_latent = c(0.5, 0.5),
-#'         alpha_r = c(0, 0),
-#'         alpha_f = c(-0.3, 0.1),
-#'         psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
-#'         lambda_r = lambda_matrix,
-#'         nu_r = c(.225, .025, .010, .240, .125),
-#'         nu_f = c(.225, -.05, .240, -.025, .125),
-#'         Theta_r = diag(1, 5),
-#'         Theta_f = c(1, .95, .80, .75, 1))
+#'         alpha = list(c(0, 0), c(-0.3, 0.1)),
+#'         psi = list(matrix(c(1, 0.5, 0.5, 1), nrow = 2), 
+#'                    matrix(c(1, 0.5, 0.5, 1), nrow = 2)), 
+#'         lambda = list(lambda_matrix, lambda_matrix),
+#'         nu = list(c(.225, .025, .010, .240, .125),
+#'                   c(.225, -.05, .240, -.025, .125)),
+#'         Theta = list(diag(1, 5), c(1, .95, .80, .75, 1)))
 #' PartInv(propsel = .10,
 #'         weights_item = c(1/3, 1/3, 1/3, 1/3),
 #'         weights_latent = 1,
-#'         alpha_r = 0.5,
-#'         alpha_f = 0,
-#'         psi_r = 1,
-#'         lambda_r = c(.3, .5, .9, .7),
-#'         nu_r = c(.225, .025, .010, .240),
-#'         nu_f = c(.225, -.05, .240, -.025),
-#'         Theta_r = diag(.96, 4),
+#'         alpha = list(0.5, 0),
+#'         psi = list(1, 1),
+#'         lambda = list(c(.3, .5, .9, .7), c(.3, .5, .9, .7)),
+#'         nu = list(c(.225, .025, .010, .240), c(.225, -.05, .240, -.025)),
+#'         Theta = list(diag(.96, 4), diag(.96, 4)),
 #'         labels = c("female", "male"),
 #'         show_mi_result = TRUE)
 #' # Multiple groups, multiple dimensions
@@ -145,7 +140,7 @@ NULL
 #'   plot_contour = TRUE, labels = c("Group 1", "Group 2", "Group 3"),
 #'   custom_colors = c("salmon1", "lightgreen", "skyblue1"),
 #'   show_mi_result = TRUE
-#' )
+#'  )
 #' @export
 PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
                             weights_item = NULL,
@@ -164,6 +159,7 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
                             nu_r = NULL, nu_f = nu_r,
                             Theta_r = NULL, Theta_f = Theta_r,
                             ...) {
+
   # for backward compatibility with different input names
   if (missing(nu) && !is.null(nu_r)) {
     nu <- vector(2, mode = "list")
@@ -185,6 +181,7 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
     alpha[[1]] <- as.numeric(alpha_r)
     alpha[[2]] <- as.numeric(alpha_f)
   }
+  
   if ((missing(psi) || is.logical(psi)) && !is.null(phi_r)) {
     psi <- vector(2, mode = "list")
     psi[[1]] <- phi_r
@@ -195,6 +192,7 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
     psi[[1]] <- as.numeric(psi_r)
     psi[[2]] <- as.numeric(psi_f)
   }
+
   if (missing(lambda) && !is.null(lambda_r)) {
     lambda <- vector(2, mode = "list")
     lambda[[1]] <- lambda_r
@@ -208,19 +206,20 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
   if (missing(pmix) && !is.null(pmix_ref)) {
     pmix <- c(pmix_ref, 1 - pmix_ref) # assuming two groups
   }
-
-  stopifnot("Number of groups as indicated in the lengths of parameters must
+  
+  stopifnot("Theta, nu, and lambda must be lists." = 
+              (all(is.list(Theta) & is.list(nu) & is.list(lambda))))
+  stopifnot("Number of groups as indicated in the lengths of parameters must 
               match." = length(alpha) == lengths(list(psi, lambda, nu, Theta)))
   stopifnot(
     "Number of dimensions must match." =
-      (all(lengths(alpha) == 1, lengths(psi) == 1, is.vector(lambda)) |
-        ((lengths(alpha) == dim(psi)[1]) & (dim(psi)[1] == dim(psi)[2]) &
+      (((lengths(alpha) == dim(psi)[1]) & (dim(psi)[1] == dim(psi)[2]) &
           lengths(alpha) == unlist(lapply(lambda, ncol))))
-  )
+    )
   stopifnot(
     "Provide the correct number of mixing proportions." =
       length(pmix) == length(alpha)
-  )
+    )
 
   num_g <- length(alpha)
   n <- length(nu[[1]])
@@ -228,6 +227,12 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
 
   if (is.null(pmix)) pmix <- as.matrix(c(rep(1 / num_g, num_g)), ncol = num_g)
   pmix <- as.vector(pmix)
+
+  if (length(weights_latent) == 1) weights_latent <- rep(1, d)
+  
+  if(length(alpha) == 1 & length(psi) == 1) {
+    stop("Check whether alpha and psi have the correct dimensions.")
+  }
 
   # If labels were not provided by the user or the number of labels provided or
   # the number of labels provided does not match num_g, define new labels
@@ -243,11 +248,11 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
   names(Theta) <- paste("Theta", g, sep = "_")
 
   # Change any vector elements within the list Theta into diagonal matrices
-  Theta <- lapply(1:length(Theta), function(x) {
+  Theta <- lapply(seq_along(Theta), function(x) {
     if (is.vector(Theta[[x]])) {
       Theta[[x]] <- diag(Theta[[x]])
     } else {
-      Theta[[x]] <- Theta[[x]]
+      Theta[[x]] <- Theta[[x]] # necessary to ensure conformable arguments later
     }
   })
 
@@ -267,6 +272,9 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
   ai_ratio <- as.data.frame(out$summary[5, (num_g + 1):(num_g + num_g - 1)] /
     out$summary[5, 1])
 
+#    message("Note: The first group is being used as the reference group. 
+#Rearrange the inputs to designate a different group as the reference.\n\n")
+  
   names(ai_ratio) <- labels[-1]
   row.names(ai_ratio) <- c("")
   out[["ai_ratio"]] <- ai_ratio

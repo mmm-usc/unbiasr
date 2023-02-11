@@ -181,13 +181,11 @@ approach.
 PartInv(propsel = .30,
         weights_item = c(1, 1, 1, 1),
         weights_latent = 1,
-        alpha_r = 0,
-        alpha_f = 0,
-        psi_r = 1,
-        lambda_r = c(1, 1, 1, 1),
-        nu_r = c(1, 1, 1, 2),
-        nu_f = c(1, 1, 1, 1),
-        Theta_r = diag(1, 4),
+        alpha = list(0, 0),
+        psi = list(1, 1),
+        lambda = list(c(1, 1, 1, 1), c(1, 1, 1, 1)),
+        nu = list(c(1, 1, 1, 2), c(1, 1, 1, 1)),
+        Theta = list(diag(1, 4), diag(1, 4)),
         labels = c("Female", "Male"),
         show_mi_result = TRUE)
 # Two groups, multiple dimensions
@@ -196,24 +194,21 @@ lambda_matrix[1:2, 1] <- c(.322, .655)
 lambda_matrix[3:5, 2] <- c(.398, .745, .543)
 PartInv(propsel = .05,
         weights_latent = c(0.5, 0.5),
-        alpha_r = c(0, 0),
-        alpha_f = c(-0.3, 0.1),
-        psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
-        lambda_r = lambda_matrix,
-        nu_r = c(.225, .025, .010, .240, .125),
-        nu_f = c(.225, -.05, .240, -.025, .125),
-        Theta_r = diag(1, 5),
-        Theta_f = c(1, .95, .80, .75, 1))
+        alpha = list(c(0, 0), c(-0.3, 0.1)),
+        psi = list(matrix(c(1, 0.5, 0.5, 1), nrow = 2), 
+                   matrix(c(1, 0.5, 0.5, 1), nrow = 2)), 
+        lambda = list(lambda_matrix, lambda_matrix),
+        nu = list(c(.225, .025, .010, .240, .125),
+                  c(.225, -.05, .240, -.025, .125)),
+        Theta = list(diag(1, 5), c(1, .95, .80, .75, 1)))
 PartInv(propsel = .10,
         weights_item = c(1/3, 1/3, 1/3, 1/3),
         weights_latent = 1,
-        alpha_r = 0.5,
-        alpha_f = 0,
-        psi_r = 1,
-        lambda_r = c(.3, .5, .9, .7),
-        nu_r = c(.225, .025, .010, .240),
-        nu_f = c(.225, -.05, .240, -.025),
-        Theta_r = diag(.96, 4),
+        alpha = list(0.5, 0),
+        psi = list(1, 1),
+        lambda = list(c(.3, .5, .9, .7), c(.3, .5, .9, .7)),
+        nu = list(c(.225, .025, .010, .240), c(.225, -.05, .240, -.025)),
+        Theta = list(diag(.96, 4), diag(.96, 4)),
         labels = c("female", "male"),
         show_mi_result = TRUE)
 # Multiple groups, multiple dimensions
@@ -232,5 +227,5 @@ PartInv(
   plot_contour = TRUE, labels = c("Group 1", "Group 2", "Group 3"),
   custom_colors = c("salmon1", "lightgreen", "skyblue1"),
   show_mi_result = TRUE
-)
+ )
 }

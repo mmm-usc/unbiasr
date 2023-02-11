@@ -130,7 +130,7 @@ compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
   if (!is_mi) {
     # selection indices for the focal group if its distribution matches the
     # distribution of the reference group (Efocal)
-    mn_z_Ef <- sd_z_Ef <- mn_xi_Ef <- cov_z_xi_Ef <- vector(mode = "list")
+    mn_z_Ef <- sd_z_Ef <- cov_z_xi_Ef <- vector(mode = "list")
     
     for (i in 2:num_g) {
       mn_z_Ef[i - 1] <- c(crossprod(weights_item, nu[[i]] + lambda[[i]]
