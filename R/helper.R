@@ -172,7 +172,7 @@ compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
 #' @param pmix1 Mixing proportion for the first distribution. Should be a 
 #'   number in the range (0, 1).
 #' @param lower.tail A logical scalar; if TRUE (default), probabilities are 
-#' \eqn{P[X <= x]}; otherwise, \eqn{P[X > x]}. 
+#' \eqn{P[X <= x]}; otherwise, \eqn{P[X > x]}.
 #' @return The output will be the cumulative probability of q or \eqn{1 - q} on 
 #'   the mixture normal distribution.
 #' @examples

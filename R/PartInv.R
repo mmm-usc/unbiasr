@@ -101,46 +101,53 @@ NULL
 #'         Theta = list(diag(1, 4), diag(1, 4)),
 #'         labels = c("Female", "Male"),
 #'         show_mi_result = TRUE)
-#' # Two groups, multiple dimensions
+#' # Two groups, two dimensions
 #' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
 #' lambda_matrix[1:2, 1] <- c(.322, .655)
 #' lambda_matrix[3:5, 2] <- c(.398, .745, .543)
 #' PartInv(propsel = .05,
 #'         weights_latent = c(0.5, 0.5),
 #'         alpha = list(c(0, 0), c(-0.3, 0.1)),
-#'         psi = list(matrix(c(1, 0.5, 0.5, 1), nrow = 2), 
-#'                    matrix(c(1, 0.5, 0.5, 1), nrow = 2)), 
+#'         psi = list(matrix(c(1, 0.5, 0.5, 1), nrow = 2),
+#'                    matrix(c(1, 0.5, 0.5, 1), nrow = 2)),
 #'         lambda = list(lambda_matrix, lambda_matrix),
-#'         nu = list(c(.225, .025, .010, .240, .125),
+#'         nu = list(c(.225, .25, .010, .30, .125),
 #'                   c(.225, -.05, .240, -.025, .125)),
-#'         Theta = list(diag(1, 5), c(1, .95, .80, .75, 1)))
-#' PartInv(propsel = .10,
-#'         weights_item = c(1/3, 1/3, 1/3, 1/3),
-#'         weights_latent = 1,
-#'         alpha = list(0.5, 0),
-#'         psi = list(1, 1),
-#'         lambda = list(c(.3, .5, .9, .7), c(.3, .5, .9, .7)),
-#'         nu = list(c(.225, .025, .010, .240), c(.225, -.05, .240, -.025)),
-#'         Theta = list(diag(.96, 4), diag(.96, 4)),
-#'         labels = c("female", "male"),
-#'         show_mi_result = TRUE)
+#'         Theta = list(diag(1, 5), c(1, .95, .80, .75, 1)),
+#'         plot_contour = TRUE, show_mi_result = TRUE)
 #' # Multiple groups, multiple dimensions
-#' lambda_matrix <- lambda_matrix1 <- lambda_matrix2 <- matrix(0, nrow = 5, ncol = 2)
-#' lambda_matrix[1:2, 1] <-  c(.322, .655); lambda_matrix[3:5, 2] <- c(.398, .745, .543)
-#' lambda_matrix1[1:2, 1] <-  c(.392, .665); lambda_matrix1[3:5, 2] <- c(.388, .725, .523)
-#' lambda_matrix2[1:2, 1] <-  c(.372, .650); lambda_matrix2[3:5, 2] <- c(.368, .7, .543)
-#' # 2 dimensions, 5 items (2,3), 3 groups
-#' PartInv(
-#'   propsel = 0.25, cut_z = 2, pmix = c(1 / 3, 1 / 3, 1 / 3),
-#'   alpha = list(c(1, 1), c(0, 0), c(.5, .5)),
-#'   psi = list(c(1, 0.2, 0.2, 1), c(1, 0.3, 0.3, 1), c(1, 0.4, 0.4, 1)),
-#'   nu = list(c(rep(1, 5)), c(rep(1.5, 5)), c(rep(1.2, 5))),
-#'   lambda = list(lambda_matrix, lambda_matrix1, lambda_matrix2),
-#'   Theta = list(c(rep(.1, 5)), c(rep(.4, 5)), c(rep(.3, 5))),
-#'   plot_contour = TRUE, labels = c("Group 1", "Group 2", "Group 3"),
-#'   custom_colors = c("salmon1", "lightgreen", "skyblue1"),
-#'   show_mi_result = TRUE
-#'  )
+#' lambda_matrix <- matrix(0, nrow = 15, ncol = 1)
+#' lambda_matrix[1:15, 1] <- c(0.68, 0.79, -0.39, 0.74, 0.59, 0.46, 0.78, -0.30,
+#'                             0.59, 0.59, 0.64, 0.66, 0.59, 0.63, 0.64);
+#' nu_matrix <- nu_matrix1 <- nu_matrix2 <- nu_matrix3 <-
+#'   matrix(0, nrow = 15, ncol = 1)
+#' nu_matrix[1:15, 1] <- c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
+#'                         3.51, 3.26, 2.45, 3.39, 2.47);
+#' nu_matrix1[1:15, 1] <- c(3.9, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
+#'                          3.51, 3.26, 2.45, 3.76, 2.81);
+#' nu_matrix2[1:15, 1] <- c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.6, 3.18,
+#'                          3.51, 3.54, 2.45, 3.39, 2.81);
+#' nu_matrix3[1:15, 1] <- c(3.6, 3.1, 2.7, 2.6, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
+#'                          3.51, 3.26, 2.45, 3.39, 2.81);
+#' theta_matrix <- c(0.35, 0.62, 0.83, 0.61, 0.81, 0.87, 0.39, 1.05, 0.84, 0.92,
+#'                   0.36, 0.66, 0.8, 0.66, 0.9);
+#' theta_matrix1 <- c(0.61, 0.62, 0.83, 0.61, 0.81, 0.5, 0.7, 1.05, 0.84, 0.92,
+#'                    0.61, 0.66, 0.8, 0.54, 0.9);
+#' theta_matrix2 <- c(0.61, 0.62, 0.826, 0.61, 0.81, 0.87, 0.5, 1.05, 0.84,
+#'                    0.92, 0.61, 0.66, 0.8, 0.66, 0.9);
+#' theta_matrix3 <- c(0.61, 0.62, 0.826, 0.61, 0.81, 0.5, 0.7, 1.05, 0.84, 0.92,
+#'                    0.61, 0.66, 0.8, 0.66, 0.9);
+#' PartInv(propsel = 0.25, pmix = c(1/4, 1/4, 1/4, 1/4),
+#'         alpha = list(0, -0.70, -1.05, -1.10), psi = list(1, 1.2, 1.29, 1.3),
+#'         nu = list(nu_matrix, nu_matrix1, nu_matrix2, nu_matrix3),
+#'         lambda = list(lambda_matrix, lambda_matrix, lambda_matrix,
+#'                       lambda_matrix),
+#'         Theta = list(theta_matrix, theta_matrix1, theta_matrix2,
+#'                      theta_matrix3),
+#'         plot_contour = TRUE, show_mi_result = TRUE,
+#'         labels = c("Group 1", "Group 2", "Group 3", "Group 4"),
+#'         custom_colors = c("salmon1", "lightgreen", "skyblue1", "pink")
+#'         )
 #' @export
 PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
                             weights_item = NULL,
