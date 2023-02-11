@@ -1,272 +1,324 @@
 #' @importFrom stats qchisq pnorm qnorm nlminb
 #' @importFrom mnormt pmnorm
-#' @import zeallot
 NULL
 
-#' Evaluating selection accuracy based on the MCAA Framework
+#' Evaluating selection accuracy for two or more groups based on the MCAA
+#' Framework
 #'
-#' \code{PartInv, PartInvMulti_we} evaluate partial measurement invariance using
-#' an extension of Millsap & Kwok's (2004) approach
+#' \code{PartInv, PartInvMulti_we} evaluates partial measurement invariance
+#' using the multidimensional classification accuracy analysis
+#' (Lai & Zhang, 2022), which is an extension of Millsap & Kwok's (2004)
+#' approach.
 #'
 #' @param propsel Proportion of selection. If missing, computed using `cut_z`.
 #' @param cut_z Pre-specified cutoff score on the observed composite. This
 #'     argument is ignored when `propsel` has input.
 #' @param weights_item A vector of item weights.
 #' @param weights_latent A vector of latent factor weights.
-#' @param alpha_r A vector of latent factor means for the reference group.
-#' @param alpha_f (optional) A vector of latent factor means for the focal group;
-#'     if no input, set equal to `alpha_r`.
-#' @param psi_r A matrix of latent factor variance-covariances for the
-#'     reference group.
-#' @param psi_f (optional) A matrix of latent factor variance-covariances for
-#'     the focal group; if no input, set equal to `psi_r`.
-#' @param lambda_r A matrix of factor loadings for the reference group.
-#' @param lambda_f (optional) A matrix of factor loadings for the focal group;
-#'     if no input, set equal to `lambda_r`.
-#' @param nu_r A matrix of measurement intercepts for the reference group.
-#' @param nu_f (optional) A matrix of measurement intercepts for the focal
-#'     group; if no input, set equal to `nu_r`.
-#' @param Theta_r A matrix of the unique factor variances and covariances
-#'     for the reference group.
-#' @param Theta_f (optional) A matrix of the unique factor variances and
-#'     covariances for the focal group; if no input, set equal to `Theta_r`.
-#' @param pmix_ref Proportion of the reference group; default to 0.5 (i.e., two
-#'     populations have equal size).
-#' @param plot_contour Logical; whether the contour of the two populations
-#'     should be plotted; default to `TRUE`.
+#' @param alpha A list of length `g` containing `1 x d` latent factor mean
+#'     vectors where `g` is the number of groups and `d` is the number of latent
+#'     dimensions. The first element is assumed to belong to the reference group.
+#' @param psi A list of length `g` containing `d x d` latent factor
+#'     variance-covariance matrices where `g` is the number of groups and `d` is
+#'     the number of latent dimensions. The first element is assumed to belong
+#'     to the reference group.
+#' @param lambda A list of length `g` containing `n x d` factor loading matrices
+#'     where `g` is the number of groups, `d` is the number of latent dimensions,
+#'     and `n` is the number of items in the scale. The first element is assumed
+#'     to belong to the reference group.
+#' @param nu A list of length `g` containing `1 x n` measurement intercept
+#'     vectors where `g` is the number of groups and `n` is the number of items
+#'     in the scale. The first element is assumed to belong to the reference
+#'     group.
+#' @param Theta A list of length `g` containing `1 x n` vectors or `n x n`
+#'     matrices of unique factor variances and covariances, where `g` is the
+#'     number of groups and `n` is the number of items in the scale. The first
+#'     element is assumed to belong to the reference group.
+#' @param pmix List of length `g` containing the mixing proportions of each
+#'     group. If `NULL`, defaults to `1/g` for each group (i.e., the populations
+#'     have equal size).
+#' @param plot_contour Logical; whether the contour of the populations should be
+#'     plotted; `TRUE` by default.
 #' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
 #'     for both the input parameters and the implied parameters based on a
 #'     strict invariance model, with common parameter values as weighted
-#'     averages of the input values using `pmix_ref`.
-#' @param labels A character vector with two elements to label the reference
-#'     and the focal group on the graph.
+#'     averages of the input values using `pmix`.
+#' @param labels A character vector with `g` elements to label the reference
+#'     and focal groups on the plot, where `g` is the number of groups. If not
+#'     provided, groups are labeled automatically as 'Reference' (for the first
+#'     group) and 'Focal_1' through 'Focal_(g-1)', where `g` is the number of
+#'     groups.
 #' @param ... Other arguments passed to the \code{\link[graphics]{contour}}
 #'     function.
-#' @param phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f Deprecated; included
-#'     only for backward compatibility.
-#' @return The output will be a list of four elements and a plot if
+#' @param alpha_r,alpha_f,nu_r,nu_f,Theta_r,Theta_f,psi_r,psi_f,lambda_r,lambda_f,phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f,pmix_ref
+#'     Deprecated; included only for backward compatibility. When comparing two
+#'     groups, parameters with the '_r' suffix refer to the reference group while
+#'     parameters with the '_f' suffix refer to the focal group.
+#' @return The output will be a list of six elements and a plot if
 #'     \code{plot_contour == TRUE}:
-#'         \item{propsel}{Echo the same argument as input.}
+#'         \item{propsel}{Proportion selected.}
 #'         \item{cutpt_xi}{Cut point on the latent scale (xi).}
 #'         \item{cutpt_z}{Cut point on the observed scale (Z).}
-#'         \item{summary}{A 8 x 3 table, with columns representing the reference,
-#'             the focal, and the expected results if the latent distribution of
-#'             focal group matches the reference group. The rows represent
-#'             probabilities of true positive (A), false positive (B),
-#'             true negative (C), false negative (D); proportion selected,
+#'         \item{summary}{A `8 x (g + g - 1)` table, with columns representing
+#'             the reference and `g - 1` focal groups, and the expected results
+#'             if the latent distribution of `g - 1` focal group match the
+#'             reference group. The rows represent probabilities of true
+#'             positive (A), false positive (B), true negative (C), false
+#'             negative (D); proportion selected, success ratio, sensitivity,
+#'             and specificity.}
+#'         \item{bivardata}{List of length `5` containing `1 x g` vectors of
+#'             latent and observed means, standard deviations, and covariances
+#'             computed for each groups.}
+#'         \item{ai_ratio}{A list of length `g - 1` containing the Adverse
+#'             Impact (AI) ratio computed for each focal group. A result less
+#'             than 80% may be considered evidence of adverse impact.}
+#'      If \code{show_mi_result = TRUE}, the returned list will have the
+#'      additional elements below:
+#'          \item{propsel_mi}{Proportion selected under strict invariance.}
+#'          \item{cutpt_xi_mi}{Cut point on the latent scale (xi) under strict
+#'             invariance.}
+#'          \item{cutpt_z_mi}{Cut point on the observed scale (Z) under strict
+#'             invariance.}
+#'         \item{summary_mi}{A `8 x (g + g - 1)` table, with columns
+#'             representing the reference and `g - 1` focal groups and the
+#'             expected results if the latent distributions of `g - 1` focal
+#'             groups match the reference group, under strict invariance. The
+#'             rows represent probabilities of true positive (A), false positive
+#'             (B), true negative (C), false negative (D); proportion selected,
 #'             success ratio, sensitivity, and specificity.}
-#'
+#'          \item{bivardata_mi}{List of length `5` containing `1 x g` vectors of
+#'             latent and observed means, standard deviations, and covariances
+#'             computed for each group under strict invariance.}
 #' @examples
-#' # Single dimension
+#' # Two groups, single dimension
 #' PartInv(propsel = .30,
 #'         weights_item = c(1, 1, 1, 1),
 #'         weights_latent = 1,
-#'         alpha_r = 0,
-#'         alpha_f = 0,
-#'         psi_r = 1,
-#'         lambda_r = c(1, 1, 1, 1),
-#'         nu_r = c(1, 1, 1, 2),
-#'         nu_f = c(1, 1, 1, 1),
-#'         Theta_r = diag(1, 4),
-#'         labels = c("Female", "Male"),
-#'         show_mi_result = FALSE)
-#'  res <- PartInv(propsel = .50,
-#'         alpha_r = 0.5,
-#'         alpha_f = 0,
-#'         psi_r = 1,
-#'         lambda_r = c(1, 1, 1, 1),
-#'         nu_r = c(1, 2, 1, 2),
-#'         nu_f = c(1, 1, 1, 1),
-#'         Theta_r = diag(1, 4),
+#'         alpha = list(0, 0),
+#'         psi = list(1, 1),
+#'         lambda = list(c(1, 1, 1, 1), c(1, 1, 1, 1)),
+#'         nu = list(c(1, 1, 1, 2), c(1, 1, 1, 1)),
+#'         Theta = list(diag(1, 4), diag(1, 4)),
 #'         labels = c("Female", "Male"),
 #'         show_mi_result = TRUE)
-#' # multiple dimensions
+#' # Two groups, two dimensions
 #' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
 #' lambda_matrix[1:2, 1] <- c(.322, .655)
 #' lambda_matrix[3:5, 2] <- c(.398, .745, .543)
 #' PartInv(propsel = .05,
 #'         weights_latent = c(0.5, 0.5),
-#'         alpha_r = c(0, 0),
-#'         alpha_f = c(-0.3, 0.1),
-#'         psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
-#'         lambda_r = lambda_matrix,
-#'         nu_r = c(.225, .025, .010, .240, .125),
-#'         nu_f = c(.225, -.05, .240, -.025, .125),
-#'         Theta_r = diag(1, 5),
-#'         Theta_f = c(1, .95, .80, .75, 1))
-#' PartInvMulti_we(propsel = .10,
-#'                 weights_item = c(1/3, 1/3, 1/3, 1/3),
-#'                 weights_latent = 1,
-#'                 alpha_r = 0.5,
-#'                 alpha_f = 0,
-#'                 psi_r = 1,
-#'                 lambda_r = c(.3, .5, .9, .7),
-#'                 nu_r = c(.225, .025, .010, .240),
-#'                 nu_f = c(.225, -.05, .240, -.025),
-#'                 Theta_r = diag(.96, 4),
-#'                 labels = c("female", "male"),
-#'                 show_mi_result = TRUE)
+#'         alpha = list(c(0, 0), c(-0.3, 0.1)),
+#'         psi = list(matrix(c(1, 0.5, 0.5, 1), nrow = 2),
+#'                    matrix(c(1, 0.5, 0.5, 1), nrow = 2)),
+#'         lambda = list(lambda_matrix, lambda_matrix),
+#'         nu = list(c(.225, .25, .010, .30, .125),
+#'                   c(.225, -.05, .240, -.025, .125)),
+#'         Theta = list(diag(1, 5), c(1, .95, .80, .75, 1)),
+#'         plot_contour = TRUE, show_mi_result = TRUE)
+#' # Multiple groups, multiple dimensions
+#' lambda_matrix <- matrix(0, nrow = 15, ncol = 1)
+#' lambda_matrix[1:15, 1] <- c(0.68, 0.79, -0.39, 0.74, 0.59, 0.46, 0.78, -0.30,
+#'                             0.59, 0.59, 0.64, 0.66, 0.59, 0.63, 0.64);
+#' nu_matrix <- nu_matrix1 <- nu_matrix2 <- nu_matrix3 <-
+#'   matrix(0, nrow = 15, ncol = 1)
+#' nu_matrix[1:15, 1] <- c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
+#'                         3.51, 3.26, 2.45, 3.39, 2.47);
+#' nu_matrix1[1:15, 1] <- c(3.9, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
+#'                          3.51, 3.26, 2.45, 3.76, 2.81);
+#' nu_matrix2[1:15, 1] <- c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.6, 3.18,
+#'                          3.51, 3.54, 2.45, 3.39, 2.81);
+#' nu_matrix3[1:15, 1] <- c(3.6, 3.1, 2.7, 2.6, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
+#'                          3.51, 3.26, 2.45, 3.39, 2.81);
+#' theta_matrix <- c(0.35, 0.62, 0.83, 0.61, 0.81, 0.87, 0.39, 1.05, 0.84, 0.92,
+#'                   0.36, 0.66, 0.8, 0.66, 0.9);
+#' theta_matrix1 <- c(0.61, 0.62, 0.83, 0.61, 0.81, 0.5, 0.7, 1.05, 0.84, 0.92,
+#'                    0.61, 0.66, 0.8, 0.54, 0.9);
+#' theta_matrix2 <- c(0.61, 0.62, 0.826, 0.61, 0.81, 0.87, 0.5, 1.05, 0.84,
+#'                    0.92, 0.61, 0.66, 0.8, 0.66, 0.9);
+#' theta_matrix3 <- c(0.61, 0.62, 0.826, 0.61, 0.81, 0.5, 0.7, 1.05, 0.84, 0.92,
+#'                    0.61, 0.66, 0.8, 0.66, 0.9);
+#' PartInv(propsel = 0.25, pmix = c(1/4, 1/4, 1/4, 1/4),
+#'         alpha = list(0, -0.70, -1.05, -1.10), psi = list(1, 1.2, 1.29, 1.3),
+#'         nu = list(nu_matrix, nu_matrix1, nu_matrix2, nu_matrix3),
+#'         lambda = list(lambda_matrix, lambda_matrix, lambda_matrix,
+#'                       lambda_matrix),
+#'         Theta = list(theta_matrix, theta_matrix1, theta_matrix2,
+#'                      theta_matrix3),
+#'         plot_contour = TRUE, show_mi_result = TRUE,
+#'         labels = c("Group 1", "Group 2", "Group 3", "Group 4"),
+#'         custom_colors = c("salmon1", "lightgreen", "skyblue1", "pink")
+#'         )
 #' @export
 PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
                             weights_item = NULL,
                             weights_latent = NULL,
-                            kappa_r = NULL, kappa_f = kappa_r,
-                            alpha_r, alpha_f = alpha_r,
-                            phi_r = NULL, phi_f = phi_r,
-                            psi_r, psi_f = psi_r,
-                            lambda_r, lambda_f = lambda_r,
-                            tau_r = NULL, tau_f = tau_r,
-                            nu_r, nu_f = nu_r,
-                            Theta_r, Theta_f = Theta_r,
+                            alpha, psi, lambda, Theta, nu,
+                            pmix = 0.5,
                             pmix_ref = 0.5, plot_contour = FALSE,
                             show_mi_result = FALSE,
-                            labels = c("Reference", "Focal"), ...) {
-  
-  # for backward compatibility with different input names
-  if (missing(nu_r) && !is.null(tau_r)) {
-    nu_r <- tau_r; nu_f <- tau_f
-  }
-  if (missing(alpha_r) && !is.null(kappa_r)) {
-    alpha_r <- kappa_r; alpha_f <- kappa_f
-  }
-  if (missing(psi_r) && !is.null(phi_r)) {
-    psi_r <- phi_r; psi_f <- phi_f
-  }
-  # formatting; convert scalars/vectors to matrices
-  if (is.vector(Theta_r)) Theta_r <- diag(Theta_r, nrow = length(Theta_r))
-  if (is.vector(Theta_f)) Theta_f <- diag(Theta_f, nrow = length(Theta_f))
-  if (is.null(weights_item)) weights_item <- rep(1, length(nu_r))
-  if (is.null(weights_latent)) weights_latent <- rep(1, length(alpha_r))
-  alpha_r <- as.matrix(alpha_r); alpha_f <- as.matrix(alpha_f)
-  psi_r <- as.matrix(psi_r); psi_f <- as.matrix(psi_f)
-  
-  # check the dimensions of input parameters
-  stopifnot(nrow(alpha_r) == ncol(as.matrix(lambda_r)),
-            nrow(psi_r) == ncol(as.matrix(lambda_r)))
-  
-  mn_z_r <- mn_z_f <- sd_z_r <- sd_z_f <- mn_xi_r <- mn_xi_f <- sd_xi_r <- 
-    sd_xi_f <- cov_z_xi_r <- cov_z_xi_f <- NULL
-  # compute the mean, sd, cov for latent and observed variables 
-  c(mn_z_r, mn_z_f, sd_z_r, sd_z_f, mn_xi_r, mn_xi_f, sd_xi_r, sd_xi_f, 
-    cov_z_xi_r, cov_z_xi_f) %<-% mn_sd_cov(weights_item, weights_latent, alpha_r, 
-                                           alpha_f, psi_r, psi_f, lambda_r, 
-                                           lambda_f, nu_r, nu_f, Theta_r, Theta_f)
-  
-  # if there is an input for selection proportion
-  if (!is.null(propsel)) {
-    if (!is.null(cut_z))  warning("Input to `cut_z` is ignored.")
-    
-    # compute the cut score using qnormmix based on input selection proportion
-    fixed_cut_z <- FALSE
-    cut_z <- qnormmix(propsel, mn_z_r, sd_z_r, mn_z_f, sd_z_f, pmix_ref, 
-                      lower.tail = FALSE)
-  } else if (!is.null(cut_z) & is.null(propsel)) {
-    # if selection proportion is missing but a cut score was provided
-    fixed_cut_z <- TRUE
-    # compute the selection proportion using pnormmix based on the cutoff value
-    propsel <- pnormmix(cut_z, mn_z_r, sd_z_r, mn_z_f, sd_z_f, pmix_ref, 
-                        lower.tail = FALSE)
-  }
-  
-  # compute the threshold for the latent variable based on the selection 
-  # proportion provided by the user/computed using cut_z
-  cut_xi <- qnormmix(propsel, mn_xi_r, sd_xi_r, mn_xi_f, sd_xi_f, pmix_ref, 
-                     lower.tail = FALSE)
-  
-  # print warning message if propsel is too small
-  if (propsel <= 0.01) warning("Proportion selected is 1% or less.")
-  
-  # computing summary statistics using .partit_bvnorm
-  CAI_r <- .partit_bvnorm(cut_xi, cut_z, mn_xi_r, sd_xi_r, mn_z_r, sd_z_r,
-                             cov12 = cov_z_xi_r)
-  CAI_f <- .partit_bvnorm(cut_xi, cut_z, mn_xi_f, sd_xi_f, mn_z_f, sd_z_f,
-                             cov12 = cov_z_xi_f)
-  
-  # Store mean, sd, cov values for the obs/latent variables; ref/focal groups
-  zf_par <- list(mn_xi_r = mn_xi_r, mn_xi_f = mn_xi_f, 
-                 sd_xi_r = sd_xi_r, sd_xi_f = sd_xi_f, 
-                 mn_z_r = mn_z_r, mn_z_f = mn_z_f,
-                 sd_z_r = sd_z_r, sd_z_f = sd_z_f,
-                 cov_z_xi_r = cov_z_xi_r, cov_z_xi_f = cov_z_xi_f)
-  
-  # selection indices for the focal group if its distribution matches the
-  # distribution of the reference group (Efocal)
-  mn_z_Ef <- c(crossprod(weights_item, nu_f + lambda_f %*% alpha_r))
-  sd_z_Ef <- c(sqrt(crossprod(weights_item, lambda_f %*% psi_r %*% t(lambda_f) 
-                              + Theta_f) %*% weights_item))
-  cov_z_xi_Ef <- c(crossprod(weights_item, lambda_f %*% psi_r) %*%
-                     weights_latent)
-  CAI_Ef <- .partit_bvnorm(cut_xi, cut_z, mn_xi_r, sd_xi_r, mn_z_Ef, sd_z_Ef,
-                           cov12 = cov_z_xi_Ef)
+                            labels = NULL,
+                            kappa_r = NULL, kappa_f = kappa_r,
+                            alpha_r = NULL, alpha_f = alpha_r,
+                            phi_r = NULL, phi_f = phi_r,
+                            psi_r = NULL, psi_f = psi_r,
+                            lambda_r = NULL, lambda_f = lambda_r,
+                            tau_r = NULL, tau_f = tau_r,
+                            nu_r = NULL, nu_f = nu_r,
+                            Theta_r = NULL, Theta_f = Theta_r,
+                            ...) {
 
-  # result table
-  dat <- data.frame("Reference" = CAI_r, "Focal" = CAI_f, "E_R(Focal)" = CAI_Ef,
-                    row.names = c("A (true positive)", "B (false positive)",
-                                  "C (true negative)", "D (false negative)",
-                                  "Proportion selected", "Success ratio",
-                                  "Sensitivity", "Specificity"))
-  colnames(dat) <- c(labels, paste0("E_R(", labels[2], ")"))
+  # for backward compatibility with different input names
+  if (missing(nu) && !is.null(nu_r)) {
+    nu <- vector(2, mode = "list")
+    nu[[1]] <- nu_r
+    nu[[2]] <- nu_f
+  }
+  if (missing(nu) && !is.null(tau_r)) {
+    nu <- vector(2, mode = "list")
+    nu[[1]] <- tau_r
+    nu[[2]] <- tau_f
+  }
+  if ((missing(alpha) || is.logical(alpha)) && !is.null(kappa_r)) {
+    alpha <- vector(2, mode = "list")
+    alpha[[1]] <- kappa_r
+    alpha[[2]] <- kappa_f
+  }
+  if ((missing(alpha) || is.logical(alpha)) && !is.null(alpha_r)) {
+    alpha <- vector(2, mode = "list")
+    alpha[[1]] <- as.numeric(alpha_r)
+    alpha[[2]] <- as.numeric(alpha_f)
+  }
   
-  out <- list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z,
-              summary = dat, bivar_data = zf_par,
-              ai_ratio = dat["Proportion selected", 3] /
-                dat["Proportion selected", 1])
+  if ((missing(psi) || is.logical(psi)) && !is.null(phi_r)) {
+    psi <- vector(2, mode = "list")
+    psi[[1]] <- phi_r
+    psi[[2]] <- phi_f
+  }
+  if ((missing(psi) || is.logical(psi)) && !is.null(psi_r)) {
+    psi <- vector(2, mode = "list")
+    psi[[1]] <- as.numeric(psi_r)
+    psi[[2]] <- as.numeric(psi_f)
+  }
+
+  if (missing(lambda) && !is.null(lambda_r)) {
+    lambda <- vector(2, mode = "list")
+    lambda[[1]] <- lambda_r
+    lambda[[2]] <- lambda_f
+  }
+  if (missing(Theta) && !is.null(Theta_r)) {
+    Theta <- vector(2, mode = "list")
+    Theta[[1]] <- Theta_r
+    Theta[[2]] <- Theta_f
+  }
+  if (missing(pmix) && !is.null(pmix_ref)) {
+    pmix <- c(pmix_ref, 1 - pmix_ref) # assuming two groups
+  }
   
-  if (show_mi_result) {  # Need to be updated
-    # Strict
-    pop_weights <- c(pmix_ref, 1 - pmix_ref)
-    lambda_r <- lambda_f <-
-      .weighted_average_list(list(lambda_r, lambda_f), weights = pop_weights)
-    nu_r <- nu_f <-
-      .weighted_average_list(list(nu_r, nu_f), weights = pop_weights)
-    Theta_r <- Theta_f <-
-      .weighted_average_list(list(Theta_r, Theta_f), weights = pop_weights)
-    
-    # compute the mean, sd, cov for latent and observed variables
-    c(mn_z_r, mn_z_f, sd_z_r, sd_z_f, mn_xi_r, mn_xi_f, sd_xi_r, sd_xi_f, 
-      cov_z_xi_r, cov_z_xi_f) %<-% mn_sd_cov(weights_item, weights_latent,
-                                             alpha_r, alpha_f, psi_r, psi_f, 
-                                             lambda_r, lambda_f, nu_r, nu_f, 
-                                             Theta_r, Theta_f)
-    if (fixed_cut_z) {
-      propsel <- pnormmix(cut_z, mn_z_r, sd_z_r, mn_z_f, sd_z_f, pmix_ref, 
-                          lower.tail = FALSE)
+  stopifnot("Theta, nu, and lambda must be lists." = 
+              (all(is.list(Theta) & is.list(nu) & is.list(lambda))))
+  stopifnot("Number of groups as indicated in the lengths of parameters must 
+              match." = length(alpha) == lengths(list(psi, lambda, nu, Theta)))
+  stopifnot(
+    "Number of dimensions must match." =
+      (((lengths(alpha) == dim(psi)[1]) & (dim(psi)[1] == dim(psi)[2]) &
+          lengths(alpha) == unlist(lapply(lambda, ncol))))
+    )
+  stopifnot(
+    "Provide the correct number of mixing proportions." =
+      length(pmix) == length(alpha)
+    )
+
+  num_g <- length(alpha)
+  n <- length(nu[[1]])
+  d <- length(alpha[[1]])
+
+  if (is.null(pmix)) pmix <- as.matrix(c(rep(1 / num_g, num_g)), ncol = num_g)
+  pmix <- as.vector(pmix)
+
+  if (length(weights_latent) == 1) weights_latent <- rep(1, d)
+  
+  if(length(alpha) == 1 & length(psi) == 1) {
+    stop("Check whether alpha and psi have the correct dimensions.")
+  }
+
+  # If labels were not provided by the user or the number of labels provided or
+  # the number of labels provided does not match num_g, define new labels
+  if (is.null(labels) || (length(labels) != num_g)) {
+    labels <- c("Reference", paste0("Focal_", 1:(num_g - 1)))
+  }
+
+  g <- c("r", paste0("f", 1:(num_g - 1)))
+  names(alpha) <- paste("alpha", g, sep = "_")
+  names(nu) <- paste("nu", g, sep = "_")
+  names(lambda) <- paste("lambda", g, sep = "_")
+  names(psi) <- paste("psi", g, sep = "_")
+  names(Theta) <- paste("Theta", g, sep = "_")
+
+  # Change any vector elements within the list Theta into diagonal matrices
+  Theta <- lapply(seq_along(Theta), function(x) {
+    if (is.vector(Theta[[x]])) {
+      Theta[[x]] <- diag(Theta[[x]])
     } else {
-      cut_z <- qnormmix(propsel, mn_z_r, sd_z_r, mn_z_f, sd_z_f, pmix_ref, 
-                        lower.tail = FALSE)
+      Theta[[x]] <- Theta[[x]] # necessary to ensure conformable arguments later
     }
-    cut_xi <- qnormmix(propsel, mn_xi_r, sd_xi_r, mn_xi_f, sd_xi_f, pmix_ref, 
-                       lower.tail = FALSE)
-    
-    CAI_r <- .partit_bvnorm(cut_xi, cut_z, mn_xi_r, sd_xi_r, mn_z_r, sd_z_r,
-                               cov12 = cov_z_xi_r)
-    CAI_f <- .partit_bvnorm(cut_xi, cut_z, mn_xi_f, sd_xi_f, mn_z_f, sd_z_f,
-                               cov12 = cov_z_xi_f)
-    
-    zf_par_mi <- list(mn_xi_r = mn_xi_r, mn_xi_f = mn_xi_f,
-                      sd_xi_r = sd_xi_r, sd_xi_f = sd_xi_f,
-                      mn_z_r = mn_z_r, mn_z_f = mn_z_f,
-                      sd_z_r = sd_z_r, sd_z_f = sd_z_f,
-                      cov_z_xi_r = cov_z_xi_r, cov_z_xi_f = cov_z_xi_f) 
-    
-    dat <- data.frame("Reference" = CAI_r, "Focal" = CAI_f,
-                      row.names = c("A (true positive)", "B (false positive)",
-                                    "C (true negative)", "D (false negative)",
-                                    "Proportion selected", "Success ratio",
-                                    "Sensitivity", "Specificity"))
-    colnames(dat) <- labels
-    out$propsel_mi <- propsel
-    out$cutpt_xi_mi <- cut_xi
-    out$cutpt_z_mi <- cut_z
-    out$summary_mi <- dat
-    out$bivar_data_mi <- zf_par_mi
-  }
+  })
+
+  alpha <- lapply(alpha, as.matrix)
+  psi <- lapply(psi, matrix, nrow = d, ncol = d)
+
+  if (is.null(weights_item)) weights_item <- rep(1, n)
+  if (is.null(weights_latent)) weights_latent <- rep(1, d)
+
+  out <- compute_cai(weights_item, weights_latent, alpha, psi, lambda, nu,
+    Theta, pmix, propsel, labels, cut_z,
+    is_mi = FALSE
+  )
+
+  if (out$propsel <= 0.01) warning("Proportion selected is 1% or less.")
+
+  ai_ratio <- as.data.frame(out$summary[5, (num_g + 1):(num_g + num_g - 1)] /
+    out$summary[5, 1])
+
+#    message("Note: The first group is being used as the reference group. 
+#Rearrange the inputs to designate a different group as the reference.\n\n")
   
-  class(out) <- "PartInv"
-  if (plot_contour) {
-    plot(out, labels = labels, ...)
+  names(ai_ratio) <- labels[-1]
+  row.names(ai_ratio) <- c("")
+  out[["ai_ratio"]] <- ai_ratio
+
+  if (show_mi_result) {
+    pop_weights <- pmix
+    lambda_average <- .weighted_average_list(lambda, weights = pop_weights)
+    nu_average <- .weighted_average_list(nu, weights = pop_weights)
+    Theta_average <- .weighted_average_list(Theta, weights = pop_weights)
+
+    lambda_average_g <- nu_average_g <- Theta_average_g <-
+      vector(mode = "list", length = num_g)
+
+    for (i in 1:num_g) {
+      lambda_average_g[[i]] <- lambda_average
+      nu_average_g[[i]] <- nu_average
+      Theta_average_g[[i]] <- Theta_average
+    }
+
+    out_mi <- compute_cai(weights_item, weights_latent, alpha, psi,
+      lambda_average_g, nu_average_g, Theta_average_g,
+      pmix, propsel, labels, cut_z,
+      is_mi = TRUE
+    )
+    colnames(out_mi$summary) <- labels
+    names(out_mi) <- paste0(names(out_mi), "_mi")
+    out <- c(out, out_mi)
   }
-  class(out) <- c('PartInv', 'PartInvSummary')
+
+
+  if (plot_contour) {
+    plot.PartInv(out, labels = labels, which_result = "pi", ...)
+    if (show_mi_result == TRUE) {
+      plot.PartInv(out, labels = labels, which_result = "mi", ...)
+    }
+  }
+  class(out) <- "PartInv"
   out
 }
 

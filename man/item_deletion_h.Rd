@@ -25,7 +25,6 @@ item_deletion_h(
   labels = c("Reference", "Focal"),
   n_dim = 1,
   n_i_per_dim = NULL,
-  print_formatted = TRUE,
   user_specified_items = NULL,
   delete_one_cutoff = NULL,
   ...
@@ -92,15 +91,6 @@ dimension; \code{NULL} by default. If the user provides a value for \code{n_dim}
 that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that
 the subscales have an equal number of items.}
 
-\item{print_formatted}{Logical; default to \code{TRUE}. By default, prints five
-formatted summary tables for biased (or user-specified) items: \code{ACAI},
-\verb{h ACAI (deletion)}, \verb{AI Ratio}, \verb{h CAI Ref-EF}, and
-\verb{delta h CAI Ref-EF (deletion)}. The formatted print output is separate
-from the returned object. The function always returns an object with
-detailed elements that can be accessed if the function output is stored
-in a variable. If \code{print_formatted==FALSE}, all elements in the
-returned object are printed without formatting.}
-
 \item{user_specified_items}{A vector; default to \code{NULL}. If the user does not
 input a vector of items, only the items determined to contain bias will
 be considered for deletion.}
@@ -144,14 +134,12 @@ the focal group respectively, for subsets of items.}
 the impact of deleting an item on the discrepancy between CAI under
 SFI vs. PFI for the reference group and the focal group respectively,
 for subsets of items.}
-\item{PartInv by groups}{Two lists (\code{reference} and \code{focal}), each
-containing restructured tables of PartInv outputs by invariance
-condition, and corresponding Cohen's h values for each item deletion
-scenario.}
+\item{h SFI-PFI by groups}{Two lists (\code{reference} and \code{focal}). The lists
+contain tables for each item deletion scenario displaying raw CAI
+under SFI, under PFI, and the Cohen's h value associated with the
+difference between the invariance condition.}
 \item{PartInv}{Two lists (\code{strict} and \code{partial}), each containing
 PartInv() outputs.}
-\item{formatted}{Logical, whether simplified and formatted output
-should be printed.}
 \item{return_items}{A vector containing the items that will be considered
 for deletion.}
 }
@@ -181,8 +169,7 @@ multi_dim <- item_deletion_h(propsel = .05, n_dim = 5,
                              nu_f = c(.225, -.05, .240, -.025, .125),
                              Theta_r = diag(1, 5),
                              Theta_f = diag(c(1, .95, .80, .75, 1)),
-                             plot_contour = TRUE,
-                             print_formatted = TRUE)
+                             plot_contour = TRUE)
 # Single dimension example
 single_dim <- item_deletion_h(propsel = .10,
                                weights_item = c(1, 0.9, 0.8, 1),
@@ -194,6 +181,5 @@ single_dim <- item_deletion_h(propsel = .10,
                                nu_r = c(.225, .025, .010, .240),
                                nu_f = c(.225, -.05, .240, -.025),
                                Theta_r = diag(.96, 4),
-                               n_dim = 1, plot_contour = TRUE,
-                               print_formatted = TRUE)
+                               n_dim = 1, plot_contour = TRUE)
 }

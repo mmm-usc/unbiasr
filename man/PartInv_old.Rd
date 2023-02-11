@@ -45,8 +45,8 @@ if no input, set equal to \code{phi_r}.}
 \item{lambda_f}{(optional) a vector of factor loadings for the focal group;
 if no input, set equal to \code{lambda_r}.}
 
-\item{Theta_r}{a matrix of the unique factor variances and covariances
-for the reference group.}
+\item{Theta_r}{a matrix of the unique factor variances and covariances for
+the reference group.}
 
 \item{Theta_f}{(optional) a matrix of the unique factor variances and
 covariances for the focal group; if no input, set equal to
@@ -54,11 +54,11 @@ covariances for the focal group; if no input, set equal to
 
 \item{tau_r}{a vector of measurement intercepts for the reference group.}
 
-\item{tau_f}{(optional) a vector of measurement intercepts for the focal group;
-if no input, set equal to \code{tau_r}.}
+\item{tau_f}{(optional) a vector of measurement intercepts for the focal
+group; if no input, set equal to \code{tau_r}.}
 
-\item{pmix_ref}{Proportion of the reference group; default to 0.5
-(i.e., two populations have equal size).}
+\item{pmix_ref}{Proportion of the reference group; default to 0.5 (i.e., two
+populations have equal size).}
 
 \item{plot_contour}{logical; whether the contour of the two populations
 should be plotted; default to \code{TRUE}.}

@@ -1,3 +1,61 @@
+
+# Function that performs formatting for various variables to be returned in
+# item_deletion_h
+format_item_del <- function(N, l) {
+  # Format stored variables
+  names(l$AI_ratios) <- c("full", paste0("|", c(1:N)))
+  rownames(l$AI_ratios) <- c("AI_SFI", "AI_PFI")
+  names(l$h_R_Ef) <-  c("r-Ef", paste0("r-Ef|", c(1:N)))
+  names(l$delta_s_p_ref) <- names(l$delta_s_p_foc) <- paste0("SFI, PFI|", 
+                                                             c(1:N))
+  names(l$store_str) <- names(l$store_par) <- names(l$s_p_ref_list) <-
+    names(l$s_p_foc_list) <- c("full", paste0("|", c(1:N)))
+  names(l$acai_p) <- c("full", paste0("|", c(1:N)))
+  names(l$h_acai_p) <- paste0("|", c(1:N))
+  rownames(l$h_acai_p) <- rownames(l$h_acai_s_p) <-
+    c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)")
+  rownames(l$acai_p) <- c("PS*", "SR*", "SE*", "SP*")
+  rownames(l$delta_h_s_p_acai) <-
+    paste0("\u0394h(", c("h(PS*)", "h(SR*)", "h(SE*)", "h(SP*)"), ")")
+  rownames(l$delta_s_p_ref) <- rownames(l$delta_s_p_foc) <- 
+    rownames(l$delta_h_R_Ef) <-
+    paste0("\u0394h(", c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP"), ")")
+  rownames(l$h_R_Ef) <- rownames(l$h_s_p_ref) <- rownames(l$h_s_p_foc) <-
+    c("h(TP)", "h(FP)", "h(TN)", "h(FN)", "h(PS)", "h(SR)", "h(SE)", "h(SP)")
+  
+  store_par <- list(outputlist = l$store_par, condition = "partial",
+                    itemset = l$return_items)
+  store_str <- list(outputlist = l$store_str, condition = "strict",
+                    itemset = l$return_items)
+  h_s_p_list_ref <- list(outputlist = l$s_p_ref_list, condition = "ref",
+                                itemset = l$return_items)
+  h_s_p_list_foc <- list(outputlist = l$s_p_foc_list, condition = "foc",
+                                itemset = l$return_items)
+  names(l$h_s_p_ref) <- names(l$h_s_p_foc) <- c("SFI, PFI", 
+                                            paste0("SFI, PFI|", c(1:N)))
+  
+  names(l$delta_h_R_Ef) <- paste0("r-Ef|", c(1:N))
+  names(l$delta_h_s_p_acai) <- paste0("SFI, PFI|", c(1:N))
+  names(l$h_acai_s_p) <- c("SFI, PFI", paste0("SFI, PFI|", c(1:N)))
+  
+  acai_p <- as.data.frame(cbind(l$acai_p))
+  h_acai_p <- as.data.frame(l$h_acai_p)
+  
+  return(list("acai_p" = t(acai_p), "h_acai_p" = t(h_acai_p), 
+              "h_acai_s_p" = t(l$h_acai_s_p), 
+              "delta_h_s_p_acai" = t(l$delta_h_s_p_acai), 
+              "AI_ratios" = t(l$AI_ratios), "h_R_Ef" = t(l$h_R_Ef), 
+              "delta_h_R_Ef" = t(l$delta_h_R_Ef), "h_s_p_ref" = t(l$h_s_p_ref), 
+              "h_s_p_foc" = t(l$h_s_p_foc), 
+              "delta_s_p_ref" = t(l$delta_s_p_ref), 
+              "delta_s_p_foc" = t(l$delta_s_p_foc), 
+              "h_s_p_list_ref" = h_s_p_list_ref, 
+              "h_s_p_list_foc" = h_s_p_list_foc, 
+              "store_str" = store_str, "store_par" = store_par))
+}
+
+
+
 #' @title
 #' Compute PS, SR, SE, SP weighted by group proportions
 #'
@@ -20,18 +78,19 @@
 #'          \item{SP}{Specificity, computed as \eqn{TN/(TN + FP)}.}
 
 get_aggregate_CAI <- function(pmixr, store_summary) {
-  r <- store_summary$Reference; f <- store_summary$Focal
+  r <- store_summary$Reference
+  f <- store_summary$Focal
   pmixf <- 1 - pmixr
   
-  TP <- pmixr*r[1] + pmixf*f[1]
-  FP <- pmixr*r[2] + pmixf*f[2]
-  TN <- pmixr*r[3] + pmixf*f[3]
-  FN <- pmixr*r[4] + pmixf*f[4]
+  TP <- pmixr * r[1] + pmixf * f[1]
+  FP <- pmixr * r[2] + pmixf * f[2]
+  TN <- pmixr * r[3] + pmixf * f[3]
+  FN <- pmixr * r[4] + pmixf * f[4]
   
   PS <- TP + FP
   SR <- TP / (TP + FP)
   SE <- TP / (TP + FN)
-  SP <- TN /(TN + FP)
+  SP <- TN / (TN + FP)
   return(c(PS, SR, SE, SP))
 }
 
@@ -55,26 +114,39 @@ get_aggregate_CAI <- function(pmixr, store_summary) {
 #' excluded.
 err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
   # Store relevant values.
-  r <- store_summary_full$Reference; f <- store_summary_full$Focal
-  r_del1 <- store_summary_del1$Reference; f_del1 <- store_summary_del1$Focal
+  r <- store_summary_full$Reference
+  f <- store_summary_full$Focal
+  r_del1 <- store_summary_del1$Reference
+  f_del1 <- store_summary_del1$Focal
 
   # Compute Cohen's h for the difference between full and drop one indices.
-  h_r <- cohens_h(r, r_del1); h_f <- cohens_h(f, f_del1)
+  h_r <- cohens_h(r, r_del1)
+  h_f <- cohens_h(f, f_del1)
   # Check for changes (boolean).
-  r_bool <- r < r_del1; f_bool_leq <- f <= f_del1; f_bool_geq <- f >= f_del1
+  r_bool <- r < r_del1 
+  f_bool_leq <- f <= f_del1
+  f_bool_geq <- f >= f_del1
   # Check the difference for the reference or focal group has Cohen's h > 0.1.
   h_rf.1 <- (h_r > 0.1 | h_f > 0.1)
 
   vals <- c("TP", "FP", "TN", "FN")
 
   # TP_f decreases/remains unchanged & TP_r increases
-  if(r_bool[1] && f_bool_geq[1] & h_rf.1[1]){ cat1(1, vals, 1) }
+  if(r_bool[1] && f_bool_geq[1] && h_rf.1[1]) {
+    cat1(1, vals, 1)
+    }
   # FP_r decreases and FP_f increases/remains unchanged
-  if(!r_bool[2] && f_bool_leq[2] & h_rf.1[2]){ cat1(2, vals, 2) }
+  if(!r_bool[2] && f_bool_leq[2] && h_rf.1[2]) {
+    cat1(2, vals, 2)
+    }
   # TN_f decreases/remains unchanged and TN_r increases
-  if(r_bool[3] && f_bool_geq[3] & h_rf.1[3]){ cat1(3, vals, 3) }
+  if(r_bool[3] && f_bool_geq[3] && h_rf.1[3]) {
+    cat1(3, vals, 3)
+    }
     # FN_r decreases and FN_f increases/remains unchanged
-  if(!r_bool[4] && f_bool_leq[4] & h_rf.1[4]){ cat1(4, vals, 4) }
+  if(!r_bool[4] && f_bool_leq[4] && h_rf.1[4]) {
+    cat1(4, vals, 4)
+    }
 
   cat1 <- function(i, vals, val_i) {
     cat("Increases in aggregate CAI after deleting item ", i, "may be
@@ -111,46 +183,51 @@ err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
 #'
 #' multi_eq_w <- c(1:9)
 #' redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2)
-#' redistribute_weights(multi_eq_w, n_dim = 3, n_i_per_dim = c(3, 3, 3), del_i = 2)
+#' redistribute_weights(multi_eq_w, n_dim = 3, n_i_per_dim = c(3, 3, 3), 
+#' del_i = 2)
 #' sum(multi_eq_w)==sum(redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2))
 #'
 #' multi_uneq_w <- c(1:12)
-#' redistribute_weights(multi_uneq_w, n_dim = 3, n_i_per_dim = c(3, 6, 3), del_i=2)
+#' redistribute_weights(multi_uneq_w, n_dim = 3, n_i_per_dim = c(3, 6, 3), 
+#' del_i=2)
 #' sum(multi_uneq_w)==sum(redistribute_weights(multi_uneq_w, n_dim = 3,
-#'                                             n_i_per_dim = c(3, 6, 3), del_i=2))
+#'                                             n_i_per_dim = c(3, 6, 3),
+#'                                             del_i=2))
 #' @export
 redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
-                               del_i){
+                               del_i) {
   n_items <- length(weights_item)
-  new_w <- weights_item; new_w[del_i] <- 0
+  new_w <- weights_item
+  new_w[del_i] <- 0
   del_weight <- weights_item[del_i] # the weight to be redistributed
 
   # Unidimensional
-  if ((n_dim == 1) & (is.null(n_i_per_dim) | length(n_i_per_dim) == 1)) {
+  if ((n_dim == 1) && (is.null(n_i_per_dim) || length(n_i_per_dim) == 1)) {
     # Increase each non-zero item in the vector by the weight to be distributed
     # proportional to the original weighting of the items.
     new_w[new_w != 0] <- new_w[new_w != 0] +
       new_w[new_w != 0] * del_weight / sum(new_w[new_w != 0])
 
   # Multidimensional, equal n
-  } else if ((n_dim > 1) & is.null(n_i_per_dim) & n_items %% n_dim != 0){
-    stop('Please pass a vector of subscale lengths to n_i_per_dim.')
+  } else if ((n_dim > 1) && is.null(n_i_per_dim) && n_items %% n_dim != 0) {
+    stop("Please pass a vector of subscale lengths to n_i_per_dim.")
 
   # Multidimensional, number of items per dimension is not specified
-  } else if ((n_dim > 1) & is.null(n_i_per_dim)) {
+  } else if ((n_dim > 1) && is.null(n_i_per_dim)) {
     # Split indices into dimensions assuming dimensions have the same length.
-    i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), n_dim, labels = FALSE))
+    i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), n_dim, 
+                                     labels = FALSE))
     new_w <- multidim_redist(n_dim, del_i, i_by_dim, new_w, del_weight)
 
   # Multidimensional, unequal n
-  } else if ((n_dim > 1) & !is.null(n_i_per_dim)) {
+  } else if ((n_dim > 1) && !is.null(n_i_per_dim)) {
     # Split indices into dimensions
     i_by_dim <- split(1:n_items, cut(seq_along(1:n_items),
                                      breaks = cumsum(c(0, n_i_per_dim)),
                                      labels = FALSE))
     new_w <- multidim_redist(n_dim, del_i, i_by_dim, new_w, del_weight)
   } else {
-    stop('Check n_dim and n_i_per_dim')
+    stop("Check n_dim and n_i_per_dim")
   }
   return(new_w)
 }
@@ -158,8 +235,8 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
 # scale, updates the specific subscale with redistributed weights proportional
 # to the original weights if the item to be deleted is in that dimension.
 multidim_redist <- function(n_dim, del_i, i_by_dim, new_w, del_weight) {
-  for(k in 1:n_dim) {
-    if(del_i %in% i_by_dim[[k]]){ # If del_i is in dimension k
+  for (k in 1:n_dim) {
+    if (del_i %in% i_by_dim[[k]]) { # If del_i is in dimension k
       # Create temporary vector to store the remaining indices in dimension k
       temp_i <- i_by_dim[[k]][i_by_dim[[k]] != del_i]
       new_w[temp_i][new_w[temp_i] != 0] <- new_w[temp_i][new_w[temp_i] != 0] +
@@ -284,18 +361,22 @@ determine_biased_items <- function(lambda_r, lambda_f, nu_r, nu_f,
   biased_items <- c()
   # Compare factor loadings
   lambda_mismatch <- !(lambda_r == lambda_f)
-  if(any(lambda_mismatch, TRUE)){
-    biased_items <- c(biased_items, which(lambda_mismatch))}
+  if (any(lambda_mismatch, TRUE)) {
+    biased_items <- c(biased_items, which(lambda_mismatch))
+    }
   # Compare uniqueness
   theta_mismatch <- !apply(Theta_r == Theta_f, 1, all)
-  if(any(theta_mismatch, TRUE)){
-    biased_items <- c(biased_items, which(theta_mismatch)) }
+  if (any(theta_mismatch, TRUE)) {
+    biased_items <- c(biased_items, which(theta_mismatch)) 
+    }
   # Compare intercepts
   nu_mismatch <- !(nu_r == nu_f)
-  if(any(nu_mismatch, TRUE)){
+  if (any(nu_mismatch, TRUE)) {
     biased_items <- c(biased_items, which(nu_mismatch)) }
 
   biased <- unique(biased_items)
-  if(length(biased) == 0) { print("Strict invariance holds for all items.") }
+  if (length(biased) == 0) {
+    print("Strict invariance holds for all items.") 
+    }
   return(sort(biased))
   }

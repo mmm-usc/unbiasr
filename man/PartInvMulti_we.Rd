@@ -3,33 +3,40 @@
 \name{PartInvMulti_we}
 \alias{PartInvMulti_we}
 \alias{PartInv}
-\title{Evaluating selection accuracy based on the MCAA Framework}
+\title{Evaluating selection accuracy for two or more groups based on the MCAA
+Framework}
 \usage{
 PartInvMulti_we(
   propsel = NULL,
   cut_z = NULL,
   weights_item = NULL,
   weights_latent = NULL,
-  kappa_r = NULL,
-  kappa_f = kappa_r,
-  alpha_r,
-  alpha_f = alpha_r,
-  phi_r = NULL,
-  phi_f = phi_r,
-  psi_r,
-  psi_f = psi_r,
-  lambda_r,
-  lambda_f = lambda_r,
-  tau_r = NULL,
-  tau_f = tau_r,
-  nu_r,
-  nu_f = nu_r,
-  Theta_r,
-  Theta_f = Theta_r,
+  alpha,
+  psi,
+  lambda,
+  Theta,
+  nu,
+  pmix = 0.5,
   pmix_ref = 0.5,
   plot_contour = FALSE,
   show_mi_result = FALSE,
-  labels = c("Reference", "Focal"),
+  labels = NULL,
+  kappa_r = NULL,
+  kappa_f = kappa_r,
+  alpha_r = NULL,
+  alpha_f = alpha_r,
+  phi_r = NULL,
+  phi_f = phi_r,
+  psi_r = NULL,
+  psi_f = psi_r,
+  lambda_r = NULL,
+  lambda_f = lambda_r,
+  tau_r = NULL,
+  tau_f = tau_r,
+  nu_r = NULL,
+  nu_f = nu_r,
+  Theta_r = NULL,
+  Theta_f = Theta_r,
   ...
 )
 
@@ -38,26 +45,32 @@ PartInv(
   cut_z = NULL,
   weights_item = NULL,
   weights_latent = NULL,
-  kappa_r = NULL,
-  kappa_f = kappa_r,
-  alpha_r,
-  alpha_f = alpha_r,
-  phi_r = NULL,
-  phi_f = phi_r,
-  psi_r,
-  psi_f = psi_r,
-  lambda_r,
-  lambda_f = lambda_r,
-  tau_r = NULL,
-  tau_f = tau_r,
-  nu_r,
-  nu_f = nu_r,
-  Theta_r,
-  Theta_f = Theta_r,
+  alpha,
+  psi,
+  lambda,
+  Theta,
+  nu,
+  pmix = 0.5,
   pmix_ref = 0.5,
   plot_contour = FALSE,
   show_mi_result = FALSE,
-  labels = c("Reference", "Focal"),
+  labels = NULL,
+  kappa_r = NULL,
+  kappa_f = kappa_r,
+  alpha_r = NULL,
+  alpha_f = alpha_r,
+  phi_r = NULL,
+  phi_f = phi_r,
+  psi_r = NULL,
+  psi_f = psi_r,
+  lambda_r = NULL,
+  lambda_f = lambda_r,
+  tau_r = NULL,
+  tau_f = tau_r,
+  nu_r = NULL,
+  nu_f = nu_r,
+  Theta_r = NULL,
+  Theta_f = Theta_r,
   ...
 )
 }
@@ -71,118 +84,155 @@ argument is ignored when \code{propsel} has input.}
 
 \item{weights_latent}{A vector of latent factor weights.}
 
-\item{alpha_r}{A vector of latent factor means for the reference group.}
+\item{alpha}{A list of length \code{g} containing \verb{1 x d} latent factor mean
+vectors where \code{g} is the number of groups and \code{d} is the number of latent
+dimensions. The first element is assumed to belong to the reference group.}
 
-\item{alpha_f}{(optional) A vector of latent factor means for the focal group;
-if no input, set equal to \code{alpha_r}.}
+\item{psi}{A list of length \code{g} containing \verb{d x d} latent factor
+variance-covariance matrices where \code{g} is the number of groups and \code{d} is
+the number of latent dimensions. The first element is assumed to belong
+to the reference group.}
 
-\item{phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f}{Deprecated; included
-only for backward compatibility.}
+\item{lambda}{A list of length \code{g} containing \verb{n x d} factor loading matrices
+where \code{g} is the number of groups, \code{d} is the number of latent dimensions,
+and \code{n} is the number of items in the scale. The first element is assumed
+to belong to the reference group.}
 
-\item{psi_r}{A matrix of latent factor variance-covariances for the
-reference group.}
+\item{Theta}{A list of length \code{g} containing \verb{1 x n} vectors or \verb{n x n}
+matrices of unique factor variances and covariances, where \code{g} is the
+number of groups and \code{n} is the number of items in the scale. The first
+element is assumed to belong to the reference group.}
 
-\item{psi_f}{(optional) A matrix of latent factor variance-covariances for
-the focal group; if no input, set equal to \code{psi_r}.}
+\item{nu}{A list of length \code{g} containing \verb{1 x n} measurement intercept
+vectors where \code{g} is the number of groups and \code{n} is the number of items
+in the scale. The first element is assumed to belong to the reference
+group.}
 
-\item{lambda_r}{A matrix of factor loadings for the reference group.}
+\item{pmix}{List of length \code{g} containing the mixing proportions of each
+group. If \code{NULL}, defaults to \code{1/g} for each group (i.e., the populations
+have equal size).}
 
-\item{lambda_f}{(optional) A matrix of factor loadings for the focal group;
-if no input, set equal to \code{lambda_r}.}
-
-\item{nu_r}{A matrix of measurement intercepts for the reference group.}
-
-\item{nu_f}{(optional) A matrix of measurement intercepts for the focal
-group; if no input, set equal to \code{nu_r}.}
-
-\item{Theta_r}{A matrix of the unique factor variances and covariances
-for the reference group.}
-
-\item{Theta_f}{(optional) A matrix of the unique factor variances and
-covariances for the focal group; if no input, set equal to \code{Theta_r}.}
-
-\item{pmix_ref}{Proportion of the reference group; default to 0.5 (i.e., two
-populations have equal size).}
-
-\item{plot_contour}{Logical; whether the contour of the two populations
-should be plotted; default to \code{TRUE}.}
+\item{plot_contour}{Logical; whether the contour of the populations should be
+plotted; \code{TRUE} by default.}
 
 \item{show_mi_result}{If \code{TRUE}, perform selection accuracy analysis
 for both the input parameters and the implied parameters based on a
 strict invariance model, with common parameter values as weighted
-averages of the input values using \code{pmix_ref}.}
+averages of the input values using \code{pmix}.}
 
-\item{labels}{A character vector with two elements to label the reference
-and the focal group on the graph.}
+\item{labels}{A character vector with \code{g} elements to label the reference
+and focal groups on the plot, where \code{g} is the number of groups. If not
+provided, groups are labeled automatically as 'Reference' (for the first
+group) and 'Focal_1' through 'Focal_(g-1)', where \code{g} is the number of
+groups.}
+
+\item{alpha_r, alpha_f, nu_r, nu_f, Theta_r, Theta_f, psi_r, psi_f, lambda_r, lambda_f, phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f, pmix_ref}{Deprecated; included only for backward compatibility. When comparing two
+groups, parameters with the '_r' suffix refer to the reference group while
+parameters with the '_f' suffix refer to the focal group.}
 
 \item{...}{Other arguments passed to the \code{\link[graphics]{contour}}
 function.}
 }
 \value{
-The output will be a list of four elements and a plot if
+The output will be a list of six elements and a plot if
 \code{plot_contour == TRUE}:
-\item{propsel}{Echo the same argument as input.}
+\item{propsel}{Proportion selected.}
 \item{cutpt_xi}{Cut point on the latent scale (xi).}
 \item{cutpt_z}{Cut point on the observed scale (Z).}
-\item{summary}{A 8 x 3 table, with columns representing the reference,
-the focal, and the expected results if the latent distribution of
-focal group matches the reference group. The rows represent
-probabilities of true positive (A), false positive (B),
-true negative (C), false negative (D); proportion selected,
+\item{summary}{A \verb{8 x (g + g - 1)} table, with columns representing
+the reference and \code{g - 1} focal groups, and the expected results
+if the latent distribution of \code{g - 1} focal group match the
+reference group. The rows represent probabilities of true
+positive (A), false positive (B), true negative (C), false
+negative (D); proportion selected, success ratio, sensitivity,
+and specificity.}
+\item{bivardata}{List of length \code{5} containing \verb{1 x g} vectors of
+latent and observed means, standard deviations, and covariances
+computed for each groups.}
+\item{ai_ratio}{A list of length \code{g - 1} containing the Adverse
+Impact (AI) ratio computed for each focal group. A result less
+than 80\% may be considered evidence of adverse impact.}
+If \code{show_mi_result = TRUE}, the returned list will have the
+additional elements below:
+\item{propsel_mi}{Proportion selected under strict invariance.}
+\item{cutpt_xi_mi}{Cut point on the latent scale (xi) under strict
+invariance.}
+\item{cutpt_z_mi}{Cut point on the observed scale (Z) under strict
+invariance.}
+\item{summary_mi}{A \verb{8 x (g + g - 1)} table, with columns
+representing the reference and \code{g - 1} focal groups and the
+expected results if the latent distributions of \code{g - 1} focal
+groups match the reference group, under strict invariance. The
+rows represent probabilities of true positive (A), false positive
+(B), true negative (C), false negative (D); proportion selected,
 success ratio, sensitivity, and specificity.}
+\item{bivardata_mi}{List of length \code{5} containing \verb{1 x g} vectors of
+latent and observed means, standard deviations, and covariances
+computed for each group under strict invariance.}
 }
 \description{
-\code{PartInv, PartInvMulti_we} evaluate partial measurement invariance using
-an extension of Millsap & Kwok's (2004) approach
+\code{PartInv, PartInvMulti_we} evaluates partial measurement invariance
+using the multidimensional classification accuracy analysis
+(Lai & Zhang, 2022), which is an extension of Millsap & Kwok's (2004)
+approach.
 }
 \examples{
-# Single dimension
+# Two groups, single dimension
 PartInv(propsel = .30,
         weights_item = c(1, 1, 1, 1),
         weights_latent = 1,
-        alpha_r = 0,
-        alpha_f = 0,
-        psi_r = 1,
-        lambda_r = c(1, 1, 1, 1),
-        nu_r = c(1, 1, 1, 2),
-        nu_f = c(1, 1, 1, 1),
-        Theta_r = diag(1, 4),
-        labels = c("Female", "Male"),
-        show_mi_result = FALSE)
- res <- PartInv(propsel = .50,
-        alpha_r = 0.5,
-        alpha_f = 0,
-        psi_r = 1,
-        lambda_r = c(1, 1, 1, 1),
-        nu_r = c(1, 2, 1, 2),
-        nu_f = c(1, 1, 1, 1),
-        Theta_r = diag(1, 4),
+        alpha = list(0, 0),
+        psi = list(1, 1),
+        lambda = list(c(1, 1, 1, 1), c(1, 1, 1, 1)),
+        nu = list(c(1, 1, 1, 2), c(1, 1, 1, 1)),
+        Theta = list(diag(1, 4), diag(1, 4)),
         labels = c("Female", "Male"),
         show_mi_result = TRUE)
-# multiple dimensions
+# Two groups, two dimensions
 lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
 lambda_matrix[1:2, 1] <- c(.322, .655)
 lambda_matrix[3:5, 2] <- c(.398, .745, .543)
 PartInv(propsel = .05,
         weights_latent = c(0.5, 0.5),
-        alpha_r = c(0, 0),
-        alpha_f = c(-0.3, 0.1),
-        psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
-        lambda_r = lambda_matrix,
-        nu_r = c(.225, .025, .010, .240, .125),
-        nu_f = c(.225, -.05, .240, -.025, .125),
-        Theta_r = diag(1, 5),
-        Theta_f = c(1, .95, .80, .75, 1))
-PartInvMulti_we(propsel = .10,
-                weights_item = c(1/3, 1/3, 1/3, 1/3),
-                weights_latent = 1,
-                alpha_r = 0.5,
-                alpha_f = 0,
-                psi_r = 1,
-                lambda_r = c(.3, .5, .9, .7),
-                nu_r = c(.225, .025, .010, .240),
-                nu_f = c(.225, -.05, .240, -.025),
-                Theta_r = diag(.96, 4),
-                labels = c("female", "male"),
-                show_mi_result = TRUE)
+        alpha = list(c(0, 0), c(-0.3, 0.1)),
+        psi = list(matrix(c(1, 0.5, 0.5, 1), nrow = 2),
+                   matrix(c(1, 0.5, 0.5, 1), nrow = 2)),
+        lambda = list(lambda_matrix, lambda_matrix),
+        nu = list(c(.225, .25, .010, .30, .125),
+                  c(.225, -.05, .240, -.025, .125)),
+        Theta = list(diag(1, 5), c(1, .95, .80, .75, 1)),
+        plot_contour = TRUE, show_mi_result = TRUE)
+# Multiple groups, multiple dimensions
+lambda_matrix <- matrix(0, nrow = 15, ncol = 1)
+lambda_matrix[1:15, 1] <- c(0.68, 0.79, -0.39, 0.74, 0.59, 0.46, 0.78, -0.30,
+                            0.59, 0.59, 0.64, 0.66, 0.59, 0.63, 0.64);
+nu_matrix <- nu_matrix1 <- nu_matrix2 <- nu_matrix3 <-
+  matrix(0, nrow = 15, ncol = 1)
+nu_matrix[1:15, 1] <- c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
+                        3.51, 3.26, 2.45, 3.39, 2.47);
+nu_matrix1[1:15, 1] <- c(3.9, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
+                         3.51, 3.26, 2.45, 3.76, 2.81);
+nu_matrix2[1:15, 1] <- c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.6, 3.18,
+                         3.51, 3.54, 2.45, 3.39, 2.81);
+nu_matrix3[1:15, 1] <- c(3.6, 3.1, 2.7, 2.6, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
+                         3.51, 3.26, 2.45, 3.39, 2.81);
+theta_matrix <- c(0.35, 0.62, 0.83, 0.61, 0.81, 0.87, 0.39, 1.05, 0.84, 0.92,
+                  0.36, 0.66, 0.8, 0.66, 0.9);
+theta_matrix1 <- c(0.61, 0.62, 0.83, 0.61, 0.81, 0.5, 0.7, 1.05, 0.84, 0.92,
+                   0.61, 0.66, 0.8, 0.54, 0.9);
+theta_matrix2 <- c(0.61, 0.62, 0.826, 0.61, 0.81, 0.87, 0.5, 1.05, 0.84,
+                   0.92, 0.61, 0.66, 0.8, 0.66, 0.9);
+theta_matrix3 <- c(0.61, 0.62, 0.826, 0.61, 0.81, 0.5, 0.7, 1.05, 0.84, 0.92,
+                   0.61, 0.66, 0.8, 0.66, 0.9);
+PartInv(propsel = 0.25, pmix = c(1/4, 1/4, 1/4, 1/4),
+        alpha = list(0, -0.70, -1.05, -1.10), psi = list(1, 1.2, 1.29, 1.3),
+        nu = list(nu_matrix, nu_matrix1, nu_matrix2, nu_matrix3),
+        lambda = list(lambda_matrix, lambda_matrix, lambda_matrix,
+                      lambda_matrix),
+        Theta = list(theta_matrix, theta_matrix1, theta_matrix2,
+                     theta_matrix3),
+        plot_contour = TRUE, show_mi_result = TRUE,
+        labels = c("Group 1", "Group 2", "Group 3", "Group 4"),
+        custom_colors = c("salmon1", "lightgreen", "skyblue1", "pink")
+        )
 }

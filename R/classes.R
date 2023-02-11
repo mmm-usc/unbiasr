@@ -6,28 +6,18 @@ stars <-
 dashes <-
   "-----------------------------------------------------------------------"
 
-# setClass("PartInvSummary",
-#          representation(
-#            summary = "data.frame"
-#          )
-# )
-
-print_PartInvSummary <- function(x, ...) {
+summary_print <- function(x, ...) {
   cat("Classification Accuracy Indices:\n")
   rownames(x) <- c("True Positive", "False Positive", "True Negative",
                         "False Negative",  "Proportion Selected",
                         "Success Ratio", "Sensitivity", "Specificity")
- # c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
   print(round(x, digits = 3))
 }
 
-setClass("PartInv_groups",
-         representation(
-           tab = "data.frame"
-         )
-)
+setClass("PartInvGroups", representation(tab = "data.frame"))
+
 #'@export
-print.PartInv_groups <- function(x, ...) {
+print.PartInvGroups <- function(x, ...) {
   rownames(x) <- c("True Positive", "False Positive", "True Negative",
                         "False Negative",  "Proportion Selected",
                         "Success Ratio", "Sensitivity", "Specificity")
@@ -53,14 +43,17 @@ print.PartInv <- function(x, ...) {
   cat("Proportion selected: ", round(x$propsel, 3), "\n")
   cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi, 3), "\n")
   cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z, 3), "\n")
-  cat("AI ratio: ", round(x$ai_ratio, 3), "\n\n")
-  print_PartInvSummary(x$summary)
+  cat(paste0("Adverse impact ratio ", "(reference group: '",
+             colnames(x$summary)[1], "'):\n"))
+  print(as.data.frame(lapply(x$ai_ratio, round, digits = 3), row.names = ""))
+  cat("\n")
+  summary_print(x$summary)
   if (!is.null(x$summary_mi)) {
     cat("\n\nStrict invariance results:\n\n")
     cat("Proportion selected: ", round(x$propsel_mi, 3), "\n")
     cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi_mi, 3), "\n")
     cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z_mi, 3), "\n\n")
-    print_PartInvSummary(x$summary_mi)
+    summary_print(x$summary_mi)
   }
 }
 
@@ -68,8 +61,7 @@ setClass("PartInvList",
          representation(
            outputlist = "list",
            condition = "character",
-           itemset = "vector"
-         )
+           itemset = "vector")
 )
 
 #'@export
@@ -83,7 +75,7 @@ print.PartInvList <- function(x, ...) {
     for (i in x$itemset) {
       cat(dashes)
       cat("\n\nUnder PFI, if item", i, "is dropped:\n\n")
-      print.PartInv(x$outputlist[[i+1]])
+      print.PartInv(x$outputlist[[i + 1]])
     }
   }
     if (x$condition == "strict") {
@@ -95,7 +87,7 @@ print.PartInvList <- function(x, ...) {
     for (i in x$itemset) {
       cat(dashes)
       cat("\n\nUnder SFI, if item", i, "is dropped:\n\n")
-      print.PartInv(x$outputlist[[i+1]])
+      print.PartInv(x$outputlist[[i + 1]])
     }
     }
   if (x$condition == "ref") {
@@ -103,11 +95,11 @@ print.PartInvList <- function(x, ...) {
     cat("\nCAI under SFI vs. PFI for the reference group\n")
     cat(stars)
     cat("\n\nReference group, full item set:\n")
-    print.PartInv_groups(x$outputlist[[1]])
+    print.PartInvGroups(x$outputlist[[1]])
     for (i in x$itemset) {
       cat(dashes)
-      cat("\n\nReference group, if item", i,"is dropped:\n")
-      print.PartInv_groups(x$outputlist[[i+1]])
+      cat("\n\nReference group, if item", i, "is dropped:\n")
+      print.PartInvGroups(x$outputlist[[i + 1]])
     }
   }
   if (x$condition == "foc") {
@@ -115,11 +107,11 @@ print.PartInvList <- function(x, ...) {
     cat("\nCAI under SFI vs. PFI for the focal group\n")
     cat(stars)
     cat("\n\nFocal group, full item set:\n")
-    print.PartInv_groups(x$outputlist[[1]])
+    print.PartInvGroups(x$outputlist[[1]])
     for (i in x$itemset) {
       cat(dashes)
       cat("\n\nFocal group, if item", i, "is dropped:\n")
-      print.PartInv_groups(x$outputlist[[i+1]])
+      print.PartInvGroups(x$outputlist[[i + 1]])
     }
   }
 }
@@ -137,59 +129,78 @@ setClass("itemdeletion",
     h_aggregate_str_par = "matrix",
     Ref_foc = "PartInvList",
     PartInv = "PartInvList",
-   # formatted = "logical",
     return_items = "list"
-)
+    )
 )
 
 #'@export
 print.itemdeletion <- function(x, ...) {
   item_set <- x$return_items
-    cat(paste0(stars, "\nAGGREGATE CLASSIFICATION ACCURACY INDICES (CAI*)\n", stars))
+    cat(paste0(stars, "\nAGGREGATE CLASSIFICATION ACCURACY INDICES (CAI*)\n",
+               stars))
     cat("\nAggregate CAI under PFI computed for item subsets:\n")
     print(round(x$`ACAI`[c(1, item_set + 1), , drop = FALSE], 3))
     cat("\nImpact of deleting an item on aggregate CAI under PFI:\n")
     print(round(x$`h ACAI (deletion)`[c(item_set), , drop = FALSE], 3))
-    cat(paste0("\n", stars, "\nAdverse Impact (AI) ratio for item subsets by invariance condition:\n", stars, "\n"))
+    cat(paste0("\n", stars, "\nAdverse Impact (AI) ratio for item subsets by 
+               invariance condition:\n", stars, "\n"))
     print(round(x$AI[c(1, item_set + 1), , drop = FALSE], 3))
-    cat(paste0("\n", stars, "\nCOMPARING CAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS\n", stars))
+    cat(paste0("\n", stars, "\nCOMPARING CAI FOR REFERENCE AND (EXPECTED) FOCAL
+               GROUPS\n", stars))
     cat("\nDiscrepancy between CAI of reference vs. Efocal groups under PFI:\n")
     print(round(x$`h CAI Ref-EF`[c(1, item_set + 1), 5:8, drop = FALSE], 3))
-    cat(paste0(dashes, "\nImpact of deleting an item on the discrepancy between CAI of\nreference vs. Efocal groups under PFI:\n"))
-    print(round(x$`delta h CAI Ref-EF (deletion)`[c(item_set), 5:8, drop = FALSE], 3))
+    cat(paste0(dashes, "\nImpact of deleting an item on the discrepancy between
+               CAI of\nreference vs. Efocal groups under PFI:\n"))
+    print(round(x$`delta h CAI Ref-EF (deletion)`[c(item_set), 5:8,
+                                                  drop = FALSE], 3))
 }
 
 
 #'@export
 summary.itemdeletion <- function(object, ...) {
   item_set <- object$return_items
-  cat(paste0(stars, "\nAGGREGATE CLASSIFICATION ACCURACY INDICES (CAI*)\n", stars))
+  cat(paste0(stars, "\nAGGREGATE CLASSIFICATION ACCURACY INDICES (CAI*)\n",
+             stars))
   cat("\nAggregate CAI computed for item subsets:\n")
   print(round(object$`ACAI`[c(1, item_set + 1), , drop = FALSE], 3))
   cat("\nImpact of deleting an item on aggregate CAI:\n")
   print(round(object$`h ACAI (deletion)`[c(item_set), , drop = FALSE], 3))
-  cat(paste0(dashes,"\nDiscrepancy between aggregate CAI under SFI vs. PFI: \n"))
+  cat(paste0(dashes, "\nDiscrepancy between aggregate CAI under SFI vs. PFI:
+             \n"))
   print(round(object$`h ACAI SFI-PFI`[c(1, item_set + 1), , drop = FALSE], 3))
-  cat("\nImpact of deleting an item on the discrepancy between aggregate CAI under \nSFI vs. PFI:\n")
-  print(round(object$`delta h ACAI SFI-PFI (deletion)`[c(item_set), , drop = FALSE], 3))
-  cat(paste0("\n", stars, "\nAdverse Impact (AI) ratio for item subsets by invariance condition:\n", stars, "\n"))
+  cat("\nImpact of deleting an item on the discrepancy between aggregate CAI 
+      under \nSFI vs. PFI:\n")
+  print(round(object$`delta h ACAI SFI-PFI (deletion)`[c(item_set), ,
+                                                       drop = FALSE], 3))
+  cat(paste0("\n", stars, "\nAdverse Impact (AI) ratio for item subsets by 
+             invariance condition:\n", stars, "\n"))
   print(round(object$AI[c(1, item_set + 1), , drop = FALSE], 3))
-  cat(paste0("\n", stars, "\nCOMPARING CAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS\n", stars))
+  cat(paste0("\n", stars, "\nCOMPARING CAI FOR REFERENCE AND (EXPECTED) FOCAL 
+             GROUPS\n", stars))
   cat("\nDiscrepancy between CAI of reference vs. Efocal groups:\n")
   print(round(object$`h CAI Ref-EF`[c(1, item_set + 1), , drop = FALSE], 3))
-  cat(paste0(dashes, "\nImpact of deleting an item on the discrepancy between CAI of reference \nvs. Efocal groups:\n"))
-  print(round(object$`delta h CAI Ref-EF (deletion)`[c(item_set), , drop = FALSE], 3))
-  cat(paste0("\n", stars, "\nCOMPARING CAI UNDER STRICT AND PARTIAL FACTORIAL INVARIANCE\n", stars))
+  cat(paste0(dashes, "\nImpact of deleting an item on the discrepancy between 
+             CAI of reference \nvs. Efocal groups:\n"))
+  print(round(object$`delta h CAI Ref-EF (deletion)`[c(item_set), ,
+                                                     drop = FALSE], 3))
+  cat(paste0("\n", stars, "\nCOMPARING CAI UNDER STRICT AND PARTIAL FACTORIAL
+             INVARIANCE\n", stars))
   cat("\nDiscrepancy between CAI under SFI vs. PFI for the reference group:\n")
-  print(round(object$`h CAI SFI-PFI`[[1]][c(1, item_set + 1), , drop = FALSE], 3))
+  print(round(object$`h CAI SFI-PFI`[[1]][c(1, item_set + 1), , drop = FALSE],
+              3))
   cat("\nDiscrepancy between CAI under SFI vs. PFI for the focal group:\n")
-  print(round(object$`h CAI SFI-PFI`[[2]][c(1, item_set + 1), , drop = FALSE], 3))
-  cat(paste0(dashes, "\nImpact of deleting an item on the discrepancy between CAI under SFI \nvs. PFI for the reference group:\n"))
-  print(round(object$`delta h SFI-PFI (deletion)`[[1]][c(item_set), , drop = FALSE], 3))
-  cat("\nImpact of deleting an item on the discrepancy between CAI under SFI \nvs. PFI for the focal group:\n")
-  print(round(object$`delta h SFI-PFI (deletion)`[[2]][c(item_set), , drop = FALSE], 3))
-  print(object$`PartInv by groups`$reference)
-  print(object$`PartInv by groups`$focal)
+  print(round(object$`h CAI SFI-PFI`[[2]][c(1, item_set + 1), , drop = FALSE],
+              3))
+  cat(paste0(dashes, "\nImpact of deleting an item on the discrepancy between
+             CAI under SFI \nvs. PFI for the reference group:\n"))
+  print(round(object$`delta h SFI-PFI (deletion)`[[1]][c(item_set), ,
+                                                       drop = FALSE], 3))
+  cat("\nImpact of deleting an item on the discrepancy between CAI under SFI 
+      \nvs. PFI for the focal group:\n")
+  print(round(object$`delta h SFI-PFI (deletion)`[[2]][c(item_set), ,
+                                                       drop = FALSE], 3))
+  print(object$`h SFI-PFI by groups`$reference)
+  print(object$`h SFI-PFI by groups`$focal)
   print(object$PartInv$strict)
   print(object$PartInv$partial)
 }

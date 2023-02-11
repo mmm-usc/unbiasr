@@ -9,6 +9,7 @@ piout <- PartInv(
   Theta_r = diag(.96, 5),
   labels = c("female", "male")
 )
+
 # Create sample output 2
 piout_eq <- PartInv(
   .10,
@@ -27,7 +28,9 @@ test_that("PartInv() returns a data frame", {
 })
 
 test_that("plot.PartInv() works successfully", {
-  expect_error(plot(piout), regexp = NA)
+  expect_error(plot(piout, labels = c("female", "male")),
+               regexp = NA)
+  expect_error(plot(piout), regexp = NULL)
   expect_error(plot(piout, which_result = "mi"))
   piout_with_mi <- PartInv(
     .10,
@@ -40,7 +43,8 @@ test_that("plot.PartInv() works successfully", {
     labels = c("female", "male"),
     show_mi_result = TRUE
   )
-  expect_error(plot(piout_with_mi, which_result = "mi"),
+  expect_error(plot(piout_with_mi, labels = c("female", "male"),
+                    which_result = "mi"),
                regexp = NA)
 })
 

@@ -36,8 +36,8 @@ The output will be the quantile corresponding to p or \eqn{1 - q} on
 the mixture normal distribution.
 }
 \description{
-\code{qnormmix} returns the quantile corresponding to \eqn{p} or \eqn{1 - q} on
-the mixture normal distribution.
+\code{qnormmix} returns the quantile corresponding to \eqn{p} or \eqn{1 - q}
+on the mixture normal distribution.
 }
 \examples{
 \dontrun{
