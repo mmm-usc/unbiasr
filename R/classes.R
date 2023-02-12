@@ -34,7 +34,8 @@ setClass("PartInv",
            propsel_mi = "numeric",
            cutpt_xi_mi = "numeric", cutpt_z_mi = "numeric",
            bivar_data_mi = "list",
-           summary_mi = "data.frame"
+           summary_mi = "data.frame",
+           labels = "character"
          )
 )
 #'@export
