@@ -7,7 +7,6 @@ dashes <-
   "-----------------------------------------------------------------------"
 
 summary_print <- function(x, ...) {
-  cat("Classification Accuracy Indices:\n")
   rownames(x) <- c("True Positive", "False Positive", "True Negative",
                         "False Negative",  "Proportion Selected",
                         "Success Ratio", "Sensitivity", "Specificity")
@@ -47,12 +46,22 @@ print.PartInv <- function(x, ...) {
              colnames(x$summary)[1], "'):\n"))
   print(as.data.frame(lapply(x$ai_ratio, round, digits = 3), row.names = ""))
   cat("\n")
-  summary_print(x$summary)
+  if(dim(x$summary)[2] > 8) {
+    cat("Classification Accuracy Indices:\n")
+    summary_print(x$summary[, 1:(round(dim(x$summary)[2] / 2) + 1)])
+    cat("\n")
+    cat("Expected Results if Latent Distributions Matched the Reference Group:\n")
+    summary_print(x$summary[, (round(dim(x$summary)[2] / 2) + 2):dim(x$summary)[2]])
+  } else {
+    cat("Classification Accuracy Indices:\n")
+    summary_print(x$summary)
+  }
   if (!is.null(x$summary_mi)) {
     cat("\n\nStrict invariance results:\n\n")
     cat("Proportion selected: ", round(x$propsel_mi, 3), "\n")
     cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi_mi, 3), "\n")
     cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z_mi, 3), "\n\n")
+    cat("Classification Accuracy Indices:\n")
     summary_print(x$summary_mi)
   }
 }

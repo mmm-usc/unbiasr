@@ -115,10 +115,9 @@ plot.PartInv <- function(x, labels, which_result = c("pi", "mi"),
      legend("topleft", labels, lty = c("solid", rep("dashed", n_g - 1)), 
             col = colorlist[1:n_g])
      abline(h = cut_z, v = cut_xi)
-     x_cord <- rep(cut_xi + c(.25, -.25) * plot_dat$sd_xi[1], 2)
-     y_cord <- rep(cut_z + c(.25, -.25) * plot_dat$sd_z[1], each = 2)
+     x_cord <- rep(cut_xi + c(.8, -.8) * plot_dat$sd_xi[1], 2)
+     y_cord <- rep(cut_z + c(.8, -.8) * plot_dat$sd_z[1], each = 2)
      text(x_cord, y_cord, c("A", "B", "D", "C"))
-     
      if (n_g > 20) {
        warning("If you would like to plot the contours of more than 20 groups, 
                please provide a list of 20 color names.")
