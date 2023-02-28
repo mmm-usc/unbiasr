@@ -46,12 +46,13 @@ print.PartInv <- function(x, ...) {
              colnames(x$summary)[1], "'):\n"))
   print(as.data.frame(lapply(x$ai_ratio, round, digits = 3), row.names = ""))
   cat("\n")
-  if (dim(x$summary)[2] > 8) {
+  nc <- ncol(x$summary)
+  if (nc > 8) {
     cat("Classification Accuracy Indices:\n")
-    summary_print(x$summary[, 1:(round(dim(x$summary)[2] / 2) + 1)])
+    summary_print(x$summary[, 1:(ceiling(nc / 2))])
     cat("\n")
     cat("Expected Results if Latent Distributions Matched the Reference Group:\n")
-    summary_print(x$summary[, (round(dim(x$summary)[2] / 2) + 2):dim(x$summary)[2]])
+    summary_print(x$summary[, (ceiling(nc / 2) + 2):nc])
   } else {
     cat("Classification Accuracy Indices:\n")
     summary_print(x$summary)
