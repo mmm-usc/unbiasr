@@ -46,7 +46,7 @@ print.PartInv <- function(x, ...) {
              colnames(x$summary)[1], "'):\n"))
   print(as.data.frame(lapply(x$ai_ratio, round, digits = 3), row.names = ""))
   cat("\n")
-  if(dim(x$summary)[2] > 8) {
+  if (dim(x$summary)[2] > 8) {
     cat("Classification Accuracy Indices:\n")
     summary_print(x$summary[, 1:(round(dim(x$summary)[2] / 2) + 1)])
     cat("\n")
