@@ -318,6 +318,7 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
       plot.PartInv(out, labels = labels, which_result = "mi", ...)
     }
   }
+  out[["labels"]] <- labels
   class(out) <- "PartInv"
   out
 }
