@@ -94,6 +94,8 @@ plot.PartInv <- function(x, labels, which_result = c("pi", "mi"),
                     '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', 
                     '#ffffff', '#000000') 
                     #https://sashamaps.net/docs/resources/20-colors/
+    ltylist <- rep(c('twodash', 'longdash', 'dotdash', 'dashed', 'dotted'), 
+                   length.out = n_g)
     if (!is.null(custom_colors)) { colorlist <- custom_colors }
 
     # Plot the ellipse for the reference group
@@ -109,7 +111,8 @@ plot.PartInv <- function(x, labels, which_result = c("pi", "mi"),
       contour_bvnorm(plot_dat$mn_xi[i], plot_dat$sd_xi[i],
                      plot_dat$mn_z[i], plot_dat$sd_z[i],
                      cov12 = plot_dat$cov_z_xi[i],
-                     add = TRUE, lty = "dashed", lwd = 2, col = colorlist[i]
+                     add = TRUE, lwd = 2, col = colorlist[i], 
+                     lty = ltylist[i]
                      )
       }
      legend("topleft", labels, lty = c("solid", rep("dashed", n_g - 1)), 
