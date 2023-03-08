@@ -114,8 +114,8 @@ plot.PartInv <- function(x, labels, which_result = c("pi", "mi"),
                      add = TRUE, lwd = 2, col = colorlist[i], 
                      lty = ltylist[i]
                      )
-      }
-     legend("topleft", labels, lty = c("solid", rep("dashed", n_g - 1)), 
+    }
+     legend("topleft", labels, lty = c("solid", ltylist[2: n_g]), 
             col = colorlist[1:n_g])
      abline(h = cut_z, v = cut_xi)
      x_cord <- rep(cut_xi + c(.25, -.25) * plot_dat$sd_xi[1], 2)
