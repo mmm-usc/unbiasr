@@ -126,11 +126,11 @@ partial_model <- '
    i6 ~ c(nu6, nu6, nu6, nu6, nu6, nu6, nu6) * 1
    i9 ~ c(nu9, nu9, nu9, nu9, nu9, nu9, nu9) * 1
   '
-partial_fit <- cfa(partial_model, data = dat9, std.lv = TRUE, group = "Age_gr")
+partial_fit <- lavaan::cfa(partial_model, data = dat9, std.lv = TRUE, group = "Age_gr")
 
 partinv9 <-
-  PartInv(cut_z = 27.81,
-          cfa_output = partial_fit,
+  PartInv(partial_fit, cut_z = 27.81,
+          #cfa_output = partial_fit,
           pmix = table(dat9$Age_gr) / dim(dat9)[1],
           plot_contour = TRUE,
           labels = c("Age 1", "Age 2", "Age 3", "Age 4", "Age 5",
