@@ -1,3 +1,55 @@
+#' @title 
+#' Extract and format parameter values for `PartInv`.
+#' 
+#' @name 
+#' format_cfa_partinv
+#'
+#' @description
+#' \code{format_cfa_partinv} takes in a lavaan CFA fit object and returns the
+#'  necessary inputs for PartInv in a list
+#'  
+#' @param obj lavaan CFA output
+#'  
+#' @return The output will be a list of 5 elements:
+#'    \item{nu}{A list of length `g` containing `1 x n` measurement intercept
+#'     vectors where `g` is the number of groups and `n` is the number of items
+#'     in the scale.}
+#'    \item{alpha}{A list of length `g` containing `1 x d` latent factor mean
+#'     vectors where `g` is the number of groups and `d` is the number of 
+#'     latent dimensions.}
+#'    \item{lambda}{A list of length `g` containing `n x d` factor loading
+#'     matrices where `g` is the number of groups, `d` is the number of 
+#'     latent dimensions, and `n` is the number of items in the scale.}
+#'    \item{psi}{A list of length `g` containing `d x d` latent factor
+#'     variance-covariance matrices where `g` is the number of groups and `d` 
+#'     is the number of latent dimensions.}
+#'    \item{Theta}{A list of length `g` containing `1 x n` vectors or `n x n`
+#'     matrices of unique factor variances and covariances, where `g` is the
+#'     number of groups and `n` is the number of items in the scale.}
+#'     
+#' @export
+format_cfa_partinv <- function(obj) {
+  ins <- lavaan::lavInspect(obj, what = "est")
+  num_gr <- length(ins)
+  
+  psi_matrices <- lambda_matrices <- alpha_list <- nu_list <- 
+    theta_list <- vector(mode = "list", length = num_gr)
+  
+  # Extract and format the parameters for each group
+  for (i in seq_along(1:num_gr)) {
+    psi_matrices[[i]] <- ins[[i]]$psi
+    lambda_matrices[[i]] <- ins[[i]]$lambda
+    alpha_list[[i]] <- ins[[i]]$alpha
+    nu_list[[i]] <- ins[[i]]$nu
+    theta_list[[i]] <- ins[[i]]$theta
+  }
+  return(list("lambda" = lambda_matrices, 
+              "Theta" = theta_list, 
+              "psi" = psi_matrices, 
+              "nu" = nu_list, 
+              "alpha" = alpha_list))
+}
+
 #' Compute the mean, standard deviation, and covariance of latent and observed
 #' variables.
 #'

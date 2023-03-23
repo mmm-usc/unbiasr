@@ -10,6 +10,10 @@ NULL
 #' (Lai & Zhang, 2022), which is an extension of Millsap & Kwok's (2004)
 #' approach.
 #'
+#' @param cfa_output (optional) Lavaan CFA output. If `cfa_output` is supplied,
+#'     extracts `alpha`, `psi`, `lambda`, `Theta` and `nu` values from the 
+#'     output. If missing, `alpha`, `psi`, `lambda`, `Theta` and `nu` parameters
+#'     need to be supplied. 
 #' @param propsel Proportion of selection. If missing, computed using `cut_z`.
 #' @param cut_z Pre-specified cutoff score on the observed composite. This
 #'     argument is ignored when `propsel` has input.
@@ -149,7 +153,7 @@ NULL
 #'         custom_colors = c("salmon1", "lightgreen", "skyblue1", "pink")
 #'         )
 #' @export
-PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
+PartInvMulti_we <- function(cfa_output = NULL, propsel = NULL, cut_z = NULL,
                             weights_item = NULL,
                             weights_latent = NULL,
                             alpha, psi, lambda, Theta, nu,
@@ -167,6 +171,19 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
                             Theta_r = NULL, Theta_f = Theta_r,
                             ...) {
 
+  if (!is.null(cfa_output)) {
+    # use CFA output to assign values to alpha`, `psi`, `lambda`, `Theta`, `nu`;
+    # if `alpha`, `psi`, `lambda`, `Theta` and `nu` were also provided, 
+    # overwrite with values from the CFA output
+  #  s <- parameterEstimates(cfa_output)
+    formatted <- format_cfa_partinv(cfa_output)
+    lambda <- formatted[['lambda']]
+    nu <- formatted[['nu']]
+    alpha <- formatted[['alpha']]
+    Theta <- formatted[['Theta']]
+    psi <- formatted[['psi']]
+  }
+  
   # for backward compatibility with different input names
   if (missing(nu) && !is.null(nu_r)) {
     nu <- vector(2, mode = "list")

@@ -7,6 +7,7 @@
 Framework}
 \usage{
 PartInvMulti_we(
+  cfa_output = NULL,
   propsel = NULL,
   cut_z = NULL,
   weights_item = NULL,
@@ -41,6 +42,7 @@ PartInvMulti_we(
 )
 
 PartInv(
+  cfa_output = NULL,
   propsel = NULL,
   cut_z = NULL,
   weights_item = NULL,
@@ -75,6 +77,11 @@ PartInv(
 )
 }
 \arguments{
+\item{cfa_output}{(optional) Lavaan CFA output. If \code{cfa_output} is supplied,
+extracts \code{alpha}, \code{psi}, \code{lambda}, \code{Theta} and \code{nu} values from the
+output. If missing, \code{alpha}, \code{psi}, \code{lambda}, \code{Theta} and \code{nu} parameters
+need to be supplied.}
+
 \item{propsel}{Proportion of selection. If missing, computed using \code{cut_z}.}
 
 \item{cut_z}{Pre-specified cutoff score on the observed composite. This

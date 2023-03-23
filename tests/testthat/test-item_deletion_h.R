@@ -159,9 +159,10 @@ user_specified_items <- 2
 delete_one_cutoff <- NULL
 plot_contour <- FALSE  
 
-ex_strict <- PartInv(propsel, 
+ex_strict <- PartInv(propsel = propsel, 
                      cut_z = cut_z, 
-                     weights_item, weights_latent,
+                     weights_item = weights_item, 
+                     weights_latent = weights_latent,
                      alpha_r = alpha_r,
                      alpha_f = alpha_f,
                      psi_r = psi_r,
@@ -174,10 +175,10 @@ ex_strict <- PartInv(propsel,
                      pmix_ref = pmix_ref, 
                      plot_contour = plot_contour, 
                      labels = c("Reference", "Focal"))
-ex_partial <- PartInv(propsel, 
+ex_partial <- PartInv(propsel = propsel, 
                       cut_z = cut_z, 
-                      weights_item, 
-                      weights_latent,
+                      weights_item = weights_item, 
+                      weights_latent = weights_latent,
                       alpha_r = alpha_r,
                       alpha_f = alpha_f,
                       psi_r = psi_r,
