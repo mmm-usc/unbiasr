@@ -149,23 +149,23 @@ NULL
 #'         custom_colors = c("salmon1", "lightgreen", "skyblue1", "pink")
 #'         )
 #' @export
-PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
-                            weights_item = NULL,
-                            weights_latent = NULL,
-                            alpha, psi, lambda, Theta, nu,
-                            pmix = 0.5,
-                            pmix_ref = 0.5, plot_contour = FALSE,
-                            show_mi_result = FALSE,
-                            labels = NULL,
-                            kappa_r = NULL, kappa_f = kappa_r,
-                            alpha_r = NULL, alpha_f = alpha_r,
-                            phi_r = NULL, phi_f = phi_r,
-                            psi_r = NULL, psi_f = psi_r,
-                            lambda_r = NULL, lambda_f = lambda_r,
-                            tau_r = NULL, tau_f = tau_r,
-                            nu_r = NULL, nu_f = nu_r,
-                            Theta_r = NULL, Theta_f = Theta_r,
-                            ...) {
+PartInv <- function(propsel = NULL, cut_z = NULL,
+                    weights_item = NULL,
+                    weights_latent = NULL,
+                    alpha, psi, lambda, Theta, nu,
+                    pmix = 0.5,
+                    pmix_ref = 0.5, plot_contour = FALSE,
+                    show_mi_result = FALSE,
+                    labels = NULL,
+                    kappa_r = NULL, kappa_f = kappa_r,
+                    alpha_r = NULL, alpha_f = alpha_r,
+                    phi_r = NULL, phi_f = phi_r,
+                    psi_r = NULL, psi_f = psi_r,
+                    lambda_r = NULL, lambda_f = lambda_r,
+                    tau_r = NULL, tau_f = tau_r,
+                    nu_r = NULL, nu_f = nu_r,
+                    Theta_r = NULL, Theta_f = Theta_r,
+                    ...) {
 
   # for backward compatibility with different input names
   if (missing(nu) && !is.null(nu_r)) {
@@ -323,6 +323,10 @@ PartInvMulti_we <- function(propsel = NULL, cut_z = NULL,
   out
 }
 
-#' @rdname PartInvMulti_we
+#' @rdname PartInv
 #' @export
-PartInv <- PartInvMulti_we
+PartInvMulti_we <- function(...)
+{
+  .Deprecated("PartInv")
+  # PartInv(...)
+}
