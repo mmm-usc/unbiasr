@@ -30,7 +30,7 @@ test_that("PartInv() returns a data frame", {
 test_that("plot.PartInv() works successfully", {
   expect_error(plot(piout, labels = c("female", "male")),
                regexp = NA)
-  expect_error(plot(piout), regexp = NULL)
+  expect_no_error(plot(piout))
   expect_error(plot(piout, which_result = "mi"))
   piout_with_mi <- PartInv(
     propsel = .10,

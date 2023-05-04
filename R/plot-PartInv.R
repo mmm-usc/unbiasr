@@ -57,8 +57,9 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
 #'     ellipses. 
 #' @param ... Additional arguments.
 #'@export
-plot.PartInv <- function(x, labels, which_result = c("pi", "mi"), 
-                              custom_colors = NULL,  ...) {
+plot.PartInv <- function(x, labels = x[["labels"]],
+                         which_result = c("pi", "mi"),
+                         custom_colors = NULL, ...) {
     which_result <- match.arg(which_result)
     if (which_result == "pi") {
         plot_dat <- x$bivar_data
@@ -118,10 +119,9 @@ plot.PartInv <- function(x, labels, which_result = c("pi", "mi"),
      legend("topleft", labels, lty = c("solid", ltylist[2: n_g]), 
             col = colorlist[1:n_g])
      abline(h = cut_z, v = cut_xi)
-     x_cord <- rep(cut_xi + c(.25, -.25) * plot_dat$sd_xi[1], 2)
-     y_cord <- rep(cut_z + c(.25, -.25) * plot_dat$sd_z[1], each = 2)
+     x_cord <- rep(cut_xi + c(.8, -.8) * plot_dat$sd_xi[1], 2)
+     y_cord <- rep(cut_z + c(.8, -.8) * plot_dat$sd_z[1], each = 2)
      text(x_cord, y_cord, c("A", "B", "D", "C"))
-     
      if (n_g > 20) {
        warning("If you would like to plot the contours of more than 20 groups, 
                please provide a list of 20 color names.")

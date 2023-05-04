@@ -8,7 +8,6 @@ dashes <-
 
 
 summary_print <- function(x, ...) {
-  cat("Classification Accuracy Indices:\n")
   rownames(x) <- c("True Positive", "False Positive", "True Negative",
                         "False Negative",  "Proportion Selected",
                         "Success Ratio", "Sensitivity", "Specificity")
@@ -35,7 +34,8 @@ setClass("PartInv",
            propsel_mi = "numeric",
            cutpt_xi_mi = "numeric", cutpt_z_mi = "numeric",
            bivar_data_mi = "list",
-           summary_mi = "data.frame"
+           summary_mi = "data.frame",
+           labels = "character"
          )
 )
 #'@export
@@ -48,12 +48,23 @@ print.PartInv <- function(x, ...) {
              colnames(x$summary)[1], "'):\n"))
   print(as.data.frame(lapply(x$ai_ratio, round, digits = 3), row.names = ""))
   cat("\n")
-  summary_print(x$summary)
+  nc <- ncol(x$summary)
+  if (nc > 8) {
+    cat("Classification Accuracy Indices:\n")
+    summary_print(x$summary[, 1:(ceiling(nc / 2))])
+    cat("\n")
+    cat("Expected Results if Latent Distributions Matched the Reference Group:\n")
+    summary_print(x$summary[, (ceiling(nc / 2) + 2):nc])
+  } else {
+    cat("Classification Accuracy Indices:\n")
+    summary_print(x$summary)
+  }
   if (!is.null(x$summary_mi)) {
     cat("\n\nStrict invariance results:\n\n")
     cat("Proportion selected: ", round(x$propsel_mi, 3), "\n")
     cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi_mi, 3), "\n")
     cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z_mi, 3), "\n\n")
+    cat("Classification Accuracy Indices:\n")
     summary_print(x$summary_mi)
   }
 }
