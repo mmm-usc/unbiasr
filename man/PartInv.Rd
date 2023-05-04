@@ -100,11 +100,6 @@ parameters with the '_f' suffix refer to the focal group.}
 
 \item{...}{Other arguments passed to the \code{\link[graphics]{contour}}
 function.}
-
-\item{cfa_output}{(optional) Lavaan CFA output. If \code{cfa_output} is supplied,
-extracts \code{alpha}, \code{psi}, \code{lambda}, \code{Theta} and \code{nu} values from the
-output. If missing, \code{alpha}, \code{psi}, \code{lambda}, \code{Theta} and \code{nu} parameters
-need to be supplied.}
 }
 \value{
 The output will be a list of six elements and a plot if
