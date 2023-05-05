@@ -3,8 +3,9 @@ NULL
 
 #' Plot classification accuracy indices at different proportions of selection
 #' 
-#' \code{plotPropselRange} plots classification accuracy indices at different proportions of selection
-#' under partial and strict invariance conditions for a given CFA fit.
+#' \code{plotPropselRange} plots classification accuracy indices at different
+#' proportions of selection under partial and strict invariance conditions for 
+#' a given CFA fit.
 #' 
 #' @param cfa_fit CFA model output from lavaan.
 #' @param from The lowest proportion of selection to consider
@@ -107,109 +108,34 @@ plotPropselRange <- function(cfa_fit,
                   '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000',
                   '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080')
                    #https://sashamaps.net/docs/resources/20-colors/
-
-  # Plot PS partial
-  plot(propsels, ls[["PS_par"]][1, ],type ="l", ylim = c(0, 1), 
-       col = colorlist[1], lwd = 1.5, xlab = "Proportion of selection",
-       ylab = "Proportion Selected (PS)",
-       main = "Proportion selected under partial invariance",
-       cex = 1.1)
-  for(i in seq_len(n_g - 1)){
-    lines(propsels, ls[["PS_par"]][i + 1, ], type = "l",
-          lwd = 1.5, col = colorlist[i + 1])
+  
+  comp <- c("PS_par", "PS_str", "SR_par", "SR_str",
+            "SE_par", "SE_str", "SP_par", "SP_str")
+  ylabs <- c(rep("Proportion Selected (PS)", 2),
+             rep("Success Ratio (SR)", 2),
+             rep("Sensitivity (SE)", 2),
+             rep("Specificity (SP)", 2))
+  mains <- c("Proportion selected under partial invariance",
+             "Proportion selected under strict invariance",
+             "Success ratio under partial invariance",
+             "Success ratio under strict invariance",
+             "Sensitivity under partial invariance",
+             "Sensitivity under strict invariance",
+             "Specificity under partial invariance",
+             "Specificity under strict invariance")
+  legends <- c(rep("topright", 2), rep("bottomright", 6))
+  
+  for(c in seq_along(comp)) {
+    plot(propsels, ls[[comp[c]]][1, ],type ="l", ylim = c(0, 1),
+         col = colorlist[1], lwd = 1.5, xlab = "Proportion of selection",
+         ylab = ylabs[c],
+         main = mains[c],
+         cex = 1.1)
+    for(i in seq_len(n_g - 1)){
+      lines(propsels, ls[[comp[c]]][i + 1, ], type = "l",
+            lwd = 1.5, col = colorlist[i + 1])
     }
-  legend("topright", legend = labels, col = colorlist[1:n_g], lty = 1,
-         lwd = 1.5, cex = 0.8)  
-
-  # Plot PS strict
-  plot(propsels, ls[["PS_str"]][1, ],type ="l", ylim = c(0, 1),
-       col = colorlist[1], lwd = 1.5, xlab = "Proportion of selection",
-       ylab = "Proportion Selected (PS)",
-       main = "Proportion selected under strict invariance",
-       cex = 1.1)
-  for(i in seq_len(n_g - 1)){
-    lines(propsels, ls[["PS_str"]][i + 1, ], type = "l",
-          lwd = 1.5, col = colorlist[i + 1])
-  }
-  legend("topright", legend = labels, col = colorlist[1:n_g], lty = 1,
-         lwd = 1.5, cex = 0.8)  
-  
-  # Plot SR partial
-  plot(propsels, ls[["SR_par"]][1, ],type ="l", ylim = c(0, 1),
-       col = colorlist[1], lwd = 1.5, xlab = "Proportion of selection",
-       ylab = "Success Ratio (SR)",
-         main = "Success ratio under partial invariance",
-       cex = 1.1)
-  for(i in seq_len(n_g - 1)){
-    lines(propsels, ls[["SR_par"]][i + 1, ], type = "l",
-          lwd = 1.5, col = colorlist[i + 1])
-  }
-  legend("bottomright", legend = labels, col = colorlist[1:n_g], lty = 1,
-         lwd = 1.5, cex = 0.8)  
-  
-  # Plot SR strict
-  plot(propsels, ls[["SR_str"]][1, ],type ="l", ylim = c(0, 1),
-       col = colorlist[1], lwd = 1.5, xlab = "Proportion of selection",
-       ylab = "Success Ratio (SR)",
-       main = "Success ratio under strict invariance",
-       cex = 1.1)
-  for(i in seq_len(n_g - 1)){
-    lines(propsels, ls[["SR_str"]][i + 1, ], type = "l",
-          lwd = 1.5, col = colorlist[i + 1])
-  }
-  legend("bottomright", legend = labels, col = colorlist[1:n_g], lty = 1,
-         lwd = 1.5, cex = 0.8)  
-  
-  # Plot SE partial
-  plot(propsels, ls[["SE_par"]][1, ],type ="l", ylim = c(0, 1),
-       col = colorlist[1], lwd = 1.5, xlab = "Proportion of selection",
-       ylab = "Sensitivity (SE))",
-       main = "Sensitivity under partial invariance",
-       cex = 1.1)
-  for(i in seq_len(n_g - 1)){
-    lines(propsels, ls[["SE_par"]][i + 1, ], type = "l",
-          lwd = 1.5, col = colorlist[i + 1])
-  }
-  legend("bottomright", legend = labels, col = colorlist[1:n_g], lty = 1,
-         lwd = 1.5, cex = 0.8)  
-  
-  # Plot SE strict
-  plot(propsels, ls[["SE_str"]][1, ],type ="l", ylim = c(0, 1),
-       col = colorlist[1], lwd = 1.5, xlab = "Proportion of selection",
-       ylab = "Sensitivity (SE)",
-       main = "Sensitivity under strict invariance",
-       cex = 1.1)
-  for(i in seq_len(n_g - 1)){
-    lines(propsels, ls[["SE_str"]][i + 1, ], type = "l",
-          lwd = 1.5, col = colorlist[i + 1])
-  }
-  legend("bottomright", legend = labels, col = colorlist[1:n_g], lty = 1,
-         lwd = 1.5, cex = 0.8)  
-  
-  # Plot SP partial
-  plot(propsels, ls[["SP_par"]][1, ],type ="l", ylim = c(0, 1),
-       col = colorlist[1], lwd = 1.5, xlab = "Proportion of selection",
-       ylab = "Specificity (SP)",
-       main = "Specificity under partial invariance",
-       cex = 1.1)
-  for(i in seq_len(n_g - 1)){
-    lines(propsels, ls[["SP_par"]][i + 1, ], type = "l",
-          lwd = 1.5, col = colorlist[i + 1])
-  }
-  legend("bottomright", legend = labels, col = colorlist[1:n_g], lty = 1,
-         lwd = 1.5, cex = 0.8)  
-  
-  # Plot SP strict
-  plot(propsels, ls[["SP_str"]][1, ],type ="l", ylim = c(0, 1),
-       col = colorlist[1], lwd = 1.5, xlab = "Proportion of selection",
-       ylab = "Specificity (SP)",
-       main = "Specificity under strict invariance",
-       cex = 1.1)
-  for(i in seq_len(n_g - 1)){
-    lines(propsels, ls[["SP_str"]][i + 1, ], type = "l",
-          lwd = 1.5, col = colorlist[i + 1])
-  }
-  legend("bottomright", legend = labels, col = colorlist[1:n_g], lty = 1,
-         lwd = 1.5, cex = 0.8)  
-  
+    legend(legends[c], legend = labels, col = colorlist[1:n_g], lty = 1,
+           lwd = 1.5, cex = 0.8)  
+  }  
 }
