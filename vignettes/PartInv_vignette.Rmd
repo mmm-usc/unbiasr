@@ -25,7 +25,7 @@ Selected (PS), Success Ratio (SR), Sensitivity (SE), Specificity (SP) computed
 for multidimensional tests administered to multiple groups.
 
 We first demonstrate the use of `PartInv` for comparison across two groups, and 
-follow by a demonstration on the use of `PartInv` for multiple groups.
+follow by a demonstration of the use of `PartInv` for multiple groups.
 
 # PartInv for 2 groups
 
@@ -68,7 +68,7 @@ PartInv(propsel = .05,
 tmp_path <- tempfile(fileext = "xlsx")  # temporary file
 download.file("https://osf.io/download/ybvhx/", destfile = tmp_path)
 rr <- readxl::read_xlsx(tmp_path, skip = 1)
-dat <- sjmisc::rec(rr, Age, append = T, suffix = "_gr",
+dat <- sjmisc::rec(rr, Age, append = TRUE, suffix = "_gr",
                     rec = "18:25=1; 26:35=2; 36:45=3; 46:55=4; 
                            56:65=5; 66:75=6; 76:94=7")
 dat <- dat[,c(1:22,24)]
