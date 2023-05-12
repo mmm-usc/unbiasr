@@ -1,4 +1,5 @@
 #' @importFrom graphics lines
+#' @importFrom lavaan cfa HolzingerSwineford1939
 NULL
 
 #' Plot classification accuracy indices at different proportions of selection
@@ -59,9 +60,11 @@ plotPropselRange <- function(cfa_fit,
   ls[["SP_str"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
   
   # if the user did not provide labels, or provided the wrong number of labels,
-  # set the groups to have labels 'Reference', 'Focal_1'... etc.
   if (is.null(labels) || (length(labels) != n_g)) {
-    labels <- c("Reference", paste0("Focal_", 1:(n_g - 1)))
+   # labels <- c("Reference", paste0("Focal_", 1:(n_g - 1)))
+    summ <- lavaan::summary(cfa_fit)
+    labels <- summ$data$group.label
+    labels <- paste(labels, c("(reference)", rep("(focal)", n_g - 1)))
   }
   
   # if pmix is missing, assume equal mixing proportions
