@@ -97,7 +97,7 @@ test_that("PartInv() handles diagonal input for Theta", {
 })
 
 test_that("PartInv() output passes logical test", {
-  propsel = psel <- .2
+  psel <- .2
   # Example favoring reference group
   piout1_pstrict <- PartInv(
     propsel = psel,
