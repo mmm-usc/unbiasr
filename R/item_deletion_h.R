@@ -184,7 +184,7 @@ item_deletion_h <- function(propsel = NULL,
 
   # Call PartInv with the full item set under strict invariance
   store_str[[1]] <- 
-    PartInv(cfa_output = NULL, propsel = propsel, cut_z = cut_z, weights_item, 
+    PartInv(propsel = propsel, cut_z = cut_z, weights_item, 
             weights_latent,
             alpha_r = alpha_r, alpha_f = alpha_f, 
             psi_r = psi_r, psi_f = psi_f,
@@ -197,7 +197,7 @@ item_deletion_h <- function(propsel = NULL,
 
   # Call PartInv with the full item set under partial invariance
   store_par[[1]] <- 
-    PartInv(cfa_output = NULL, propsel = propsel, cut_z = cut_z, weights_item,
+    PartInv(propsel = propsel, cut_z = cut_z, weights_item,
             weights_latent, alpha_r = alpha_r, alpha_f = alpha_f, psi_r = psi_r,
             psi_f = psi_f, lambda_r = lambda_r, lambda_f = lambda_f,
             nu_r = nu_r, nu_f = nu_f, Theta_r = Theta_r, Theta_f = Theta_f,
@@ -251,7 +251,7 @@ item_deletion_h <- function(propsel = NULL,
     
     # Call PartInv with the new weights under strict invariance
     store_str[[i]] <- 
-      PartInv(cfa_output = NULL, propsel = propsel_s, cut_z = cut_z, 
+      PartInv(propsel = propsel_s, cut_z = cut_z, 
               take_one_out, weights_latent, 
               alpha_r = alpha_r, alpha_f = alpha_f, psi_r = psi_r, 
               psi_f = psi_f,
@@ -264,7 +264,7 @@ item_deletion_h <- function(propsel = NULL,
     
     # Call PartInv with the new weights under partial invariance
     store_par[[i]] <- 
-      PartInv(cfa_output = NULL, propsel = propsel_p, cut_z = cut_z,
+      PartInv(propsel = propsel_p, cut_z = cut_z,
               take_one_out, weights_latent,
               alpha_r = alpha_r, alpha_f = alpha_f, psi_r = psi_r, psi_f = psi_f,
               lambda_r = lambda_r, nu_r = nu_r, nu_f = nu_f, Theta_r = Theta_r,
