@@ -5,8 +5,8 @@
 #' format_cfa_partinv
 #'
 #' @description
-#' \code{format_cfa_partinv} takes in a lavaan CFA fit object and returns the
-#'  necessary inputs for PartInv in a list
+#' \code{format_cfa_partinv} takes in a lavaan CFA fit object and a component
+#'  and returns the necessary inputs for PartInv in a list
 #'  
 #' @param obj lavaan CFA output
 #'  
@@ -28,8 +28,8 @@
 #'     number of groups and `n` is the number of items in the scale.}
 #'     
 #' @export
-format_cfa_partinv <- function(obj) {
-  ins <- lavaan::lavInspect(obj, what = "est")
+format_cfa_partinv <- function(obj, comp) {
+  ins <- lavaan::lavInspect(obj, what = comp)
   num_gr <- length(ins)
   
   psi_matrices <- lambda_matrices <- alpha_list <- nu_list <- 
