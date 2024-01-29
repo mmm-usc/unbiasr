@@ -1,4 +1,32 @@
 #' @title 
+#' Unnest list elements. 
+#' 
+#' @name 
+#' unnest_list
+#'
+#' @description
+#' \code{unnest_list} takes in a list object and returns an unnested list
+#'  of lists
+#'  
+#' @param ins list object (e.g., lavaan CFA fit)
+#' 
+#' @return The output will be a list of lists.
+#'
+#' @export
+unnest_list <- function(ins) {
+        nms <- names(ins[[1]])
+        num_gr <- length(ins)
+        out <- rep(list(vector(mode = "list", length = num_gr)), length(nms))
+        names(out) <- nms
+        for (i in seq_along(ins)) {
+            for (nm in nms) {
+                out[[nm]][[i]] <- ins[[i]][[nm]]
+            }
+        }
+        out
+    }
+
+#' @title 
 #' Extract and format parameter values for `PartInv`.
 #' 
 #' @name 
@@ -9,6 +37,8 @@
 #'  and returns the necessary inputs for PartInv in a list
 #'  
 #' @param obj lavaan CFA output
+#' @param comp a string indicating the lavaan object component of interest
+#'             e.g., "se", "est"
 #'  
 #' @return The output will be a list of 5 elements:
 #'    \item{nu}{A list of length `g` containing `1 x n` measurement intercept
@@ -36,7 +66,7 @@ format_cfa_partinv <- function(obj, comp) {
     theta_list <- vector(mode = "list", length = num_gr)
   
   # Extract and format the parameters for each group
-  for (i in seq_along(1:num_gr)) {
+  for (i in seq_len(num_gr)) {
     psi_matrices[[i]] <- ins[[i]]$psi
     lambda_matrices[[i]] <- ins[[i]]$lambda
     alpha_list[[i]] <- ins[[i]]$alpha
@@ -49,6 +79,7 @@ format_cfa_partinv <- function(obj, comp) {
               "nu" = nu_list, 
               "alpha" = alpha_list))
 }
+
 
 #' Compute the mean, standard deviation, and covariance of latent and observed
 #' variables.
