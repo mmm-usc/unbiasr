@@ -1,5 +1,4 @@
 #' @importFrom graphics lines
-#' @importFrom lavaan cfa HolzingerSwineford1939
 NULL
 
 #' Plot classification accuracy indices at different proportions of selection
@@ -25,6 +24,7 @@ NULL
 #'     proportions of selection under partial and strict invariance conditions.
 #' @examples
 #' \dontrun{
+#' library(lavaan)
 #' HS <- HolzingerSwineford1939
 #' HS$sex <- as.factor(HS$sex)
 #' HS.model <- ' visual  =~ x1 + x2 + x3
