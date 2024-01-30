@@ -42,7 +42,7 @@ plotPropselRange <- function(cfa_fit,
                              by = 0.01,
                              pmix = NULL,
                              labels = NULL) {
-  est <- format_cfa_partinv(cfa_fit)
+  est <- format_cfa_partinv(cfa_fit, comp = "est")
   
   propsels <- seq(from = from,to = to, by = by)
   
