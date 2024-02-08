@@ -83,7 +83,7 @@ plot.PartInv <- function(x, labels = x[["labels"]],
     x_lim <- y_lim <- c()
     n_g <- length(plot_dat$mn_xi) # number of groups
     
-    for (i in seq_along(1:n_g)) {
+    for (i in seq_len(n_g)) {
       x_lim <- c(x_lim, c(plot_dat$mn_xi[i] + c(-3, 3) * plot_dat$sd_xi[i]))
       y_lim <- c(y_lim, plot_dat$mn_z[i] + c(-3, 3) * plot_dat$sd_z[i])
     }

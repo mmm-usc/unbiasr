@@ -44,28 +44,37 @@ plotPropselRange <- function(cfa_fit,
                              labels = NULL) {
   est <- format_cfa_partinv(cfa_fit, comp = "est")
   
-  propsels <- seq(from = from,to = to, by = by)
+  propsels <- seq(from = from, to = to, by = by)
   
   n_g <- length(est[['alpha']]) # number of groups
   
   # list to store PS, SE, SR, SP at different proportions of selection
-  ls <- vector(length = 8, mode = "list")
-  ls[["PS_par"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
-  ls[["PS_str"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
-  ls[["SR_par"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
-  ls[["SR_str"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
-  ls[["SE_par"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
-  ls[["SE_str"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
-  ls[["SP_par"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
-  ls[["SP_str"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
+  # ls <- vector(length = 8, mode = "list")
+  # ls[["PS_par"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
+  # ls[["PS_str"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
+  # ls[["SR_par"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
+  # ls[["SR_str"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
+  # ls[["SE_par"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
+  # ls[["SE_str"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
+  # ls[["SP_par"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
+  # ls[["SP_str"]] <- as.data.frame(matrix(NA, ncol = length(propsels), nrow = n_g))
   
   # if the user did not provide labels, or provided the wrong number of labels,
   if (is.null(labels) || (length(labels) != n_g)) {
    # labels <- c("Reference", paste0("Focal_", 1:(n_g - 1)))
-    summ <- lavaan::summary(cfa_fit)
-    labels <- summ$data$group.label
+    # summ <- lavaan::summary(cfa_fit)
+    # labels <- summ$data$group.label
+    labels <- cfa_fit@Data@group.label
     labels <- paste(labels, c("(reference)", rep("(focal)", n_g - 1)))
   }
+
+  ls_mat <- matrix(NA, ncol = length(propsels), nrow = n_g,
+                   dimnames = list(labels, propsels))
+  cai_names <- c("PS", "SR", "SE", "SP")
+  mod_names <- c("par", "str")
+  ls_names <- c(t(outer(cai_names, Y = mod_names, FUN = paste, sep = "_")))
+  ls <- rep(list(ls_mat), length(ls_names))
+  names(ls) <- ls_names
   
   # if pmix is missing, assume equal mixing proportions
   if (is.null(pmix)) pmix <- as.matrix(c(rep(1 / n_g, n_g)), ncol = n_g)
@@ -85,25 +94,30 @@ plotPropselRange <- function(cfa_fit,
                     labels = labels,
                     show_mi_result = TRUE)
     
-    ls[["PS_par"]][, p] <- as.numeric(pinv$summary[5, 1:n_g])
-    ls[["PS_str"]][, p] <- as.numeric(pinv$summary_mi[5, 1:n_g])
-    ls[["SR_par"]][, p] <- as.numeric(pinv$summary[6, 1:n_g])
-    ls[["SR_str"]][, p] <- as.numeric(pinv$summary_mi[6, 1:n_g])
-    ls[["SE_par"]][, p] <- as.numeric(pinv$summary[7, 1:n_g])
-    ls[["SE_str"]][, p] <- as.numeric(pinv$summary_mi[7, 1:n_g])
-    ls[["SP_par"]][, p] <- as.numeric(pinv$summary[8, 1:n_g])
-    ls[["SP_str"]][, p] <- as.numeric(pinv$summary_mi[8, 1:n_g])
+    # ls[["PS_par"]][, p] <- as.numeric(pinv$summary[5, 1:n_g])
+    # ls[["PS_str"]][, p] <- as.numeric(pinv$summary_mi[5, 1:n_g])
+    # ls[["SR_par"]][, p] <- as.numeric(pinv$summary[6, 1:n_g])
+    # ls[["SR_str"]][, p] <- as.numeric(pinv$summary_mi[6, 1:n_g])
+    # ls[["SE_par"]][, p] <- as.numeric(pinv$summary[7, 1:n_g])
+    # ls[["SE_str"]][, p] <- as.numeric(pinv$summary_mi[7, 1:n_g])
+    # ls[["SP_par"]][, p] <- as.numeric(pinv$summary[8, 1:n_g])
+    # ls[["SP_str"]][, p] <- as.numeric(pinv$summary_mi[8, 1:n_g])
+    for (i in seq_along(cai_names)) {
+      for (j in seq_along(mod_names)) {
+        ls[[(i - 1) * 2 + j]][, p] <- as.numeric(pinv$summary[4 + i, 1:n_g])
+      }
+    }
     
   }
-  rownames(ls[["PS_par"]]) <- rownames(ls[["PS_str"]]) <-
-    rownames(ls[["SR_par"]]) <- rownames(ls[["SR_str"]]) <-
-    rownames(ls[["SE_par"]]) <- rownames(ls[["SE_str"]]) <-
-    rownames(ls[["SP_par"]]) <- rownames(ls[["SP_str"]]) <- labels
+  # rownames(ls[["PS_par"]]) <- rownames(ls[["PS_str"]]) <-
+  #   rownames(ls[["SR_par"]]) <- rownames(ls[["SR_str"]]) <-
+  #   rownames(ls[["SE_par"]]) <- rownames(ls[["SE_str"]]) <-
+  #   rownames(ls[["SP_par"]]) <- rownames(ls[["SP_str"]]) <- labels
   
-  colnames(ls[["PS_par"]]) <- colnames(ls[["PS_str"]]) <-
-    colnames(ls[["SR_par"]]) <- colnames(ls[["SR_str"]]) <-
-    colnames(ls[["SE_par"]]) <- colnames(ls[["SE_str"]]) <-
-    colnames(ls[["SP_par"]]) <- colnames(ls[["SP_str"]]) <- propsels
+  # colnames(ls[["PS_par"]]) <- colnames(ls[["PS_str"]]) <-
+  #   colnames(ls[["SR_par"]]) <- colnames(ls[["SR_str"]]) <-
+  #   colnames(ls[["SE_par"]]) <- colnames(ls[["SE_str"]]) <-
+  #   colnames(ls[["SP_par"]]) <- colnames(ls[["SP_str"]]) <- propsels
   
   colorlist <-  c('#000000', '#f58231', '#e6194b', 'lightskyblue',
                   '#ffe119', '#3cb44b', '#4363d8', '#f032e6',
@@ -128,13 +142,13 @@ plotPropselRange <- function(cfa_fit,
              "Specificity under strict invariance")
   legends <- c(rep("topright", 2), rep("bottomright", 6))
   
-  for(c in seq_along(comp)) {
-    plot(propsels, ls[[comp[c]]][1, ],type ="l", ylim = c(0, 1),
+  for (c in seq_along(comp)) {
+    plot(propsels, ls[[comp[c]]][1, ], type = "l", ylim = c(0, 1),
          col = colorlist[1], lwd = 1.5, xlab = "Proportion of selection",
          ylab = ylabs[c],
          main = mains[c],
          cex = 1.1)
-    for(i in seq_len(n_g - 1)){
+    for (i in seq_len(n_g - 1)){
       lines(propsels, ls[[comp[c]]][i + 1, ], type = "l",
             lwd = 1.5, col = colorlist[i + 1])
     }
