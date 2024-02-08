@@ -30,7 +30,7 @@ NULL
 #'     vectors where `g` is the number of groups and `n` is the number of items
 #'     in the scale. The first element is assumed to belong to the reference
 #'     group.
-#' @param Theta A list of length `g` containing `1 x n` vectors or `n x n`
+#' @param theta A list of length `g` containing `1 x n` vectors or `n x n`
 #'     matrices of unique factor variances and covariances, where `g` is the
 #'     number of groups and `n` is the number of items in the scale. The first
 #'     element is assumed to belong to the reference group.
@@ -98,7 +98,7 @@ NULL
 #'         psi = list(1, 1),
 #'         lambda = list(c(1, 1, 1, 1), c(1, 1, 1, 1)),
 #'         nu = list(c(1, 1, 1, 2), c(1, 1, 1, 1)),
-#'         Theta = list(diag(1, 4), diag(1, 4)),
+#'         theta = list(diag(1, 4), diag(1, 4)),
 #'         labels = c("Female", "Male"),
 #'         show_mi_result = TRUE)
 #' # Two groups, two dimensions
@@ -113,7 +113,7 @@ NULL
 #'         lambda = list(lambda_matrix, lambda_matrix),
 #'         nu = list(c(.225, .25, .010, .30, .125),
 #'                   c(.225, -.05, .240, -.025, .125)),
-#'         Theta = list(diag(1, 5), c(1, .95, .80, .75, 1)),
+#'         theta = list(diag(1, 5), c(1, .95, .80, .75, 1)),
 #'         plot_contour = TRUE, show_mi_result = TRUE)
 #' # Multiple groups, multiple dimensions
 #' lambda_matrix <- matrix(0, nrow = 15, ncol = 1)
@@ -142,7 +142,7 @@ NULL
 #'         nu = list(nu_matrix, nu_matrix1, nu_matrix2, nu_matrix3),
 #'         lambda = list(lambda_matrix, lambda_matrix, lambda_matrix,
 #'                       lambda_matrix),
-#'         Theta = list(theta_matrix, theta_matrix1, theta_matrix2,
+#'         theta = list(theta_matrix, theta_matrix1, theta_matrix2,
 #'                      theta_matrix3),
 #'         plot_contour = TRUE, show_mi_result = TRUE,
 #'         labels = c("Group 1", "Group 2", "Group 3", "Group 4"),
@@ -152,7 +152,7 @@ NULL
 PartInv <- function(propsel = NULL, cut_z = NULL,
                     weights_item = NULL,
                     weights_latent = NULL,
-                    alpha, psi, lambda, Theta, nu,
+                    alpha, psi, lambda, theta, nu,
                     pmix = 0.5,
                     pmix_ref = 0.5, plot_contour = FALSE,
                     show_mi_result = FALSE,
@@ -205,19 +205,19 @@ PartInv <- function(propsel = NULL, cut_z = NULL,
     lambda[[1]] <- lambda_r
     lambda[[2]] <- lambda_f
   }
-  if (missing(Theta) && !is.null(Theta_r)) {
-    Theta <- vector(2, mode = "list")
-    Theta[[1]] <- Theta_r
-    Theta[[2]] <- Theta_f
+  if (missing(theta) && !is.null(Theta_r)) {
+    theta <- vector(2, mode = "list")
+    theta[[1]] <- Theta_r
+    theta[[2]] <- Theta_f
   }
   if (missing(pmix) && !is.null(pmix_ref)) {
     pmix <- c(pmix_ref, 1 - pmix_ref) # assuming two groups
   }
   
-  stopifnot("Theta, nu, and lambda must be lists. Consider using `format_cfa_partinv()`." =
-              (all(is.list(Theta) & is.list(nu) & is.list(lambda))))
+  stopifnot("theta, nu, and lambda must be lists. Consider using `format_cfa_partinv()`." =
+              (all(is.list(theta) & is.list(nu) & is.list(lambda))))
   stopifnot("Number of groups as indicated in the lengths of parameters must 
-              match." = length(alpha) == lengths(list(psi, lambda, nu, Theta)))
+              match." = length(alpha) == lengths(list(psi, lambda, nu, theta)))
   stopifnot(
     "Number of dimensions must match." =
       (((lengths(alpha) == dim(psi)[1]) & (dim(psi)[1] == dim(psi)[2]) &
@@ -252,14 +252,14 @@ PartInv <- function(propsel = NULL, cut_z = NULL,
   names(nu) <- paste("nu", g, sep = "_")
   names(lambda) <- paste("lambda", g, sep = "_")
   names(psi) <- paste("psi", g, sep = "_")
-  names(Theta) <- paste("Theta", g, sep = "_")
+  names(theta) <- paste("theta", g, sep = "_")
 
-  # Change any vector elements within the list Theta into diagonal matrices
-  Theta <- lapply(seq_along(Theta), function(x) {
-    if (is.vector(Theta[[x]])) {
-      Theta[[x]] <- diag(Theta[[x]])
+  # Change any vector elements within the list theta into diagonal matrices
+  theta <- lapply(seq_along(theta), function(x) {
+    if (is.vector(theta[[x]])) {
+      theta[[x]] <- diag(theta[[x]])
     } else {
-      Theta[[x]] <- Theta[[x]] # necessary to ensure conformable arguments later
+      theta[[x]] <- theta[[x]] # necessary to ensure conformable arguments later
     }
   })
 
@@ -270,7 +270,7 @@ PartInv <- function(propsel = NULL, cut_z = NULL,
   if (is.null(weights_latent)) weights_latent <- rep(1, d)
 
   out <- compute_cai(weights_item, weights_latent, alpha, psi, lambda, nu,
-    Theta, pmix, propsel, labels, cut_z,
+    theta, pmix, propsel, labels, cut_z,
     is_mi = FALSE
   )
 
@@ -290,19 +290,19 @@ PartInv <- function(propsel = NULL, cut_z = NULL,
     pop_weights <- pmix
     lambda_average <- .weighted_average_list(lambda, weights = pop_weights)
     nu_average <- .weighted_average_list(nu, weights = pop_weights)
-    Theta_average <- .weighted_average_list(Theta, weights = pop_weights)
+    theta_average <- .weighted_average_list(theta, weights = pop_weights)
 
-    lambda_average_g <- nu_average_g <- Theta_average_g <-
+    lambda_average_g <- nu_average_g <- theta_average_g <-
       vector(mode = "list", length = num_g)
 
     for (i in 1:num_g) {
       lambda_average_g[[i]] <- lambda_average
       nu_average_g[[i]] <- nu_average
-      Theta_average_g[[i]] <- Theta_average
+      theta_average_g[[i]] <- theta_average
     }
 
     out_mi <- compute_cai(weights_item, weights_latent, alpha, psi,
-      lambda_average_g, nu_average_g, Theta_average_g,
+      lambda_average_g, nu_average_g, theta_average_g,
       pmix, propsel, labels, cut_z,
       is_mi = TRUE
     )

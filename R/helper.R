@@ -53,7 +53,7 @@ unnest_list <- function(ins) {
 #'    \item{psi}{A list of length `g` containing `d x d` latent factor
 #'     variance-covariance matrices where `g` is the number of groups and `d` 
 #'     is the number of latent dimensions.}
-#'    \item{Theta}{A list of length `g` containing `1 x n` vectors or `n x n`
+#'    \item{theta}{A list of length `g` containing `1 x n` vectors or `n x n`
 #'     matrices of unique factor variances and covariances, where `g` is the
 #'     number of groups and `n` is the number of items in the scale.}
 #'     
@@ -74,7 +74,7 @@ format_cfa_partinv <- function(obj, comp) {
     theta_list[[i]] <- ins[[i]]$theta
   }
   return(list("lambda" = lambda_matrices, 
-              "Theta" = theta_list, 
+              "theta" = theta_list, 
               "psi" = psi_matrices, 
               "nu" = nu_list, 
               "alpha" = alpha_list))
@@ -104,7 +104,7 @@ format_cfa_partinv <- function(obj, comp) {
 #'    vectors where `g` is the number of groups and `n` is the number of items 
 #'    in the scale. The first element is assumed to belong to the reference 
 #'    group.
-#' @param Theta A list of length `g` containing `1 x n` vectors or `n x n` 
+#' @param theta A list of length `g` containing `1 x n` vectors or `n x n` 
 #'    matrices of unique factor variances and covariances, where `g` is the 
 #'    number of groups and `n` is the number of items in the scale. The first 
 #'    element is assumed to belong to the reference group.
@@ -115,12 +115,12 @@ format_cfa_partinv <- function(obj, comp) {
 #'    \item{sd_xi}{Standard deviation of the latent variable.}
 #'    \item{cov_z_xi}{Covariance of the latent and observed variables.}
 mn_sd_cov <- function(weights_item, weights_latent, alpha, psi, lambda, nu, 
-                      Theta) {
+                      theta) {
   mn_z <- sd_z <- mn_xi <- sd_xi <- cov_z_xi <- NULL
   for (i in seq_along(alpha)) {
     mn_z[i] <- c(crossprod(weights_item, nu[[i]] + lambda[[i]] %*% alpha[[i]]))
     sd_z[i] <- c(sqrt(crossprod(weights_item, lambda[[i]] %*% psi[[i]] %*% 
-                                  t(lambda[[i]]) + Theta[[i]]) %*%
+                                  t(lambda[[i]]) + theta[[i]]) %*%
                         weights_item))
     names(alpha) <- names(psi) <- NULL
     mn_xi[i] <- c(crossprod(weights_latent, alpha[[i]]))
@@ -151,7 +151,7 @@ mn_sd_cov <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
 #'    vectors where `g` is the number of groups and `n` is the number of items 
 #'    in the scale. The first element is assumed to belong to the reference 
 #'    group.
-#' @param Theta A list of length `g` containing `1 x n` vectors or `n x n` 
+#' @param theta A list of length `g` containing `1 x n` vectors or `n x n` 
 #'    matrices of unique factor variances and covariances, where `g` is the 
 #'    number of groups and `n` is the number of items in the scale. The first 
 #'    element is assumed to belong to the reference group.
@@ -172,10 +172,10 @@ mn_sd_cov <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
 #'    \item{bivar_data}{The mean, standard deviation, and covariance of latent 
 #'     and observed variables for each group.}
 compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu, 
-                        Theta, pmix, propsel, labels, cut_z = NULL, 
+                        theta, pmix, propsel, labels, cut_z = NULL, 
                         is_mi = FALSE) {
   num_g <- length(alpha)
-  lst <- mn_sd_cov(weights_item, weights_latent, alpha, psi, lambda, nu, Theta)
+  lst <- mn_sd_cov(weights_item, weights_latent, alpha, psi, lambda, nu, theta)
 
   if (!is.null(propsel)) {  # if there is an input for selection proportion
     # compute the cut score using qnormmix based on input selection proportion
@@ -219,7 +219,7 @@ compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
       mn_z_Ef[i - 1] <- c(crossprod(weights_item, nu[[i]] + lambda[[i]]
                                     %*% alpha[[1]]))
       sd_z_Ef[i - 1] <- c(sqrt(crossprod(weights_item, lambda[[i]] %*% psi[[1]]
-                                         %*% t(lambda[[i]]) + Theta[[i]])
+                                         %*% t(lambda[[i]]) + theta[[i]])
                                %*% weights_item))
       cov_z_xi_Ef[i - 1] <- c(crossprod(weights_item, lambda[[i]] %*% psi[[1]]) 
                               %*% weights_latent)

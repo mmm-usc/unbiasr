@@ -5,7 +5,7 @@
 \title{Compute the mean, standard deviation, and covariance of latent and observed
 variables.}
 \usage{
-mn_sd_cov(weights_item, weights_latent, alpha, psi, lambda, nu, Theta)
+mn_sd_cov(weights_item, weights_latent, alpha, psi, lambda, nu, theta)
 }
 \arguments{
 \item{weights_item}{A vector of item weights.}
@@ -31,7 +31,7 @@ vectors where \code{g} is the number of groups and \code{n} is the number of ite
 in the scale. The first element is assumed to belong to the reference
 group.}
 
-\item{Theta}{A list of length \code{g} containing \verb{1 x n} vectors or \verb{n x n}
+\item{theta}{A list of length \code{g} containing \verb{1 x n} vectors or \verb{n x n}
 matrices of unique factor variances and covariances, where \code{g} is the
 number of groups and \code{n} is the number of items in the scale. The first
 element is assumed to belong to the reference group.}

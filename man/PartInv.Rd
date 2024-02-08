@@ -14,7 +14,7 @@ PartInv(
   alpha,
   psi,
   lambda,
-  Theta,
+  theta,
   nu,
   pmix = 0.5,
   pmix_ref = 0.5,
@@ -66,7 +66,7 @@ where \code{g} is the number of groups, \code{d} is the number of latent dimensi
 and \code{n} is the number of items in the scale. The first element is assumed
 to belong to the reference group.}
 
-\item{Theta}{A list of length \code{g} containing \verb{1 x n} vectors or \verb{n x n}
+\item{theta}{A list of length \code{g} containing \verb{1 x n} vectors or \verb{n x n}
 matrices of unique factor variances and covariances, where \code{g} is the
 number of groups and \code{n} is the number of items in the scale. The first
 element is assumed to belong to the reference group.}
@@ -153,7 +153,7 @@ PartInv(propsel = .30,
         psi = list(1, 1),
         lambda = list(c(1, 1, 1, 1), c(1, 1, 1, 1)),
         nu = list(c(1, 1, 1, 2), c(1, 1, 1, 1)),
-        Theta = list(diag(1, 4), diag(1, 4)),
+        theta = list(diag(1, 4), diag(1, 4)),
         labels = c("Female", "Male"),
         show_mi_result = TRUE)
 # Two groups, two dimensions
@@ -168,7 +168,7 @@ PartInv(propsel = .05,
         lambda = list(lambda_matrix, lambda_matrix),
         nu = list(c(.225, .25, .010, .30, .125),
                   c(.225, -.05, .240, -.025, .125)),
-        Theta = list(diag(1, 5), c(1, .95, .80, .75, 1)),
+        theta = list(diag(1, 5), c(1, .95, .80, .75, 1)),
         plot_contour = TRUE, show_mi_result = TRUE)
 # Multiple groups, multiple dimensions
 lambda_matrix <- matrix(0, nrow = 15, ncol = 1)
@@ -197,7 +197,7 @@ PartInv(propsel = 0.25, pmix = c(1/4, 1/4, 1/4, 1/4),
         nu = list(nu_matrix, nu_matrix1, nu_matrix2, nu_matrix3),
         lambda = list(lambda_matrix, lambda_matrix, lambda_matrix,
                       lambda_matrix),
-        Theta = list(theta_matrix, theta_matrix1, theta_matrix2,
+        theta = list(theta_matrix, theta_matrix1, theta_matrix2,
                      theta_matrix3),
         plot_contour = TRUE, show_mi_result = TRUE,
         labels = c("Group 1", "Group 2", "Group 3", "Group 4"),
