@@ -46,7 +46,7 @@ plotPropselRange <- function(cfa_fit,
   
   propsels <- seq(from = from, to = to, by = by)
   
-  n_g <- length(est[['alpha']]) # number of groups
+  n_g <- cfa_fit@Data@ngroups # number of groups
   
   # list to store PS, SE, SR, SP at different proportions of selection
   # ls <- vector(length = 8, mode = "list")
