@@ -27,6 +27,38 @@ unnest_list <- function(ins) {
     }
 
 #' @title 
+#' Convert acronym of composite index to full form. 
+#' 
+#' @name 
+#' lab_cai
+#'
+#' @description
+#' \code{lab_cai} takes in a string (PS, SR, SE, or SP) and returns the string 
+#' for the full form.
+#'  
+#' @param cai A two-letter string indicating the classification accuracy index.
+#' 
+#' @return The output will be a string.
+#'
+#' @export
+lab_cai <- function(cai) {
+  out <- ""
+  if(cai == "PS") {
+    out <- "Proportion selected"
+  }
+  if(cai == "SR") {
+    out <- "Success ratio"
+  }
+  if(cai == "SE") {
+    out <- "Sensitivity"
+  }
+  if(cai == "SP") {
+    out <- "Specificity"
+  }
+  out
+}
+
+#' @title 
 #' Extract and format parameter values for `PartInv`.
 #' 
 #' @name 
