@@ -26,7 +26,7 @@ NULL
 #' @param by The increment of the sequence of proportions. `0.01` by default.
 #' @param cutoffs_from The lowest threshold to consider.`NULL` by default.
 #' @param cutoffs_to The largest threshold to consider. `NULL` by default.
-#' @param cutoffs_by The increment of the sequence of thresholds.
+#' @param plotAIs Whether a plot for AIs should be printed. `TRUE` by default.
 #' @return Eight plots illustrating how proportion selected (PS), success ratio 
 #'     (SR), sensitivity (SE), and specificity (SP) change across different 
 #'     proportions of selection under partial and strict invariance conditions.
@@ -46,7 +46,7 @@ NULL
 #' 
 #' # plot CAI at different cutoffs
 #' plotPropselRange(fit, pmix = table(HS$sex)/sum(table(HS$sex)), 
-#'    cutoffs_from = 35, cutoffs_to = 50, cutoffs_by = 1)
+#'    cutoffs_from = 35, cutoffs_to = 50)
 #'
 #' # plot only SR under partial invariance for up to 10% selection.
 #' plotPropselRange(fit, pmix = table(HS$sex)/sum(table(HS$sex)), 
@@ -63,7 +63,7 @@ plotPropselRange <- function(cfa_fit,
                              by = 0.01,
                              cutoffs_from = NULL,
                              cutoffs_to = NULL,
-                             cutoffs_by = 0.1
+                             plotAIs = TRUE
                              ) {
   
   stopifnot("cai_names can only take the following values: PS, SR, SE, SP." =
@@ -88,7 +88,7 @@ plotPropselRange <- function(cfa_fit,
   # if the user provided the max and min cutoff values, update rangeVals with 
   # a range of cutoffs
   if (!is.null(cutoffs_from) && !is.null(cutoffs_to)) {
-    cutoffs <- seq(from = cutoffs_from, to = cutoffs_to, by = cutoffs_by)
+    cutoffs <- seq(from = cutoffs_from, to = cutoffs_to, by = by)
     rangeVals <- cutoffs
     xl <- "Thresholds" # for the plots later
     use <- "cutoffs"
@@ -103,7 +103,8 @@ plotPropselRange <- function(cfa_fit,
   
   ls_mat <- matrix(NA, ncol = length(rangeVals), nrow = n_g,
                    dimnames = list(labels, rangeVals))
-  
+  AIs <- matrix(NA, ncol = length(rangeVals), nrow = n_g - 1,
+                   dimnames = list(labels[-1], rangeVals))
   ls_names <- c(t(outer(cai_names, Y = mod_names, FUN = paste, sep = "_")))
   ls <- rep(list(ls_mat), length(ls_names))
   names(ls) <- ls_names
@@ -173,6 +174,7 @@ plotPropselRange <- function(cfa_fit,
          mains <- c(mains, paste0(cai, " under " , temp))
          ind <- ind + 1
        }
+        AIs[,p] <- as.numeric(pinv$ai_ratio)
       }
      
     }
@@ -202,5 +204,22 @@ plotPropselRange <- function(cfa_fit,
     }
     legend(legends[l], legend = labels, col = colorlist[1:n_g], lty = 1,
            lwd = 1.5, cex = 0.8)  
-  }  
+  }
+  
+  if (plotAIs) {
+    plot(rangeVals, AIs[1,], type = "l", ylim = c(0, 1.5),
+         col = colorlist[1], lwd = 1.5, xlab = xl,
+         ylab = "AI ratio",
+         main = "AI ratios",
+         cex = 1.1)
+    if (n_g > 2) {
+      for (i in seq_len(n_g - 1)){
+        lines(rangeVals, AIs[i + 1,], type = "l",
+              lwd = 1.5, col = colorlist[i + 1])
+      }
+    }
+    legend(legends[l], legend = labels, col = colorlist[1:n_g], lty = 1,
+           lwd = 1.5, cex = 0.8)  
+  }
 }
+
