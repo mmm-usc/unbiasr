@@ -2,15 +2,13 @@
 NULL
 
 #' Plot classification accuracy indices at different proportions of selection
+#'   or at different threshold (cutoff) values
 #' 
 #' \code{plotPropselRange} plots classification accuracy indices at different
 #' proportions of selection under partial and strict invariance conditions for 
 #' a given CFA fit.
 #' 
 #' @param cfa_fit CFA model output from lavaan.
-#' @param from The lowest proportion of selection to consider
-#' @param to The largest proportion of selection to consider
-#' @param by The increment of the sequence of proportions.
 #' @param pmix List of length `g` containing the mixing proportions of each
 #'     group (where `g` is the number of groups). If `NULL`, defaults to `1/g` 
 #'     for each group (i.e., the populations have equal size).
@@ -23,6 +21,12 @@ NULL
 #'     indices of interest. c("PS", "SR", "SE", "SP") by default.
 #' @param mod_names A vector of strings indicating the invariance conditions of
 #'     interest. c("par", "str") by default.
+#' @param from The lowest proportion of selection to consider. `0.01` by default.
+#' @param to The largest proportion of selection to consider. `0.25` by default.
+#' @param by The increment of the sequence of proportions. `0.01` by default.
+#' @param cutoffs_from The lowest threshold to consider.`NULL` by default.
+#' @param cutoffs_to The largest threshold to consider. `NULL` by default.
+#' @param cutoffs_by The increment of the sequence of thresholds.
 #' @return Eight plots illustrating how proportion selected (PS), success ratio 
 #'     (SR), sensitivity (SE), and specificity (SP) change across different 
 #'     proportions of selection under partial and strict invariance conditions.
@@ -37,17 +41,29 @@ NULL
 #' 
 #' fit <- cfa(HS.model, data = HS, group = "sex")
 #' 
+#' # plot CAI at different proportions of selection
 #' plotPropselRange(fit, pmix = table(HS$sex)/sum(table(HS$sex)))
+#' 
+#' # plot CAI at different cutoffs
+#' plotPropselRange(fit, pmix = table(HS$sex)/sum(table(HS$sex)), 
+#'    cutoffs_from = 35, cutoffs_to = 50, cutoffs_by = 1)
+#'
+#' # plot only SR under partial invariance for up to 10% selection.
+#' plotPropselRange(fit, pmix = table(HS$sex)/sum(table(HS$sex)), 
+#'     from = 0.01, to = 0.10, cai_names = "SR", mod_names = "par")
 #' }
 #' @export
 plotPropselRange <- function(cfa_fit,
-                             from = 0.01,
-                             to = 0.25,
-                             by = 0.01,
                              pmix = NULL,
                              labels = NULL,
                              cai_names = c("PS", "SR", "SE", "SP"),
-                             mod_names = c("par", "str")
+                             mod_names = c("par", "str"),
+                             from = 0.01,
+                             to = 0.25,
+                             by = 0.01,
+                             cutoffs_from = NULL,
+                             cutoffs_to = NULL,
+                             cutoffs_by = 0.1
                              ) {
   
   stopifnot("cai_names can only take the following values: PS, SR, SE, SP." =
@@ -58,7 +74,25 @@ plotPropselRange <- function(cfa_fit,
   est <- format_cfa_partinv(cfa_fit, comp = "est")
   
   propsels <- seq(from = from, to = to, by = by)
+  use <- "propsels"
+  xl <- "Proportion of selection"
+  rangeVals <- propsels
   
+  if ((is.null(cutoffs_from) && !is.null(cutoffs_to)) | 
+      (!is.null(cutoffs_from) && is.null(cutoffs_to))) { 
+    warning("If you would like to plot CAI at different thresholds, provide 
+            parameter values for both `cutoffs_to` and `cutoffs_from`. 
+            CAI were plotted at different proportions of selection by default.")
+  }
+    
+  # if the user provided the max and min cutoff values, update rangeVals with 
+  # a range of cutoffs
+  if (!is.null(cutoffs_from) && !is.null(cutoffs_to)) {
+    cutoffs <- seq(from = cutoffs_from, to = cutoffs_to, by = cutoffs_by)
+    rangeVals <- cutoffs
+    xl <- "Thresholds" # for the plots later
+    use <- "cutoffs"
+  }
   n_g <- cfa_fit@Data@ngroups # number of groups
   
   # if the user did not provide labels, or provided the wrong number of labels,
@@ -66,9 +100,9 @@ plotPropselRange <- function(cfa_fit,
     labels <- cfa_fit@Data@group.label
     labels <- paste(labels, c("(reference)", rep("(focal)", n_g - 1)))
   }
-
-  ls_mat <- matrix(NA, ncol = length(propsels), nrow = n_g,
-                   dimnames = list(labels, propsels))
+  
+  ls_mat <- matrix(NA, ncol = length(rangeVals), nrow = n_g,
+                   dimnames = list(labels, rangeVals))
   
   ls_names <- c(t(outer(cai_names, Y = mod_names, FUN = paste, sep = "_")))
   ls <- rep(list(ls_mat), length(ls_names))
@@ -83,19 +117,37 @@ plotPropselRange <- function(cfa_fit,
   
   # call PartInv with each proportion of selection and store CAI in the list of
   # data frames
-  for(p in seq_along(propsels)) {
-    suppressWarnings({
-      pinv <- PartInv(propsel = propsels[p],
-                    psi = est$psi,
-                    lambda = est$lambda,
-                    theta = est$theta,
-                    alpha = est$alpha,
-                    nu = est$nu,
-                    pmix = pmix,
-                    plot_contour = FALSE,
-                    labels = labels,
-                    show_mi_result = TRUE)
+  for(p in seq_along(rangeVals)) {
+    # if the user provided cutoff values
+    if (use == "cutoffs") {
+      suppressWarnings({
+        pinv <- PartInv(cut_z = cutoffs[p],
+                      psi = est$psi,
+                      lambda = est$lambda,
+                      theta = est$theta,
+                      alpha = est$alpha,
+                      nu = est$nu,
+                      pmix = pmix,
+                      plot_contour = FALSE,
+                      labels = labels,
+                      show_mi_result = TRUE)
+        })
+    }
+    # if the user did not provide cutoff values
+    if (use == "propsels") {
+      suppressWarnings({
+        pinv <- PartInv(propsel = propsels[p],
+                        psi = est$psi,
+                        lambda = est$lambda,
+                        theta = est$theta,
+                        alpha = est$alpha,
+                        nu = est$nu,
+                        pmix = pmix,
+                        plot_contour = FALSE,
+                        labels = labels,
+                        show_mi_result = TRUE)
       })
+    }  
     num_comb <- length(cai_names) * length(mod_names) + 1 # for specifying the
     # index within ls
     ind <- 1
@@ -139,13 +191,13 @@ plotPropselRange <- function(cfa_fit,
 
   # iterate over each CAI & invariance condition of interest and produce plots
   for (l in seq_along(ls_names)) {
-    plot(propsels, ls[[ls_names[l]]][1, ], type = "l", ylim = c(0, 1),
-         col = colorlist[1], lwd = 1.5, xlab = "Proportion of selection",
+    plot(rangeVals, ls[[ls_names[l]]][1, ], type = "l", ylim = c(0, 1),
+         col = colorlist[1], lwd = 1.5, xlab = xl,
          ylab = ylabs[l],
          main = mains[l],
          cex = 1.1)
     for (i in seq_len(n_g - 1)){
-      lines(propsels, ls[[ls_names[l]]][i + 1, ], type = "l",
+      lines(rangeVals, ls[[ls_names[l]]][i + 1, ], type = "l",
             lwd = 1.5, col = colorlist[i + 1])
     }
     legend(legends[l], legend = labels, col = colorlist[1:n_g], lty = 1,
