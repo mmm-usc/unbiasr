@@ -18,7 +18,7 @@ NULL
 #'     group) and 'Focal_1' through 'Focal_(g-1)', where `g` is the number of
 #'     groups.
 #' @param cai_names A vector of strings indicating the classification accuracy
-#'     indices of interest. c("PS", "SR", "SE", "SP") by default.
+#'     indices of interest. c("PS", "SR", "SE", "SP", "AI) by default.
 #' @param mod_names A vector of strings indicating the invariance conditions of
 #'     interest. c("par", "str") by default.
 #' @param from The lowest proportion of selection to consider. `0.01` by default.
@@ -26,7 +26,6 @@ NULL
 #' @param by The increment of the sequence of proportions. `0.01` by default.
 #' @param cutoffs_from The lowest threshold to consider.`NULL` by default.
 #' @param cutoffs_to The largest threshold to consider. `NULL` by default.
-#' @param plotAIs Whether a plot for AIs should be printed. `TRUE` by default.
 #' @return Eight plots illustrating how proportion selected (PS), success ratio 
 #'     (SR), sensitivity (SE), and specificity (SP) change across different 
 #'     proportions of selection under partial and strict invariance conditions.
@@ -56,20 +55,29 @@ NULL
 plotPropselRange <- function(cfa_fit,
                              pmix = NULL,
                              labels = NULL,
-                             cai_names = c("PS", "SR", "SE", "SP"),
+                             cai_names = c("PS", "SR", "SE", "SP", "AI"),
                              mod_names = c("par", "str"),
                              from = 0.01,
                              to = 0.25,
                              by = 0.01,
                              cutoffs_from = NULL,
-                             cutoffs_to = NULL,
-                             plotAIs = TRUE
+                             cutoffs_to = NULL
                              ) {
   
   stopifnot("cai_names can only take the following values: PS, SR, SE, SP." =
-              (all(cai_names %in% c("PS", "SR", "SE", "SP"))))
+              (all(cai_names %in% c("PS", "SR", "SE", "SP", "AI"))))
   stopifnot("mod_names can only take the following values: par, str" =
               (all(mod_names %in% c("par", "str"))))
+  plotAIs <- TRUE
+  if ("AI" %in% cai_names) {
+    
+    cai_names <- cai_names[!cai_names %in% "AI"]
+    if (length(cai_names) == 0) {
+      cai_names <- NULL
+    }
+   } else {
+    plotAIs <- FALSE
+    }
   
   est <- format_cfa_partinv(cfa_fit, comp = "est")
   
@@ -152,6 +160,7 @@ plotPropselRange <- function(cfa_fit,
     num_comb <- length(cai_names) * length(mod_names) + 1 # for specifying the
     # index within ls
     ind <- 1
+
     while(ind < num_comb) {
       # for each specified CAI
       for (i in seq_along(cai_names)) {
@@ -174,11 +183,12 @@ plotPropselRange <- function(cfa_fit,
          mains <- c(mains, paste0(cai, " under " , temp))
          ind <- ind + 1
        }
-        AIs[,p] <- as.numeric(pinv$ai_ratio)
       }
      
     }
+    AIs[,p] <- as.numeric(pinv$ai_ratio)
   }
+  
   mains <- mains[-1]
   ylabs <- ylabs[-1]
   
@@ -190,22 +200,23 @@ plotPropselRange <- function(cfa_fit,
                    #https://sashamaps.net/docs/resources/20-colors/
 
   legends <- c(rep("topright", 2), rep("bottomright", 6))
-
-  # iterate over each CAI & invariance condition of interest and produce plots
-  for (l in seq_along(ls_names)) {
-    plot(rangeVals, ls[[ls_names[l]]][1, ], type = "l", ylim = c(0, 1),
-         col = colorlist[1], lwd = 1.5, xlab = xl,
-         ylab = ylabs[l],
-         main = mains[l],
-         cex = 1.1)
-    for (i in seq_len(n_g - 1)){
-      lines(rangeVals, ls[[ls_names[l]]][i + 1, ], type = "l",
-            lwd = 1.5, col = colorlist[i + 1])
-    }
-    legend(legends[l], legend = labels, col = colorlist[1:n_g], lty = 1,
-           lwd = 1.5, cex = 0.8)  
-  }
   
+  if (!is.null(cai_names)) {
+    # iterate over each CAI & invariance condition of interest and produce plots
+    for (l in seq_along(ls_names)) {
+      plot(rangeVals, ls[[ls_names[l]]][1, ], type = "l", ylim = c(0, 1),
+           col = colorlist[1], lwd = 1.5, xlab = xl,
+           ylab = ylabs[l],
+           main = mains[l],
+           cex = 1.1)
+      for (i in seq_len(n_g - 1)){
+        lines(rangeVals, ls[[ls_names[l]]][i + 1, ], type = "l",
+              lwd = 1.5, col = colorlist[i + 1])
+      }
+      legend(legends[l], legend = labels, col = colorlist[1:n_g], lty = 1,
+             lwd = 1.5, cex = 0.8)  
+    }
+  }
   if (plotAIs) {
     plot(rangeVals, AIs[1,], type = "l", ylim = c(0, 1.5),
          col = colorlist[1], lwd = 1.5, xlab = xl,
@@ -218,7 +229,7 @@ plotPropselRange <- function(cfa_fit,
               lwd = 1.5, col = colorlist[i + 1])
       }
     }
-    legend(legends[l], legend = labels, col = colorlist[1:n_g], lty = 1,
+    legend("bottomright", legend = labels, col = colorlist[1:n_g], lty = 1,
            lwd = 1.5, cex = 0.8)  
   }
 }
