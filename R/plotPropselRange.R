@@ -218,10 +218,11 @@ plotPropselRange <- function(cfa_fit,
     }
   }
   if (plotAIs) {
+    colorlist <- colorlist[-1]
     plot(rangeVals, AIs[1,], type = "l", ylim = c(0, 1.5),
          col = colorlist[1], lwd = 1.5, xlab = xl,
          ylab = "AI ratio",
-         main = "AI ratios",
+         main = paste0("AI ratios (reference group: ", labels[1], ")"),
          cex = 1.1)
     if (n_g > 2) {
       for (i in seq_len(n_g - 1)){
@@ -229,7 +230,7 @@ plotPropselRange <- function(cfa_fit,
               lwd = 1.5, col = colorlist[i + 1])
       }
     }
-    legend("bottomright", legend = labels, col = colorlist[1:n_g], lty = 1,
+    legend("bottomright", legend = labels[-1], col = colorlist[1:n_g], lty = 1,
            lwd = 1.5, cex = 0.8)  
   }
 }
