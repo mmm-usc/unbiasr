@@ -88,7 +88,7 @@ Evaluate partial measurement invariance using Millsap & Kwok's (2004)
 approach
 }
 \examples{
-PartInv(.25, kappa_r = 0.5, kappa_f = 0, phi_r = 1,
+PartInv(propsel = .25, kappa_r = 0.5, kappa_f = 0, phi_r = 1,
         lambda_r = c(.3, .5, .9, .7), tau_r = c(.225, .025, .010, .240),
         Theta_r = diag(.96, 4), labels = c("female", "male"))
 }

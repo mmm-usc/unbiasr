@@ -1,6 +1,6 @@
 # Create sample output
 piout <- PartInv(
-  .10,
+  propsel = .10,
   kappa_r = 0.5,
   kappa_f = 0,
   phi_r = 1,
@@ -12,7 +12,7 @@ piout <- PartInv(
 
 # Create sample output 2
 piout_eq <- PartInv(
-  .10,
+  propsel = .10,
   kappa_r = 0.5,
   phi_r = 1,
   lambda_r = c(.3, .5, .9, .7, .8),
@@ -33,7 +33,7 @@ test_that("plot.PartInv() works successfully", {
   expect_no_error(plot(piout))
   expect_error(plot(piout, which_result = "mi"))
   piout_with_mi <- PartInv(
-    .10,
+    propsel = .10,
     kappa_r = 0.5,
     kappa_f = 0,
     phi_r = 1,
@@ -56,7 +56,7 @@ test_that("Identical selection with the same parameters", {
 
 test_that("Duplicated results with `show_mi_result = TRUE` when inputting invariant model", {
   piout_eq2 <- PartInv(
-    .10,
+    propsel = .10,
     kappa_r = 0.5,
     phi_r = 1,
     lambda_r = c(.3, .5, .9, .7, .8),
@@ -70,7 +70,7 @@ test_that("Duplicated results with `show_mi_result = TRUE` when inputting invari
 
 test_that("PartInv() handles matrix input", {
   piout_mat <- PartInv(
-    .10,
+    propsel = .10,
     kappa_r = matrix(0.5),
     kappa_f = matrix(0),
     phi_r = matrix(1),
@@ -84,7 +84,7 @@ test_that("PartInv() handles matrix input", {
 
 test_that("PartInv() handles diagonal input for Theta", {
   piout_diag <- PartInv(
-    .10,
+    propsel = .10,
     kappa_r = matrix(0.5),
     kappa_f = matrix(0),
     phi_r = matrix(1),
@@ -100,7 +100,7 @@ test_that("PartInv() output passes logical test", {
   psel <- .2
   # Example favoring reference group
   piout1_pstrict <- PartInv(
-    psel,
+    propsel = psel,
     kappa_r = 0,
     kappa_f = -0.1,
     phi_r = 1.3,
@@ -114,7 +114,7 @@ test_that("PartInv() output passes logical test", {
     labels = c("reference", "focal")
   )
   piout1_strict <- PartInv(
-    psel,
+    propsel = psel,
     kappa_r = 0,
     kappa_f = -0.1,
     phi_r = 1.3,
@@ -149,7 +149,7 @@ test_that("`show_mi_result = TRUE` works properly", {
   Theta_f <- diag(c(1, .65, .75, .9, .8))
   # Example favoring reference group
   piout1_pstrict <- PartInv(
-    psel,
+    propsel = psel,
     kappa_r = 0,
     kappa_f = -0.1,
     phi_r = 1.3,
@@ -165,7 +165,7 @@ test_that("`show_mi_result = TRUE` works properly", {
     show_mi_result = TRUE
   )
   piout1_strict <- PartInv(
-    psel,
+    propsel = psel,
     kappa_r = 0,
     kappa_f = -0.1,
     phi_r = 1.3,

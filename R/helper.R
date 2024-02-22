@@ -1,3 +1,115 @@
+#' @title 
+#' Unnest list elements. 
+#' 
+#' @name 
+#' unnest_list
+#'
+#' @description
+#' \code{unnest_list} takes in a list object and returns an unnested list
+#'  of lists
+#'  
+#' @param ins list object (e.g., lavaan CFA fit)
+#' 
+#' @return The output will be a list of lists.
+#'
+unnest_list <- function(ins) {
+        nms <- names(ins[[1]])
+        num_gr <- length(ins)
+        out <- rep(list(vector(mode = "list", length = num_gr)), length(nms))
+        names(out) <- nms
+        for (i in seq_along(ins)) {
+            for (nm in nms) {
+                out[[nm]][[i]] <- ins[[i]][[nm]]
+            }
+        }
+        out
+    }
+
+#' @title 
+#' Convert acronym of composite index to full form. 
+#' 
+#' @name 
+#' lab_cai
+#'
+#' @description
+#' \code{lab_cai} takes in a string (PS, SR, SE, or SP) and returns the string 
+#' for the full form.
+#'  
+#' @param cai A two-letter string indicating the classification accuracy index.
+#' 
+#' @return The output will be a string.
+lab_cai <- function(cai) {
+  out <- ""
+  if(cai == "PS") {
+    out <- "Proportion selected"
+  }
+  if(cai == "SR") {
+    out <- "Success ratio"
+  }
+  if(cai == "SE") {
+    out <- "Sensitivity"
+  }
+  if(cai == "SP") {
+    out <- "Specificity"
+  }
+  out
+}
+
+#' @title 
+#' Extract and format parameter values for `PartInv`.
+#' 
+#' @name 
+#' format_cfa_partinv
+#'
+#' @description
+#' \code{format_cfa_partinv} takes in a lavaan CFA fit object and a component
+#'  and returns the necessary inputs for PartInv in a list
+#'  
+#' @param obj lavaan CFA output
+#' @param comp a string indicating the lavaan object component of interest
+#'             e.g., "se", "est"
+#'  
+#' @return The output will be a list of 5 elements:
+#'    \item{nu}{A list of length `g` containing `1 x n` measurement intercept
+#'     vectors where `g` is the number of groups and `n` is the number of items
+#'     in the scale.}
+#'    \item{alpha}{A list of length `g` containing `1 x d` latent factor mean
+#'     vectors where `g` is the number of groups and `d` is the number of 
+#'     latent dimensions.}
+#'    \item{lambda}{A list of length `g` containing `n x d` factor loading
+#'     matrices where `g` is the number of groups, `d` is the number of 
+#'     latent dimensions, and `n` is the number of items in the scale.}
+#'    \item{psi}{A list of length `g` containing `d x d` latent factor
+#'     variance-covariance matrices where `g` is the number of groups and `d` 
+#'     is the number of latent dimensions.}
+#'    \item{theta}{A list of length `g` containing `1 x n` vectors or `n x n`
+#'     matrices of unique factor variances and covariances, where `g` is the
+#'     number of groups and `n` is the number of items in the scale.}
+#'     
+#' @export
+format_cfa_partinv <- function(obj, comp) {
+  ins <- lavaan::lavInspect(obj, what = comp)
+  num_gr <- length(ins)
+  
+  psi_matrices <- lambda_matrices <- alpha_list <- nu_list <- 
+    theta_list <- vector(mode = "list", length = num_gr)
+  
+  # Extract and format the parameters for each group
+  for (i in seq_len(num_gr)) {
+    psi_matrices[[i]] <- ins[[i]]$psi
+    lambda_matrices[[i]] <- ins[[i]]$lambda
+    alpha_list[[i]] <- ins[[i]]$alpha
+    nu_list[[i]] <- ins[[i]]$nu
+    theta_list[[i]] <- ins[[i]]$theta
+  }
+  return(list("lambda" = lambda_matrices, 
+              "theta" = theta_list, 
+              "psi" = psi_matrices, 
+              "nu" = nu_list, 
+              "alpha" = alpha_list))
+}
+
+
 #' Compute the mean, standard deviation, and covariance of latent and observed
 #' variables.
 #'
@@ -21,7 +133,7 @@
 #'    vectors where `g` is the number of groups and `n` is the number of items 
 #'    in the scale. The first element is assumed to belong to the reference 
 #'    group.
-#' @param Theta A list of length `g` containing `1 x n` vectors or `n x n` 
+#' @param theta A list of length `g` containing `1 x n` vectors or `n x n` 
 #'    matrices of unique factor variances and covariances, where `g` is the 
 #'    number of groups and `n` is the number of items in the scale. The first 
 #'    element is assumed to belong to the reference group.
@@ -32,12 +144,12 @@
 #'    \item{sd_xi}{Standard deviation of the latent variable.}
 #'    \item{cov_z_xi}{Covariance of the latent and observed variables.}
 mn_sd_cov <- function(weights_item, weights_latent, alpha, psi, lambda, nu, 
-                      Theta) {
+                      theta) {
   mn_z <- sd_z <- mn_xi <- sd_xi <- cov_z_xi <- NULL
   for (i in seq_along(alpha)) {
     mn_z[i] <- c(crossprod(weights_item, nu[[i]] + lambda[[i]] %*% alpha[[i]]))
     sd_z[i] <- c(sqrt(crossprod(weights_item, lambda[[i]] %*% psi[[i]] %*% 
-                                  t(lambda[[i]]) + Theta[[i]]) %*%
+                                  t(lambda[[i]]) + theta[[i]]) %*%
                         weights_item))
     names(alpha) <- names(psi) <- NULL
     mn_xi[i] <- c(crossprod(weights_latent, alpha[[i]]))
@@ -68,7 +180,7 @@ mn_sd_cov <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
 #'    vectors where `g` is the number of groups and `n` is the number of items 
 #'    in the scale. The first element is assumed to belong to the reference 
 #'    group.
-#' @param Theta A list of length `g` containing `1 x n` vectors or `n x n` 
+#' @param theta A list of length `g` containing `1 x n` vectors or `n x n` 
 #'    matrices of unique factor variances and covariances, where `g` is the 
 #'    number of groups and `n` is the number of items in the scale. The first 
 #'    element is assumed to belong to the reference group.
@@ -89,10 +201,10 @@ mn_sd_cov <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
 #'    \item{bivar_data}{The mean, standard deviation, and covariance of latent 
 #'     and observed variables for each group.}
 compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu, 
-                        Theta, pmix, propsel, labels, cut_z = NULL, 
+                        theta, pmix, propsel, labels, cut_z = NULL, 
                         is_mi = FALSE) {
   num_g <- length(alpha)
-  lst <- mn_sd_cov(weights_item, weights_latent, alpha, psi, lambda, nu, Theta)
+  lst <- mn_sd_cov(weights_item, weights_latent, alpha, psi, lambda, nu, theta)
 
   if (!is.null(propsel)) {  # if there is an input for selection proportion
     # compute the cut score using qnormmix based on input selection proportion
@@ -136,7 +248,7 @@ compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
       mn_z_Ef[i - 1] <- c(crossprod(weights_item, nu[[i]] + lambda[[i]]
                                     %*% alpha[[1]]))
       sd_z_Ef[i - 1] <- c(sqrt(crossprod(weights_item, lambda[[i]] %*% psi[[1]]
-                                         %*% t(lambda[[i]]) + Theta[[i]])
+                                         %*% t(lambda[[i]]) + theta[[i]])
                                %*% weights_item))
       cov_z_xi_Ef[i - 1] <- c(crossprod(weights_item, lambda[[i]] %*% psi[[1]]) 
                               %*% weights_latent)

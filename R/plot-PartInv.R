@@ -83,7 +83,7 @@ plot.PartInv <- function(x, labels = x[["labels"]],
     x_lim <- y_lim <- c()
     n_g <- length(plot_dat$mn_xi) # number of groups
     
-    for (i in seq_along(1:n_g)) {
+    for (i in seq_len(n_g)) {
       x_lim <- c(x_lim, c(plot_dat$mn_xi[i] + c(-3, 3) * plot_dat$sd_xi[i]))
       y_lim <- c(y_lim, plot_dat$mn_z[i] + c(-3, 3) * plot_dat$sd_z[i])
     }
@@ -95,6 +95,8 @@ plot.PartInv <- function(x, labels = x[["labels"]],
                     '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', 
                     '#ffffff', '#000000') 
                     #https://sashamaps.net/docs/resources/20-colors/
+    ltylist <- rep(c('twodash', 'longdash', 'dotdash', 'dashed', 'dotted'), 
+                   length.out = n_g)
     if (!is.null(custom_colors)) { colorlist <- custom_colors }
 
     # Plot the ellipse for the reference group
@@ -110,10 +112,11 @@ plot.PartInv <- function(x, labels = x[["labels"]],
       contour_bvnorm(plot_dat$mn_xi[i], plot_dat$sd_xi[i],
                      plot_dat$mn_z[i], plot_dat$sd_z[i],
                      cov12 = plot_dat$cov_z_xi[i],
-                     add = TRUE, lty = "dashed", lwd = 2, col = colorlist[i]
+                     add = TRUE, lwd = 2, col = colorlist[i], 
+                     lty = ltylist[i]
                      )
-      }
-     legend("topleft", labels, lty = c("solid", rep("dashed", n_g - 1)), 
+    }
+     legend("topleft", labels, lty = c("solid", ltylist[2:n_g]), 
             col = colorlist[1:n_g])
      abline(h = cut_z, v = cut_xi)
      x_cord <- rep(cut_xi + c(.8, -.8) * plot_dat$sd_xi[1], 2)

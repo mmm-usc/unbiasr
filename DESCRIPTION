@@ -36,7 +36,9 @@ Suggests:
     shinytest,
     rmarkdown,
     knitr,
-    lavaan
+    lavaan,
+    readxl,
+    sjmisc
 Imports: 
     methods,
     mnormt,
