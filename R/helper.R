@@ -12,7 +12,6 @@
 #' 
 #' @return The output will be a list of lists.
 #'
-#' @export
 unnest_list <- function(ins) {
         nms <- names(ins[[1]])
         num_gr <- length(ins)
@@ -39,8 +38,6 @@ unnest_list <- function(ins) {
 #' @param cai A two-letter string indicating the classification accuracy index.
 #' 
 #' @return The output will be a string.
-#'
-#' @export
 lab_cai <- function(cai) {
   out <- ""
   if(cai == "PS") {
