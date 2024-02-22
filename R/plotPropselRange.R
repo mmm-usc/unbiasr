@@ -64,7 +64,7 @@ plotPropselRange <- function(cfa_fit,
                              cutoffs_to = NULL
                              ) {
   
-  stopifnot("cai_names can only take the following values: PS, SR, SE, SP." =
+  stopifnot("cai_names can only take the following values: PS, SR, SE, SP, AI." =
               (all(cai_names %in% c("PS", "SR", "SE", "SP", "AI"))))
   stopifnot("mod_names can only take the following values: par, str" =
               (all(mod_names %in% c("par", "str"))))
@@ -75,9 +75,9 @@ plotPropselRange <- function(cfa_fit,
     if (length(cai_names) == 0) {
       cai_names <- NULL
     }
-   } else {
+  } else {
     plotAIs <- FALSE
-    }
+  }
   
   est <- format_cfa_partinv(cfa_fit, comp = "est")
   
@@ -86,10 +86,10 @@ plotPropselRange <- function(cfa_fit,
   xl <- "Proportion of selection"
   rangeVals <- propsels
   
-  if ((is.null(cutoffs_from) && !is.null(cutoffs_to)) | 
-      (!is.null(cutoffs_from) && is.null(cutoffs_to))) { 
-    warning("If you would like to plot CAI at different thresholds, provide 
-            parameter values for both `cutoffs_to` and `cutoffs_from`. 
+  if ((is.null(cutoffs_from) && !is.null(cutoffs_to)) ||
+    (!is.null(cutoffs_from) && is.null(cutoffs_to))) {
+    warning("If you would like to plot CAI at different thresholds, provide
+            parameter values for both `cutoffs_to` and `cutoffs_from`.
             CAI were plotted at different proportions of selection by default.")
   }
     
@@ -112,7 +112,7 @@ plotPropselRange <- function(cfa_fit,
   ls_mat <- matrix(NA, ncol = length(rangeVals), nrow = n_g,
                    dimnames = list(labels, rangeVals))
   AIs <- matrix(NA, ncol = length(rangeVals), nrow = n_g - 1,
-                   dimnames = list(labels[-1], rangeVals))
+                dimnames = list(labels[-1], rangeVals))
   ls_names <- c(t(outer(cai_names, Y = mod_names, FUN = paste, sep = "_")))
   ls <- rep(list(ls_mat), length(ls_names))
   names(ls) <- ls_names
@@ -126,21 +126,21 @@ plotPropselRange <- function(cfa_fit,
   
   # call PartInv with each proportion of selection and store CAI in the list of
   # data frames
-  for(p in seq_along(rangeVals)) {
+  for (p in seq_along(rangeVals)) {
     # if the user provided cutoff values
     if (use == "cutoffs") {
       suppressWarnings({
         pinv <- PartInv(cut_z = cutoffs[p],
-                      psi = est$psi,
-                      lambda = est$lambda,
-                      theta = est$theta,
-                      alpha = est$alpha,
-                      nu = est$nu,
-                      pmix = pmix,
-                      plot_contour = FALSE,
-                      labels = labels,
-                      show_mi_result = TRUE)
-        })
+                        psi = est$psi,
+                        lambda = est$lambda,
+                        theta = est$theta,
+                        alpha = est$alpha,
+                        nu = est$nu,
+                        pmix = pmix,
+                        plot_contour = FALSE,
+                        labels = labels,
+                        show_mi_result = TRUE)
+      })
     }
     # if the user did not provide cutoff values
     if (use == "propsels") {
@@ -161,30 +161,30 @@ plotPropselRange <- function(cfa_fit,
     # index within ls
     ind <- 1
 
-    while(ind < num_comb) {
+    while (ind < num_comb) {
       # for each specified CAI
       for (i in seq_along(cai_names)) {
         # swap out the acronym of the composite CAI with the full form
-        cai <- lab_cai(substr(cai_names[i], 1, 2))  
+        cai <- lab_cai(substr(cai_names[i], 1, 2))
         # for each specified invariance condition
-       for (j in seq_along(mod_names)) {
-         # if the specified invariance condition is partial inv.,
-         ls[[ind]][, p] <- 
-           ifelse(rep(mod_names[j] == "par", n_g),
-                  as.numeric(pinv$summary[cai, 1:n_g]),
-                  as.numeric(pinv$summary_mi[cai, 1:n_g]))
-         
-         ylabs <- c(ylabs, paste0(cai, " (", cai_names[i], ")"))
-         
-         temp <- ""
-         if(mod_names[j] == "par") temp <- "partial invariance"
-         if(mod_names[j] == "str") temp <- "strict invariance"
-         
-         mains <- c(mains, paste0(cai, " under " , temp))
-         ind <- ind + 1
-       }
+        for (j in seq_along(mod_names)) {
+          # if the specified invariance condition is partial inv.,
+          ls[[ind]][, p] <-
+            ifelse(rep(mod_names[j] == "par", n_g),
+              as.numeric(pinv$summary[cai, 1:n_g]),
+              as.numeric(pinv$summary_mi[cai, 1:n_g])
+            )
+
+          ylabs <- c(ylabs, paste0(cai, " (", cai_names[i], ")"))
+
+          temp <- ""
+          if (mod_names[j] == "par") temp <- "partial invariance"
+          if (mod_names[j] == "str") temp <- "strict invariance"
+
+          mains <- c(mains, paste0(cai, " under ", temp))
+          ind <- ind + 1
+        }
       }
-     
     }
     AIs[,p] <- as.numeric(pinv$ai_ratio)
   }
@@ -209,7 +209,7 @@ plotPropselRange <- function(cfa_fit,
            ylab = ylabs[l],
            main = mains[l],
            cex = 1.1)
-      for (i in seq_len(n_g - 1)){
+      for (i in seq_len(n_g - 1)) {
         lines(rangeVals, ls[[ls_names[l]]][i + 1, ], type = "l",
               lwd = 1.5, col = colorlist[i + 1])
       }
@@ -225,7 +225,7 @@ plotPropselRange <- function(cfa_fit,
          main = paste0("AI ratios (reference group: ", labels[1], ")"),
          cex = 1.1)
     if (n_g > 2) {
-      for (i in seq_len(n_g - 1)){
+      for (i in seq_len(n_g - 1)) {
         lines(rangeVals, AIs[i + 1,], type = "l",
               lwd = 1.5, col = colorlist[i + 1])
       }
