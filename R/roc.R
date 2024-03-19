@@ -121,3 +121,16 @@ roc_PartInv <- function(cfa_fit,
   }
   return(ls)
 }                         
+
+library(lavaan)
+HS <- HolzingerSwineford1939
+HS$sex <- as.factor(HS$sex)
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HS.model, data = HS, group = "sex")
+
+out <- roc_PartInv(fit, pmix = c(0.5, 0.5))
+b <- 1 - out$Specificity_par
+plot(y = out$Sensitivity_par, x = b)
