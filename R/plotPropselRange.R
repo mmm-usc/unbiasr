@@ -10,25 +10,25 @@ NULL
 #' 
 #' @param cfa_fit CFA model output from lavaan.
 #' @param pmix List of length `g` containing the mixing proportions of each
-#'     group (where `g` is the number of groups). If `NULL`, defaults to `1/g` 
-#'     for each group (i.e., the populations have equal size).
+#'   group (where `g` is the number of groups). If `NULL`, defaults to `1/g` 
+#'   for each group (i.e., the populations have equal size).
 #' @param labels A character vector with `g` elements to label the reference
-#'     and focal groups on the plot, where `g` is the number of groups. If not
-#'     provided, groups are labeled automatically as 'Reference' (for the first
-#'     group) and 'Focal_1' through 'Focal_(g-1)', where `g` is the number of
-#'     groups.
+#'   and focal groups on the plot, where `g` is the number of groups. If not
+#'   provided, groups are labeled automatically as 'Reference' (for the first
+#'   group) and 'Focal_1' through 'Focal_(g-1)', where `g` is the number of
+#'   groups.
 #' @param cai_names A vector of strings indicating the classification accuracy
-#'     indices of interest. c("PS", "SR", "SE", "SP", "AI) by default.
+#'   indices of interest. c("PS", "SR", "SE", "SP", "AI) by default.
 #' @param mod_names A vector of strings indicating the invariance conditions of
-#'     interest. c("par", "str") by default.
+#'   interest. c("par", "str") by default.
 #' @param from The lowest proportion of selection to consider. `0.01` by default.
 #' @param to The largest proportion of selection to consider. `0.25` by default.
 #' @param by The increment of the sequence of proportions. `0.01` by default.
 #' @param cutoffs_from The lowest threshold to consider.`NULL` by default.
 #' @param cutoffs_to The largest threshold to consider. `NULL` by default.
 #' @return Eight plots illustrating how proportion selected (PS), success ratio 
-#'     (SR), sensitivity (SE), and specificity (SP) change across different 
-#'     proportions of selection under partial and strict invariance conditions.
+#'   (SR), sensitivity (SE), and specificity (SP) change across different 
+#'   proportions of selection under partial and strict invariance conditions.
 #' @examples
 #' \dontrun{
 #' library(lavaan)

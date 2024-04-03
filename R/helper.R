@@ -67,7 +67,7 @@ lab_cai <- function(cai) {
 #'  
 #' @param obj lavaan CFA output
 #' @param comp a string indicating the lavaan object component of interest
-#'             e.g., "se", "est"
+#'   e.g., "se", "est"
 #'  
 #' @return The output will be a list of 5 elements:
 #'    \item{nu}{A list of length `g` containing `1 x n` measurement intercept
@@ -119,24 +119,24 @@ format_cfa_partinv <- function(obj, comp) {
 #' @param weights_item A vector of item weights.
 #' @param weights_latent A vector of latent factor weights.
 #' @param alpha A list of length `g` containing `1 x d` latent factor mean 
-#'    vectors where `g` is the number of groups and `d` is the number of latent 
-#'    dimensions. The first element is assumed to belong to the reference group.
+#'   vectors where `g` is the number of groups and `d` is the number of latent 
+#'   dimensions. The first element is assumed to belong to the reference group.
 #' @param psi A list of length `g` containing `d x d` latent factor 
-#'    variance-covariance matrices where `g` is the number of groups and `d` is 
-#'    the number of latent dimensions. The first element is assumed to belong 
-#'    to the reference group.
+#'   variance-covariance matrices where `g` is the number of groups and `d` is 
+#'   the number of latent dimensions. The first element is assumed to belong 
+#'   to the reference group.
 #' @param lambda A list of length `g` containing `n x d` factor loading matrices 
-#'    where `g` is the number of groups, `d` is the number of latent dimensions, 
-#'    and `n` is the number of items in the scale. The first element is assumed 
-#'    to belong to the reference group.
+#'   where `g` is the number of groups, `d` is the number of latent dimensions, 
+#'   and `n` is the number of items in the scale. The first element is assumed 
+#'   to belong to the reference group.
 #' @param nu A list of length `g` containing `1 x n` measurement intercept
-#'    vectors where `g` is the number of groups and `n` is the number of items 
-#'    in the scale. The first element is assumed to belong to the reference 
-#'    group.
+#'   vectors where `g` is the number of groups and `n` is the number of items 
+#'   in the scale. The first element is assumed to belong to the reference 
+#'   group.
 #' @param theta A list of length `g` containing `1 x n` vectors or `n x n` 
-#'    matrices of unique factor variances and covariances, where `g` is the 
-#'    number of groups and `n` is the number of items in the scale. The first 
-#'    element is assumed to belong to the reference group.
+#'   matrices of unique factor variances and covariances, where `g` is the 
+#'   number of groups and `n` is the number of items in the scale. The first 
+#'   element is assumed to belong to the reference group.
 #' @return The output will be a list of 5 elements:
 #'    \item{mn_z}{Mean of the observed variable.}
 #'    \item{sd_z}{Standard deviation of the observed variable.}
@@ -166,33 +166,33 @@ mn_sd_cov <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
 #' @param weights_item A vector of item weights.
 #' @param weights_latent A vector of latent factor weights.
 #' @param alpha A list of length `g` containing `1 x d` latent factor mean 
-#'    vectors where `g` is the number of groups and `d` is the number of latent 
-#'    dimensions. The first element is assumed to belong to the reference group.
+#'   vectors where `g` is the number of groups and `d` is the number of latent 
+#'   dimensions. The first element is assumed to belong to the reference group.
 #' @param psi A list of length `g` containing `d x d` latent factor 
-#'    variance-covariance matrices where `g` is the number of groups and `d` is 
-#'    the number of latent dimensions. The first element is assumed to belong 
-#'    to the reference group.
+#'   variance-covariance matrices where `g` is the number of groups and `d` is 
+#'   the number of latent dimensions. The first element is assumed to belong 
+#'   to the reference group.
 #' @param lambda A list of length `g` containing `n x d` factor loading matrices 
-#'    where `g` is the number of groups, `d` is the number of latent dimensions, 
-#'    and `n` is the number of items in the scale. The first element is assumed 
-#'    to belong to the reference group.
+#'   where `g` is the number of groups, `d` is the number of latent dimensions, 
+#'   and `n` is the number of items in the scale. The first element is assumed 
+#'   to belong to the reference group.
 #' @param nu A list of length `g` containing `1 x n` measurement intercept
-#'    vectors where `g` is the number of groups and `n` is the number of items 
-#'    in the scale. The first element is assumed to belong to the reference 
-#'    group.
+#'   vectors where `g` is the number of groups and `n` is the number of items 
+#'   in the scale. The first element is assumed to belong to the reference 
+#'   group.
 #' @param theta A list of length `g` containing `1 x n` vectors or `n x n` 
-#'    matrices of unique factor variances and covariances, where `g` is the 
-#'    number of groups and `n` is the number of items in the scale. The first 
-#'    element is assumed to belong to the reference group.
+#'   matrices of unique factor variances and covariances, where `g` is the 
+#'   number of groups and `n` is the number of items in the scale. The first 
+#'   element is assumed to belong to the reference group.
 #' @param pmix List of length `g` containing the mixing proportions of each 
-#'    group.
+#'   group.
 #' @param propsel Proportion of selection. If missing, computed using `cut_z`.
 #' @param labels A character vector with `g` elements to label the reference
-#'    and focal groups on the plot, where `g` is the number of groups.
+#'   and focal groups on the plot, where `g` is the number of groups.
 #' @param cut_z Pre-specified cutoff score on the observed composite. This
-#'    argument is ignored when `propsel` has input.
+#'   argument is ignored when `propsel` has input.
 #' @param is_mi Whether summary statistics should be computed for strict vs. 
-#'    partial measurement invariance. `FALSE` by default (partial).
+#'   partial measurement invariance. `FALSE` by default (partial).
 #' @return The output will be a list of 5 elements:
 #'    \item{propsel}{Proportion selected.}
 #'    \item{cutpt_xi}{Cut point on the latent variable.}

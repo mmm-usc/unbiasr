@@ -9,15 +9,15 @@ NULL
 #' @param sd2 Standard deviation of the second normal distribution.
 #' @param cor12 Correlation in the bivariate normal distribution.
 #' @param cov12 Covariance in the bivariate normal distribution. If not input,
-#'     compute the covariance using the correlation and the standard deviations.
+#'   compute the covariance using the correlation and the standard deviations.
 #' @param density Density level, i.e., probability enclosed by the ellipse.
 #' @param length_out Number of values on the x-axis and on the y-axis to be
-#'               evaluated; default to 101.
+#'   evaluated; default to 101.
 #' @param bty Argument passed to the `contour` function.
 #' @param ... Additional arguments passed to \code{\link[graphics]{contour}}
 #'
 #' @return A plot showing the contour of the bivariate normal distribution on
-#'     a two-dimensional space.
+#'   a two-dimensional space.
 #' @examples
 #' \dontrun{
 #' contour_bvnorm(
@@ -51,10 +51,10 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
 #' 
 #' @param x PartInv output.
 #' @param labels By default, c("Reference", "Focal_1", ..., "Focal_g") where `g`
-#'     is the number of groups.
+#'   is the number of groups.
 #' @param which_result Whether to plot the partial or the strict invariance plot.
 #' @param custom_colors Optional argument for specifying the colors of the 
-#'     ellipses. 
+#'   ellipses. 
 #' @param ... Additional arguments.
 #'@export
 plot.PartInv <- function(x, labels = x[["labels"]],

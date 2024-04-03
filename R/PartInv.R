@@ -12,48 +12,48 @@ NULL
 #'
 #' @param propsel Proportion of selection. If missing, computed using `cut_z`.
 #' @param cut_z Pre-specified cutoff score on the observed composite. This
-#'     argument is ignored when `propsel` has input.
+#'   argument is ignored when `propsel` has input.
 #' @param weights_item A vector of item weights.
 #' @param weights_latent A vector of latent factor weights.
 #' @param alpha A list of length `g` containing `1 x d` latent factor mean
-#'     vectors where `g` is the number of groups and `d` is the number of latent
-#'     dimensions. The first element is assumed to belong to the reference group.
+#'   vectors where `g` is the number of groups and `d` is the number of latent
+#'   dimensions. The first element is assumed to belong to the reference group.
 #' @param psi A list of length `g` containing `d x d` latent factor
-#'     variance-covariance matrices where `g` is the number of groups and `d` is
-#'     the number of latent dimensions. The first element is assumed to belong
-#'     to the reference group.
+#'   variance-covariance matrices where `g` is the number of groups and `d` is
+#'   the number of latent dimensions. The first element is assumed to belong
+#'   to the reference group.
 #' @param lambda A list of length `g` containing `n x d` factor loading matrices
-#'     where `g` is the number of groups, `d` is the number of latent dimensions,
-#'     and `n` is the number of items in the scale. The first element is assumed
-#'     to belong to the reference group.
+#'   where `g` is the number of groups, `d` is the number of latent dimensions,
+#'   and `n` is the number of items in the scale. The first element is assumed
+#'   to belong to the reference group.
 #' @param nu A list of length `g` containing `1 x n` measurement intercept
-#'     vectors where `g` is the number of groups and `n` is the number of items
-#'     in the scale. The first element is assumed to belong to the reference
-#'     group.
+#'   vectors where `g` is the number of groups and `n` is the number of items
+#'   in the scale. The first element is assumed to belong to the reference
+#'   group.
 #' @param theta A list of length `g` containing `1 x n` vectors or `n x n`
-#'     matrices of unique factor variances and covariances, where `g` is the
-#'     number of groups and `n` is the number of items in the scale. The first
-#'     element is assumed to belong to the reference group.
+#'   matrices of unique factor variances and covariances, where `g` is the
+#'   number of groups and `n` is the number of items in the scale. The first
+#'   element is assumed to belong to the reference group.
 #' @param pmix List of length `g` containing the mixing proportions of each
-#'     group. If `NULL`, defaults to `1/g` for each group (i.e., the populations
-#'     have equal size).
+#'   group. If `NULL`, defaults to `1/g` for each group (i.e., the populations
+#'   have equal size).
 #' @param plot_contour Logical; whether the contour of the populations should be
-#'     plotted; `TRUE` by default.
+#'   plotted; `TRUE` by default.
 #' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
 #'     for both the input parameters and the implied parameters based on a
 #'     strict invariance model, with common parameter values as weighted
-#'     averages of the input values using `pmix`.
+#'   averages of the input values using `pmix`.
 #' @param labels A character vector with `g` elements to label the reference
-#'     and focal groups on the plot, where `g` is the number of groups. If not
-#'     provided, groups are labeled automatically as 'Reference' (for the first
-#'     group) and 'Focal_1' through 'Focal_(g-1)', where `g` is the number of
-#'     groups.
+#'   and focal groups on the plot, where `g` is the number of groups. If not
+#'   provided, groups are labeled automatically as 'Reference' (for the first
+#'   group) and 'Focal_1' through 'Focal_(g-1)', where `g` is the number of
+#'   groups.
 #' @param ... Other arguments passed to the \code{\link[graphics]{contour}}
-#'     function.
+#'   function.
 #' @param alpha_r,alpha_f,nu_r,nu_f,Theta_r,Theta_f,psi_r,psi_f,lambda_r,lambda_f,phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f,pmix_ref
-#'     Deprecated; included only for backward compatibility. When comparing two
-#'     groups, parameters with the '_r' suffix refer to the reference group while
-#'     parameters with the '_f' suffix refer to the focal group.
+#'   Deprecated; included only for backward compatibility. When comparing two
+#'   groups, parameters with the '_r' suffix refer to the reference group while
+#'   parameters with the '_f' suffix refer to the focal group.
 #' @return The output will be a list of six elements and a plot if
 #'     \code{plot_contour == TRUE}:
 #'         \item{propsel}{Proportion selected.}

@@ -14,121 +14,125 @@
 #'  invariance (PFI); and between aggregate CAI computed for item subsets.
 #' @param propsel Proportion of selection. If missing, computed using `cut_z`.
 #' @param cut_z Pre-specified cutoff score on the observed composite. This
-#'        argument is ignored when `propsel` has an input.
+#'   argument is ignored when `propsel` has an input.
 #' @param weights_item A vector of item weights.
 #' @param weights_latent A  vector of latent factor weights.
 #' @param alpha_r A vector of latent factor mean for the reference group.
 #' @param alpha_f (optional) A vector of latent factor mean for the focal
-#'        group; if no input, set equal to `alpha_r`.
+#'   group; if no input, set equal to `alpha_r`.
 #' @param psi_r A matrix of latent factor variance covariances for the reference
-#'        group.
+#'   group.
 #' @param psi_f (optional) A matrix of latent factor variance-covariances for
-#'        the focal group; if no input, set equal to `psi_r`.
+#'   the focal group; if no input, set equal to `psi_r`.
 #' @param lambda_r A matrix of factor loadings for the reference group.
 #' @param lambda_f (optional) A matrix of factor loadings for the focal group;
-#'        if no input, set equal to `lambda_r`.
+#'   if no input, set equal to `lambda_r`.
 #' @param nu_r A matrix of measurement intercepts for the reference group
-#'        under the partial invariance condition.
+#'   under the partial invariance condition.
 #' @param nu_f (optional) A matrix of measurement intercepts for the focal
-#'        group; if no input, set equal to `nu_r`.
+#'   group; if no input, set equal to `nu_r`.
 #' @param Theta_r A matrix of the unique factor variances and covariances
-#'        for the reference group.
+#'   for the reference group.
 #' @param Theta_f (optional) A matrix of the unique factor variances and
-#'        covariances for the focal group; if no input, set equal to `Theta_r`.
+#'   covariances for the focal group; if no input, set equal to `Theta_r`.
 #' @param pmix_ref Proportion of the reference group; default to 0.5 (i.e., two
-#'        populations have equal size).
+#'   populations have equal size).
 #' @param plot_contour Logical; whether the contour of the two populations
-#'        should be plotted; default to `TRUE`.
+#'   should be plotted; default to `TRUE`.
 #' @param show_mi_result If \code{TRUE}, perform classification accuracy analysis
-#'        for both the input parameters and the implied parameters based on a
-#'        strict invariance model, with common parameter values as weighted
-#'        averages of the input values using `pmix_ref`.
+#'   for both the input parameters and the implied parameters based on a
+#'   strict invariance model, with common parameter values as weighted
+#'   averages of the input values using `pmix_ref`.
 #' @param n_dim Number of dimensions, 1 by default. If the user does not supply
-#'        a different value, proceeds with the assumption that the scale is
-#'        unidimensional.
+#'   a different value, proceeds with the assumption that the scale is
+#'   unidimensional.
 #' @param n_i_per_dim A vector containing the number of items in each
-#'        dimension; `NULL` by default. If the user provides a value for `n_dim`
-#'        that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that
-#'        the subscales have an equal number of items.
+#'   dimension; `NULL` by default. If the user provides a value for `n_dim`
+#'   that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that
+#'   the subscales have an equal number of items.
 #' @param user_specified_items A vector; default to `NULL`. If the user does not
-#'        input a vector of items, only the items determined to contain bias will
-#'        be considered for deletion.
+#'   input a vector of items, only the items determined to contain bias will
+#'   be considered for deletion.
 #' @param delete_one_cutoff (optional) User-specified cutoff to use in
-#'        delete-one scenarios. `NULL` by default; if `NULL`, proportion
-#'        selected under SFI and PFI when the full item set is used is passed
-#'        onto calls to PartInv.
+#'   delete-one scenarios. `NULL` by default; if `NULL`, proportion
+#'   selected under SFI and PFI when the full item set is used is passed
+#'   onto calls to PartInv.
 #' @param labels A character vector with two elements to label the reference
-#'     and the focal group on the graph.
+#'   and the focal group on the graph.
 #' @param ... Other arguments passed to the \code{\link[graphics]{contour}}
-#'     function.
+#'   function.
 #' @return An object of class `itemdeletion` containing 13 elements.
-#'        \item{ACAI}{A matrix that stores aggregate PS, SR, SE, SP computed for
-#'        the full set of items and item subsets excluding biased or user specified
-#'        items under PFI.}
-#'        \item{h ACAI (deletion)}{A matrix that stores Cohen's h computed for
-#'        the impact of deleting each item considered in the `ACAI` table.}
-#'        \item{h ACAI SFI-PFI}{A matrix that stores Cohen's h values
-#'        quantifying the discrepancy between ACAI under SFI vs. ACAI under PFI.}
-#'        \item{delta h ACAI SFI-PFI (deletion)}{A matrix that stores delta h
-#'        values quantifying the impact of deleting an item on the discrepancy
-#'        between ACAI under SFI vs. ACAI under PFI for subsets of items.}
-#'        \item{AI Ratio}{A matrix storing Adverse Impact Ratio values computed
-#'        for item subsets by invariance condition.}
-#'        \item{h CAI Ref-EF}{A matrix that stores Cohen's h values quantifying
-#'        the discrepancy between CAI computed for the reference group and the
-#'        expected CAI computed for the focal group if it matched the
-#'        distribution of the reference group (Efocal), under PFI for subsets of
-#'        items.}
-#'        \item{delta h CAI Ref-EF (deletion)}{A matrix that stores delta h
-#'        values quantifying the impact of deleting an item on the discrepancy
-#'        between CAI of reference vs. Efocal groups under PFI.}
-#'        \item{h CAI SFI-PFI}{A list containing two items, `ref` and `foc`
-#'        which are matrices storing Cohen's h values quantifying the
-#'        discrepancy between CAI under SFI vs. PFI for the reference group and
-#'        the focal group respectively, for subsets of items.}
-#'        \item{delta h SFI-PFI (deletion)}{A list containing two items,
-#'        `ref` and `foc` which are matrices storing delta h values quantifying
-#'        the impact of deleting an item on the discrepancy between CAI under
-#'        SFI vs. PFI for the reference group and the focal group respectively,
-#'        for subsets of items.}
-#'        \item{h SFI-PFI by groups}{Two lists (`reference` and `focal`). The lists
-#'        contain tables for each item deletion scenario displaying raw CAI
-#'        under SFI, under PFI, and the Cohen's h value associated with the
-#'        difference between the invariance condition.}
-#'        \item{PartInv}{Two lists (`strict` and `partial`), each containing
-#'        PartInv() outputs.}
-#'        \item{return_items}{A vector containing the items that will be considered
-#'        for deletion.}
+#'   \item{ACAI}{A matrix that stores aggregate PS, SR, SE, SP computed for
+#'   the full set of items and item subsets excluding biased or user specified
+#'   items under PFI.}
+#'   \item{h ACAI (deletion)}{A matrix that stores Cohen's h computed for
+#'   the impact of deleting each item considered in the `ACAI` table.}
+#'   \item{h ACAI SFI-PFI}{A matrix that stores Cohen's h values
+#'   quantifying the discrepancy between ACAI under SFI vs. ACAI under PFI.}
+#'   \item{delta h ACAI SFI-PFI (deletion)}{A matrix that stores delta h
+#'   values quantifying the impact of deleting an item on the discrepancy
+#'   between ACAI under SFI vs. ACAI under PFI for subsets of items.}
+#'   \item{AI Ratio}{A matrix storing Adverse Impact Ratio values computed
+#'   for item subsets by invariance condition.}
+#'   \item{h CAI Ref-EF}{A matrix that stores Cohen's h values quantifying
+#'   the discrepancy between CAI computed for the reference group and the
+#'   expected CAI computed for the focal group if it matched the
+#'   distribution of the reference group (Efocal), under PFI for subsets of
+#'   items.}
+#'   \item{delta h CAI Ref-EF (deletion)}{A matrix that stores delta h
+#'   values quantifying the impact of deleting an item on the discrepancy
+#'   between CAI of reference vs. Efocal groups under PFI.}
+#'   \item{h CAI SFI-PFI}{A list containing two items, `ref` and `foc`
+#'   which are matrices storing Cohen's h values quantifying the
+#'   discrepancy between CAI under SFI vs. PFI for the reference group and
+#'   the focal group respectively, for subsets of items.}
+#'   \item{delta h SFI-PFI (deletion)}{A list containing two items,
+#'   `ref` and `foc` which are matrices storing delta h values quantifying
+#'   the impact of deleting an item on the discrepancy between CAI under
+#'   SFI vs. PFI for the reference group and the focal group respectively,
+#'   for subsets of items.}
+#'   \item{h SFI-PFI by groups}{Two lists (`reference` and `focal`). The lists
+#'   contain tables for each item deletion scenario displaying raw CAI
+#'   under SFI, under PFI, and the Cohen's h value associated with the
+#'   difference between the invariance condition.}
+#'   \item{PartInv}{Two lists (`strict` and `partial`), each containing
+#'   PartInv() outputs.}
+#'   \item{return_items}{A vector containing the items that will be considered
+#'   for deletion.}
 #' @examples
 #' # Multidimensional example
 #' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
 #' lambda_matrix[1:2, 1] <- c(.322, .655)
 #' lambda_matrix[3:5, 2] <- c(.398, .745, .543)
 #'
-#' multi_dim <- item_deletion_h(propsel = .05, n_dim = 5,
-#'                              weights_item = c(1/4, 1/4, 1/6, 1/6, 1/6),
-#'                              weights_latent = c(0.5, 0.5),
-#'                              alpha_r = c(0, 0),
-#'                              alpha_f = c(-0.3, 0.1),
-#'                              psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
-#'                              lambda_r = lambda_matrix,
-#'                              nu_r = c(.225, .025, .010, .240, .125),
-#'                              nu_f = c(.225, -.05, .240, -.025, .125),
-#'                              Theta_r = diag(1, 5),
-#'                              Theta_f = diag(c(1, .95, .80, .75, 1)),
-#'                              plot_contour = TRUE)
+#' multi_dim <- item_deletion_h(
+#'   propsel = .05, n_dim = 5,
+#'   weights_item = c(1 / 4, 1 / 4, 1 / 6, 1 / 6, 1 / 6),
+#'   weights_latent = c(0.5, 0.5),
+#'   alpha_r = c(0, 0),
+#'   alpha_f = c(-0.3, 0.1),
+#'   psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
+#'   lambda_r = lambda_matrix,
+#'   nu_r = c(.225, .025, .010, .240, .125),
+#'   nu_f = c(.225, -.05, .240, -.025, .125),
+#'   Theta_r = diag(1, 5),
+#'   Theta_f = diag(c(1, .95, .80, .75, 1)),
+#'   plot_contour = TRUE
+#' )
 #' # Single dimension example
-#' single_dim <- item_deletion_h(propsel = .10,
-#'                                weights_item = c(1, 0.9, 0.8, 1),
-#'                                weights_latent = 0.9,
-#'                                alpha_r = 0.5,
-#'                                alpha_f = 0,
-#'                                psi_r = 1,
-#'                                lambda_r = c(.3, .5, .9, .7),
-#'                                nu_r = c(.225, .025, .010, .240),
-#'                                nu_f = c(.225, -.05, .240, -.025),
-#'                                Theta_r = diag(.96, 4),
-#'                                n_dim = 1, plot_contour = TRUE)
+#' single_dim <- item_deletion_h(
+#'   propsel = .10,
+#'   weights_item = c(1, 0.9, 0.8, 1),
+#'   weights_latent = 0.9,
+#'   alpha_r = 0.5,
+#'   alpha_f = 0,
+#'   psi_r = 1,
+#'   lambda_r = c(.3, .5, .9, .7),
+#'   nu_r = c(.225, .025, .010, .240),
+#'   nu_f = c(.225, -.05, .240, -.025),
+#'   Theta_r = diag(.96, 4),
+#'   n_dim = 1, plot_contour = TRUE
+#' )
 #' @export
 item_deletion_h <- function(propsel = NULL,
                             cut_z = NULL,

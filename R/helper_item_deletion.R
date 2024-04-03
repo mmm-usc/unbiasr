@@ -69,7 +69,7 @@ format_item_del <- function(N, l) {
 #'
 #' @param pmixr Proportion of the reference group.
 #' @param store_summary The summary table from [PartInv()]
-#' under partial or strict invariance.
+#'   under partial or strict invariance.
 #'
 #' @return A vector of length 4.
 #'          \item{PS}{Proportion selected, computed as \eqn{TP + FP}.}
@@ -109,9 +109,9 @@ get_aggregate_CAI <- function(pmixr, store_summary) {
 #' message.
 #' @param i Index of item under consideration.
 #' @param store_summary_full PartInv summary for the case where all items are
-#' retained.
+#'   retained.
 #' @param store_summary_del1 PartInv summary for the case where item i is
-#' excluded.
+#'   excluded.
 err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
   # Store relevant values.
   r <- store_summary_full$Reference
@@ -167,11 +167,11 @@ err_improv_acai <- function(i, store_summary_full, store_summary_del1) {
 
 #' @param weights_item A vector of item weights.
 #' @param n_dim Number of dimensions, 1 by default. If the user does not supply
-#'        a value, assumes that the scale is unidimensional.
+#'   a value, assumes that the scale is unidimensional.
 #' @param n_i_per_dim A vector containing the number of items in each
-#'        dimension; `NULL` by default. If the user provides a value for n_dim
-#'        that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that
-#'        the subscales have an equal number of items.
+#'   dimension; `NULL` by default. If the user provides a value for n_dim
+#'   that is \eqn{> 1} but leaves \code{n_i_per_dim = NULL}, assumes that
+#'   the subscales have an equal number of items.
 #' @param del_i Index of the item to be deleted.
 #'
 #' @return `new_w` Weights vector with redistributed weights.
@@ -281,7 +281,7 @@ cohens_h <- function(p1, p2) {
 #' @param h_R h effect sizes for when the item is included.
 #' @param h_i_del h effect sizes for when the item is deleted.
 #' @return Cohen's h for the difference in the classification accuracy index
-#' when the item is deleted.
+#'   when the item is deleted.
 #' @examples
 #' delta_h(0.04, 0.01)
 #' delta_h(-0.002, 0.011)
@@ -307,7 +307,7 @@ delta_h <- function(h_R, h_i_del) {
 #' @param strict_output Output from [PartInv()] under strict invariance.
 #' @param partial_output Output from [PartInv()] under partial invariance.
 #' @return A 8 x 3 dataframe with columns `strict invariance`,
-#'        `partial invariance`, and `h`.
+#'   `partial invariance`, and `h`.
 acc_indices_h <- function(strict_output, partial_output) {
   r_names <- c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
 
