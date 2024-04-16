@@ -600,41 +600,41 @@ myApp <- function(...) {
     #for theta_r and theta_f depending on button presses
     theta_f <- reactive({
       if (input$usetheta_f == FALSE & input$use_mat_theta_f == FALSE) {
-        theta_f = diag(theta_rNumeric())
+        theta_f <- diag(theta_rNumeric())
       }
       else if (input$usetheta_f == TRUE & input$use_mat_theta_f == FALSE) {
-        theta_f = diag(theta_fNumeric())
+        theta_f <- diag(theta_fNumeric())
       }
       else if (input$usetheta_f == TRUE & input$use_mat_theta_f == TRUE) {
-        theta_f = input$ins_mat_theta_fInput
+        theta_f <- input$ins_mat_theta_fInput
       }
       else{
-        theta_f = input$ins_mat_theta_rInput
+        theta_f <- input$ins_mat_theta_rInput
       }
     })
     
     theta_r <- reactive({
       if (input$use_mat_theta_f == TRUE) {
-        theta_r = input$ins_mat_theta_rInput
+        theta_r <- input$ins_mat_theta_rInput
       }
       else{
-        theta_r = diag(theta_rNumeric())
+        theta_r <- diag(theta_rNumeric())
       }
     })
     kappa_f <- reactive({
       if (input$usekappa_f == FALSE) {
-        kappa_f = input$kappa_r
+        kappa_f <- input$kappa_r
       }
       else{
-        kappa_f = input$kappa_f
+        kappa_f <- input$kappa_f
       }
     })
     phi_f <- reactive({
       if (input$usephi_f == FALSE) {
-        phi_f = input$phi_r
+        phi_f <- input$phi_r
       }
       else{
-        phi_f = input$phi_f
+        phi_f <- input$phi_f
       }
     })
     
@@ -653,7 +653,7 @@ myApp <- function(...) {
         ),
         need(
           length(lambda_rNumeric()) == length(tau_rNumeric()),
-          "Factor loadings and intercepts need to have the same value\n"
+          "Factor loadings and intercepts should have the same dimension\n"
         ),
         need(
           input$usepropsel || !is.na(input$cut_z),
@@ -662,32 +662,32 @@ myApp <- function(...) {
         if (input$uselambda_f == TRUE) {
           need(
             length(lambda_rNumeric()) == length(lambda_fNumeric()),
-            "factor loadings for referance and focal groups need to have the same number of values\n"
+            "Factor loadings for referance and focal groups should have the same dimension\n"
           )
         },
         if (input$usetau_f == TRUE) {
           need(
             length(tau_rNumeric()) == length(tau_fNumeric()),
-            "intercepts for referance and focal groups need to have the same number of values\n"
+            "Intercepts for referance and focal groups should have the same dimension\n"
           )
         },
         if (input$use_mat_theta_f == FALSE && input$usetheta_f == TRUE) {
           need(
             length(theta_rNumeric()) == length(theta_fNumeric()),
-            "(placeholder) diagonals of referance and focal groups must match"
+            "(placeholder) diagonals of referance and focal groups must match\n"
           )
         },
         #only checks for numeric input of theta_r when matrix is not being used as input
         if (input$use_mat_theta_f == FALSE) {
           need(
             input$theta_r,
-            "Input for unique variance-covariance matrix of reference group is missing\n"
+            "Input for unique covariance matrix of reference group is missing\n"
           )
         },
         if (input$use_mat_theta_f == FALSE && length(theta_rNumeric()) > 0) {
           need(
             length(theta_rNumeric()) == length(lambda_rNumeric()),
-            "number of inputs for measurement intercepts must match factor loadings"
+            "Uniqueness and loadings should have the same dimension\n"
           )
         },
         if (input$use_mat_theta_f == TRUE) {
@@ -698,21 +698,21 @@ myApp <- function(...) {
         },
         if (input$use_mat_theta_f == TRUE) {
           need(length(unique(theta_r())) / length(lambda_rNumeric())[1] != 1,
-               "reference matrix empty")
+               "Reference unique covariance matrix is empty\n")
         },
         if (input$use_mat_theta_f == TRUE && input$usetheta_f == TRUE) {
           need(length(unique(theta_f())) / length(lambda_rNumeric())[1] != 1,
-               "focal matrix empty")
+               "Focal unique covariance matrix is empty\n")
         },
         if (input$use_mat_theta_f == TRUE) {
           need(isSymmetric(input$ins_mat_theta_rInput) &&
                  is_symmetric_posdef(input$ins_mat_theta_rInput),
-               "reference Theta matrix not positive definite")
+               "Reference unique covariance matrix is not positive definite\n")
         },
         if (input$use_mat_theta_f == TRUE && input$usetheta_f == TRUE) {
           need(isSymmetric(input$ins_mat_theta_fInput) &&
                  is_symmetric_posdef(input$ins_mat_theta_fInput),
-               "focal Theta matrix not positive definite")
+               "Focal unique covariance matrix is not positive definite\n")
         }
         
       )})

@@ -30,10 +30,13 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.1
 Suggests: 
-    testthat,
-    shinytest
+    testthat (>= 3.0.0),
+    shinytest,
+    rmarkdown,
+    knitr,
+    lavaan
 Imports: 
     methods,
     mnormt,
@@ -42,4 +45,6 @@ Imports:
     shinyjs,
     shinyMatrix,
     shinyWidgets
+VignetteBuilder: knitr
+Config/testthat/edition: 3
 URL: https://mmm-usc.github.io/unbiasr/
