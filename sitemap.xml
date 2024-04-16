@@ -7,19 +7,40 @@
     <loc>https://mmm-usc.github.io/unbiasr/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://mmm-usc.github.io/unbiasr/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/articles/item-deletion-examples.html</loc>
+  </url>
+  <url>
     <loc>https://mmm-usc.github.io/unbiasr/authors.html</loc>
   </url>
   <url>
     <loc>https://mmm-usc.github.io/unbiasr/index.html</loc>
   </url>
   <url>
-    <loc>https://mmm-usc.github.io/unbiasr/reference/PartInvMulti_we.html</loc>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/PartInv.html</loc>
   </url>
   <url>
     <loc>https://mmm-usc.github.io/unbiasr/reference/PartInv_old.html</loc>
   </url>
   <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/acc_indices_h.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/cohens_h.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/compute_cai.html</loc>
+  </url>
+  <url>
     <loc>https://mmm-usc.github.io/unbiasr/reference/contour_bvnorm.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/delta_h.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/determine_biased_items.html</loc>
   </url>
   <url>
     <loc>https://mmm-usc.github.io/unbiasr/reference/dot-bvnorm_kernel.html</loc>
@@ -28,15 +49,45 @@
     <loc>https://mmm-usc.github.io/unbiasr/reference/dot-partit_bvnorm.html</loc>
   </url>
   <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/err_improv_acai.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/format_cfa_partinv.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/get_aggregate_CAI.html</loc>
+  </url>
+  <url>
     <loc>https://mmm-usc.github.io/unbiasr/reference/index.html</loc>
   </url>
   <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/item_deletion_h.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/lab_cai.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/mn_sd_cov.html</loc>
+  </url>
+  <url>
     <loc>https://mmm-usc.github.io/unbiasr/reference/myApp.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/plot.PartInv.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/plotPropselRange.html</loc>
   </url>
   <url>
     <loc>https://mmm-usc.github.io/unbiasr/reference/pnormmix.html</loc>
   </url>
   <url>
     <loc>https://mmm-usc.github.io/unbiasr/reference/qnormmix.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/redistribute_weights.html</loc>
+  </url>
+  <url>
+    <loc>https://mmm-usc.github.io/unbiasr/reference/unnest_list.html</loc>
   </url>
 </urlset>
