@@ -103,7 +103,7 @@ plot.PartInv <- function(x, labels = x[["labels"]],
     contour_bvnorm(plot_dat$mn_xi[1], plot_dat$sd_xi[1],
                    plot_dat$mn_z[1], plot_dat$sd_z[1],
                    cov12 = plot_dat$cov_z_xi[1],
-                   xlab = bquote("Latent Composite" ~ (zeta)),
+                   xlab = bquote("Latent Composite" ~ (eta)),
                    ylab = bquote("Observed Composite" ~ (italic(Z))),
                    lwd = 2, col = colorlist[1], xlim = x_lim, ylim = y_lim,
                    main = title)
