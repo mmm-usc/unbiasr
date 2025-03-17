@@ -23,6 +23,7 @@ PartInv(
   labels = NULL,
   custom_colors = NULL,
   reference = NULL,
+  quadrantsABCD = TRUE,
   kappa_r = NULL,
   kappa_f = kappa_r,
   alpha_r = NULL,
@@ -72,13 +73,12 @@ to belong to the reference group.}
 
 \item{theta}{A list of length \code{g} containing \verb{1 x n} vectors or \verb{n x n}
 matrices of unique factor variances and covariances, where \code{g} is the
-number of groups and \code{n} is the number of items. The first
-element is assumed to belong to the reference group.}
+number of groups and \code{n} is the number of items. The first element is
+assumed to belong to the reference group.}
 
 \item{nu}{A list of length \code{g} containing \verb{1 x n} measurement intercept
-vectors where \code{g} is the number of groups and \code{n} is the number of items
-. The first element is assumed to belong to the reference
-group.}
+vectors where \code{g} is the number of groups and \code{n} is the number of items.
+The first element is assumed to belong to the reference group.}
 
 \item{pmix}{List of length \code{g} containing the mixing proportions of each
 group. If \code{NULL}, defaults to \code{1/g} for each group (i.e., equal sizes).}
@@ -99,8 +99,11 @@ groups are labeled as 'Reference' and 'Focal_1' through 'Focal_(g-1)'.}
 
 \item{reference}{Optional argument for specifying the reference group.
 Currently only functional when cfa_fit is provided. If providing parameter
-estimates instead, reorder estimates such that the first estimates belong to
-the reference group.}
+estimates instead, reorder estimates such that the first estimates belong
+to the reference group.}
+
+\item{quadrantsABCD}{Whether to label the quadrants with A, B, C, D or TR,
+FP, TN, FN. \code{TRUE} by default.}
 
 \item{alpha_r, alpha_f, nu_r, nu_f, Theta_r, Theta_f, psi_r, psi_f, lambda_r, lambda_f, phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f, pmix_ref}{Deprecated; included for backward compatibility. With two groups, '_r'
 and '_f' suffixes refer to the reference group and the focal group.}
@@ -197,7 +200,7 @@ PartInv(propsel = .05, weights_latent = c(.5, .5),
         lambda = list(l_mat, l_mat),
         nu = list(c(.3, .3, .01, .3, .1), c(.3, -.05, .3, -.03, .1)),
         theta = list(diag(1, 5), c(1, .9, .8, .8, 1)),
-        plot_contour = TRUE, show_mi_result = TRUE)
+        plot_contour = TRUE, show_mi_result = TRUE, quadrantsABCD = FALSE)
 # Multiple groups, multiple dimensions
 l_mat <- matrix(c(.7, .8, -.4, .7, .6, .5, .8, -.3, .6, .6, .6, .7, .6, 
                   .6, .6), nrow = 15, ncol = 1)
@@ -216,5 +219,5 @@ PartInv(propsel = .25, pmix = rep(1/4, 4),
         theta = list(th_mat, th_mat1, th_mat2, th_mat3),
         plot_contour = TRUE, show_mi_result = TRUE,
         labels = c("G1", "G2", "G3", "G4"),
-        custom_colors = cols, reference = "G2")
+        custom_colors = cols, reference = "G1", quadrantsABCD = FALSE)
 }

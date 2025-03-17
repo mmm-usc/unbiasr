@@ -99,7 +99,7 @@ fit_sim <- lavaan::cfa(model = sim_m, data = dat_sim, group = "group")
 plot_CAI_across_range(cfa_fit = fit_sim)
 plot_CAI_across_range(cfa_fit = fit_sim, custom_colors = c("blue", "pink", "red"))
 plot_CAI_across_range(cfa_fit = fit_sim, plot_only_g = "Japanese")
-
+plot_CAI_across_range(cfa_fit = fit_sim, add_vertical_threshold_at = 0.07)
 library(lavaan)
 HS <- HolzingerSwineford1939
 HS$sex <- as.factor(HS$sex)

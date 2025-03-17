@@ -27,13 +27,12 @@ NULL
 #'     and `n` is the number of items. The first element is assumed
 #'     to belong to the reference group.
 #' @param nu A list of length `g` containing `1 x n` measurement intercept
-#'     vectors where `g` is the number of groups and `n` is the number of items
-#'    . The first element is assumed to belong to the reference
-#'     group.
+#'     vectors where `g` is the number of groups and `n` is the number of items.
+#'     The first element is assumed to belong to the reference group.
 #' @param theta A list of length `g` containing `1 x n` vectors or `n x n`
 #'     matrices of unique factor variances and covariances, where `g` is the
-#'     number of groups and `n` is the number of items. The first
-#'     element is assumed to belong to the reference group.
+#'     number of groups and `n` is the number of items. The first element is
+#'     assumed to belong to the reference group.
 #' @param pmix List of length `g` containing the mixing proportions of each
 #'     group. If `NULL`, defaults to `1/g` for each group (i.e., equal sizes).
 #' @param plot_contour Logical; whether the contour of the populations should be
@@ -47,9 +46,11 @@ NULL
 #'     groups are labeled as 'Reference' and 'Focal_1' through 'Focal_(g-1)'.
 #' @param custom_colors Optional argument for specifying group colors.
 #' @param reference Optional argument for specifying the reference group.
-#' Currently only functional when cfa_fit is provided. If providing parameter 
-#' estimates instead, reorder estimates such that the first estimates belong to 
-#' the reference group.
+#'     Currently only functional when cfa_fit is provided. If providing parameter 
+#'     estimates instead, reorder estimates such that the first estimates belong
+#'     to the reference group.
+#' @param quadrantsABCD Whether to label the quadrants with A, B, C, D or TR,
+#'     FP, TN, FN. `TRUE` by default.
 #' @param ... Other arguments for \code{\link[graphics]{contour}}.
 #' @param alpha_r,alpha_f,nu_r,nu_f,Theta_r,Theta_f,psi_r,psi_f,lambda_r,lambda_f,phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f,pmix_ref
 #'     Deprecated; included for backward compatibility. With two groups, '_r' 
@@ -136,7 +137,7 @@ NULL
 #'         lambda = list(l_mat, l_mat),
 #'         nu = list(c(.3, .3, .01, .3, .1), c(.3, -.05, .3, -.03, .1)),
 #'         theta = list(diag(1, 5), c(1, .9, .8, .8, 1)),
-#'         plot_contour = TRUE, show_mi_result = TRUE)
+#'         plot_contour = TRUE, show_mi_result = TRUE, quadrantsABCD = FALSE)
 #' # Multiple groups, multiple dimensions
 #' l_mat <- matrix(c(.7, .8, -.4, .7, .6, .5, .8, -.3, .6, .6, .6, .7, .6, 
 #'                   .6, .6), nrow = 15, ncol = 1)
@@ -155,7 +156,7 @@ NULL
 #'         theta = list(th_mat, th_mat1, th_mat2, th_mat3),
 #'         plot_contour = TRUE, show_mi_result = TRUE,
 #'         labels = c("G1", "G2", "G3", "G4"),
-#'         custom_colors = cols, reference = "G2")
+#'         custom_colors = cols, reference = "G1", quadrantsABCD = FALSE)
 #' @export
 PartInv <- function(cfa_fit = NULL,
                     propsel = NULL, cut_z = NULL,
@@ -167,6 +168,7 @@ PartInv <- function(cfa_fit = NULL,
                     labels = NULL,
                     custom_colors = NULL,
                     reference = NULL,
+                    quadrantsABCD = TRUE,
                     kappa_r = NULL, kappa_f = kappa_r, alpha_r = NULL, alpha_f = alpha_r, phi_r = NULL, phi_f = phi_r, psi_r = NULL, psi_f = psi_r, lambda_r = NULL, lambda_f = lambda_r, tau_r = NULL, tau_f = tau_r, nu_r = NULL, nu_f = nu_r, Theta_r = NULL, Theta_f = Theta_r,
                     ...) {
 
@@ -234,10 +236,12 @@ PartInv <- function(cfa_fit = NULL,
 
   if (plot_contour) {
     plot.PartInv(out, labels = labels, which_result = "pi",
-                 custom_colors = custom_colors, ...)
+                 custom_colors = custom_colors, quadrantsABCD = quadrantsABCD,
+                 ...)
     if (show_mi_result == TRUE) {
       plot.PartInv(out, labels = labels, which_result = "mi", 
-                   custom_colors = custom_colors, ...)
+                   custom_colors = custom_colors, quadrantsABCD = quadrantsABCD, 
+                   ...)
     }
   }
   out[["labels"]] <- labels
