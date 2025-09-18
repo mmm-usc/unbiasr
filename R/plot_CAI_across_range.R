@@ -6,12 +6,32 @@ NULL
 #' 
 #' \code{plot_CAI_across_range} plots classification accuracy indices at different
 #' proportions of selection under partial and strict invariance conditions for 
-#' a given CFA fit.
+#' a given CFA fit or set of parameter estimates.
 #' 
-#' @param cfa_fit CFA model output from lavaan.
+#' @param cfa_fit CFA model output from lavaan. `NULL` by default.
 #' @param pmix List of length `g` containing the mixing proportions of each
 #'   group (where `g` is the number of groups). If `NULL`, defaults to `1/g` 
 #'   for each group (i.e., the populations have equal size).
+#' @param weights_item A vector of item weights.
+#' @param weights_latent A vector of latent factor weights.
+#' @param alpha A list of length `g` containing `1 x d` latent factor mean
+#'   vectors where `g` is the number of groups and `d` is the number of latent
+#'   dimensions. The first element is assumed to belong to the reference group.
+#' @param psi A list of length `g` containing `d x d` latent factor
+#'   variance-covariance matrices where `g` is the number of groups and `d` is
+#'   the number of latent dimensions. The first element is assumed to belong
+#'   to the reference group.
+#' @param lambda A list of length `g` containing `n x d` factor loading matrices
+#'     where `g` is the number of groups, `d` is the number of latent dimensions,
+#'     and `n` is the number of items. The first element is assumed
+#'     to belong to the reference group.
+#' @param nu A list of length `g` containing `1 x n` measurement intercept
+#'     vectors where `g` is the number of groups and `n` is the number of items.
+#'     The first element is assumed to belong to the reference group.
+#' @param theta A list of length `g` containing `1 x n` vectors or `n x n`
+#'     matrices of unique factor variances and covariances, where `g` is the
+#'     number of groups and `n` is the number of items. The first element is
+#'     assumed to belong to the reference group.
 #' @param labels A character vector with `g` elements to label the reference
 #'   and focal groups on the plot, where `g` is the number of groups. If not
 #'   provided, groups are labeled automatically as 'Reference' (for the first
@@ -24,15 +44,15 @@ NULL
 #' @param from The lowest proportion of selection to consider. `0.01` by default.
 #' @param to The largest proportion of selection to consider. `0.25` by default.
 #' @param by The increment of the sequence of proportions. `0.01` by default.
-#' @param cutoffs_from The lowest threshold to consider.`NULL` by default.
+#' @param cutoffs_from The lowest threshold to consider. `NULL` by default.
 #' @param cutoffs_to The largest threshold to consider. `NULL` by default.
 #' @return Eight plots illustrating how proportion selected (PS), success ratio 
 #'   (SR), sensitivity (SE), and specificity (SP) change across different 
 #'   proportions of selection under partial and strict invariance conditions.
 #' @param custom_colors Optional argument for specifying colors. `NULL` by default.  
 #' @param reference Optional argument for specifying the reference group.
-#' @param add_AI_threshold_lines Whether horizontal lines at AI = 1 and AI = 0.8
-#'   should be plotted. `TRUE` by default.
+#' @param add_AI_threshold_lines Whether horizontal lines at Adverse Impact 
+#' ratios of 1 and 0.8 should be plotted. `TRUE` by default.
 #' @param add_vertical_threshold_at Adds a vertical line at a specified threshold
 #'   value for easier comparison. `NULL` by default.  
 #' @param plot_only_g Optional argument, vector of strings specifying the labels
@@ -60,6 +80,10 @@ NULL
 #' plot_CAI_across_range(cfa_fit = fit_sim, custom_colors = c("blue", "pink", "red"))
 #' plot_CAI_across_range(cfa_fit = fit_sim, plot_only_g = "Japanese")
 #' plot_CAI_across_range(cfa_fit = fit_sim, add_vertical_threshold_at = 0.07)
+#' # use parameter estimates rather than cfa_fit object
+#' ests <- unnest_list(lavInspect(fit_sim, "est"))
+#' plot_CAI_across_range(alpha = ests$alpha, lambda = ests$lambda, 
+#'   psi = ests$psi, theta = ests$theta, nu = ests$nu)
 #' library(lavaan)
 #' HS <- HolzingerSwineford1939
 #' HS$sex <- as.factor(HS$sex)
@@ -67,17 +91,19 @@ NULL
 #'               textual =~ x4 + x5 + x6
 #'               speed   =~ x7 + x8 + x9 '
 #' fit <- cfa(HS.model, data = HS, group = "sex")
-#' plot_CAI_across_range(fit, pmix = table(HS$sex) / sum(table(HS$sex)), 
+#' plot_CAI_across_range(cfa_fit = fit, pmix = table(HS$sex) / sum(table(HS$sex)), 
 #'                  cutoffs_from = 35, cutoffs_to = 50)
 #' # plot only SR under partial invariance for up to 10% selection.
-#' plot_CAI_across_range(fit, pmix = table(HS$sex)/sum(table(HS$sex)), 
+#' plot_CAI_across_range(cfa_fit = fit, pmix = table(HS$sex)/sum(table(HS$sex)), 
 #'     from = 0.01, to = 0.10, cai_names = "SR", mod_names = "par", 
 #'      labels = c("Male", "Female"))
 #' }
 #' @export
 plot_CAI_across_range <- function(
-    cfa_fit,
+    cfa_fit = NULL,
     pmix = NULL,
+    weights_item = NULL, weights_latent = NULL,
+    alpha = NULL, psi = NULL, lambda = NULL, theta = NULL, nu = NULL,
     labels = NULL,
     cai_names = c("PS", "SR", "SE", "SP", "AI"),
     mod_names = c("par", "str"),
@@ -106,7 +132,24 @@ plot_CAI_across_range <- function(
     plotAIs <- FALSE
   }
   
-  est <- format_cfa_partinv(cfa_fit, comp = "est")
+  pl <- prep_params(
+    cfa_fit = cfa_fit, weights_item = weights_item, 
+    weights_latent = weights_latent, 
+    alpha = alpha, psi = psi, lambda = lambda, theta = theta, nu = nu, 
+    pmix = pmix, labels = labels, reference = reference,
+    custom_colors = custom_colors)
+  
+  alpha <- pl$alpha
+  psi <- pl$psi
+  lambda <- pl$lambda
+  nu <- pl$nu
+  theta <- pl$theta
+  pmix <- pl$pmix
+  num_g <- pl$num_g
+  weights_latent <- pl$weights_latent
+  weights_item <- pl$weights_item
+  labels <- pl$labels
+  
   propsels <- seq(from = from, to = to, by = by)
   use <- "propsels"
   xl <- "Proportion of selection"
@@ -127,17 +170,12 @@ plot_CAI_across_range <- function(
     xl <- "Thresholds" # for the plots later
     use <- "cutoffs"
   }
-  num_g <- cfa_fit@Data@ngroups # number of groups
 
   ls_mat <- matrix(NA, ncol = length(rangeVals), nrow = num_g)
   AIs <- matrix(NA, ncol = length(rangeVals), nrow = num_g - 1)
   ls_names <- c(t(outer(cai_names, Y = mod_names, FUN = paste, sep = "_")))
   ls <- rep(list(ls_mat), length(ls_names))
   names(ls) <- ls_names
-  
-  # if pmix is missing, assume equal mixing proportions
-  if (is.null(pmix)) pmix <- as.matrix(c(rep(1 / num_g, num_g)), ncol = num_g)
-  pmix <- as.vector(pmix)
   
   ylabs <- ""
   mains <- ""
@@ -148,32 +186,36 @@ plot_CAI_across_range <- function(
     if (use == "cutoffs") {
       suppressWarnings({
         pinv <- PartInv(cut_z = cutoffs[p],
-                        psi = est$psi,
-                        lambda = est$lambda,
-                        theta = est$theta,
-                        alpha = est$alpha,
-                        nu = est$nu,
+                        psi = psi,
+                        lambda = lambda,
+                        theta = theta,
+                        alpha = alpha,
+                        nu = nu,
                         pmix = pmix,
                         plot_contour = FALSE,
                         labels = labels,
                         show_mi_result = TRUE, 
-                        reference = reference)
+                        reference = reference, 
+                        weights_item = weights_item,
+                        weights_latent = weights_latent)
       })
     }
     # if the user did not provide cutoff values
     if (use == "propsels") {
       suppressWarnings({
         pinv <- PartInv(propsel = propsels[p],
-                        psi = est$psi,
-                        lambda = est$lambda,
-                        theta = est$theta,
-                        alpha = est$alpha,
-                        nu = est$nu,
+                        psi = psi,
+                        lambda = lambda,
+                        theta = theta,
+                        alpha = alpha,
+                        nu = nu,
                         pmix = pmix,
                         plot_contour = FALSE,
                         labels = labels,
                         show_mi_result = TRUE,
-                        reference = reference)
+                        reference = reference, 
+                        weights_item = weights_item,
+                        weights_latent = weights_latent)
       })
     }  
     # for specifying the index within ls
@@ -206,22 +248,6 @@ plot_CAI_across_range <- function(
       }
     }
     AIs[,p] <- as.numeric(pinv$ai_ratio)
-  }
-  
-  # extract labels
-  if (!is.null(labels)) { # 'labels' was provided
-    if (length(labels) != num_g) {
-      stop("The number of labels does not match the number of groups. Using defaults.")
-      labels <- c("Reference", paste0("Focal_", 1:(num_g - 1)))
-    }
-    lab_text <- "provided"
-  } else {  # 'labels' is null
-    if (!is.null(cfa_fit)) { # user supplied cfa_fit
-      labels <- summary(cfa_fit)$data$group.label
-      lab_text <- "cfa fit object"
-    } else { # user did not supply cfa_fit
-      labels <- c("Reference", paste0("Focal_", 1:(num_g - 1)))
-    }
   }
 
   rownames(AIs) <- labels[-1]

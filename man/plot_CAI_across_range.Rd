@@ -6,8 +6,15 @@
 or at different threshold (cutoff) values}
 \usage{
 plot_CAI_across_range(
-  cfa_fit,
+  cfa_fit = NULL,
   pmix = NULL,
+  weights_item = NULL,
+  weights_latent = NULL,
+  alpha = NULL,
+  psi = NULL,
+  lambda = NULL,
+  theta = NULL,
+  nu = NULL,
   labels = NULL,
   cai_names = c("PS", "SR", "SE", "SP", "AI"),
   mod_names = c("par", "str"),
@@ -25,11 +32,38 @@ plot_CAI_across_range(
 )
 }
 \arguments{
-\item{cfa_fit}{CFA model output from lavaan.}
+\item{cfa_fit}{CFA model output from lavaan. \code{NULL} by default.}
 
 \item{pmix}{List of length \code{g} containing the mixing proportions of each
 group (where \code{g} is the number of groups). If \code{NULL}, defaults to \code{1/g}
 for each group (i.e., the populations have equal size).}
+
+\item{weights_item}{A vector of item weights.}
+
+\item{weights_latent}{A vector of latent factor weights.}
+
+\item{alpha}{A list of length \code{g} containing \verb{1 x d} latent factor mean
+vectors where \code{g} is the number of groups and \code{d} is the number of latent
+dimensions. The first element is assumed to belong to the reference group.}
+
+\item{psi}{A list of length \code{g} containing \verb{d x d} latent factor
+variance-covariance matrices where \code{g} is the number of groups and \code{d} is
+the number of latent dimensions. The first element is assumed to belong
+to the reference group.}
+
+\item{lambda}{A list of length \code{g} containing \verb{n x d} factor loading matrices
+where \code{g} is the number of groups, \code{d} is the number of latent dimensions,
+and \code{n} is the number of items. The first element is assumed
+to belong to the reference group.}
+
+\item{theta}{A list of length \code{g} containing \verb{1 x n} vectors or \verb{n x n}
+matrices of unique factor variances and covariances, where \code{g} is the
+number of groups and \code{n} is the number of items. The first element is
+assumed to belong to the reference group.}
+
+\item{nu}{A list of length \code{g} containing \verb{1 x n} measurement intercept
+vectors where \code{g} is the number of groups and \code{n} is the number of items.
+The first element is assumed to belong to the reference group.}
 
 \item{labels}{A character vector with \code{g} elements to label the reference
 and focal groups on the plot, where \code{g} is the number of groups. If not
@@ -49,7 +83,7 @@ interest. c("par", "str") by default.}
 
 \item{by}{The increment of the sequence of proportions. \code{0.01} by default.}
 
-\item{cutoffs_from}{The lowest threshold to consider.\code{NULL} by default.}
+\item{cutoffs_from}{The lowest threshold to consider. \code{NULL} by default.}
 
 \item{cutoffs_to}{The largest threshold to consider. \code{NULL} by default.}
 
@@ -57,8 +91,8 @@ interest. c("par", "str") by default.}
 
 \item{reference}{Optional argument for specifying the reference group.}
 
-\item{add_AI_threshold_lines}{Whether horizontal lines at AI = 1 and AI = 0.8
-should be plotted. \code{TRUE} by default.}
+\item{add_AI_threshold_lines}{Whether horizontal lines at Adverse Impact
+ratios of 1 and 0.8 should be plotted. \code{TRUE} by default.}
 
 \item{add_vertical_threshold_at}{Adds a vertical line at a specified threshold
 value for easier comparison. \code{NULL} by default.}
@@ -77,7 +111,7 @@ proportions of selection under partial and strict invariance conditions.
 \description{
 \code{plot_CAI_across_range} plots classification accuracy indices at different
 proportions of selection under partial and strict invariance conditions for
-a given CFA fit.
+a given CFA fit or set of parameter estimates.
 }
 \examples{
 \dontrun{
@@ -100,6 +134,10 @@ plot_CAI_across_range(cfa_fit = fit_sim)
 plot_CAI_across_range(cfa_fit = fit_sim, custom_colors = c("blue", "pink", "red"))
 plot_CAI_across_range(cfa_fit = fit_sim, plot_only_g = "Japanese")
 plot_CAI_across_range(cfa_fit = fit_sim, add_vertical_threshold_at = 0.07)
+# use parameter estimates rather than cfa_fit object
+ests <- unnest_list(lavInspect(fit_sim, "est"))
+plot_CAI_across_range(alpha = ests$alpha, lambda = ests$lambda, 
+  psi = ests$psi, theta = ests$theta, nu = ests$nu)
 library(lavaan)
 HS <- HolzingerSwineford1939
 HS$sex <- as.factor(HS$sex)
@@ -107,10 +145,10 @@ HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed   =~ x7 + x8 + x9 '
 fit <- cfa(HS.model, data = HS, group = "sex")
-plot_CAI_across_range(fit, pmix = table(HS$sex) / sum(table(HS$sex)), 
+plot_CAI_across_range(cfa_fit = fit, pmix = table(HS$sex) / sum(table(HS$sex)), 
                  cutoffs_from = 35, cutoffs_to = 50)
 # plot only SR under partial invariance for up to 10\% selection.
-plot_CAI_across_range(fit, pmix = table(HS$sex)/sum(table(HS$sex)), 
+plot_CAI_across_range(cfa_fit = fit, pmix = table(HS$sex)/sum(table(HS$sex)), 
     from = 0.01, to = 0.10, cai_names = "SR", mod_names = "par", 
      labels = c("Male", "Female"))
 }
