@@ -28,6 +28,9 @@ plot_CAI_across_range(
   add_AI_threshold_lines = TRUE,
   add_vertical_threshold_at = NULL,
   plot_only_g = NULL,
+  saveplots = FALSE,
+  plot_folder = NULL,
+  suffix = "",
   ...
 )
 }
@@ -100,6 +103,13 @@ value for easier comparison. \code{NULL} by default.}
 \item{plot_only_g}{Optional argument, vector of strings specifying the labels
 of the subset of groups to be plotted. The reference group is always
 plotted. Ignored if all elements do not appear in \code{labels}.}
+
+\item{saveplots}{Logical; if TRUE, saves plots to files. \code{FALSE} by default.}
+
+\item{plot_folder}{Optional folder name for saved plots. Created if missing.
+If no folder name is provided, saves plots in the current working directory.}
+
+\item{suffix}{Optional string suffix appended to plot filenames. \code{""} by default.}
 
 \item{...}{Additional arguments.}
 }

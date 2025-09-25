@@ -1,4 +1,5 @@
 #' @importFrom graphics lines
+#' @importFrom grDevices dev.off png replayPlot recordPlot
 NULL
 
 #' Plot classification accuracy indices at different proportions of selection
@@ -58,6 +59,11 @@ NULL
 #' @param plot_only_g Optional argument, vector of strings specifying the labels
 #'   of the subset of groups to be plotted. The reference group is always 
 #'   plotted. Ignored if all elements do not appear in `labels`.
+#' @param saveplots Logical; if TRUE, saves plots to files. `FALSE` by default.
+#' @param plot_folder Optional folder name for saved plots. Created if missing. 
+#'   If no folder name is provided, saves plots in the current working directory.
+#' @param suffix Optional string suffix appended to plot filenames. `""` by default.
+#' @param ... Additional arguments.
 #' @param ... Additional arguments.
 #' @examples
 #' \dontrun{
@@ -116,7 +122,11 @@ plot_CAI_across_range <- function(
     reference = NULL, 
     add_AI_threshold_lines = TRUE, 
     add_vertical_threshold_at = NULL,
-    plot_only_g = NULL, ...
+    plot_only_g = NULL, 
+    saveplots = FALSE,
+    plot_folder = NULL,
+    suffix = "",
+    ...
     ) {
   stopifnot("cai_names can only take the following values: PS, SR, SE, SP, AI." =
               (all(cai_names %in% c("PS", "SR", "SE", "SP", "AI"))))
@@ -130,6 +140,11 @@ plot_CAI_across_range <- function(
     }
   } else {
     plotAIs <- FALSE
+  }
+  
+  if (saveplots) {
+    if (is.null(plot_folder)) plot_folder <- "."  # default to working dir
+    if (!dir.exists(plot_folder)) dir.create(plot_folder, recursive = TRUE)
   }
   
   pl <- prep_params(
@@ -291,9 +306,6 @@ plot_CAI_across_range <- function(
       
       if (!is.null(add_vertical_threshold_at)) {
         abline(v = add_vertical_threshold_at, col = "gray", lty = 3)
-        #l_lab <- c(l_lab, "Cutoff")
-        # l_col <- c(l_col, "gray")
-        #l_lty <- c(l_lty, 3)
       }
 
       lines(rangeVals, ls[[ls_names[l]]][1, ], type = "l", col = colorlist[1], lwd = 1.5)
@@ -303,6 +315,20 @@ plot_CAI_across_range <- function(
       }
       legend(legends[l], legend = l_lab, col = l_col, lty = l_lty,
              lwd = 1.5, cex = 0.8)  
+      
+      if (saveplots) {
+        fname <- file.path(
+          plot_folder,
+          paste0(ls_names[l], if (nzchar(suffix)) paste0("_", suffix), ".png")
+        )
+        p <- recordPlot()
+        invisible({
+          png(fname, width = 1600, height = 1200, res = 200)
+          replayPlot(p)
+          dev.off()
+        })
+      }
+      
     }
   }
   # if the user wants AI plots and if the only group specified to be 
@@ -317,25 +343,36 @@ plot_CAI_across_range <- function(
     l_lwd <- rep(1.5, num_g - 1)
     
     plot(0, xlim = c(min(rangeVals), max(rangeVals)), ylim = c(0, ylim_u),
-         ylab = "Adverse Impact Ratio (AIR)",cex = 1.1,
+         ylab = "Adverse Impact Ratio (AIR)", cex = 1.1,
          main = paste0("Adverse Impact Ratios [reference group: ", labels[1], "]"))
     if (add_AI_threshold_lines) {
       abline(h = 1, lty = 2, col = "lightgray", lwd = 0.8)
-      abline(h = 0.8, lty = 2, col = "gray42", lwd = .8)
+      abline(h = 0.8, lty = 2, col = "gray42", lwd = 0.8)
       l_lab <- c(l_lab, "AIR = 1", "AIR = 0.8")
       l_col <- c(l_col, "lightgray", "gray42")
       l_lty <- c(l_lty, 2, 2)
       l_lwd <- c(l_lwd, 0.8, 0.8)
     }
-    #lines(rangeVals, AIs[1,], type = "l", col = colorlist[1], lwd = 1.5)
-    #if (num_g > 2) {
-      for (i in ind[-1]) {
-        lines(rangeVals, AIs[labels_temp[i],], type = "l",
-              lwd = 1.5, col = colorlist[i])
+    for (i in ind[-1]) {
+      lines(rangeVals, AIs[labels_temp[i],], type = "l", lwd = 1.5, 
+            col = colorlist[i])
       }
-    #}
-    legend("bottomright", legend = l_lab, col = l_col, lty = l_lty, 
-           lwd = l_lwd, cex = 0.8)  
+    legend("bottomright", legend = l_lab, col = l_col, lty = l_lty, lwd = l_lwd, 
+           cex = 0.8)  
+    
+    if (saveplots) {
+      fname <- file.path(
+        plot_folder,
+        paste0("AI", if (nzchar(suffix)) paste0("_", suffix), ".png")
+      )
+      p <- recordPlot()  # capture the plot that just appeared on screen
+      invisible({
+        png(fname, width = 1600, height = 1200, res = 200)
+        replayPlot(p) # redraw into png file
+        dev.off()
+      })
+    }
+    
   }
 }
 
