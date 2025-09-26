@@ -44,7 +44,7 @@ NULL
 #'   interest. c("par", "str") by default.
 #' @param from The lowest proportion of selection to consider. `0.01` by default.
 #' @param to The largest proportion of selection to consider. `0.25` by default.
-#' @param by The increment of the sequence of proportions. `0.01` by default.
+#' @param by The increment of the sequence of proportions. `0.1` by default.
 #' @param cutoffs_from The lowest threshold to consider. `NULL` by default.
 #' @param cutoffs_to The largest threshold to consider. `NULL` by default.
 #' @return Eight plots illustrating how proportion selected (PS), success ratio 
@@ -115,7 +115,7 @@ plot_CAI_across_range <- function(
     mod_names = c("par", "str"),
     from = 0.01,
     to = 0.25,
-    by = 0.01,
+    by = 0.1,
     cutoffs_from = NULL,
     cutoffs_to = NULL, 
     custom_colors = NULL, 

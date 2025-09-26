@@ -5,7 +5,6 @@
 \title{Plot the receiver-operating characteristic (ROC) curve and compute AUC}
 \usage{
 roc_auc(
-  cfa_fit = NULL,
   PartInv_fit = NULL,
   plot_group = NULL,
   pmix = NULL,
@@ -29,8 +28,6 @@ roc_auc(
 )
 }
 \arguments{
-\item{cfa_fit}{Output from cfa(). NULL by default.}
-
 \item{PartInv_fit}{Output from PartInv(). NULL by default.}
 
 \item{plot_group}{vector of integers indicating the groups of interest.
@@ -40,7 +37,7 @@ roc_auc(
 
 \item{from}{0.01 by default.}
 
-\item{to}{0.9999 by default.}
+\item{to}{0.999 by default.}
 
 \item{by}{0.01 by default.}
 
@@ -95,19 +92,19 @@ function.}
 A list of of length \code{inv}
 }
 \description{
-\code{roc_auc} takes in a CFA fit object, output from PartInv(), or
-vectors of model parameter estimates, plots ROC curves, and computes AUCs
-for the specified groups under the specified invariance conditions.
+\code{roc_auc} takes in output from PartInv(), or vectors of model parameter
+estimates, plots ROC curves, and computes AUCs for the specified groups under
+the specified invariance conditions.
 }
 \examples{
 # using parameter estimates as input
 lam_v <- c(.68, .8, -.39, .74, .6, .5, .8, -.30, .6, .6, .64,.66, .6, .63)
-nu_v <- nu_v1 <- nu_v2 <- nu_v3 <- 
+nu_v <- nu_v1 <- nu_v2 <- nu_v3 <-
   c(3.6, 3, 2.7, 3, 2.5, 2.1, 3.5, 2.6, 3.2, 2.8, 3.5, 3.3, 2.45, 3.4)
 nu_v1[1] <- 3.9; nu_v1[12:14] <- c(3.6, 2.45, 3.7)
 nu_v2[8:9] <- c(3.6, 3.2); nu_v2[12] <- 3.5
 nu_v3[4] <- 2.6
-th_v <- th_v1 <- th_v2 <- th_v3 <- 
+th_v <- th_v1 <- th_v2 <- th_v3 <-
   c(.6, .6, .83, .6, .8, .87, .4, 1, .84, .9, .6, .66, .8, .66)
 th_v1[1] <- .35; th_v1[6] <- .5; th_v1[11] <- .36
 th_v2[3] <- .8; th_v2[3] <- .3
@@ -116,33 +113,25 @@ roc_auc(pmix = rep(1/4, 4), alpha = list(0, -.70, -1.05, -1.10),
         psi = list(1, 1.2, 1.29, 1.3), nu = list(nu_v, nu_v1, nu_v2, nu_v3),
         lambda = list(lam_v, lam_v, lam_v, lam_v),
         theta = list(th_v, th_v1, th_v2, th_v3), inv = c("strict", "partial"))
-
-# when a CFA output object is provided as input
+# when parameter estimates are provided as input to PartInv()
+PI_out <- PartInv(propsel = .30, weights_item = rep(1, 4),
+                  weights_latent = 1, alpha = list(0, 0), psi = list(1, 1),
+                  lambda = list(rep(1, 4), rep(1, 4)),
+                  nu = list(c(1, 1, 1, 2), rep(1, 4)),
+                  theta = list(diag(1, 4), diag(1, 4)),
+                  labels = c("Female", "Male"), show_mi_result = TRUE)
+roc_auc(PartInv_fit = PI_out, inv = c("partial"))
+roc_auc(PartInv_fit = PI_out, inv = c("partial", "strict"), 
+        custom_colors = c("purple", "orange"))
+# when a a cfa fit object is provided as input to PartInv()
 library(lavaan)
-data("HolzingerSwineford1939", package = "lavaan")
+data("HolzingerSwineford1939")
 HS <- HolzingerSwineford1939
 HS$sex <- as.factor(HS$sex)
 HS.model <- 'visual  =~ x1 + x2 + x3
              textual =~ x4 + x5 + x6
              speed   =~ x7 + x8 + x9'
 HS.fit <- cfa(HS.model, data = HS, group = "sex")
-roc_auc(cfa_fit = HS.fit, inv = c("partial"), labels = c("M", "F"))
-roc_auc(cfa_fit = HS.fit, inv = c("partial", "strict"), on_same_plot = FALSE,
-labels = c("M", "F"))
-
-# when PartInv output is provided as input (with parameter estimates as input
-# to PartInv())
-PI_out <- PartInv(propsel = .30, weights_item = rep(1, 4),
-                 weights_latent = 1, alpha = list(0, 0), psi = list(1, 1),
-                 lambda = list(rep(1, 4), rep(1, 4)),
-                 nu = list(c(1, 1, 1, 2), rep(1, 4)),
-                 theta = list(diag(1, 4), diag(1, 4)),
-                 labels = c("Female", "Male"), show_mi_result = TRUE)
-roc_auc(PartInv_fit = PI_out, inv = c("partial"))
-roc_auc(PartInv_fit = PI_out, inv = c("partial", "strict"), 
-        custom_colors = c("purple", "orange"))
-
-# when PartInv output is provided as input (with cfa_fit as input to PartInv())
 PI_out2 <- PartInv(propsel = .30,cfa_fit = HS.fit, labels = c("M", "F"))
 roc_auc(PartInv_fit = PI_out2)
 }

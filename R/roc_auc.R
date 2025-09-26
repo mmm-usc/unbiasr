@@ -7,17 +7,16 @@
 #' roc_auc
 #'
 #' @description
-#' \code{roc_auc} takes in a CFA fit object, output from PartInv(), or 
-#' vectors of model parameter estimates, plots ROC curves, and computes AUCs 
-#' for the specified groups under the specified invariance conditions.
+#' \code{roc_auc} takes in output from PartInv() or vectors of model parameter
+#' estimates, plots ROC curves, and computes AUCs for the specified groups under 
+#' the specified invariance conditions.
 #'
-#' @param cfa_fit Output from cfa(). NULL by default.
 #' @param PartInv_fit Output from PartInv(). NULL by default.
 #' @param pmix Vector of mixing proportions.
 #' @param from 0.01 by default.
-#' @param to 0.9999 by default.
+#' @param to 0.999 by default.
 #' @param by 0.01 by default.
-#' @param cutoffs_from  NULL by default.
+#' @param cutoffs_from NULL by default.
 #' @param cutoffs_to NULL by default.
 #' @param inv Invariance condition to be considered. c("partial", "strict") by
 #'     default.
@@ -57,12 +56,12 @@
 #' @examples
 #'# using parameter estimates as input
 #' lam_v <- c(.68, .8, -.39, .74, .6, .5, .8, -.30, .6, .6, .64,.66, .6, .63)
-#' nu_v <- nu_v1 <- nu_v2 <- nu_v3 <- 
+#' nu_v <- nu_v1 <- nu_v2 <- nu_v3 <-
 #'   c(3.6, 3, 2.7, 3, 2.5, 2.1, 3.5, 2.6, 3.2, 2.8, 3.5, 3.3, 2.45, 3.4)
 #' nu_v1[1] <- 3.9; nu_v1[12:14] <- c(3.6, 2.45, 3.7)
 #' nu_v2[8:9] <- c(3.6, 3.2); nu_v2[12] <- 3.5
 #' nu_v3[4] <- 2.6
-#' th_v <- th_v1 <- th_v2 <- th_v3 <- 
+#' th_v <- th_v1 <- th_v2 <- th_v3 <-
 #'   c(.6, .6, .83, .6, .8, .87, .4, 1, .84, .9, .6, .66, .8, .66)
 #' th_v1[1] <- .35; th_v1[6] <- .5; th_v1[11] <- .36
 #' th_v2[3] <- .8; th_v2[3] <- .3
@@ -71,38 +70,29 @@
 #'         psi = list(1, 1.2, 1.29, 1.3), nu = list(nu_v, nu_v1, nu_v2, nu_v3),
 #'         lambda = list(lam_v, lam_v, lam_v, lam_v),
 #'         theta = list(th_v, th_v1, th_v2, th_v3), inv = c("strict", "partial"))
-#'
-#' # when a CFA output object is provided as input
+#' # when parameter estimates are provided as input to PartInv()
+#' PI_out <- PartInv(propsel = .30, weights_item = rep(1, 4),
+#'                   weights_latent = 1, alpha = list(0, 0), psi = list(1, 1),
+#'                   lambda = list(rep(1, 4), rep(1, 4)),
+#'                   nu = list(c(1, 1, 1, 2), rep(1, 4)),
+#'                   theta = list(diag(1, 4), diag(1, 4)),
+#'                   labels = c("Female", "Male"), show_mi_result = TRUE)
+#' roc_auc(PartInv_fit = PI_out, inv = c("partial"))
+#' roc_auc(PartInv_fit = PI_out, inv = c("partial", "strict"), 
+#'         custom_colors = c("purple", "orange"))
+#' # when a a cfa fit object is provided as input to PartInv()
 #' library(lavaan)
-#' data("HolzingerSwineford1939", package = "lavaan")
+#' data("HolzingerSwineford1939")
 #' HS <- HolzingerSwineford1939
 #' HS$sex <- as.factor(HS$sex)
 #' HS.model <- 'visual  =~ x1 + x2 + x3
 #'              textual =~ x4 + x5 + x6
 #'              speed   =~ x7 + x8 + x9'
 #' HS.fit <- cfa(HS.model, data = HS, group = "sex")
-#' roc_auc(cfa_fit = HS.fit, inv = c("partial"), labels = c("M", "F"))
-#' roc_auc(cfa_fit = HS.fit, inv = c("partial", "strict"), on_same_plot = FALSE,
-#' labels = c("M", "F"))
-#'
-#' # when PartInv output is provided as input (with parameter estimates as input
-#' # to PartInv())
-#' PI_out <- PartInv(propsel = .30, weights_item = rep(1, 4),
-#'                  weights_latent = 1, alpha = list(0, 0), psi = list(1, 1),
-#'                  lambda = list(rep(1, 4), rep(1, 4)),
-#'                  nu = list(c(1, 1, 1, 2), rep(1, 4)),
-#'                  theta = list(diag(1, 4), diag(1, 4)),
-#'                  labels = c("Female", "Male"), show_mi_result = TRUE)
-#' roc_auc(PartInv_fit = PI_out, inv = c("partial"))
-#' roc_auc(PartInv_fit = PI_out, inv = c("partial", "strict"), 
-#'         custom_colors = c("purple", "orange"))
-#'
-#' # when PartInv output is provided as input (with cfa_fit as input to PartInv())
 #' PI_out2 <- PartInv(propsel = .30,cfa_fit = HS.fit, labels = c("M", "F"))
 #' roc_auc(PartInv_fit = PI_out2)
 #' @export
-roc_auc <- function(cfa_fit = NULL, 
-                    PartInv_fit = NULL,
+roc_auc <- function(PartInv_fit = NULL,
                     plot_group = NULL, 
                     pmix = NULL, 
                     from = 0.01,
@@ -123,56 +113,41 @@ roc_auc <- function(cfa_fit = NULL,
                     on_same_plot = TRUE,
                     ...) {
   ## extract and format relevant parameters ##
-  if (sum(!is.null(PartInv_fit), !is.null(cfa_fit), !is.null(alpha)) >= 2) {
-    message('Please provide only a CFA fit object, output from PartInv(), or vectors of model parameter estimates.')
+  if (sum(is.null(PartInv_fit), is.null(alpha)) == 2) {
+    message('Please provide only output from PartInv() or vectors of model parameter estimates.')
   }
 
-  # if PartInv_fit was provided, use it to extract relevant parameters
+  cfa_fit <- NULL
+  
+  # If PartInv_fit was provided, use it to extract relevant parameters. Otherwise
+  # use the vectors of estimates.
   if (!is.null(PartInv_fit)) {
-    if (!is.null(cfa_fit)) message('Both a CFA fit object and output from PartInv() were provided. Proceeding with the PartInv() output.')
-    
     pi_f <- PartInv_fit 
-    if (is.null(labels)) labels <- pi_f$labels
+    if (is.null(labels) & !is.null(pi_f$labels)) labels <- pi_f$labels
+    if (is.null(pmix) & !is.null(pi_f$pmix)) pmix <- pi_f$pmix
+    if (is.null(custom_colors) & !is.null(eval(pi_f$functioncall$custom_colors))) 
+      custom_colors <- eval(pi_f$functioncall$custom_colors)
     
-    # If cfa_fit was passed to PartInv() to produce PartInv_fit:
+    # If PartInv() was called using a cfa() object to produce PartInv_fit:
     if (!is.null(eval(pi_f$functioncall$cfa_fit))) {
       cfa_fit <- eval(pi_f$functioncall$cfa_fit)
-      if (!is.null(eval(pi_f$functioncall$custom_colors))) {
-        custom_colors <- eval(pi_f$functioncall$custom_colors)
-      }  
-    } else { # (if vectors of parameter estimates were passed to PartInv())
-      psi <- eval(pi_f$functioncall$psi)
-      lambda <- eval(pi_f$functioncall$lambda)
-      theta <- eval(pi_f$functioncall$theta)
-      alpha <- eval(pi_f$functioncall$alpha)
-      nu <- eval(pi_f$functioncall$nu)
-      weights_latent <- eval(pi_f$functioncall$weights_latent)
-      weights_item <- eval(pi_f$functioncall$weights_item)
-      num_g <- length(alpha)
-      d <- length(alpha[[1]])
-      alpha <- lapply(alpha, FUN = as.matrix)
-      psi <- lapply(psi, FUN = matrix, nrow = d, ncol = d)
-      
-      if (is.null(pmix)) {
-        cf <- eval(pi_f$cfa_fit)
-        if (!is.null(cf)) {
-          pmix <- cf@data@nobs / sum(cf@data@nobs)
-        } else {
-          message("Mixing proportions not provided (pmix). Assuming equal weights.")
-          pmix <- rep(1, num_g) / num_g
-        }
-      } 
-    }
+      } else {  # (if vectors of parameter estimates were passed to PartInv())
+        psi <- eval(pi_f$functioncall$psi)
+        lambda <- eval(pi_f$functioncall$lambda)
+        theta <- eval(pi_f$functioncall$theta)
+        alpha <- eval(pi_f$functioncall$alpha)
+        nu <- eval(pi_f$functioncall$nu)
+        weights_latent <- eval(pi_f$functioncall$weights_latent)
+        weights_item <- eval(pi_f$functioncall$weights_item)
+        num_g <- length(alpha)
+        d <- length(alpha[[1]])
+        alpha <- lapply(alpha, FUN = as.matrix)
+        psi <- lapply(psi, FUN = matrix, nrow = d, ncol = d)
+      }
   }
- # } else { # extract/format relevant parameters from cfa_fit or parameter vectors
     pl <- prep_params(
       cfa_fit, propsel, cut_z, weights_item, weights_latent, alpha, psi, lambda,
-      theta, nu, pmix, pmix_ref = NULL, plot_contour = NULL, labels = labels#, 
-      # n_dim = NULL, n_i_per_dim = NULL, delete_items = NULL, delete_one_cutoff = NULL, 
-      # alpha_r = NULL, alpha_f = NULL, phi_r = NULL, phi_f = NULL, psi_r = NULL, 
-      # psi_f = NULL, lambda_r = NULL, lambda_f = NULL, tau_r = NULL, tau_f = NULL,
-      # kappa_r = NULL, kappa_f = NULL, nu_r = NULL, nu_f = NULL, Theta_r = NULL, 
-      # Theta_f = NULL, reference = NULL, custom_colors = NULL, PartInv_fit = NULL
+      theta, nu, pmix, pmix_ref = NULL, plot_contour = NULL, labels = labels
       )
     alpha <- pl$alpha
     psi <- pl$psi
@@ -185,7 +160,6 @@ roc_auc <- function(cfa_fit = NULL,
     weights_latent <- pl$weights_latent
     weights_item <- pl$weights_item
     labels <- pl$labels
- # }
 
   ## prepare cutoffs/proportions of selection (rangeVals) ##
   propsels <- seq(from = from, to = to, by = by)
@@ -234,7 +208,7 @@ roc_auc <- function(cfa_fit = NULL,
     
     num_comb <- length(cai) * length(inv) + 1 # for specifying the index
     ind <- 1
-    
+  
     while (ind < num_comb) {
       for (i in cai) { 
         for (j in seq_along(inv)) {
@@ -249,67 +223,70 @@ roc_auc <- function(cfa_fit = NULL,
   }
 
   # having obtained SE and SP values (stored in val), plot ROC and compute AUC
-  if(is.null(plot_group)) {
-    plot_group <- labels #c(1:length(rownames(vals[1][[1]])))
-  }
+  if(is.null(plot_group)) plot_group <- labels
 
   SEs <- SPs <- data.frame(matrix(NA, nrow = 1, ncol = length(rangeVals)))
   AUCs <- create_list_of_dfs(
     ls_len = length(inv), ncol = num_g, nrow = 1, df_cn = labels, 
     df_rn = "AUC", groups = c(paste0("AUC under ", inv, " invariance")))
   
-  cl <- colorlist()
-  
-  aucs <- function(AUCs, vals, ind, txt) {
-    # for each group, plot ROC and compute AUC
-    for (g in plot_group) {
-      SEs <- c(0, vals[ind[1]][[1]][g, ], 1)
-      SPs <- c(0, (1 - vals[ind[2]][[1]][g, ]), 1)
-      if (!is.null(custom_colors)) cl <- custom_colors
-      # set up plotting space
-      if (grep(g, plot_group) == 1) {
-        plot(y = SEs, x = SPs, type = "l", ylim = c(0, 1), xlim = c(0, 1), 
-             xlab = "FPR (1-SP)", ylab = "TPR (SE)",
-             main = paste0("ROC (", txt, " invariance)"),
-             col = cl[grep(g, plot_group)])
-        if (!on_same_plot){
-          legend("bottomright", paste0("Group: ", g), lty = c("solid"), 
-               col = cl[grep(g, plot_group)])
-        }
-      }
-      if (!on_same_plot) {
-        plot(y = SEs, x = SPs, type = "l", ylim = c(0, 1), xlim = c(0, 1), 
-             xlab = "FPR (1-SP)", ylab = "TPR (SE)",
-             main = paste0("ROC (", txt, " invariance)"),
-             col = cl[grep(g, plot_group)])
-       
-        legend("bottomright", paste0("Group: ", g), lty = c("solid"), 
-               col = cl[grep(g, plot_group)])
-      } else {
-        lines(y = SEs, x = SPs, type = "l", ylim = c(0, 1), xlim = c(0, 1), 
-              col = cl[grep(g, plot_group)])
-        legend("bottomright", paste0("Group: ", plot_group), lty = c("solid"), 
-               col = cl[1:num_g], cex = .7)
-      }
-      AUCs[[grep(txt, inv)]][g] <- auc(SEs, SPs)
-    }
-    return(AUCs)
-  }
-  
   par_ind <- grep("par", names(vals))
   str_ind <- grep("str", names(vals))
 
   if(!(is.integer(str_ind) && length(str_ind) == 0L)) {
-    AUCs <- aucs(AUCs, vals, str_ind, txt = "strict")
+    AUCs <- aucs(AUCs, vals, str_ind, inv, txt = "strict", plot_group,
+                 custom_colors, on_same_plot, num_g)
   }
   if(!(is.integer(par_ind) && length(par_ind) == 0L)) {
-    AUCs <- aucs(AUCs, vals, par_ind, txt = "partial")
+    AUCs <- aucs(AUCs, vals, par_ind, inv, txt = "partial", plot_group, 
+                 custom_colors, on_same_plot, num_g)
   }
   return(AUCs)
 }
 
+### Helper functions
 
-# helper function to compute AUC using SE and SP
+# Helper function that iterates through each group in plot_group to build ROC 
+# curve data, draw plots, and computes AUC
+aucs <- function(AUCs, vals, ind, inv, txt, plot_group, custom_colors,
+                 on_same_plot, num_g) {
+  cl <- colorlist()
+  # for each group, plot ROC and compute AUC
+  for (g in plot_group) {
+    SEs <- c(0, vals[ind[1]][[1]][g, ], 1)
+    SPs <- c(0, (1 - vals[ind[2]][[1]][g, ]), 1)
+    if (!is.null(custom_colors)) cl <- custom_colors
+    # set up plotting space
+    if (grep(g, plot_group) == 1) {
+      plot(y = SEs, x = SPs, type = "l", ylim = c(0, 1), xlim = c(0, 1), 
+           xlab = "FPR (1-SP)", ylab = "TPR (SE)",
+           main = paste0("ROC (", txt, " invariance)"),
+           col = cl[grep(g, plot_group)])
+      if (!on_same_plot){
+        legend("bottomright", paste0("Group: ", g), lty = c("solid"), 
+               col = cl[grep(g, plot_group)])
+      }
+    }
+    if (!on_same_plot) {
+      plot(y = SEs, x = SPs, type = "l", ylim = c(0, 1), xlim = c(0, 1), 
+           xlab = "FPR (1-SP)", ylab = "TPR (SE)",
+           main = paste0("ROC (", txt, " invariance)"),
+           col = cl[grep(g, plot_group)])
+      
+      legend("bottomright", paste0("Group: ", g), lty = c("solid"), 
+             col = cl[grep(g, plot_group)])
+    } else {
+      lines(y = SEs, x = SPs, type = "l", ylim = c(0, 1), xlim = c(0, 1), 
+            col = cl[grep(g, plot_group)])
+      legend("bottomright", paste0("Group: ", plot_group), lty = c("solid"), 
+             col = cl[1:num_g], cex = .7)
+    }
+    AUCs[[grep(txt, inv)]][g] <- auc(SEs, SPs)
+  }
+  return(AUCs)
+}
+
+# Helper function to compute AUC using SE and SP
 auc <- function(SE, SP) {
   TPR <- SE
   FPR <- 1 - SP
@@ -317,7 +294,3 @@ auc <- function(SE, SP) {
   dTPR <- c(diff(TPR), 0)
   sum(TPR * dFPR) + sum(dTPR * dFPR) / 2
 }
-
-
-
-

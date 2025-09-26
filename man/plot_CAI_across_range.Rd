@@ -20,7 +20,7 @@ plot_CAI_across_range(
   mod_names = c("par", "str"),
   from = 0.01,
   to = 0.25,
-  by = 0.01,
+  by = 0.1,
   cutoffs_from = NULL,
   cutoffs_to = NULL,
   custom_colors = NULL,
@@ -84,7 +84,7 @@ interest. c("par", "str") by default.}
 
 \item{to}{The largest proportion of selection to consider. \code{0.25} by default.}
 
-\item{by}{The increment of the sequence of proportions. \code{0.01} by default.}
+\item{by}{The increment of the sequence of proportions. \code{0.1} by default.}
 
 \item{cutoffs_from}{The lowest threshold to consider. \code{NULL} by default.}
 
