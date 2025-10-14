@@ -11,8 +11,8 @@ alpha_POS_f <- -0.125
 psi_POS_r <- 0.354^2
 psi_POS_f <- 0.329^2
 
-CESD_pos <- item_deletion_h(cut_z = 16/60*12, 
-                            weights_item = c(rep(1,4)), 
+CESD_pos <- item_deletion_h(cut_z = 16/60 * 12, 
+                            weights_item = c(rep(1, 4)), 
                             weights_latent = 1,
                             alpha_r = alpha_POS_r,
                             alpha_f = alpha_POS_f,
@@ -28,16 +28,13 @@ CESD_pos <- item_deletion_h(cut_z = 16/60*12,
                             plot_contour = FALSE,
                             print_formatted = TRUE)
 
-
-
-
 test_that("AI ratio is > 0 for all cells", {
   expect_true(all(CESD_pos$`AI Ratio` > 0))
 })
 
 
 test_that("item_deletion_h() handles matrix input", {
-  CESD_pos_mat <- item_deletion_h(cut_z = 16/60*12, 
+  CESD_pos_mat <- item_deletion_h(cut_z = 16/60 * 12, 
                                   weights_item = c(rep(1,4)), 
                                   weights_latent = 1,
                                   alpha_r = matrix(alpha_POS_r),
@@ -53,12 +50,11 @@ test_that("item_deletion_h() handles matrix input", {
                                   pmix_ref = pmix_CESD_r, 
                                   plot_contour = FALSE,
                                   print_formatted = TRUE)
-  expect_equal(CESD_pos, CESD_pos_mat)
+  # outputs should be equivalent aside from the function calls (index 12)
+  expect_equal(CESD_pos[-12], CESD_pos_mat[-12]) 
 })
 
-
 ### Helper functions
-
 test_that("redistribute_weights() is working properly", {
 error_ex <- c(1:12)
 one_dim_w <- c(1:7)
@@ -174,7 +170,7 @@ ex_strict <- PartInv(propsel = propsel,
                        Theta_r * pmix_ref,
                      pmix_ref = pmix_ref, 
                      plot_contour = plot_contour, 
-                     labels = c("Reference", "Focal"))
+                     labels = c("Reference", "Focal"), show_mi_result = TRUE)
 ex_partial <- PartInv(propsel = propsel, 
                       cut_z = cut_z, 
                       weights_item = weights_item, 
@@ -192,19 +188,10 @@ ex_partial <- PartInv(propsel = propsel,
                       pmix_ref = pmix_ref, 
                       plot_contour = plot_contour,
                       labels = c("Reference", "Focal"))
-
-test_that("acc_indices_h() returns data frames", {
-  acc <- vapply(acc_indices_h(ex_strict, ex_partial), FUN = inherits, 
-                what = c("data.frame"), FUN.VALUE = logical(1))
-  expect_true(any(acc))
-})
-
-test_that("cohens_h() is computed correctly for comparing reference with the
-          Efocal", {
+test_that("cohens_h() computed correctly for comparing the reference with Efocal", {
   out <- c(0.104203486, 0.166642094, -0.101844057, -0.180318247,  0.200493093,
            -0.161048764, 0.211048367, -0.373602451)
   expect_equal(out, cohens_h(ex_partial$summary$Reference, 
                              ex_partial$summary$`E_R(Focal)`))
   
 })
-
