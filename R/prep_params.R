@@ -106,12 +106,12 @@ prep_params <- function(cfa_fit = NULL, propsel = NULL, cut_z = NULL, weights_it
       message("Both cfa_fit and estimates were provided. Defaulting to cfa_fit.")
     }
     # extract the parameter estimates from the cfa fit object
-    lav_cfa <- unnest_list(lavInspect(cfa_fit, "est"))
-    alpha <- lapply(lav_cfa$alpha, FUN = c)
-    nu <- lapply(lav_cfa$nu, FUN = c)
-    theta <- lav_cfa$theta
-    lambda <- lav_cfa$lambda
-    psi <- lav_cfa$psi
+    lav_cfa <- cfa_fit@Model@GLIST
+    alpha <- lapply(lav_cfa[which(names(lav_cfa) == "alpha")], FUN = c)
+    nu <- lapply(lav_cfa[which(names(lav_cfa) == "nu")], FUN = c)
+    theta <- lav_cfa[which(names(lav_cfa) == "theta")]
+    lambda <- lav_cfa[which(names(lav_cfa) == "lambda")]
+    psi <- lav_cfa[which(names(lav_cfa) == "psi")]
   }
     
   num_g <- length(alpha)
