@@ -7,8 +7,9 @@
 \method{plot}{PartInv}(
   x,
   labels = x[["labels"]],
-  which_result = c("pi", "mi"),
+  which_result = NULL,
   custom_colors = NULL,
+  quadrantsABCD = TRUE,
   ...
 )
 }
@@ -22,6 +23,9 @@ is the number of groups.}
 
 \item{custom_colors}{Optional argument for specifying the colors of the
 ellipses.}
+
+\item{quadrantsABCD}{Whether to label the quadrants with A, B, C, D or TR,
+FP, TN, FN. \code{TRUE} by default.}
 
 \item{...}{Additional arguments.}
 }
