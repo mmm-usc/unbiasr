@@ -51,7 +51,6 @@ NULL
 #'     to the reference group.
 #' @param quadrantsABCD Whether to label the quadrants with A, B, C, D or TR,
 #'     FP, TN, FN. `TRUE` by default.
-#' @param roc_auc Plots ROC curves and prints AUCs. `FALSE` by default.
 #' @param ... Other arguments for \code{\link[graphics]{contour}}.
 #' @param alpha_r,alpha_f,nu_r,nu_f,Theta_r,Theta_f,psi_r,psi_f,lambda_r,lambda_f,phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f,pmix_ref
 #'     Deprecated; included for backward compatibility. With two groups, '_r' 
@@ -167,8 +166,7 @@ NULL
 #'         theta = list(th_mat, th_mat1, th_mat2, th_mat3),
 #'         plot_contour = TRUE, show_mi_result = TRUE,
 #'         labels = c("G1", "G2", "G3", "G4"),
-#'         custom_colors = cols, reference = "G1", quadrantsABCD = FALSE,
-#'         roc_auc = TRUE)
+#'         custom_colors = cols, reference = "G1", quadrantsABCD = FALSE)
 #' @export
 PartInv <- function(cfa_fit = NULL,
                     propsel = NULL, cut_z = NULL,
@@ -181,7 +179,6 @@ PartInv <- function(cfa_fit = NULL,
                     custom_colors = NULL,
                     reference = NULL,
                     quadrantsABCD = TRUE,
-                    roc_auc = FALSE,
                     kappa_r = NULL, kappa_f = kappa_r, alpha_r = NULL, alpha_f = alpha_r, phi_r = NULL, phi_f = phi_r, psi_r = NULL, psi_f = psi_r, lambda_r = NULL, lambda_f = lambda_r, tau_r = NULL, tau_f = tau_r, nu_r = NULL, nu_f = nu_r, Theta_r = NULL, Theta_f = Theta_r,
                     ...) {
 
@@ -261,10 +258,6 @@ PartInv <- function(cfa_fit = NULL,
   out[["functioncall"]] <- functioncall
   class(out) <- "PartInv"
   
-  if(roc_auc) {
-    AUCs <- roc_auc(PartInv_fit = out)
-    print(AUCs)
-  } 
   out
 }
 
