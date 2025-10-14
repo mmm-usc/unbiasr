@@ -7,8 +7,12 @@
 \method{plot}{PartInv}(
   x,
   labels = x[["labels"]],
-  which_result = c("pi", "mi"),
+  which_result = NULL,
   custom_colors = NULL,
+  quadrantsABCD = TRUE,
+  saveplots = FALSE,
+  plot_folder = NULL,
+  suffix = "",
   ...
 )
 }
@@ -22,6 +26,16 @@ is the number of groups.}
 
 \item{custom_colors}{Optional argument for specifying the colors of the
 ellipses.}
+
+\item{quadrantsABCD}{Whether to label the quadrants with A, B, C, D or TR,
+FP, TN, FN. \code{TRUE} by default.}
+
+\item{saveplots}{Logical; if TRUE, saves plots to files. \code{FALSE} by default.}
+
+\item{plot_folder}{Optional folder name for saved plots. Created if missing.
+If no folder name is provided, saves plots in the current working directory.}
+
+\item{suffix}{Optional string suffix appended to plot filenames. \code{""} by default.}
 
 \item{...}{Additional arguments.}
 }

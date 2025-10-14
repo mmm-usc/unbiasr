@@ -33,10 +33,12 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 Suggests: 
     testthat (>= 3.0.0),
+    waldo,
     shinytest,
     rmarkdown,
     knitr,
-    lavaan
+    readxl,
+    sjmisc
 Imports: 
     methods,
     mnormt,
@@ -44,7 +46,8 @@ Imports:
     shinydashboard,
     shinyjs,
     shinyMatrix,
-    shinyWidgets
+    shinyWidgets,
+    lavaan
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://mmm-usc.github.io/unbiasr/

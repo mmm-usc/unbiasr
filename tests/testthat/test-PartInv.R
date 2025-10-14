@@ -28,14 +28,15 @@ test_that("PartInv() returns a data frame", {
 })
 
 test_that("plot.PartInv() works successfully", {
-  expect_error(plot(piout, labels = c("female", "male")),
-               regexp = NA)
+  # case where which_result=NULL, uses piout to determine which results are 
+  # available
+  expect_no_error(plot(piout, labels = c("female", "male")))
   expect_no_error(plot(piout))
+  # case where which_result="mi" but mi results were not previously requested
   expect_error(plot(piout, which_result = "mi"))
   piout_with_mi <- PartInv(
     propsel = .10,
     kappa_r = 0.5,
-    kappa_f = 0,
     phi_r = 1,
     lambda_r = c(.3, .5, .9, .7, .8),
     tau_r = c(.225, .025, .010, .240, .123),
@@ -43,16 +44,30 @@ test_that("plot.PartInv() works successfully", {
     labels = c("female", "male"),
     show_mi_result = TRUE
   )
-  expect_error(plot(piout_with_mi, labels = c("female", "male"),
-                    which_result = "mi"),
-               regexp = NA)
+  # case where which_result=mi, and mi results had been requested
+  expect_no_error(plot(piout_with_mi, labels = c("female", "male"),
+                    which_result = "mi"))
+  # case where which_result=NULL, and mi results had been requested
+  expect_no_error(plot(piout_with_mi, labels = c("female", "male")))
 })
 
 test_that("Identical selection with the same parameters", {
-  expect_equal(piout_eq$summary[ , 1],
-               piout_eq$summary[ , 2])
+  expect_equal(piout_eq$summary[, 1],
+               piout_eq$summary[, 2])
   expect_equal(piout_eq$summary["Proportion selected", 1], .10)
 })
+
+# if alpha or alpha_r or kappa_r or cfa_fit not provided
+expect_error(PartInv(
+  propsel = .10,
+  phi_r = 1,
+  lambda_r = c(.3, .5, .9, .7, .8),
+  tau_r = c(.225, .025, .010, .240, .123),
+  Theta_r = diag(.96, 5),
+  labels = c("female", "male"),
+  show_mi_result = TRUE
+)
+)
 
 test_that("Duplicated results with `show_mi_result = TRUE` when inputting invariant model", {
   piout_eq2 <- PartInv(
@@ -218,3 +233,35 @@ test_that("`show_mi_result = TRUE` uses same cut_z if specified", {
   )
   expect_equal(piout1_pstrict$summary_mi, piout1_strict$summary[, 1:2])
 })
+
+# # run manually
+# test_that("PartInv() correctly saves plots in a specified folder", {
+#   #withr::local_dir(here::here())
+#   plot_dir <- "Plots_temp"
+#   expect_false(dir.exists(plot_dir))
+# 
+#   piout_mat <- PartInv(
+#     propsel = .10,
+#     alpha = list(matrix(0.5), matrix(0)),
+#     psi = list(matrix(1), matrix(1)),
+#     lambda = list(matrix(c(.3, .5, .9, .7, .8)), matrix(c(.3, .5, .9, .7, .8))),
+#     nu = list(matrix(c(.25, .02, .01, .24, .13)), matrix(c(.25, .02, .01, .24, .13))),
+#     theta = list(diag(.96, 5),diag(.96, 5)), 
+#     labels = c("female", "male"), 
+#     show_mi_result = TRUE,
+#     plot_contour = TRUE,
+#     saveplots = TRUE,
+#     plot_folder = "Plots_temp",
+#     suffix = "test"
+#   )
+#  
+#   expect_true(dir.exists(plot_dir))
+#   
+#   expected_files <- file.path(plot_dir, c("partial_test.png", "strict_test.png"))
+#   
+#   expect_true(all(file.exists(expected_files)),
+#               info = paste("Missing expected plot files in", plot_dir))
+#   
+#   unlink(plot_dir, recursive = TRUE, force = TRUE)
+#   expect_false(dir.exists(plot_dir))
+# })
