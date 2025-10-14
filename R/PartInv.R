@@ -52,6 +52,10 @@ NULL
 #' @param quadrantsABCD Whether to label the quadrants with A, B, C, D or TR,
 #'     FP, TN, FN. `TRUE` by default.
 #' @param roc_auc Plots ROC curves and prints AUCs. `FALSE` by default.
+#' @param saveplots Logical; if TRUE, saves plots to files. `FALSE` by default.
+#' @param plot_folder Optional folder name for saved plots. Created if missing. 
+#'   If no folder name is provided, saves plots in the current working directory.
+#' @param suffix Optional string suffix appended to plot filenames. `""` by default.
 #' @param ... Other arguments for \code{\link[graphics]{contour}}.
 #' @param alpha_r,alpha_f,nu_r,nu_f,Theta_r,Theta_f,psi_r,psi_f,lambda_r,lambda_f,phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f,pmix_ref
 #'     Deprecated; included for backward compatibility. With two groups, '_r' 
@@ -182,6 +186,9 @@ PartInv <- function(cfa_fit = NULL,
                     reference = NULL,
                     quadrantsABCD = TRUE,
                     roc_auc = FALSE,
+                    saveplots = FALSE,
+                    plot_folder = NULL,
+                    suffix = "",
                     kappa_r = NULL, kappa_f = kappa_r, alpha_r = NULL, alpha_f = alpha_r, phi_r = NULL, phi_f = phi_r, psi_r = NULL, psi_f = psi_r, lambda_r = NULL, lambda_f = lambda_r, tau_r = NULL, tau_f = tau_r, nu_r = NULL, nu_f = nu_r, Theta_r = NULL, Theta_f = Theta_r,
                     ...) {
 
@@ -246,7 +253,7 @@ PartInv <- function(cfa_fit = NULL,
     out <- c(out, out_mi)
     out[["ai_ratio_mi"]] <- ai_ratio_mi
   }
-
+  
   if (plot_contour) {
     if (show_mi_result == TRUE) {
       which_result <- c("pi", "mi")
@@ -255,7 +262,8 @@ PartInv <- function(cfa_fit = NULL,
     }
     plot.PartInv(out, labels = labels, which_result = which_result,
                  custom_colors = custom_colors, quadrantsABCD = quadrantsABCD,
-                 ...)
+                 saveplots = saveplots, plot_folder = plot_folder, 
+                 suffix = suffix, ...)
   }
   out[["labels"]] <- labels
   out[["functioncall"]] <- functioncall

@@ -92,7 +92,7 @@ function.}
 A list of of length \code{inv}
 }
 \description{
-\code{roc_auc} takes in output from PartInv(), or vectors of model parameter
+\code{roc_auc} takes in output from PartInv() or vectors of model parameter
 estimates, plots ROC curves, and computes AUCs for the specified groups under
 the specified invariance conditions.
 }

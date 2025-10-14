@@ -56,13 +56,25 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
 #'   ellipses. 
 #' @param quadrantsABCD Whether to label the quadrants with A, B, C, D or TR,
 #'   FP, TN, FN. `TRUE` by default.
+#' @param saveplots Logical; if TRUE, saves plots to files. `FALSE` by default.
+#' @param plot_folder Optional folder name for saved plots. Created if missing. 
+#'   If no folder name is provided, saves plots in the current working directory.
+#' @param suffix Optional string suffix appended to plot filenames. `""` by default.
 #' @param ... Additional arguments.
 #'@export
 plot.PartInv <- function(x, labels = x[["labels"]],
                          which_result = NULL,
                          custom_colors = NULL, 
                          quadrantsABCD = TRUE, 
+                         saveplots = FALSE,
+                         plot_folder = NULL,
+                         suffix = "",
                          ...) {
+  
+  if (saveplots) {
+    if (is.null(plot_folder)) plot_folder <- "."  # default to working dir
+    if (!dir.exists(plot_folder)) dir.create(plot_folder, recursive = TRUE)
+  }
   
   if (is.null(which_result)) {
     available_res <- c()
@@ -153,7 +165,21 @@ plot.PartInv <- function(x, labels = x[["labels"]],
    } else {
      text(x_cord, y_cord, c("TP", "FP", "FN", "TN"))
    }
-   
+   if (saveplots) {
+     fname <- file.path(
+       plot_folder,
+       paste0(
+         ifelse(r == "pi", "partial", "strict"), 
+         if (nzchar(suffix)) paste0("_", suffix), ".png")
+     )
+     p <- recordPlot()
+     invisible({
+       png(fname, width = 1600, height = 1200, res = 200)
+       replayPlot(p)
+       dev.off()
+     })
+     
+   }
    if (n_g > 20) {
      warning("If you would like to plot the contours of more than 20 groups, 
              please provide a list of 20 color names.")

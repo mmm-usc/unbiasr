@@ -234,3 +234,34 @@ test_that("`show_mi_result = TRUE` uses same cut_z if specified", {
   expect_equal(piout1_pstrict$summary_mi, piout1_strict$summary[, 1:2])
 })
 
+# # run manually
+# test_that("PartInv() correctly saves plots in a specified folder", {
+#   #withr::local_dir(here::here())
+#   plot_dir <- "Plots_temp"
+#   expect_false(dir.exists(plot_dir))
+# 
+#   piout_mat <- PartInv(
+#     propsel = .10,
+#     alpha = list(matrix(0.5), matrix(0)),
+#     psi = list(matrix(1), matrix(1)),
+#     lambda = list(matrix(c(.3, .5, .9, .7, .8)), matrix(c(.3, .5, .9, .7, .8))),
+#     nu = list(matrix(c(.25, .02, .01, .24, .13)), matrix(c(.25, .02, .01, .24, .13))),
+#     theta = list(diag(.96, 5),diag(.96, 5)), 
+#     labels = c("female", "male"), 
+#     show_mi_result = TRUE,
+#     plot_contour = TRUE,
+#     saveplots = TRUE,
+#     plot_folder = "Plots_temp",
+#     suffix = "test"
+#   )
+#  
+#   expect_true(dir.exists(plot_dir))
+#   
+#   expected_files <- file.path(plot_dir, c("partial_test.png", "strict_test.png"))
+#   
+#   expect_true(all(file.exists(expected_files)),
+#               info = paste("Missing expected plot files in", plot_dir))
+#   
+#   unlink(plot_dir, recursive = TRUE, force = TRUE)
+#   expect_false(dir.exists(plot_dir))
+# })

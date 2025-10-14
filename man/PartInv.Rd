@@ -25,6 +25,9 @@ PartInv(
   reference = NULL,
   quadrantsABCD = TRUE,
   roc_auc = FALSE,
+  saveplots = FALSE,
+  plot_folder = NULL,
+  suffix = "",
   kappa_r = NULL,
   kappa_f = kappa_r,
   alpha_r = NULL,
@@ -107,6 +110,13 @@ to the reference group.}
 FP, TN, FN. \code{TRUE} by default.}
 
 \item{roc_auc}{Plots ROC curves and prints AUCs. \code{FALSE} by default.}
+
+\item{saveplots}{Logical; if TRUE, saves plots to files. \code{FALSE} by default.}
+
+\item{plot_folder}{Optional folder name for saved plots. Created if missing.
+If no folder name is provided, saves plots in the current working directory.}
+
+\item{suffix}{Optional string suffix appended to plot filenames. \code{""} by default.}
 
 \item{alpha_r, alpha_f, nu_r, nu_f, Theta_r, Theta_f, psi_r, psi_f, lambda_r, lambda_f, phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f, pmix_ref}{Deprecated; included for backward compatibility. With two groups, '_r'
 and '_f' suffixes refer to the reference group and the focal group.}
