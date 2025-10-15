@@ -137,7 +137,7 @@ mn_sd_cov <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
 #'   and focal groups on the plot, where `g` is the number of groups.
 #' @param cut_z Pre-specified cutoff score on the observed composite. This
 #'    argument is ignored when `propsel` has input.
-#' @param num_g Number of groups.
+#' @param num_g Deprecated. Number of groups.
 #' @param is_mi Whether summary statistics should be computed for strict vs. 
 #'   partial measurement invariance. `FALSE` by default (partial).
 #' @return The output will be a list of 5 elements:
@@ -148,9 +148,9 @@ mn_sd_cov <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
 #'    \item{bivar_data}{The mean, standard deviation, and covariance of latent 
 #'     and observed variables for each group.}
 compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu, 
-                        theta, pmix, propsel, labels, cut_z = NULL, num_g,
+                        theta, pmix, propsel, labels, cut_z = NULL, num_g = NULL,
                         is_mi = FALSE) {
-  
+  num_g <- length(alpha)
   lst <- mn_sd_cov(weights_item, weights_latent, alpha, psi, lambda, nu, theta)
 
   if (!is.null(propsel)) {  # if there is an input for selection proportion
