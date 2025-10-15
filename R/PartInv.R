@@ -52,6 +52,9 @@ NULL
 #' @param quadrantsABCD Whether to label the quadrants with A, B, C, D or TR,
 #'   FP, TN, FN. `TRUE` by default.
 #' @param ... Other arguments for \code{\link[graphics]{contour}}.
+#' @param alpha_r,alpha_f,nu_r,nu_f,Theta_r,Theta_f,psi_r,psi_f,lambda_r,lambda_f,phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f,pmix_ref
+#'     Deprecated; included for backward compatibility. With two groups, '_r' 
+#'     and '_f' suffixes refer to the reference group and the focal group.
 #' @return The output will be a list of six elements and a plot if
 #'     \code{plot_contour == TRUE}:
 #'         \item{propsel}{Proportion selected.}
@@ -160,31 +163,33 @@ PartInv <- function(cfa_fit = NULL,
                     weights_item = NULL, weights_latent = NULL,
                     alpha = NULL, psi = NULL, lambda = NULL, theta = NULL, nu = NULL,
                     pmix = NULL,
+                    pmix_ref = 0.5, # deprecated
                     plot_contour = FALSE,
                     show_mi_result = FALSE,
                     labels = NULL,
                     custom_colors = NULL,
                     reference = NULL,
                     quadrantsABCD = TRUE,
-                    ...) {
+                    ...,
+                    kappa_r = NULL, kappa_f = kappa_r,
+                    alpha_r = NULL, alpha_f = alpha_r,
+                    phi_r = NULL, phi_f = phi_r,
+                    psi_r = NULL, psi_f = psi_r,
+                    lambda_r = NULL, lambda_f = lambda_r,
+                    tau_r = NULL, tau_f = tau_r,
+                    nu_r = NULL, nu_f = nu_r,
+                    Theta_r = NULL, Theta_f = Theta_r) {
   functioncall <- match.call()
-  if (!is.null(cfa_fit)) {
-    argg <- c(as.list(environment()), list(...))
-    cfa_params <- get_params_cfa(cfa_fit, pmix, labels)
-    argg[names(cfa_params)] <- cfa_params
-    argg$cfa_fit <- NULL
-    return(do.call(PartInv, argg))
-  }
-  num_g <- length(alpha)
-  params <- list(weights_item = weights_item, weights_latent = weights_latent,
-                 alpha = alpha, psi = psi, lambda = lambda, theta = theta, nu = nu,
-                 pmix = pmix, propsel = propsel, cut_z = cut_z, num_g = num_g)
-  params <- prep_params(params, reference)
+  argg <- c(as.list(environment()), list(...))
+  argg <- prep_params(argg)
+  params <- argg[c("weights_item", "weights_latent", "alpha", "psi",
+                   "lambda", "theta", "nu", "pmix", "propsel", "labels",
+                   "cut_z", "num_g")]
   out <- do.call(compute_cai, params)
 
   if (out$propsel <= 0.01) warning("Proportion selected is 1% or less.")
 
-  ai_ratio <- as.data.frame(out$summary[5, (num_g + 1):(num_g + num_g - 1)] /
+  ai_ratio <- as.data.frame(out$summary[5, (params$num_g + 1):(params$num_g + params$num_g - 1)] /
     out$summary[5, 1])
   names(ai_ratio) <- params$labels[-1]
   row.names(ai_ratio) <- c("")
@@ -195,9 +200,9 @@ PartInv <- function(cfa_fit = NULL,
     nu_avg <- .weighted_average_list(params$nu, weights = params$pmix)
     theta_avg <- .weighted_average_list(params$theta, weights = params$pmix)
 
-    params[["lambda"]] <- replicate(num_g, lambda_avg, simplify = FALSE)
-    params[["nu"]] <- replicate(num_g, nu_avg, simplify = FALSE)
-    params[["theta"]] <- replicate(num_g, theta_avg, simplify = FALSE)
+    params[["lambda"]] <- replicate(params$num_g, lambda_avg, simplify = FALSE)
+    params[["nu"]] <- replicate(params$num_g, nu_avg, simplify = FALSE)
+    params[["theta"]] <- replicate(params$num_g, theta_avg, simplify = FALSE)
 
     out_mi <- do.call(compute_cai, params)
     colnames(out_mi$summary) <- params$labels
@@ -205,12 +210,12 @@ PartInv <- function(cfa_fit = NULL,
 
     # calculate AI ratio for strict invariance
     ai_ratio_mi <- as.data.frame(
-      out_mi$summary[5, (num_g + 1):(num_g + num_g - 1)] / out_mi$summary[5, 1])
+      out_mi$summary[5, (params$num_g + 1):(params$num_g + params$num_g - 1)] / out_mi$summary[5, 1])
     names(ai_ratio_mi) <- params$labels[-1]
     row.names(ai_ratio_mi) <- c("")
 
     # remove the E_R(Focal) columns from summary_mi
-    out_mi$summary_mi <- out_mi$summary_mi[, 1:num_g]
+    out_mi$summary_mi <- out_mi$summary_mi[, 1:params$num_g]
     out <- c(out, out_mi)
     out[["ai_ratio_mi"]] <- ai_ratio_mi
   }

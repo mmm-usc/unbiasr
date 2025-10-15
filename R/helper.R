@@ -181,14 +181,14 @@ compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
   # Store mean, sd, cov values for the obs/latent variables
   zf_par <- list(mn_xi = lst$mn_xi, sd_xi = lst$sd_xi, mn_z = lst$mn_z,
                  sd_z = lst$sd_z, cov_z_xi = lst$cov_z_xi)
-   dat <- data.frame(CAIs,
+  dat <- data.frame(CAIs,
                     row.names = c("A (true positive)", "B (false positive)",
                                   "C (true negative)", "D (false negative)",
                                   "Proportion selected", "Success ratio",
                                   "Sensitivity", "Specificity"))
-   nms <- labels #c("Reference", paste0("Focal_", 1:(num_g - 1)))
+  nms <- labels #c("Reference", paste0("Focal_", 1:(num_g - 1)))
    
- ### if (!is_mi) {
+  ### if (!is_mi) {
     # selection indices for the focal group if its distribution matches the
     # distribution of the reference group (Efocal)
     mn_z_Ef <- sd_z_Ef <- cov_z_xi_Ef <- vector(mode = "list")

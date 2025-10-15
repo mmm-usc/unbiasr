@@ -1,9 +1,25 @@
-prep_params <- function(x, reference = NULL) {
+.old_rf_names <- c("alpha_r", "alpha_f", "nu_r", "nu_f", "Theta_r", "Theta_f",
+                   "psi_r", "psi_f", "lambda_r", "lambda_f",
+                   "kappa_r", "kappa_f", "phi_r", "phi_f", "tau_r", "tau_f")
+
+prep_params <- function(x) {
+  if (!is.null(x$cfa_fit)) {
+    cfa_params <- get_params_cfa(x$cfa_fit, x$pmix, x$labels)
+    x[names(cfa_params)] <- cfa_params
+    x$cfa_fit <- NULL
+  } else if (any(!sapply(x[.old_rf_names], is.null))) {
+    warning("The arguments with suffixes '_r' and '_f' are deprecated. ",
+            "Please use 'alpha', 'nu', 'theta', 'psi', 'lambda', 'pmix' ",
+            "instead. See ?PartInv for details.")
+    rf_list <- rf_params_to_list(x)
+    x[names(rf_list)] <- rf_list
+    x[c(.old_rf_names, "pmix_ref")] <- NULL
+  }
   stopifnot("Number of groups as indicated in the estimates must match." = 
               length(x$alpha) == lengths(x[c("psi", "lambda", "nu", "theta")]))
   q <- length(x$alpha[[1]])
   p <- length(x$nu[[1]])
-  num_g <- length(x$alpha)
+  x$num_g <- length(x$alpha)
   x$alpha <- to_list_matrices(x$alpha)
   x$psi <- to_list_matrices(x$psi, dims = c(q, q))
   x$lambda <- to_list_matrices(x$lambda, dims = c(p, q))
@@ -15,14 +31,14 @@ prep_params <- function(x, reference = NULL) {
   x$weights_latent <- check_weights(x$weights_latent, q)
   
   #### 'pmix' ####
-  x$pmix <- check_pmix(x$pmix, num_g)
+  x$pmix <- check_pmix(x$pmix, x$num_g)
 
   #### 'labels' #### 
-  x$labels <- check_labels(x$labels, num_g, reference)
+  x$labels <- check_labels(x$labels, x$num_g, x$reference)
   
   #### set the reference group and reorder appropriately ####
-  if (!is.null(reference)) {
-    x <- reference_first(x, x$labels, reference)
+  if (!is.null(x$reference)) {
+    x <- reference_first(x, x$labels, x$reference)
   }
   
   # g_labs <- c("r", paste0("f", 1:(num_g - 1)))
@@ -95,6 +111,7 @@ check_labels <- function(x, num_g, reference) {
       }
     }
   }
+  return(x)
 }
 
 reference_first <- function(x, labels, reference) {
@@ -127,4 +144,41 @@ get_params_cfa <- function(cfa_fit, pmix = NULL, labels = NULL) {
   }
   return(list("alpha" = alpha, "lambda" = lambda, "nu" = nu, "psi" = psi, 
               "theta" = theta, "pmix" = pmix, "labels" = labels))
+}
+
+all_null <- function(x) {
+  return(all(sapply(x, is.null)))
+}
+
+all_nonnull <- function(x) {
+  return(all(!sapply(x, is.null)))
+}
+
+rf_params_to_list <- function(x) {
+  if (all_null(x[c("alpha_r", "alpha_f")]) &&
+      all_nonnull(x[c("kappa_r", "kappa_f")])) {
+    x$alpha_r <- x$kappa_r
+    x$alpha_f <- x$kappa_f
+  }
+  if (all_null(x[c("nu_r", "nu_f")]) &&
+      all_nonnull(x[c("tau_r", "tau_f")])) {
+    x$nu_r <- x$tau_r
+    x$nu_f <- x$tau_f
+  }
+  if (all_null(x[c("psi_r", "psi_f")]) &&
+      all_nonnull(x[c("phi_r", "phi_f")])) {
+    x$psi_r <- x$phi_r
+    x$psi_f <- x$phi_f
+  }
+  if (!is.null(x$pmix_ref) && is.null(x$pmix)) {
+    x$pmix <- c(x$pmix_ref, 1 - x$pmix_ref)
+  }
+  return(list(
+    "nu" = list(x$nu_r, x$nu_f),
+    "alpha" = list(x$alpha_r, x$alpha_f),
+    "psi" = list(x$psi_r, x$psi_f),
+    "lambda" = list(x$lambda_r, x$lambda_f),
+    "theta" = list(x$Theta_r, x$Theta_f),
+    "pmix" = x$pmix
+  ))
 }
