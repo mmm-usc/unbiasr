@@ -19,7 +19,7 @@ prep_params <- function(x) {
               length(x$alpha) == lengths(x[c("psi", "lambda", "nu", "theta")]))
   q <- length(x$alpha[[1]])
   p <- length(x$nu[[1]])
-  x$num_g <- length(x$alpha)
+  num_g <- length(x$alpha)
   x$alpha <- to_list_matrices(x$alpha)
   x$psi <- to_list_matrices(x$psi, dims = c(q, q))
   x$lambda <- to_list_matrices(x$lambda, dims = c(p, q))
@@ -31,10 +31,10 @@ prep_params <- function(x) {
   x$weights_latent <- check_weights(x$weights_latent, q)
   
   #### 'pmix' ####
-  x$pmix <- check_pmix(x$pmix, x$num_g)
+  x$pmix <- check_pmix(x$pmix, num_g)
 
   #### 'labels' #### 
-  x$labels <- check_labels(x$labels, x$num_g, x$reference)
+  x$labels <- check_labels(x$labels, num_g, x$reference)
   
   #### set the reference group and reorder appropriately ####
   if (!is.null(x$reference)) {
@@ -48,6 +48,9 @@ prep_params <- function(x) {
   # names(psi) <- paste("psi", g_labs, sep = "_")
   # names(theta) <- paste("theta", g_labs, sep = "_")
 
+  x$p <- p
+  x$q <- q
+  x$num_g <- num_g
   return(x)
 }
 
@@ -56,7 +59,7 @@ to_matrix <- function(x, dims = NULL) {
     return(as.matrix(x))
   } else if (length(dims) == 2) {
     if (length(x) == dims[1] && dims[1] == dims[2]) {
-      return(diag(c(x)))
+      return(diag(c(x), nrow = dims[1], ncol = dims[2]))
     } else if (length(x) == prod(dims)) {
       return(matrix(x, nrow = dims[1], ncol = dims[2]))
     } else {

@@ -10,27 +10,48 @@ dashes <-
   "-----------------------------------------------------------------------"
 
 summary_print <- function(x, ...) {
-  rownames(x) <- c("True Positive", "False Positive", "True Negative",
-                   "False Negative", "Proportion Selected",
-                   "Success Ratio", "Sensitivity", "Specificity")
+  # rownames(x) <- c("True Positive", "False Positive", "True Negative",
+  #                  "False Negative", "Proportion Selected",
+  #                  "Success Ratio", "Sensitivity", "Specificity")
   print(round(x, digits = 3))
 }
 
-setClass("PartInv",
-  representation(
-    propsel = "numeric",
-    cutpt_xi = "numeric", cutpt_z = "numeric",
-    summary = "data.frame",
-    bivar_data = "list",
-    ai_ratio = "numeric",
-    propsel_mi = "numeric",
-    cutpt_xi_mi = "numeric", cutpt_z_mi = "numeric",
-    bivar_data_mi = "list",
-    summary_mi = "data.frame",
-    labels = "character", 
-    functioncall = "character"
+# Constructor
+new_PartInv <- function() {
+  structure(
+    list(
+      propsel = numeric(),
+      cutpt_xi = numeric(),
+      cutpt_z = numeric(),
+      summary = data.frame(),
+      bivar_data = list(),
+      ai_ratio = numeric(),
+      propsel_mi = numeric(),
+      cutpt_xi_mi = numeric(),
+      cutpt_z_mi = numeric(),
+      summary_mi = data.frame(),
+      bivar_data_mi = list(),
+      labels = character()
+    ),
+    class = "PartInv"
   )
-)
+}
+
+# setClass("PartInv",
+#   representation(
+#     propsel = "numeric",
+#     cutpt_xi = "numeric", cutpt_z = "numeric",
+#     summary = "data.frame",
+#     bivar_data = "list",
+#     ai_ratio = "numeric",
+#     propsel_mi = "numeric",
+#     cutpt_xi_mi = "numeric", cutpt_z_mi = "numeric",
+#     bivar_data_mi = "list",
+#     summary_mi = "data.frame",
+#     labels = "character", 
+#     functioncall = "character"
+#   )
+# )
 #' @method print PartInv 
 #' @title Print method for PartInv class
 #' @description performs printing and formatting on a PartInv object.
@@ -83,13 +104,13 @@ print.PartInv <- function(x, ...) {
   nc <- ncol(x$summary)
   if (nc > 8) {
     cat("Classification Accuracy Indices:\n")
-    summary_print(x$summary[, 1:(ceiling(nc / 2))])
+    print(x$summary[, 1:(ceiling(nc / 2))])
     cat("\n")
     cat("Expected Results if Latent Distributions Matched the Reference Group:\n")
-    summary_print(x$summary[, (ceiling(nc / 2) + 2):nc])
+    print(x$summary[, (ceiling(nc / 2) + 2):nc])
   } else {
     cat("Classification Accuracy Indices:\n")
-    summary_print(x$summary)
+    print(x$summary)
   }
   if (!is.null(x$summary_mi)) {
     cat("\n\nStrict invariance results:\n\n")
@@ -97,7 +118,7 @@ print.PartInv <- function(x, ...) {
     cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi_mi, 3), "\n")
     cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z_mi, 3), "\n\n")
     cat("Classification Accuracy Indices:\n")
-    summary_print(x$summary_mi)
+    print(x$summary_mi)
   }
 }
 
@@ -113,9 +134,8 @@ setClass("itemdeletion",
     delta_h_str_vs_par = "list",
     PartInv_outputs = "list",
     items = "vector",
-    function_call = "call",
-    digits = "numeric"
-    )
+    function_call = "call"
+  )
 )
 
 #' @method print itemdeletion 
@@ -145,8 +165,7 @@ setClass("itemdeletion",
 #'                              plot_contour = TRUE)
 #' print(multi_dim)
 #'@export
-print.itemdeletion <- function(x, ...) {
-  digits <- x$digits
+print.itemdeletion <- function(x, digits = 3L, ...) {
   item_set <- x$items
   # apply rounding and get the composite index columns
   x <- c(x[1],

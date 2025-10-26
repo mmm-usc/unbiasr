@@ -46,12 +46,14 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
 
 #' Contour plots for multiple groups.
 #' 
-#' \code{plot.PartInv} plots the contours for any number of groups.
+#' Plotting method for objects of class [`PartInv`] to show the contours for
+#' any number of groups.
 #' 
 #' @param x PartInv output.
-#' @param labels By default, c("Reference", "Focal_1", ..., "Focal_g") where `g`
-#'   is the number of groups.
-#' @param which_result Whether to plot the partial or the strict invariance plot.
+#' @param labels Character vector. By default, use the `labels` value from
+#'   `x`.
+#' @param which_result Logical; whether to plot the partial or the strict 
+#'   invariance plot.
 #' @param custom_colors Optional argument for specifying the colors of the 
 #'   ellipses. 
 #' @param quadrantsABCD Whether to label the quadrants with A, B, C, D or TR,
@@ -64,23 +66,21 @@ plot.PartInv <- function(x, labels = x[["labels"]],
                          quadrantsABCD = TRUE, 
                          ...) {
   
+  valid_results <- c("pi", "mi")
   if (is.null(which_result)) {
-    available_res <- c()
-    if (!is.null(x$bivar_data)) available_res <- c(available_res, "pi")
-    if (!is.null(x$bivar_data_mi)) available_res <- c(available_res, "mi")
-    if (length(available_res) == 0) {
+    if (length(x$bivar_data) > 0) which_result <- c(which_result, "pi")
+    if (length(x$bivar_data_mi) > 0) which_result <- c(which_result, "mi")
+    if (length(which_result) == 0) {
       stop("No data available for plotting. Please ensure `x$bivar_data` or `x$bivar_data_mi` is not null.")
     }
-    which_result <- available_res
   }
   
   # Validate which_result
-  valid_results <- c("pi", "mi")
   if (!all(which_result %in% valid_results)) {
     stop("Invalid value for `which_result`. Choose from 'pi', 'mi', or both.")
   }
     
-  which_result <- match.arg(which_result, valid_results, several.ok = TRUE)
+  # which_result <- match.arg(which_result, valid_results, several.ok = TRUE)
   
   n_g <- length(x$bivar_data$mn_xi) # number of groups
   
@@ -102,7 +102,7 @@ plot.PartInv <- function(x, labels = x[["labels"]],
   x_lim <- range(x_lim_pi, x_lim_mi)
   y_lim <- range(y_lim_pi, y_lim_mi)
   
-  for (r in which_result){
+  for (r in which_result) {
     if (r == "pi") {
         plot_dat <- x$bivar_data
         cut_xi <- x$cutpt_xi
@@ -121,42 +121,41 @@ plot.PartInv <- function(x, labels = x[["labels"]],
         title <- c("Strict Measurement Invariance")
     }
   
-  colorlist <- colorlist()
-  ltylist <- rep(c('twodash', 'longdash', 'dotdash', 'dashed', 'dotted'), 
-                 length.out = n_g)
-  if (!is.null(custom_colors)) { colorlist <- custom_colors }
+    colorlist <- colorlist()
+    ltylist <- rep(c('twodash', 'longdash', 'dotdash', 'dashed', 'dotted'), 
+                   length.out = n_g)
+    if (!is.null(custom_colors)) { colorlist <- custom_colors }
 
-  # Plot the ellipse for the reference group
-  contour_bvnorm(plot_dat$mn_xi[1], plot_dat$sd_xi[1],
-                 plot_dat$mn_z[1], plot_dat$sd_z[1],
-                 cov12 = plot_dat$cov_z_xi[1],
-                 xlab = bquote("Latent Composite" ~ (eta)),
-                 ylab = bquote("Observed Composite" ~ (italic(Z))),
-                 lwd = 2, col = colorlist[1], xlim = x_lim, ylim = y_lim,
-                 main = title)
-  # Add on the ellipses for the focal groups
-  for (i in 2:n_g) {
-    contour_bvnorm(plot_dat$mn_xi[i], plot_dat$sd_xi[i],
-                   plot_dat$mn_z[i], plot_dat$sd_z[i],
-                   cov12 = plot_dat$cov_z_xi[i],
-                   add = TRUE, lwd = 2, col = colorlist[i], 
-                   lty = ltylist[i]
-                   )
-  }
-   legend("topleft", labels, lty = c("solid", ltylist[2:n_g]), 
-          col = colorlist[1:n_g])
-   abline(h = cut_z, v = cut_xi)
-   x_cord <- rep(cut_xi + c(.8, -.8) * plot_dat$sd_xi[1], 2)
-   y_cord <- rep(cut_z + c(.8, -.8) * plot_dat$sd_z[1], each = 2)
-   if (quadrantsABCD) { 
-     text(x_cord, y_cord, c("A", "B", "D", "C"))
-   } else {
-     text(x_cord, y_cord, c("TP", "FP", "FN", "TN"))
-   }
-   
-   if (n_g > 20) {
-     warning("If you would like to plot the contours of more than 20 groups, 
-             please provide a list of 20 color names.")
-   }
+    # Plot the ellipse for the reference group
+    contour_bvnorm(plot_dat$mn_xi[1], plot_dat$sd_xi[1],
+                   plot_dat$mn_z[1], plot_dat$sd_z[1],
+                   cov12 = plot_dat$cov_z_xi[1],
+                   xlab = bquote("Latent Composite" ~ (eta)),
+                   ylab = bquote("Observed Composite" ~ (italic(Z))),
+                   lwd = 2, col = colorlist[1], xlim = x_lim, ylim = y_lim,
+                   main = title)
+    # Add on the ellipses for the focal groups
+    for (i in 2:n_g) {
+      contour_bvnorm(plot_dat$mn_xi[i], plot_dat$sd_xi[i],
+                     plot_dat$mn_z[i], plot_dat$sd_z[i],
+                     cov12 = plot_dat$cov_z_xi[i],
+                     add = TRUE, lwd = 2, col = colorlist[i], 
+                     lty = ltylist[i])
+    }
+    legend("topleft", labels, lty = c("solid", ltylist[2:n_g]), 
+           col = colorlist[1:n_g])
+    abline(h = cut_z, v = cut_xi)
+    x_cord <- rep(cut_xi + c(.8, -.8) * plot_dat$sd_xi[1], 2)
+    y_cord <- rep(cut_z + c(.8, -.8) * plot_dat$sd_z[1], each = 2)
+    if (quadrantsABCD) { 
+      text(x_cord, y_cord, c("A", "B", "D", "C"))
+    } else {
+      text(x_cord, y_cord, c("TP", "FP", "FN", "TN"))
+    }
+    
+    if (n_g > 20) {
+      warning("If you would like to plot the contours of more than 20 groups, 
+              please provide a list of 20 color names.")
+    }
   }
 }

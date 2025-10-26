@@ -179,21 +179,20 @@ PartInv <- function(cfa_fit = NULL,
                     tau_r = NULL, tau_f = tau_r,
                     nu_r = NULL, nu_f = nu_r,
                     Theta_r = NULL, Theta_f = Theta_r) {
-  functioncall <- match.call()
   argg <- c(as.list(environment()), list(...))
   argg <- prep_params(argg)
+  out <- new_PartInv()
   params <- argg[c("weights_item", "weights_latent", "alpha", "psi",
                    "lambda", "theta", "nu", "pmix", "propsel", "labels",
                    "cut_z", "num_g")]
-  out <- do.call(compute_cai, params)
+  out$labels <- params$labels
+  out_pi <- do.call(compute_cai, params)
+  names_to_update <- intersect(names(out), names(out_pi))
+  out[names_to_update] <- out_pi[names_to_update]
 
   if (out$propsel <= 0.01) warning("Proportion selected is 1% or less.")
 
-  ai_ratio <- as.data.frame(out$summary[5, (params$num_g + 1):(params$num_g + params$num_g - 1)] /
-    out$summary[5, 1])
-  names(ai_ratio) <- params$labels[-1]
-  row.names(ai_ratio) <- c("")
-  out[["ai_ratio"]] <- ai_ratio
+  out[["ai_ratio"]] <- get_ai_ratio.PartInv(out, params$num_g)
 
   if (show_mi_result) {
     lambda_avg <- .weighted_average_list(params$lambda, weights = params$pmix)
@@ -204,20 +203,13 @@ PartInv <- function(cfa_fit = NULL,
     params[["nu"]] <- replicate(params$num_g, nu_avg, simplify = FALSE)
     params[["theta"]] <- replicate(params$num_g, theta_avg, simplify = FALSE)
 
-    out_mi <- do.call(compute_cai, params)
-    colnames(out_mi$summary) <- params$labels
+    out_mi <- do.call(compute_cai, c(params, list(is_mi = TRUE)))
     names(out_mi) <- paste0(names(out_mi), "_mi")
+    names_to_update <- intersect(names(out), names(out_mi))
+    out[names_to_update] <- out_mi[names_to_update]
+    # colnames(out_mi$summary) <- params$labels
+    # names(out_mi) <- paste0(names(out_mi), "_mi")
 
-    # calculate AI ratio for strict invariance
-    ai_ratio_mi <- as.data.frame(
-      out_mi$summary[5, (params$num_g + 1):(params$num_g + params$num_g - 1)] / out_mi$summary[5, 1])
-    names(ai_ratio_mi) <- params$labels[-1]
-    row.names(ai_ratio_mi) <- c("")
-
-    # remove the E_R(Focal) columns from summary_mi
-    out_mi$summary_mi <- out_mi$summary_mi[, 1:params$num_g]
-    out <- c(out, out_mi)
-    out[["ai_ratio_mi"]] <- ai_ratio_mi
   }
 
   if (plot_contour) {
@@ -226,13 +218,10 @@ PartInv <- function(cfa_fit = NULL,
     } else {
       which_result <- c("pi")
     }
-    plot.PartInv(out, labels = params$labels, which_result = which_result,
+    plot.PartInv(out, which_result = which_result,
                  custom_colors = custom_colors, quadrantsABCD = quadrantsABCD,
                  ...)
   }
-  out[["labels"]] <- labels
-  out[["functioncall"]] <- functioncall
-  class(out) <- "PartInv"
 
   out
 }
