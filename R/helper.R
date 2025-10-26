@@ -181,11 +181,11 @@ compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
   # Store mean, sd, cov values for the obs/latent variables
   zf_par <- list(mn_xi = lst$mn_xi, sd_xi = lst$sd_xi, mn_z = lst$mn_z,
                  sd_z = lst$sd_z, cov_z_xi = lst$cov_z_xi)
-  dat <- data.frame(CAIs,
-                    row.names = c("A (true positive)", "B (false positive)",
-                                  "C (true negative)", "D (false negative)",
-                                  "Proportion selected", "Success ratio",
-                                  "Sensitivity", "Specificity"))
+  cai_names <- c("A (true positive)", "B (false positive)",
+                 "C (true negative)", "D (false negative)",
+                 "Proportion selected", "Success ratio",
+                 "Sensitivity", "Specificity")
+  dat <- data.frame(CAIs, row.names = cai_names)
   nms <- labels #c("Reference", paste0("Focal_", 1:(num_g - 1)))
 
   if (!is_mi) {
@@ -208,11 +208,7 @@ compute_cai <- function(weights_item, weights_latent, alpha, psi, lambda, nu,
       nms <- c(labels, paste0("E_R(", labels[2:length(labels)], ")"))
     }
   }
-  dat <-
-    data.frame(CAIs, row.names = c("A (true positive)", "B (false positive)",
-                                   "C (true negative)", "D (false negative)",
-                                   "Proportion selected", "Success ratio",
-                                   "Sensitivity", "Specificity"))
+  dat <- data.frame(CAIs, row.names = cai_names)
   names(dat) <- nms
 
   list(propsel = propsel, cutpt_xi = cut_xi, cutpt_z = cut_z, summary = dat,
