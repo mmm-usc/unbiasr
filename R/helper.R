@@ -354,6 +354,11 @@ qnormmix_mult <- function(p, means = c(0), sds = 1, pmix = NULL,
   B <- pnorm(cut1, mean1, sd1) - C
   D <- pnorm(cut2, mean2, sd2) - C
   A <- 1 - B - C - D
+  .compute_cai(c(A, B, C, D))
+}
+
+.compute_cai <- function(x) {
+  A <- x[[1]]; B <- x[[2]]; C <- x[[3]]; D <- x[[4]]
   propsel <- A + B
   success_ratio <- A / propsel
   sensitivity <- A / (A + D)
