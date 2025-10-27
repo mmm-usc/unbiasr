@@ -20,7 +20,6 @@
 #'     determined to contain bias will be considered for deletion.
 #' @param delete_one_cutoff User-specified cutoff to use in delete-one scenarios.
 #'     `NULL` by default; if `NULL`, PS on the full item set will be used.
-#' @param digits Number of digits for rounding. 3 by default.
 #' @param ... Other arguments for \code{\link[graphics]{contour}}.
 #' @return `item_deletion_h` returns an object of class `itemdeletion` containing
 #'     the following elements.
@@ -67,7 +66,8 @@
 #'                  ifelse(dat_sim$group == 2, "Japanese",
 #'                  ifelse(dat_sim$group == 3, "Swahili", NA)))
 #' fit_sim <- lavaan::cfa(model = sim_m, data = dat_sim, group = "group")
-#' del <- item_deletion_h(cfa_fit = fit_sim, propsel = .05)
+#' partinv_sim <- PartInv(cfa_fit = fit_sim, propsel = .05)
+#' del <- item_deletion_h(partinv_sim)
 #' del # formatted
 #' summary(del) #formatted with additional output
 #' del$AI # can access all outputs without rounding or formatting
@@ -104,37 +104,24 @@
 #' fit <- cfa(HS.model, data = HS, group = "sex")
 #' item_deletion_h(cfa_fit = fit, propsel = .05, plot_contour = TRUE)
 #' @export
-item_deletion_h <- function(cfa_fit = NULL,
-                            propsel = NULL,
-                            cut_z = NULL,
-                            weights_item = NULL,
-                            weights_latent = NULL,
-                            alpha = NULL, psi = NULL, lambda = NULL, theta = NULL, nu = NULL,
-                            pmix = NULL,
-                            pmix_ref = 0.5,
-                            plot_contour = TRUE, # not sure this is needed
-                            labels = NULL, #c("Reference", "Focal"),
+item_deletion_h <- function(x,
                             n_dim = 1,
                             n_i_per_dim = NULL,
                             delete_items = NULL,
                             delete_one_cutoff = NULL,
-                            alpha_r = NULL, alpha_f = alpha_r,
-                            psi_r = NULL, psi_f = psi_r,
-                            lambda_r = NULL, lambda_f = lambda_r,
-                            nu_r = NULL, nu_f = nu_r,
-                            Theta_r = NULL, Theta_f = Theta_r, reference = NULL,
-                            custom_colors = NULL,
-                            quadrantsABCD = TRUE,
-                            digits = 3,
                             ...) {
   CAIs <- c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
   CAIs_star <- paste0(CAIs, "*")
   # make adjustments for formatting and backward compatibility
-  argg <- c(as.list(environment()), list(...))
-  pl <- prep_params(argg)
-
+  # argg <- c(as.list(environment()), list(...))
+  # pl <- prep_params(argg)
+  x <- add_mi_partinv(x)  # add MI results if not present
+  x <- validate_PartInv(x)
+  
+  pl <- c(x$params, propsel = list(x$propsel), cut_z = list(x$cutpt_z),
+          n_dim = n_dim, n_i_per_dim = n_i_per_dim, list(...))
   pmix <- pl$pmix
-  n_i <- pl$p
+  n_i <- nrow(pl$lambda)
   num_g <- pl$num_g
   labels <- pl$labels
 
@@ -149,143 +136,107 @@ item_deletion_h <- function(cfa_fit = NULL,
       stop("'delete_items' cannot take integers > the scale length.")}
   }
   dlabs <- c(paste0("|", delete_items))
-  store_str <- store_par <- vector(mode = "list", n_i + 1)
-  names(store_str) <- names(store_par) <- c("Full item set", dlabs)
-  out_str <- c(paste0(
-    c("propsel", "cutpt_xi", "cutpt_z", "summary", "bivar_data", "ai_ratio"),
-    "_mi"), "labels", "functioncall")
-  
-  # Call PartInv with the full item set under partial and strict invariance ###
-  store_par[[1]] <- do.call(PartInv, c(pl, list(show_mi_result = TRUE)))
-  class(store_par[[1]]) <- "PartInv"
-  store_str[[1]] <- store_par[[1]][out_str]
-  class(store_str[[1]]) <- "PartInv"
+  store_del_i <- vector(mode = "list", length(delete_items))
+  names(store_del_i) <- dlabs
+  # out_str <- c(paste0(
+  #   c("propsel", "cutpt_xi", "cutpt_z", "summary", "bivar_data", "ai_ratio"),
+  #   "_mi"), "labels")
   
   # Perform delete i PartInv for all items to be deleted
   # If no cutoff was provided, set propsel based on PartInv output with all items
   pl_del <- pl
   if (is.null(delete_one_cutoff)) {
-    pl_del$propsel <- store_par[[1]]$propsel
+    pl_del$propsel <- pl$propsel
     pl_del$cut_z <- NULL
   } else {
     pl_del$cut_z <- delete_one_cutoff
     pl_del$propsel <- NULL
   }
-  for (i in seq_along(delete_items) + 1) {
-    store_par[[i]] <- partinv_del_i(c(pl_del, list(show_mi_result = TRUE)), delete_items[i - 1])
-    class(store_par[[i]]) <- "PartInv"
-    store_str[[i]] <- store_par[[i]][out_str]
-    class(store_str[[i]]) <- "PartInv"
+  for (i in seq_along(delete_items)) {
+    store_del_i[[i]] <- partinv_del_i(
+      c(pl_del, list(show_mi_result = TRUE)), delete_items[i])
+    class(store_del_i[[i]]) <- "PartInv"
   }
 
-  acai_p <- acai_s <- create_list_of_mats(
-    labels[-1], rn = c("Full", dlabs), cn = CAIs_star
-  )
-  h_acai_s_p <- create_list_of_mats(
-    labels[-1], rn = c("Full", dlabs), cn = paste0("h(", CAIs_star, ")")
-  )
-  h_R_Ef <- create_list_of_mats(
-    labels[-1], rn = c("r_Ef", paste0("r_Ef", dlabs)), cn = paste0("h(", CAIs, ")")
-  )
-  h_acai_p <- create_list_of_mats(
-    labels[-1], rn = dlabs, cn = paste0("h(", CAIs_star, ")")
-  )
-  delta_h_R_Ef <- create_list_of_mats(
-    labels[-1], rn = dlabs, cn = paste0("delta_h(", CAIs, ")")
-  )
-  delta_h_acai_s_p <- create_list_of_mats(
-    labels[-1], rn = dlabs, cn = paste0("\u0394h(", CAIs_star, ")")
-  )
-  h_s_p <- create_list_of_mats(
-    labels, rn = c("Full", dlabs), cn = paste0("h(", CAIs, ")")
-  )
-  delta_h_s_p <- create_list_of_mats(
-    labels, rn = dlabs, cn = paste0("\u0394h(", CAIs, ")")
-  )
-  AI_ratios <- matrix(ncol = num_g, nrow = n_i + 1,
-                      dimnames = list(c("Full", dlabs),
-                                      c("(SFI)", paste0(labels[-1]))))
+  ai_ratios <- lapply(c(list(x), store_del_i), function(x_i) x_i$ai_ratio)
 
-  # h: strict vs. partial invariance (full item set) for all groups
-  temp_h <- with(store_par[[1]],
-    cohens_h(summary[, rep(1, num_g - 1)],
-             summary[, seq_len(num_g - 1) + num_g]))
+  acai_p <- lapply(c(list(x), store_del_i), extract_cai, key = "a_pi")
+  acai_s <- lapply(c(list(x), store_del_i), extract_cai, key = "a_mi")
+  rfcai_p <- lapply(c(list(x), store_del_i), extract_cai, key = "rf_pi")
+  rfcai_s <- lapply(c(list(x), store_del_i), extract_cai, key = "rf_mi")
+  efcai_p <- lapply(c(list(x), store_del_i), extract_cai, key = "Ef_pi")
 
-  # Compute aggregate CAI on the full item set
-  temp_p <- get_aggregate_CAI(pmix, store_par[[1]]$summary, inv_cond = "partial")
-  temp_s <- get_aggregate_CAI(pmix, store_str[[1]]$summary_mi, inv_cond = "strict")
+  # Comparison 1: delete one ACAI vs. full ACAI under PFI
+  # h: change in aggregate CAI when an item is deleted under partial invariance
+  h_acai_p <- lapply(acai_p[-1], FUN = cohens_h, p1 = acai_p[[1]])
+  # Comparison 2: strict vs. partial invariance for ACAI
+  # h: difference between strict and partial invariance for aggregate CAI
+  h_acai_s_p <- mapply(cohens_h, p1 = acai_s, p2 = acai_p, SIMPLIFY = FALSE)
+  # Comparison 3: reference vs. expected focal CAI under PFI
+  # h: difference in CAI under partial invariance for the ref group vs. for
+  # the expected CAI for the focal groups
+  h_R_Ef <- mapply(function(p1, p2) {
+    cohens_h(p1[, rep(1, ncol(p2))], p2)
+  }, p1 = rfcai_p, p2 = efcai_p, SIMPLIFY = FALSE)
+  # Comparison 4: strict vs. partial invariance for CAI (one for each group)
+  # h: strict vs. partial invariance for all groups
+  h_s_p <- mapply(cohens_h, p1 = rfcai_s, p2 = rfcai_p, SIMPLIFY = FALSE)
 
-  for (g in seq_len(num_g - 1)) {
-    h_R_Ef[[g]][1, ] <- temp_h[, g]
-    acai_p[[g]][1, ] <- temp_p[, g]
-    acai_s[[g]][1, ] <- temp_s[, g]
-    # h: difference between strict and partial invariance for aggregate CAI
-    # (on the first row of the data frames in each element of the two lists)
-    h_acai_s_p[[g]][1, ] <- cohens_h(temp_s[, g], temp_p[, g])
-  }
-  AI_ratios[1, ] <- as.vector(c(1, store_par[[1]]$ai_ratio), mode = "double")
-
+  # Delta h computations
+  delta_h_acai_s_p <- lapply(h_acai_s_p[-1], FUN = delta_h,
+                             h_i_del = h_acai_s_p[[1]])
+  # change in h_R_Ef_del when item i is deleted (under partial invariance)
+  delta_h_R_Ef <- lapply(h_R_Ef[-1], FUN = delta_h, h_i_del = h_R_Ef[[1]])
+  # delta h: comparing CAI under strict vs. partial invariance when item i is
+  # deleted (i.e. the change in h_s_p_ref and h_s_p_foc) for all groups
+  delta_h_s_p <- lapply(h_s_p[-1], FUN = delta_h, h_i_del = h_s_p[[1]])
+  
+  # Format outputs into list of tables
+  tbl_ai_ratios <- to_tbl_itemdeletion(
+    ai_ratios, rn = c("Full", dlabs), cn = labels[-1])
+  tbl_acai_p <- to_tbl_itemdeletion(
+    acai_p, rn = c("Full", dlabs), cn = CAIs_star)
+  tbl_h_acai_p <- to_tbl_itemdeletion(
+    h_acai_p, rn = dlabs, cn = paste0("h(", CAIs_star, ")"))
+  tbl_h_acai_s_p <- to_tbl_itemdeletion(
+    h_acai_s_p, rn = c("Full", dlabs), cn = paste0("h(", CAIs_star, ")"))
+  tbl_delta_h_acai_s_p <- to_tbl_itemdeletion(
+    delta_h_acai_s_p, rn = dlabs, cn = paste0("\u0394h(", CAIs_star, ")"))
+  tbl_h_R_Ef <- to_tbl_itemdeletion(
+    h_R_Ef, rn = c("Full", dlabs), cn = paste0("h(", CAIs, ")"),
+    labels = labels[-1])
+  tbl_h_s_p <- to_tbl_itemdeletion(
+    h_s_p, rn = c("Full", dlabs), cn = paste0("h(", CAIs, ")"),
+    labels = labels)
+  tbl_delta_h_R_Ef <- to_tbl_itemdeletion(
+    delta_h_R_Ef, rn = dlabs, cn = paste0("\u0394h(", CAIs, ")"),
+    labels = labels[-1])
+  tbl_delta_h_s_p <- to_tbl_itemdeletion(
+    delta_h_s_p, rn = dlabs, cn = paste0("\u0394h(", CAIs, ")"),
+    labels = labels)
+  
   # # Item deletion scenarios ####
-  for (i in seq_along(delete_items) + 1) {
+  for (i in seq_along(store_del_i)) {
     # Check whether improvements in ACAI may be misleading due pmix
-    err_improv_acai(i = i, s_full = store_par[[1]]$summary,
-                    s_del1 = store_par[[i]]$summary, num_g = num_g)
-    err_improv_acai(i = i, s_full = store_str[[1]]$summary_mi,
-                    s_del1 = store_str[[i]]$summary_mi, num_g = num_g)
-
-    # Weight the aggregate SR, SE, SP indices under partial and strict invariance
-    temp_p_i <- get_aggregate_CAI(pmix, store_par[[i]]$summary, inv_cond = "partial")
-    temp_s_i <- get_aggregate_CAI(pmix, store_str[[i]]$summary_mi, inv_cond = "strict")
-
-    # h: strict vs. partial invariance (delete-one item set) for all groups
-    temp_h_i <- cohens_h(store_str[[i]]$summary_mi, store_par[[i]]$summary[1:num_g])
-
-    # h: difference in CAI under partial invariance for the ref group vs. for
-    # the expected CAI for the focal group with the full item set
-    temp_h_r_ef <- with(store_par[[i]],
-      cohens_h(summary[, rep(1, num_g - 1)], summary[, seq_len(num_g - 1) + num_g]))
-
-    # May make computation of delete one indices as a method
-
-    for (g in seq_len(num_g - 1)) {
-      acai_p[[g]][i, ] <- temp_p_i[, g]
-      acai_s[[g]][i, ] <- temp_s_i[, g]
-      # compute cohen's h for the difference between the strict and partial inv. conditions
-      # (on the i-th row of the data frames in each element of the two lists)
-      h_acai_s_p[[g]][i, ] <- cohens_h(temp_s_i[, g], temp_p_i[, g])
-      # h: change in aggregate CAI when an item is deleted under partial invariance
-      h_acai_p[[g]][i - 1, ] <- cohens_h(acai_p[[g]][1, ], acai_p[[g]][i, ])
-      delta_h_acai_s_p[[g]][i - 1, ] <- delta_h(h_acai_s_p[[g]][1, ], h_acai_s_p[[g]][i, ])
-
-      h_s_p[[g]][i - 1, ] <- temp_h_i[, g]
-      # delta h: comparing CAI under strict vs. partial invariance when item i is
-      # deleted (i.e. the change in h_s_p_ref and h_s_p_foc) for all groups
-      delta_h_s_p[[g]][i - 1, ] <- delta_h(temp_h_i[, 1], temp_h_i[, g])
-
-      h_R_Ef[[g]][i, ] <- temp_h_r_ef[, g]
-      # change in h_R_Ef_del when item i is deleted (under partial invariance)
-      delta_h_R_Ef[[g]][i - 1, ] <- delta_h(temp_h_r_ef[, 1], temp_h_r_ef[, g])
-    }
-    AI_ratios[i, ] <- c(1, as.numeric(store_par[[i]]$ai_ratio))
+    err_improv_acai(i = i, s_full = x$summary,
+                    s_del1 = store_del_i[[i]]$summary, num_g = num_g)
+    err_improv_acai(i = i, s_full = x$summary_mi,
+                    s_del1 = store_del_i[[i]]$summary_mi, num_g = num_g)
   }
 
-  out <- list(
-    "AI" = AI_ratios,
-    "ACAI" = acai_p,
-    "h_acai_p" = h_acai_p,
-    "h_acai_s_p" = h_acai_s_p,
-    "delta_h_acai_s_p" = delta_h_acai_s_p,
-    "h_R_Ef" = h_R_Ef,
-    "delta_h_R_Ef" = delta_h_R_Ef,
-    "h_s_p" = h_s_p,
-    "delta_h_s_p" = delta_h_s_p,
-    "PartInv_outputs" = store_par,
-    "items" = delete_items,
-    "function_call" = match.call()
+  list(
+    "AI" = tbl_ai_ratios,
+    "ACAI" = tbl_acai_p,
+    "h_acai_p" = tbl_h_acai_p,
+    "h_acai_s_p" = tbl_h_acai_s_p,
+    "delta_h_acai_s_p" = tbl_delta_h_acai_s_p,
+    "h_R_Ef" = tbl_h_R_Ef,
+    "delta_h_R_Ef" = tbl_delta_h_R_Ef,
+    "h_s_p" = tbl_h_s_p,
+    "delta_h_s_p" = tbl_delta_h_s_p,
+    "delete_one_outputs" = store_del_i,
+    "items" = delete_items
   )
-
-  class(out) <- "itemdeletion"
-  return(out)
 }
 
 partinv_del_i <- function(x, i) {
@@ -295,4 +246,20 @@ partinv_del_i <- function(x, i) {
 
   # Call PartInv with the new weights ####
   do.call(PartInv, x)
+}
+
+to_tbl_itemdeletion <- function(x, rn, cn, labels) {
+  if (ncol(as.matrix(x[[1]])) > 1) {
+    out <- lapply(seq_along(labels), function(j) {
+      tbl <- do.call(rbind, lapply(x, function(x_i) x_i[, j]))
+      dimnames(tbl) <- list(rn, cn)
+      tbl
+    })
+    names(out) <- labels
+    return(out)
+  } else {
+    out <- do.call(rbind, lapply(x, as.numeric))
+    dimnames(out) <- list(rn, cn)
+    return(out)
+  }
 }
