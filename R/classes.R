@@ -91,37 +91,67 @@ new_PartInv <- function() {
 #'   labels = c("Group 1", "Group 2", "Group 3", "Group 4"),
 #'   custom_colors = c("salmon1", "lightgreen", "skyblue1", "pink"))
 #'
-#'@export
-print.PartInv <- function(x, ...) {
-  cat("Partial invariance results:\n\n")
-  cat("Proportion selected: ", round(x$propsel, 3), "\n")
-  cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi, 3), "\n")
-  cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z, 3), "\n")
-  cat(paste0("Adverse impact ratio ", "(reference group: '",
-             colnames(x$summary)[1], "'):\n"))
-  print(as.data.frame(lapply(x$ai_ratio, round, digits = 3), row.names = ""))
-  cat("\n")
-  nc <- ncol(x$summary)
-  if (nc > 8) {
-    cat("Classification Accuracy Indices:\n")
-    print(x$summary[, 1:(ceiling(nc / 2))])
-    cat("\n")
-    cat("Expected Results if Latent Distributions Matched the Reference Group:\n")
-    print(x$summary[, (ceiling(nc / 2) + 2):nc])
-  } else {
-    cat("Classification Accuracy Indices:\n")
-    print(x$summary)
-  }
-  if (!is.null(x$summary_mi)) {
-    cat("\n\nStrict invariance results:\n\n")
-    cat("Proportion selected: ", round(x$propsel_mi, 3), "\n")
-    cat("Cutpoint on the latent scale (xi): ", round(x$cutpt_xi_mi, 3), "\n")
-    cat("Cutpoint on the observed scale (Z): ", round(x$cutpt_z_mi, 3), "\n\n")
-    cat("Classification Accuracy Indices:\n")
-    print(x$summary_mi)
+print.PartInv <- function(x, digits = 3L, ...) {
+  .print_partinv(x[c("propsel", "cutpt_xi", "cutpt_z", "summary", "ai_ratio")],
+                 type = "pi", digits = digits, ...)
+  if (length(x$summary_mi) > 0) {
+    .print_partinv(x[c("propsel_mi", "cutpt_xi_mi", "cutpt_z_mi",
+                      "summary_mi")],
+                   type = "mi", digits = digits, ...)
   }
 }
 
+.print_partinv <- function(x, type = c("pi", "mi"), ...) {
+  type <- match.arg(type)
+  ps <- x[[1]]
+  cut_xi <- x[[2]]
+  cut_z <- x[[3]]
+  summ <- x[[4]]
+  first_word <- switch(type,
+                       pi = "Partial",
+                       mi = "Strict")
+  cat(first_word, " invariance results:\n\n")
+  cat("Proportion selected: ", format(ps, ...), "\n")
+  cat("Cutpoint on the latent scale (xi): ",
+     format(cut_xi, ...), "\n")
+  cat("Cutpoint on the observed scale (Z): ",
+      format(cut_z, ...), "\n")
+  if (type == "pi") {
+    air <- x[[5]]
+    cat(paste0("Adverse impact ratio ", "(reference group: '",
+               colnames(x$summary)[1], "'):\n"))
+    print(air, ...)
+  }
+  cat("\n")
+  cat("Classification Accuracy Indices:\n")
+  nc <- ncol(summ)
+  if (nc > 8) {
+    print(summ[, 1:(ceiling(nc / 2))], ...)
+    cat("\n")
+    cat("Expected Results if Latent Distributions Matched the Reference Group:\n")
+    print(summ[, (ceiling(nc / 2) + 2):nc], ...)
+  } else {
+    print(format_p(summ, ...))
+  }
+}
+
+#' @export
+format_p <- function(x, digits) {
+  UseMethod("format_p")
+}
+
+#' @export
+format_p.default <- function(x, digits) {
+  formatted <- sprintf(paste0("%.", digits, "f"), x)
+  sub("^(-?)0\\.", "\\.", formatted)
+}
+
+#' @export
+format_p.data.frame <- function(x, digits) {
+  x[] <- lapply(x, format_p, digits = digits)
+  x
+}
+  
 setClass("itemdeletion",
   representation(
     AI_ratios = "data.frame",
