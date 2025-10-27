@@ -390,8 +390,17 @@ get_ai_ratio <- function(x) {
 }
 
 #' @export
-get_ai_ratio.PartInv <- function(x, num_g = NULL) {
+get_ai_ratio.PartInv <- function(x) {
+  num_g <- x$params$num_g
   out <- x$summary[5, seq_len(num_g - 1) + num_g] / x$summary[5, 1]
   out <- as.numeric(out)
-  setNames(out, x$labels[-1])
+  setNames(out, x$params$labels[-1])
+}
+
+add_mi_partinv <- function(x) {
+  if (length(x$summary_mi) == 0) {
+    pl <- c(x$params, propsel = list(x$propsel), cut_z = list(x$cutpt_z))
+    return(do.call(PartInv, c(pl, list(show_mi_result = TRUE))))
+  }
+  x
 }

@@ -185,14 +185,16 @@ PartInv <- function(cfa_fit = NULL,
   params <- argg[c("weights_item", "weights_latent", "alpha", "psi",
                    "lambda", "theta", "nu", "pmix", "propsel", "labels",
                    "cut_z", "num_g")]
-  out$labels <- params$labels
+  out$params <- params[
+    c("alpha", "psi", "lambda", "nu", "theta",
+      "weights_item", "weights_latent", "labels", "num_g", "pmix")]
   out_pi <- do.call(compute_cai, params)
   names_to_update <- intersect(names(out), names(out_pi))
   out[names_to_update] <- out_pi[names_to_update]
 
   if (out$propsel <= 0.01) warning("Proportion selected is 1% or less.")
 
-  out[["ai_ratio"]] <- get_ai_ratio.PartInv(out, params$num_g)
+  out[["ai_ratio"]] <- get_ai_ratio.PartInv(out)
 
   if (show_mi_result) {
     lambda_avg <- .weighted_average_list(params$lambda, weights = params$pmix)

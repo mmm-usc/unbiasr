@@ -52,15 +52,15 @@ contour_bvnorm <- function(mean1 = 0, sd1 = 1, mean2 = 0, sd2 = 1,
 #' @param x PartInv output.
 #' @param labels Character vector. By default, use the `labels` value from
 #'   `x`.
-#' @param which_result Logical; whether to plot the partial or the strict 
-#'   invariance plot.
+#' @param which_result Character; whether to operate on the partial (`"mi"`)
+#'   or the strict invariance (`"mi"`) plot.
 #' @param custom_colors Optional argument for specifying the colors of the 
 #'   ellipses. 
 #' @param quadrantsABCD Whether to label the quadrants with A, B, C, D or TR,
 #'   FP, TN, FN. `TRUE` by default.
 #' @param ... Additional arguments.
 #'@export
-plot.PartInv <- function(x, labels = x[["labels"]],
+plot.PartInv <- function(x, labels = x[["params"]][["labels"]],
                          which_result = NULL,
                          custom_colors = NULL, 
                          quadrantsABCD = TRUE, 

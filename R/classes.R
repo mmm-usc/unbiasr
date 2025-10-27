@@ -31,10 +31,50 @@ new_PartInv <- function() {
       cutpt_z_mi = numeric(),
       summary_mi = data.frame(),
       bivar_data_mi = list(),
-      labels = character()
+      params = list(alpha = matrix(),
+                    psi = matrix(),
+                    lambda = matrix(),
+                    nu = matrix(),
+                    theta = matrix(),
+                    weights_item = numeric(),
+                    weights_latent = numeric(),
+                    labels = character(),
+                    num_g = integer(),
+                    pmix = numeric())
     ),
     class = "PartInv"
   )
+}
+
+validate_PartInv <- function(x) {
+  pl <- x$params
+  if (!is.numeric(x$propsel) || length(x$propsel) != 1) {
+    stop("`propsel` must be a single numeric value.")
+  }
+  if (!is.data.frame(x$summary)) {
+    stop("`summary` must be a data frame.")
+  }
+  if (!is.list(x$bivar_data)) {
+    stop("`bivar_data` must be a list.")
+  }
+  if (!is.numeric(x$ai_ratio)) {
+    stop("`ai_ratio` must be numeric.")
+  }
+  if (!is.character(pl$labels)) {
+    stop("`labels` must be a character vector.")
+  }
+  if (length(pl$labels) != pl$num_g || length(pl$pmix) != pl$num_g) {
+    stop("Lengths of `labels` and `pmix` must match the number of groups.")
+  }
+  if (ncol(x$summary) != ((2 * pl$num_g - 1))) {
+    stop("Number of columns in `summary` does not match expected number ",
+         "of 2 * g - 1, where g is the number of groups.")
+  }
+  if (length(x$summary_mi) > 0 && ncol(x$summary_mi) != pl$num_g) {
+    stop("Number of columns in `summary_mi` does not match the number ",
+         "groups.")
+  }
+  x
 }
 
 # setClass("PartInv",
@@ -95,6 +135,7 @@ print.PartInv <- function(x, digits = 3L, ...) {
   .print_partinv(x[c("propsel", "cutpt_xi", "cutpt_z", "summary", "ai_ratio")],
                  type = "pi", digits = digits, ...)
   if (length(x$summary_mi) > 0) {
+    cat("\n")
     .print_partinv(x[c("propsel_mi", "cutpt_xi_mi", "cutpt_z_mi",
                       "summary_mi")],
                    type = "mi", digits = digits, ...)
@@ -110,7 +151,7 @@ print.PartInv <- function(x, digits = 3L, ...) {
   first_word <- switch(type,
                        pi = "Partial",
                        mi = "Strict")
-  cat(first_word, " invariance results:\n\n")
+  cat(first_word, "invariance results:\n\n")
   cat("Proportion selected: ", format(ps, ...), "\n")
   cat("Cutpoint on the latent scale (xi): ",
      format(cut_xi, ...), "\n")
@@ -167,6 +208,9 @@ setClass("itemdeletion",
     function_call = "call"
   )
 )
+new_itemdeletion <- function() {
+  list()
+}
 
 #' @method print itemdeletion 
 #' @title Print method for itemdeletion class
