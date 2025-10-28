@@ -10,6 +10,8 @@ cohens_h(p1, p2, ...)
 \item{p1}{The first proportion.}
 
 \item{p2}{The second proportion.}
+
+\item{...}{Additional arguments passed to other methods.}
 }
 \value{
 \code{h} The computed Cohen's h value.

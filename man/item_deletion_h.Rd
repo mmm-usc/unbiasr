@@ -14,6 +14,8 @@ item_deletion_h(
 )
 }
 \arguments{
+\item{x}{An object of class \code{\link{PartInv}} obtained from \code{\link{PartInv}}.}
+
 \item{item_which_dim}{A vector indicating the dimension to which each item
 belongs; \code{NULL} by default. Only needed for multidimensional scales and
 when \code{reweigh_by_dim = TRUE}.}
@@ -25,29 +27,30 @@ Defaults to \code{TRUE} when \code{item_which_dim} is provided.}
 \item{delete_items}{A vector; default to \code{NULL}. If \code{NULL}, only items
 determined to contain bias will be considered for deletion.}
 
-\item{delete_one_cutoff}{User-specified cutoff to use in delete-one scenarios.
-\code{NULL} by default; if \code{NULL}, PS on the full item set will be used.}
+\item{delete_one_cutoff}{User-specified cutoff to use in delete-one
+scenarios. \code{NULL} by default; if \code{NULL}, PS on the full item set will
+be used.}
 
 \item{...}{Other arguments for \code{\link[graphics]{contour}}.}
 }
 \value{
-\code{item_deletion_h} returns an object of class \code{itemdeletion} containing
-the following elements.
+\code{item_deletion_h} returns an object of class \code{itemdeletion}
+containing the following elements.
 \item{AI}{A data frame storing Adverse Impact (AI) values under partial
 invariance by groups.}
-\item{ACAI}{A list storing aggregate PS, SR, SE, SP computed for the full
-set of items and item subsets excluding biased or user specified items
-under partial invariance (PFI).}
-\item{h_acai_p}{A list storing Cohen's h values quantifying the impact of
-deleting each item considered in the \code{ACAI} table.}
+\item{ACAI}{A list storing aggregate PS, SR, SE, SP computed for the
+full set of items and item subsets excluding biased or user specified
+items under partial invariance (PFI).}
+\item{h_acai_p}{A list storing Cohen's h values quantifying the impact
+of deleting each item considered in the \code{ACAI} table.}
 \item{h_acai_s_p}{A list storing Cohen's h values quantifying the
 discrepancy between ACAI under SFI vs. ACAI under PFI.}
 \item{delta_h_acai_s_p}{A list storing delta h values quantifying the
 impact of deleting an item on discrepancies in h_acai_s_p.}
-\item{h_R_EF}{A list storing Cohen's h values quantifying the discrepancy
-between observed CAI for the reference group and the expected CAI
-computed for the focal group if it matched the distribution of the
-reference group (Efocal) under PFI.}
+\item{h_R_EF}{A list storing Cohen's h values quantifying the
+discrepancy between observed CAI for the reference group and the
+expected CAI computed for the focal group if it matched the
+distribution of the reference group (Efocal) under PFI.}
 \item{delta_h_R_EF}{A list storing delta h values quantifying the impact
 of deleting an item on discrepancies in h_R_Ef.}
 \item{h_s_p}{A list containing Cohen's h values quantifying the
@@ -65,9 +68,9 @@ each item deletion scenario.}
 of (and changes in the impact of) measurement bias on CAI if an item is
 dropped vs. retained.
 Comparisons are made between CAI computed for the reference group and
-expected CAI computed for the focal group; between CAI computed under strict
-factorial invariance (SFI) vs. partial factorial invariance (PFI); and
-aggregate CAI computed for item subsets.
+expected CAI computed for the focal group; between CAI computed under
+strict factorial invariance (SFI) vs. partial factorial invariance (PFI);
+and aggregate CAI computed for item subsets.
 }
 \examples{
 set.seed(7)
@@ -88,32 +91,33 @@ fit_sim <- lavaan::cfa(model = sim_m, data = dat_sim, group = "group")
 partinv_sim <- PartInv(cfa_fit = fit_sim, propsel = .05)
 del <- item_deletion_h(partinv_sim)
 del # formatted
-summary(del) #formatted with additional output
+print(del, full_result = TRUE) #formatted with additional output
 del$AI # can access all outputs without rounding or formatting
 del$ACAI
 del$PartInv_outputs$`Full item set`$summary
 # choose Japanese as the reference group and use a cutoff:
-del <- item_deletion_h(cfa_fit = fit_sim, cut_z = 15, reference = "Japanese")
+partinv_sim <- PartInv(cfa_fit = fit_sim, cut_z = 15, reference = "Japanese")
+del <- item_deletion_h(partinv_sim)
 del
 
 # Multidimensional example
 l_mat <- matrix(0, nrow = 5, ncol = 2)
 l_mat[1:2, 1] <- c(.322, .655); l_mat[3:5, 2] <- c(.398, .745, .543)
-multi_dim <- item_deletion_h(propsel = .05, n_dim = 5,
+multi_dim_partinv <- PartInv(propsel = .05,
     weights_item = c(1/4, 1/4, 1/6, 1/6, 1/6),
     weights_latent = c(0.5, 0.5), alpha_r = c(0, 0), alpha_f = c(-0.3, 0.1),
     psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2), lambda_r = l_mat,
     nu_r = c(.225, .025, .010, .240, .125),
     nu_f = c(.225, -.05, .240, -.025, .125), Theta_r = diag(1, 5),
-    Theta_f = diag(c(1, .95, .80, .75, 1)), plot_contour = TRUE)
-print(multi_dim)
+    Theta_f = diag(c(1, .95, .80, .75, 1)))
+item_deletion_h(multi_dim_partinv, item_which_dim = rep(1:2, each = 5))
 # Single dimension example
-single_dim <- item_deletion_h(propsel = .10, weights_item = c(1, 0.9, 1, 1),
+partinv_single_dim <- PartInv(propsel = .10,
+    weights_item = c(1, 0.9, 1, 1),
     weights_latent = 0.9, alpha_r = 0.5, alpha_f = 0, psi_r = 1,
     lambda_r = c(.3, .5, .9, .7), nu_r = c(.225, .025, .240, .240),
-    nu_f = c(.225, -.05, .240, -.025), Theta_r = diag(.96, 4), n_dim = 1,
-    plot_contour = TRUE)
-print(single_dim)
+    nu_f = c(.225, -.05, .240, -.025), Theta_r = diag(.96, 4))
+item_deletion_h(partinv_single_dim)
 # Using cfa_fit
 HS <- HolzingerSwineford1939
 HS$sex <- as.factor(HS$sex)
@@ -121,5 +125,6 @@ HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed   =~ x7 + x8 + x9 '
 fit <- cfa(HS.model, data = HS, group = "sex")
-item_deletion_h(cfa_fit = fit, propsel = .05, plot_contour = TRUE)
+partinv_fit <- PartInv(cfa_fit = fit, propsel = .05)
+item_deletion_h(partinv_fit)
 }
