@@ -24,6 +24,9 @@
 #' @param delete_one_cutoff User-specified cutoff to use in delete-one
 #'   scenarios. `NULL` by default; if `NULL`, PS on the full item set will
 #'   be used.
+#' @param update_latent_weights Logical; if `TRUE`, latent weights will be
+#'   updated so that the dimension for the deleted item will be reduced
+#'   proportionally. Default is `FALSE`.
 #' @param ... Other arguments for \code{\link[graphics]{contour}}.
 #' @return `item_deletion_h` returns an object of class `itemdeletion`
 #'     containing the following elements.
@@ -114,6 +117,7 @@ item_deletion_h <- function(x,
                             reweigh_by_dim = !is.null(item_which_dim),
                             delete_items = NULL,
                             delete_one_cutoff = NULL,
+                            update_latent_weights = FALSE,
                             ...) {
   CAIs <- c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
   CAIs_star <- paste0(CAIs, "*")
@@ -124,7 +128,10 @@ item_deletion_h <- function(x,
   x <- validate_PartInv(x)
 
   pl <- c(x$params, propsel = list(x$propsel), cut_z = list(x$cutpt_z),
-          item_which_dim = item_which_dim, reweigh_by_dim = reweigh_by_dim, list(...))
+          item_which_dim = list(item_which_dim),
+          reweigh_by_dim = list(reweigh_by_dim),
+          update_latent_weights = list(update_latent_weights),
+          list(...))
   pmix <- pl$pmix
   n_i <- nrow(pl$lambda)
   num_g <- pl$num_g
@@ -251,7 +258,10 @@ partinv_del_i <- function(x, i) {
   x$weights_item <- redistribute_weights2(
     x$weights_item, item_which_dim = x$item_which_dim,
     reweigh_by_dim = x$reweigh_by_dim, del_i = i)
-
+  if (x$update_latent_weights) {
+    x$weights_latent <- update_lw(
+      x$weights_latent, del_i = i, item_which_dim = x$item_which_dim)
+  }
   # Call PartInv with the new weights ####
   do.call(PartInv, x)
 }

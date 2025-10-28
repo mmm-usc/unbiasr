@@ -227,6 +227,14 @@ redistribute_weights2 <- function(
   }
 }
 
+update_lw <- function(w, del_i, item_which_dim) {
+  # Update latent weights
+  target_dim <- item_which_dim[del_i]
+  len_target_dim <- sum(item_which_dim == target_dim)
+  w[target_dim] <- w[target_dim] * (len_target_dim - 1) / len_target_dim
+  w
+}
+
 #' @title
 #' Compute Cohen's h effect size for the difference in two proportions.
 #'
