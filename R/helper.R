@@ -384,17 +384,12 @@ colorlist <- function() {
   #https://sashamaps.net/docs/resources/20-colors/
 }
 
-#' @export
-get_ai_ratio <- function(x) {
-  UseMethod("get_ai_ratio")
-}
-
-#' @export
-get_ai_ratio.PartInv <- function(x) {
+get_ai_ratio_partInv <- function(x) {
   num_g <- x$params$num_g
   out <- x$summary[5, seq_len(num_g - 1) + num_g] / x$summary[5, 1]
   out <- as.numeric(out)
-  setNames(out, x$params$labels[-1])
+  names(out) <- x$params$labels[-1]
+  out
 }
 
 add_mi_partinv <- function(x) {

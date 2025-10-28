@@ -239,6 +239,7 @@ redistribute_weights2 <- function(
 #'
 #' @param p1 The first proportion.
 #' @param p2 The second proportion.
+#' @param ... Additional arguments passed to other methods.
 #' @return `h` The computed Cohen's h value.
 #' @examples
 #' cohens_h(0.7, 0.75)
