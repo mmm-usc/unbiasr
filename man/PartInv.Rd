@@ -17,7 +17,7 @@ PartInv(
   theta = NULL,
   nu = NULL,
   pmix = NULL,
-  pmix_ref = 0.5,
+  pmix_ref = NULL,
   plot_contour = FALSE,
   show_mi_result = FALSE,
   labels = NULL,

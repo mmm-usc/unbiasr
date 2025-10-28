@@ -10,6 +10,7 @@ item_deletion_h(
   reweigh_by_dim = !is.null(item_which_dim),
   delete_items = NULL,
   delete_one_cutoff = NULL,
+  update_latent_weights = FALSE,
   ...
 )
 }
@@ -30,6 +31,10 @@ determined to contain bias will be considered for deletion.}
 \item{delete_one_cutoff}{User-specified cutoff to use in delete-one
 scenarios. \code{NULL} by default; if \code{NULL}, PS on the full item set will
 be used.}
+
+\item{update_latent_weights}{Logical; if \code{TRUE}, latent weights will be
+updated so that the dimension for the deleted item will be reduced
+proportionally. Default is \code{FALSE}.}
 
 \item{...}{Other arguments for \code{\link[graphics]{contour}}.}
 }
