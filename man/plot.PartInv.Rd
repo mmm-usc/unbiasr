@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{PartInv}(
   x,
-  labels = x[["labels"]],
+  labels = x[["params"]][["labels"]],
   which_result = NULL,
   custom_colors = NULL,
   quadrantsABCD = TRUE,
@@ -16,10 +16,11 @@
 \arguments{
 \item{x}{PartInv output.}
 
-\item{labels}{By default, c("Reference", "Focal_1", ..., "Focal_g") where \code{g}
-is the number of groups.}
+\item{labels}{Character vector. By default, use the \code{labels} value from
+\code{x}.}
 
-\item{which_result}{Whether to plot the partial or the strict invariance plot.}
+\item{which_result}{Character; whether to operate on the partial (\code{"mi"})
+or the strict invariance (\code{"mi"}) plot.}
 
 \item{custom_colors}{Optional argument for specifying the colors of the
 ellipses.}
@@ -30,5 +31,6 @@ FP, TN, FN. \code{TRUE} by default.}
 \item{...}{Additional arguments.}
 }
 \description{
-\code{plot.PartInv} plots the contours for any number of groups.
+Plotting method for objects of class \code{\link{PartInv}} to show the contours for
+any number of groups.
 }

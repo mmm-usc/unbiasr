@@ -4,7 +4,7 @@
 \alias{print.itemdeletion}
 \title{Print method for itemdeletion class}
 \usage{
-\method{print}{itemdeletion}(x, ...)
+\method{print}{itemdeletion}(x, digits = 3L, ...)
 }
 \arguments{
 \item{x}{An object of class \code{itemdeletion}, the output from

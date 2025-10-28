@@ -5,90 +5,22 @@
 \title{Impact of deleting biased item(s) on classification accuracy indices (CAI)}
 \usage{
 item_deletion_h(
-  cfa_fit = NULL,
-  propsel = NULL,
-  cut_z = NULL,
-  weights_item = NULL,
-  weights_latent = NULL,
-  alpha = NULL,
-  psi = NULL,
-  lambda = NULL,
-  theta = NULL,
-  nu = NULL,
-  pmix = NULL,
-  pmix_ref = 0.5,
-  plot_contour = TRUE,
-  labels = NULL,
-  n_dim = 1,
-  n_i_per_dim = NULL,
+  x,
+  item_which_dim = NULL,
+  reweigh_by_dim = !is.null(item_which_dim),
   delete_items = NULL,
   delete_one_cutoff = NULL,
-  alpha_r = NULL,
-  alpha_f = alpha_r,
-  psi_r = NULL,
-  psi_f = psi_r,
-  lambda_r = NULL,
-  lambda_f = lambda_r,
-  nu_r = NULL,
-  nu_f = nu_r,
-  Theta_r = NULL,
-  Theta_f = Theta_r,
-  reference = NULL,
-  custom_colors = NULL,
-  quadrantsABCD = TRUE,
-  digits = 3,
   ...
 )
 }
 \arguments{
-\item{cfa_fit}{CFA model output from lavaan.}
+\item{item_which_dim}{A vector indicating the dimension to which each item
+belongs; \code{NULL} by default. Only needed for multidimensional scales and
+when \code{reweigh_by_dim = TRUE}.}
 
-\item{propsel}{Proportion of selection. If missing, computed using \code{cut_z}.}
-
-\item{cut_z}{Pre-specified cutoff score on the observed composite. Ignored
-when \code{propsel} has an input.}
-
-\item{weights_item}{A vector of item weights.}
-
-\item{weights_latent}{A vector of latent factor weights.}
-
-\item{alpha}{A list of length \code{g} containing \verb{1 x d} latent factor mean
-vectors where \code{g} is the number of groups and \code{d} is the number of latent
-dimensions. The first element is assumed to belong to the reference group.}
-
-\item{psi}{A list of length \code{g} containing \verb{d x d} latent factor
-variance-covariance matrices where \code{g} is the number of groups and \code{d} is
-the number of latent dimensions. The first element is assumed to belong
-to the reference group.}
-
-\item{lambda}{A list of length \code{g} containing \verb{n_i x d} factor loading matrices
-where \code{g} is the number of groups, \code{d} is the number of latent dimensions,
-and \code{n} is the number of items . The first element is assumed
-to belong to the reference group.}
-
-\item{theta}{A list of length \code{g} containing \verb{1 x n_i} vectors or \verb{n_i x n_i}
-matrices of unique factor variances and covariances, where \code{g} is the
-number of groups and \code{n_i} is the number of items . The first
-element is assumed to belong to the reference group.}
-
-\item{nu}{A list of length \code{g} containing \verb{1 x n_i} measurement intercept
-vectors where \code{g} is the number of groups and \code{n_i} is the number of
-items. The first element is assumed to belong to the reference group.}
-
-\item{pmix}{List of length \code{g} containing the mixing proportions of each
-group. If \code{NULL}, defaults to \code{1/g} for each group (i.e., equal sizes).}
-
-\item{plot_contour}{Logical; whether the contour of the populations should be
-plotted; \code{TRUE} by default.}
-
-\item{labels}{A character vector with two elements to label the reference
-and the focal group on the graph.}
-
-\item{n_dim}{Number of dimensions, 1 by default.}
-
-\item{n_i_per_dim}{A vector containing the number of items per dimension;
-\code{NULL} by default. If \code{n_dim} \eqn{> 1} and \code{n_i_per_dim = NULL},
-subscales are assumed to have an equal number of items.}
+\item{reweigh_by_dim}{Logical indicating whether to redistribute item
+weight of the deleted item within the dimension to which it belongs.
+Defaults to \code{TRUE} when \code{item_which_dim} is provided.}
 
 \item{delete_items}{A vector; default to \code{NULL}. If \code{NULL}, only items
 determined to contain bias will be considered for deletion.}
@@ -96,25 +28,11 @@ determined to contain bias will be considered for deletion.}
 \item{delete_one_cutoff}{User-specified cutoff to use in delete-one scenarios.
 \code{NULL} by default; if \code{NULL}, PS on the full item set will be used.}
 
-\item{alpha_r, alpha_f, nu_r, nu_f, Theta_r, Theta_f, psi_r, psi_f, lambda_r, lambda_f, pmix_ref}{Deprecated; included for backward compatibility. With two groups, '_r'
-and '_f' suffixes refer to the reference group and the focal group.}
-
-\item{reference}{Optional argument for specifying the reference group.
-Currently only functional when cfa_fit is provided. If providing parameter
-estimates instead, reorder estimates such that the first estimates belong
-to the reference group.}
-
-\item{custom_colors}{Optional argument for specifying group colors.}
-
-\item{quadrantsABCD}{Whether to label the quadrants with A, B, C, D or TR,
-FP, TN, FN. \code{TRUE} by default.}
-
-\item{digits}{Number of digits for rounding. 3 by default.}
-
 \item{...}{Other arguments for \code{\link[graphics]{contour}}.}
 }
 \value{
-An object of class \code{itemdeletion} containing 13 elements.
+\code{item_deletion_h} returns an object of class \code{itemdeletion} containing
+the following elements.
 \item{AI}{A data frame storing Adverse Impact (AI) values under partial
 invariance by groups.}
 \item{ACAI}{A list storing aggregate PS, SR, SE, SP computed for the full
@@ -152,7 +70,7 @@ factorial invariance (SFI) vs. partial factorial invariance (PFI); and
 aggregate CAI computed for item subsets.
 }
 \examples{
-set.seed(7) 
+set.seed(7)
 # Simulate random data to fit a multigroup CFA, invariance across languages
 library(lavaan)
 sim_m <-
@@ -167,7 +85,8 @@ dat_sim$group <- ifelse(dat_sim$group == 1, "English",
                  ifelse(dat_sim$group == 2, "Japanese",
                  ifelse(dat_sim$group == 3, "Swahili", NA)))
 fit_sim <- lavaan::cfa(model = sim_m, data = dat_sim, group = "group")
-del <- item_deletion_h(cfa_fit = fit_sim, propsel = .05)
+partinv_sim <- PartInv(cfa_fit = fit_sim, propsel = .05)
+del <- item_deletion_h(partinv_sim)
 del # formatted
 summary(del) #formatted with additional output
 del$AI # can access all outputs without rounding or formatting
@@ -180,7 +99,7 @@ del
 # Multidimensional example
 l_mat <- matrix(0, nrow = 5, ncol = 2)
 l_mat[1:2, 1] <- c(.322, .655); l_mat[3:5, 2] <- c(.398, .745, .543)
-multi_dim <- item_deletion_h(propsel = .05, n_dim = 5, 
+multi_dim <- item_deletion_h(propsel = .05, n_dim = 5,
     weights_item = c(1/4, 1/4, 1/6, 1/6, 1/6),
     weights_latent = c(0.5, 0.5), alpha_r = c(0, 0), alpha_f = c(-0.3, 0.1),
     psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2), lambda_r = l_mat,
@@ -192,7 +111,7 @@ print(multi_dim)
 single_dim <- item_deletion_h(propsel = .10, weights_item = c(1, 0.9, 1, 1),
     weights_latent = 0.9, alpha_r = 0.5, alpha_f = 0, psi_r = 1,
     lambda_r = c(.3, .5, .9, .7), nu_r = c(.225, .025, .240, .240),
-    nu_f = c(.225, -.05, .240, -.025), Theta_r = diag(.96, 4), n_dim = 1, 
+    nu_f = c(.225, -.05, .240, -.025), Theta_r = diag(.96, 4), n_dim = 1,
     plot_contour = TRUE)
 print(single_dim)
 # Using cfa_fit

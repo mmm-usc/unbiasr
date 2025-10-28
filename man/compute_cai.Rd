@@ -16,7 +16,7 @@ compute_cai(
   propsel,
   labels,
   cut_z = NULL,
-  num_g,
+  num_g = NULL,
   is_mi = FALSE
 )
 }
@@ -60,7 +60,7 @@ and focal groups on the plot, where \code{g} is the number of groups.}
 \item{cut_z}{Pre-specified cutoff score on the observed composite. This
 argument is ignored when \code{propsel} has input.}
 
-\item{num_g}{Number of groups.}
+\item{num_g}{Deprecated. Number of groups.}
 
 \item{is_mi}{Whether summary statistics should be computed for strict vs.
 partial measurement invariance. \code{FALSE} by default (partial).}

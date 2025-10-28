@@ -4,7 +4,7 @@
 \alias{print.PartInv}
 \title{Print method for PartInv class}
 \usage{
-\method{print}{PartInv}(x, ...)
+\method{print}{PartInv}(x, digits = 3L, ...)
 }
 \arguments{
 \item{x}{An object of class \code{PartInv}, the output from
@@ -45,5 +45,4 @@ out <- PartInv(propsel = 0.25, pmix = c(1/4, 1/4, 1/4, 1/4),
   plot_contour = TRUE, show_mi_result = TRUE,
   labels = c("Group 1", "Group 2", "Group 3", "Group 4"),
   custom_colors = c("salmon1", "lightgreen", "skyblue1", "pink"))
-
 }

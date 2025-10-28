@@ -4,15 +4,13 @@
 \alias{get_aggregate_CAI}
 \title{Compute PS, SR, SE, SP weighted by group proportions}
 \usage{
-get_aggregate_CAI(pmix, store_summary, inv_cond)
+get_aggregate_CAI(x, which_result = c("pi", "mi"))
 }
 \arguments{
-\item{pmix}{Proportion of the reference group.}
+\item{x}{An object of class \code{\link{PartInv}}}
 
-\item{store_summary}{The summary table from \code{\link[=PartInv]{PartInv()}} under partial or
-strict invariance.}
-
-\item{inv_cond}{Strict vs. partial.}
+\item{which_result}{Character; whether to operate on the partial (\code{"mi"})
+or the strict invariance (\code{"mi"}) plot.}
 }
 \value{
 A vector of length 4.
@@ -23,6 +21,6 @@ A vector of length 4.
 }
 \description{
 \code{get_aggregate_CAI} computes aggregate PS, SR, SE, SP under partial or
-strict invariance by weighting the TP, TF, TN, FP values for the reference
-and focal groups with the group proportions.
+strict invariance by weighting the TP, TF, TN, FP values for groups with
+the group proportions.
 }

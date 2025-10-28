@@ -3,7 +3,7 @@
 \name{PartInv}
 \alias{PartInv}
 \alias{PartInvMulti_we}
-\title{Classification Accuracy Analysis with MCAA}
+\title{(Multivariate) Classification Accuracy Analysis (MCAA)}
 \usage{
 PartInv(
   cfa_fit = NULL,
@@ -17,13 +17,14 @@ PartInv(
   theta = NULL,
   nu = NULL,
   pmix = NULL,
-  pmix_ref = NULL,
+  pmix_ref = 0.5,
   plot_contour = FALSE,
   show_mi_result = FALSE,
   labels = NULL,
   custom_colors = NULL,
   reference = NULL,
   quadrantsABCD = TRUE,
+  ...,
   kappa_r = NULL,
   kappa_f = kappa_r,
   alpha_r = NULL,
@@ -39,8 +40,7 @@ PartInv(
   nu_r = NULL,
   nu_f = nu_r,
   Theta_r = NULL,
-  Theta_f = Theta_r,
-  ...
+  Theta_f = Theta_r
 )
 
 PartInvMulti_we(...)
@@ -97,18 +97,18 @@ groups are labeled as 'Reference' and 'Focal_1' through 'Focal_(g-1)'.}
 
 \item{custom_colors}{Optional argument for specifying group colors.}
 
-\item{reference}{Optional argument for specifying the reference group.
-Currently only functional when cfa_fit is provided. If providing parameter
+\item{reference}{Optional character argument for specifying the reference group.
+Currently only functional when \code{cfa_fit} is provided. If providing parameter
 estimates instead, reorder estimates such that the first estimates belong
 to the reference group.}
 
 \item{quadrantsABCD}{Whether to label the quadrants with A, B, C, D or TR,
 FP, TN, FN. \code{TRUE} by default.}
 
+\item{...}{Other arguments for \code{\link[graphics]{contour}}.}
+
 \item{alpha_r, alpha_f, nu_r, nu_f, Theta_r, Theta_f, psi_r, psi_f, lambda_r, lambda_f, phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f, pmix_ref}{Deprecated; included for backward compatibility. With two groups, '_r'
 and '_f' suffixes refer to the reference group and the focal group.}
-
-\item{...}{Other arguments for \code{\link[graphics]{contour}}.}
 }
 \value{
 The output will be a list of six elements and a plot if
@@ -156,7 +156,7 @@ using the multidimensional classification accuracy analysis framework
 approach.
 }
 \examples{
-set.seed(7)  
+set.seed(7)
 cols <- c("salmon1", "lightgreen", "skyblue1", "pink")
 # Simulate random data to fit a multigroup CFA, invariance across languages
 sim_m <-
@@ -185,10 +185,10 @@ PartInv(fit, propsel = .7, plot_contour = TRUE, show_mi_result = TRUE,
         labels = c("Male", "Female"))
 # Two groups, single dimension
 PartInv(cfa_fit = NULL, propsel = .30, weights_item = rep(1, 4),
-        alpha = list(0, 0), psi = list(1, 1), 
+        alpha = list(0, 0), psi = list(1, 1),
         lambda = list(rep(1, 4), c(1, 1, .7, .4)),
         nu = list(rep(1, 4), rep(1, 4)), theta = list(diag(1, 4), diag(1, 4)),
-        labels = c("Public", "Private "), show_mi_result = TRUE, 
+        labels = c("Public", "Private "), show_mi_result = TRUE,
         plot_contour = TRUE)
 # Two groups, two dimensions
 l_mat <- matrix(0, nrow = 5, ncol = 2)
@@ -202,7 +202,7 @@ PartInv(propsel = .05, weights_latent = c(.5, .5),
         theta = list(diag(1, 5), c(1, .9, .8, .8, 1)),
         plot_contour = TRUE, show_mi_result = TRUE, quadrantsABCD = FALSE)
 # Multiple groups, multiple dimensions
-l_mat <- matrix(c(.7, .8, -.4, .7, .6, .5, .8, -.3, .6, .6, .6, .7, .6, 
+l_mat <- matrix(c(.7, .8, -.4, .7, .6, .5, .8, -.3, .6, .6, .6, .7, .6,
                   .6, .6), nrow = 15, ncol = 1)
 nu_mat <- matrix(c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.5, 2.6, 3.2, 2.8,
                    3.5, 3.3, 2.5, 3.4, 2.5), nrow = 15, ncol = 1)
@@ -212,16 +212,6 @@ nu_mat2[c(9:10, 12, 15), 1] <- c(3.6, 3.2, 3.5, 2.8); nu_mat3[15] <- 2.9
 th_mat <- (c(.6, .6, .8, .6, .8, .5, .7, 1.1, .8, .9, .6, .7, .8, .5, .9))
 th_mat1 <- th_mat2 <- th_mat3 <- th_mat
 th_mat1[1] <- .4; th_mat2[c(6, 14)] <- c(.9, .7); th_mat3[14] <- .7
-PartInv(propsel = .25, pmix = rep(1/4, 4),
-        alpha = list(0, -.7, -1.1, -1.1), psi = list(1, 1.2, 1.3, 1.3),
-        nu = list(nu_mat, nu_mat1, nu_mat2, nu_mat3),
-        lambda = list(l_mat, l_mat, l_mat, l_mat),
-        theta = list(th_mat, th_mat1, th_mat2, th_mat3),
-        plot_contour = TRUE, show_mi_result = TRUE,
-        labels = c("G1", "G2", "G3", "G4"),
-        custom_colors = cols, reference = "G1", quadrantsABCD = FALSE)
-        
-# Plot ROC curve and compute AUC         
 PartInv(propsel = .25, pmix = rep(1/4, 4),
         alpha = list(0, -.7, -1.1, -1.1), psi = list(1, 1.2, 1.3, 1.3),
         nu = list(nu_mat, nu_mat1, nu_mat2, nu_mat3),
