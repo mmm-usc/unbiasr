@@ -194,7 +194,7 @@ PartInv <- function(cfa_fit = NULL,
 
   if (out$propsel <= 0.01) warning("Proportion selected is 1% or less.")
 
-  out[["ai_ratio"]] <- get_ai_ratio.PartInv(out)
+  out[["ai_ratio"]] <- get_ai_ratio_partInv(out)
 
   if (show_mi_result) {
     lambda_avg <- .weighted_average_list(params$lambda, weights = params$pmix)

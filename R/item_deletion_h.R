@@ -9,9 +9,10 @@
 #'   of (and changes in the impact of) measurement bias on CAI if an item is
 #'   dropped vs. retained.
 #'   Comparisons are made between CAI computed for the reference group and
-#'   expected CAI computed for the focal group; between CAI computed under strict
-#'   factorial invariance (SFI) vs. partial factorial invariance (PFI); and
-#'   aggregate CAI computed for item subsets.
+#'   expected CAI computed for the focal group; between CAI computed under
+#'   strict factorial invariance (SFI) vs. partial factorial invariance (PFI);
+#'   and aggregate CAI computed for item subsets.
+#' @param x An object of class [`PartInv`] obtained from \code{\link{PartInv}}.
 #' @param item_which_dim A vector indicating the dimension to which each item
 #'   belongs; `NULL` by default. Only needed for multidimensional scales and
 #'   when `reweigh_by_dim = TRUE`.
@@ -19,27 +20,28 @@
 #'   weight of the deleted item within the dimension to which it belongs.
 #'   Defaults to `TRUE` when `item_which_dim` is provided.
 #' @param delete_items A vector; default to `NULL`. If `NULL`, only items
-#'     determined to contain bias will be considered for deletion.
-#' @param delete_one_cutoff User-specified cutoff to use in delete-one scenarios.
-#'     `NULL` by default; if `NULL`, PS on the full item set will be used.
+#'   determined to contain bias will be considered for deletion.
+#' @param delete_one_cutoff User-specified cutoff to use in delete-one
+#'   scenarios. `NULL` by default; if `NULL`, PS on the full item set will
+#'   be used.
 #' @param ... Other arguments for \code{\link[graphics]{contour}}.
-#' @return `item_deletion_h` returns an object of class `itemdeletion` containing
-#'     the following elements.
+#' @return `item_deletion_h` returns an object of class `itemdeletion`
+#'     containing the following elements.
 #'     \item{AI}{A data frame storing Adverse Impact (AI) values under partial
 #'      invariance by groups.}
-#'     \item{ACAI}{A list storing aggregate PS, SR, SE, SP computed for the full
-#'      set of items and item subsets excluding biased or user specified items
-#'      under partial invariance (PFI).}
-#'     \item{h_acai_p}{A list storing Cohen's h values quantifying the impact of
-#'      deleting each item considered in the `ACAI` table.}
+#'     \item{ACAI}{A list storing aggregate PS, SR, SE, SP computed for the
+#'      full set of items and item subsets excluding biased or user specified
+#'      items under partial invariance (PFI).}
+#'     \item{h_acai_p}{A list storing Cohen's h values quantifying the impact
+#'      of deleting each item considered in the `ACAI` table.}
 #'     \item{h_acai_s_p}{A list storing Cohen's h values quantifying the
 #'      discrepancy between ACAI under SFI vs. ACAI under PFI.}
 #'     \item{delta_h_acai_s_p}{A list storing delta h values quantifying the
 #'      impact of deleting an item on discrepancies in h_acai_s_p.}
-#'     \item{h_R_EF}{A list storing Cohen's h values quantifying the discrepancy
-#'      between observed CAI for the reference group and the expected CAI
-#'      computed for the focal group if it matched the distribution of the
-#'      reference group (Efocal) under PFI.}
+#'     \item{h_R_EF}{A list storing Cohen's h values quantifying the
+#'      discrepancy between observed CAI for the reference group and the
+#'      expected CAI computed for the focal group if it matched the
+#'      distribution of the reference group (Efocal) under PFI.}
 #'     \item{delta_h_R_EF}{A list storing delta h values quantifying the impact
 #'      of deleting an item on discrepancies in h_R_Ef.}
 #'     \item{h_s_p}{A list containing Cohen's h values quantifying the
@@ -70,32 +72,33 @@
 #' partinv_sim <- PartInv(cfa_fit = fit_sim, propsel = .05)
 #' del <- item_deletion_h(partinv_sim)
 #' del # formatted
-#' summary(del) #formatted with additional output
+#' print(del, full_result = TRUE) #formatted with additional output
 #' del$AI # can access all outputs without rounding or formatting
 #' del$ACAI
 #' del$PartInv_outputs$`Full item set`$summary
 #' # choose Japanese as the reference group and use a cutoff:
-#' del <- item_deletion_h(cfa_fit = fit_sim, cut_z = 15, reference = "Japanese")
+#' partinv_sim <- PartInv(cfa_fit = fit_sim, cut_z = 15, reference = "Japanese")
+#' del <- item_deletion_h(partinv_sim)
 #' del
 #'
 #' # Multidimensional example
 #' l_mat <- matrix(0, nrow = 5, ncol = 2)
 #' l_mat[1:2, 1] <- c(.322, .655); l_mat[3:5, 2] <- c(.398, .745, .543)
-#' multi_dim <- item_deletion_h(propsel = .05, n_dim = 5,
+#' multi_dim_partinv <- PartInv(propsel = .05,
 #'     weights_item = c(1/4, 1/4, 1/6, 1/6, 1/6),
 #'     weights_latent = c(0.5, 0.5), alpha_r = c(0, 0), alpha_f = c(-0.3, 0.1),
 #'     psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2), lambda_r = l_mat,
 #'     nu_r = c(.225, .025, .010, .240, .125),
 #'     nu_f = c(.225, -.05, .240, -.025, .125), Theta_r = diag(1, 5),
-#'     Theta_f = diag(c(1, .95, .80, .75, 1)), plot_contour = TRUE)
-#' print(multi_dim)
+#'     Theta_f = diag(c(1, .95, .80, .75, 1)))
+#' item_deletion_h(multi_dim_partinv, item_which_dim = rep(1:2, each = 5))
 #' # Single dimension example
-#' single_dim <- item_deletion_h(propsel = .10, weights_item = c(1, 0.9, 1, 1),
+#' partinv_single_dim <- PartInv(propsel = .10,
+#'     weights_item = c(1, 0.9, 1, 1),
 #'     weights_latent = 0.9, alpha_r = 0.5, alpha_f = 0, psi_r = 1,
 #'     lambda_r = c(.3, .5, .9, .7), nu_r = c(.225, .025, .240, .240),
-#'     nu_f = c(.225, -.05, .240, -.025), Theta_r = diag(.96, 4), n_dim = 1,
-#'     plot_contour = TRUE)
-#' print(single_dim)
+#'     nu_f = c(.225, -.05, .240, -.025), Theta_r = diag(.96, 4))
+#' item_deletion_h(partinv_single_dim)
 #' # Using cfa_fit
 #' HS <- HolzingerSwineford1939
 #' HS$sex <- as.factor(HS$sex)
@@ -103,7 +106,8 @@
 #'               textual =~ x4 + x5 + x6
 #'               speed   =~ x7 + x8 + x9 '
 #' fit <- cfa(HS.model, data = HS, group = "sex")
-#' item_deletion_h(cfa_fit = fit, propsel = .05, plot_contour = TRUE)
+#' partinv_fit <- PartInv(cfa_fit = fit, propsel = .05)
+#' item_deletion_h(partinv_fit)
 #' @export
 item_deletion_h <- function(x,
                             item_which_dim = NULL,
@@ -118,7 +122,7 @@ item_deletion_h <- function(x,
   # pl <- prep_params(argg)
   x <- add_mi_partinv(x)  # add MI results if not present
   x <- validate_PartInv(x)
-  
+
   pl <- c(x$params, propsel = list(x$propsel), cut_z = list(x$cutpt_z),
           item_which_dim = item_which_dim, reweigh_by_dim = reweigh_by_dim, list(...))
   pmix <- pl$pmix
@@ -142,7 +146,7 @@ item_deletion_h <- function(x,
   # out_str <- c(paste0(
   #   c("propsel", "cutpt_xi", "cutpt_z", "summary", "bivar_data", "ai_ratio"),
   #   "_mi"), "labels")
-  
+
   # Perform delete i PartInv for all items to be deleted
   # If no cutoff was provided, set propsel based on PartInv output with all items
   pl_del <- pl
@@ -185,13 +189,13 @@ item_deletion_h <- function(x,
 
   # Delta h computations
   delta_h_acai_s_p <- lapply(h_acai_s_p[-1], FUN = delta_h,
-                             h_i_del = h_acai_s_p[[1]])
+                             h_R = h_acai_s_p[[1]])
   # change in h_R_Ef_del when item i is deleted (under partial invariance)
-  delta_h_R_Ef <- lapply(h_R_Ef[-1], FUN = delta_h, h_i_del = h_R_Ef[[1]])
+  delta_h_R_Ef <- lapply(h_R_Ef[-1], FUN = delta_h, h_R = h_R_Ef[[1]])
   # delta h: comparing CAI under strict vs. partial invariance when item i is
   # deleted (i.e. the change in h_s_p_ref and h_s_p_foc) for all groups
-  delta_h_s_p <- lapply(h_s_p[-1], FUN = delta_h, h_i_del = h_s_p[[1]])
-  
+  delta_h_s_p <- lapply(h_s_p[-1], FUN = delta_h, h_R = h_s_p[[1]])
+
   # Format outputs into list of tables
   tbl_ai_ratios <- to_tbl_itemdeletion(
     ai_ratios, rn = c("Full", dlabs), cn = labels[-1])
@@ -215,15 +219,15 @@ item_deletion_h <- function(x,
   tbl_delta_h_s_p <- to_tbl_itemdeletion(
     delta_h_s_p, rn = dlabs, cn = paste0("\u0394h(", CAIs, ")"),
     labels = labels)
-  
-  # # Item deletion scenarios ####
-  for (i in seq_along(store_del_i)) {
-    # Check whether improvements in ACAI may be misleading due pmix
-    err_improv_acai(i = i, s_full = x$summary,
-                    s_del1 = store_del_i[[i]]$summary, num_g = num_g)
-    err_improv_acai(i = i, s_full = x$summary_mi,
-                    s_del1 = store_del_i[[i]]$summary_mi, num_g = num_g)
-  }
+
+  # HL: Not working properly
+  # for (i in seq_along(store_del_i)) {
+  #   # Check whether improvements in ACAI may be misleading due pmix
+  #   err_improv_acai(i = i, s_full = x$summary,
+  #                   s_del1 = store_del_i[[i]]$summary, num_g = num_g)
+  #   err_improv_acai(i = i, s_full = x$summary_mi,
+  #                   s_del1 = store_del_i[[i]]$summary_mi, num_g = num_g)
+  # }
 
   structure(
     list(
@@ -252,8 +256,8 @@ partinv_del_i <- function(x, i) {
   do.call(PartInv, x)
 }
 
-to_tbl_itemdeletion <- function(x, rn, cn, labels) {
-  if (ncol(as.matrix(x[[1]])) > 1) {
+to_tbl_itemdeletion <- function(x, rn, cn, labels = NULL) {
+  if (!is.null(labels)) {
     out <- lapply(seq_along(labels), function(j) {
       tbl <- do.call(rbind, lapply(x, function(x_i) x_i[, j]))
       dimnames(tbl) <- list(rn, cn)
