@@ -6,16 +6,18 @@
 #'
 #' @description
 #' \code{item_deletion_h} computes effect size indices that quantify the impact
-#'  of (and changes in the impact of) measurement bias on CAI if an item is
-#'  dropped vs. retained.
-#'  Comparisons are made between CAI computed for the reference group and
-#'  expected CAI computed for the focal group; between CAI computed under strict
-#'  factorial invariance (SFI) vs. partial factorial invariance (PFI); and
-#'  aggregate CAI computed for item subsets.
-#' @param n_dim Number of dimensions, 1 by default.
-#' @param n_i_per_dim A vector containing the number of items per dimension;
-#'     `NULL` by default. If `n_dim` \eqn{> 1} and \code{n_i_per_dim = NULL},
-#'      subscales are assumed to have an equal number of items.
+#'   of (and changes in the impact of) measurement bias on CAI if an item is
+#'   dropped vs. retained.
+#'   Comparisons are made between CAI computed for the reference group and
+#'   expected CAI computed for the focal group; between CAI computed under strict
+#'   factorial invariance (SFI) vs. partial factorial invariance (PFI); and
+#'   aggregate CAI computed for item subsets.
+#' @param item_which_dim A vector indicating the dimension to which each item
+#'   belongs; `NULL` by default. Only needed for multidimensional scales and
+#'   when `reweigh_by_dim = TRUE`.
+#' @param reweigh_by_dim Logical indicating whether to redistribute item
+#'   weight of the deleted item within the dimension to which it belongs.
+#'   Defaults to `TRUE` when `item_which_dim` is provided.
 #' @param delete_items A vector; default to `NULL`. If `NULL`, only items
 #'     determined to contain bias will be considered for deletion.
 #' @param delete_one_cutoff User-specified cutoff to use in delete-one scenarios.
@@ -49,7 +51,6 @@
 #'     \item{items}{A vector with items considered for deletion.}
 #'     \item{function_call}{Function call to item_deletion_h().}
 #'     \item{digits}{Number of digits utilized for rounding.}
-#' @rdname PartInv
 #' @examples
 #' set.seed(7)
 #' # Simulate random data to fit a multigroup CFA, invariance across languages
@@ -105,8 +106,8 @@
 #' item_deletion_h(cfa_fit = fit, propsel = .05, plot_contour = TRUE)
 #' @export
 item_deletion_h <- function(x,
-                            n_dim = 1,
-                            n_i_per_dim = NULL,
+                            item_which_dim = NULL,
+                            reweigh_by_dim = !is.null(item_which_dim),
                             delete_items = NULL,
                             delete_one_cutoff = NULL,
                             ...) {
@@ -119,7 +120,7 @@ item_deletion_h <- function(x,
   x <- validate_PartInv(x)
   
   pl <- c(x$params, propsel = list(x$propsel), cut_z = list(x$cutpt_z),
-          n_dim = n_dim, n_i_per_dim = n_i_per_dim, list(...))
+          item_which_dim = item_which_dim, reweigh_by_dim = reweigh_by_dim, list(...))
   pmix <- pl$pmix
   n_i <- nrow(pl$lambda)
   num_g <- pl$num_g
@@ -224,25 +225,28 @@ item_deletion_h <- function(x,
                     s_del1 = store_del_i[[i]]$summary_mi, num_g = num_g)
   }
 
-  list(
-    "AI" = tbl_ai_ratios,
-    "ACAI" = tbl_acai_p,
-    "h_acai_p" = tbl_h_acai_p,
-    "h_acai_s_p" = tbl_h_acai_s_p,
-    "delta_h_acai_s_p" = tbl_delta_h_acai_s_p,
-    "h_R_Ef" = tbl_h_R_Ef,
-    "delta_h_R_Ef" = tbl_delta_h_R_Ef,
-    "h_s_p" = tbl_h_s_p,
-    "delta_h_s_p" = tbl_delta_h_s_p,
-    "delete_one_outputs" = store_del_i,
-    "items" = delete_items
+  structure(
+    list(
+      "AI" = tbl_ai_ratios,
+      "ACAI" = tbl_acai_p,
+      "h_acai_p" = tbl_h_acai_p,
+      "h_acai_s_p" = tbl_h_acai_s_p,
+      "delta_h_acai_s_p" = tbl_delta_h_acai_s_p,
+      "h_R_Ef" = tbl_h_R_Ef,
+      "delta_h_R_Ef" = tbl_delta_h_R_Ef,
+      "h_s_p" = tbl_h_s_p,
+      "delta_h_s_p" = tbl_delta_h_s_p,
+      "delete_one_outputs" = store_del_i,
+      "items" = delete_items
+    ),
+    class = "itemdeletion"
   )
 }
 
 partinv_del_i <- function(x, i) {
-  x$weights_item <- redistribute_weights(
-    x$weights_item, n_dim = x$n_dim,
-    n_i_per_dim = x$n_i_per_dim, del_i = i)
+  x$weights_item <- redistribute_weights2(
+    x$weights_item, item_which_dim = x$item_which_dim,
+    reweigh_by_dim = x$reweigh_by_dim, del_i = i)
 
   # Call PartInv with the new weights ####
   do.call(PartInv, x)
@@ -258,7 +262,7 @@ to_tbl_itemdeletion <- function(x, rn, cn, labels) {
     names(out) <- labels
     return(out)
   } else {
-    out <- do.call(rbind, lapply(x, as.numeric))
+    out <- do.call(rbind, lapply(x, function(x) as.numeric(unlist(x))))
     dimnames(out) <- list(rn, cn)
     return(out)
   }

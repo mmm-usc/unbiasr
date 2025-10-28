@@ -130,7 +130,7 @@ validate_PartInv <- function(x) {
 #'   plot_contour = TRUE, show_mi_result = TRUE,
 #'   labels = c("Group 1", "Group 2", "Group 3", "Group 4"),
 #'   custom_colors = c("salmon1", "lightgreen", "skyblue1", "pink"))
-#'
+#' @export
 print.PartInv <- function(x, digits = 3L, ...) {
   .print_partinv(x[c("propsel", "cutpt_xi", "cutpt_z", "summary", "ai_ratio")],
                  type = "pi", digits = digits, ...)
@@ -242,30 +242,30 @@ new_itemdeletion <- function() {
 print.itemdeletion <- function(x, digits = 3L, ...) {
   item_set <- x$items
   # apply rounding and get the composite index columns
-  x <- c(x[1],
-              lapply(x[-c(1, 10:13)], function(inner_list) {
-                lapply(inner_list, function(df) {
-                  df <- df[, 5:8]
-                  round(df, digits)
-                  })
-                }),
-            list(x[10:13]))
-  x$AI <- round(x$AI, digits)
+  # x <- c(x[1],
+  #             lapply(x[-c(1, 10:13)], function(inner_list) {
+  #               lapply(inner_list, function(df) {
+  #                 df <- df[, 5:8]
+  #                 round(df, digits)
+  #                 })
+  #               }),
+  #           list(x[10:13]))
+  # x$AI <- round(x$AI, digits)
   cat(paste0("\n", stars, "\nAdverse Impact (AI) ratios under partial invariance by group\n", stars, "\n"))
-  print(x$AI[c("Full", item_set), -1, drop = FALSE])
+  print(x$AI, digits, ...)
   cat("\n(Note: AI ratios equal 1 under strict invariance by definition.)\n\n")
   cat(paste0(stars, "\nAGGREGATE CLASSIFICATION ACCURACY INDICES (CAI*)\n", stars))
   cat("\nAggregate CAI under partial invariance:\n")
-  print_dfs_from_list(x$ACAI, c("Full", item_set) )
+  print(x$ACAI, digits, ...)
   cat(paste0(dashes, "\nImpact of deleting an item on aggregate CAI under partial invariance:\n"))
-  print_dfs_from_list(x$h_acai_p, item_set)
+  print(x$h_acai_p, digits, ...)
   cat(paste0("\n", stars, "\nCOMPARING CAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS\n", stars))
   cat("\nDiscrepancy between CAI of reference vs. Efocal groups under PFI:\n")
-  print_dfs_from_list(x$h_R_Ef, c("r_Ef", paste0("r_Ef", item_set))) 
+  print(x$h_R_Ef, digits, ...)
   cat(paste0(dashes, "\nImpact of deleting an item on the discrepancy between observed CAI for the 
 reference group and expected CAI for the focal groups (Efocal):\n"))
-   print_dfs_from_list(x$delta_h_R_Ef, item_set)
-   invisible(NULL)
+  print(x$delta_h_R_Ef, digits, ...)
+  invisible(NULL)
 }
 
 # register the custom print method for the itemdeletion class

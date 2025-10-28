@@ -21,10 +21,10 @@ update_rows_in_lists_of_dfs <- function(l1, l2, ind) {
     df
   }, l1, l2)
 }
- 
+
 print_dfs_from_list <- function(ls, items) {
   lapply(seq_along(ls), function(i) {
-    cat(paste0("Focal group: ", names(ls)[i], "\n"))  
+    cat(paste0("Focal group: ", names(ls)[i], "\n"))
     print(ls[[i]][items, ])
   })
 }
@@ -56,10 +56,10 @@ get_aggregate_CAI <- function(x, which_result = c("pi", "mi")) {
   if (abs(sum(pmix) - 1) > 1e-6) {
     stop("The sum of pmix must be equal to 1.")
   }
-  
+
   # Validate the input object
   x <- validate_PartInv(x)
-  # Compute weighted aggregates for TP, FP, TN, FN 
+  # Compute weighted aggregates for TP, FP, TN, FN
   # TP <- sum(pmix * store_summary[1, seq_len(num_g)]) # this gets the aggregate across groups, it should be aggregates between the reference and one focal group
   # FP <- sum(pmix * store_summary[2, seq_len(num_g)])
   # TN <- sum(pmix * store_summary[3, seq_len(num_g)])
@@ -95,9 +95,9 @@ err_improv_acai <- function(i, s_full, s_del1, num_g) {
   h_f <- Map(cohens_h, s_full, s_del1)[-1]
   # check the difference for the reference or focal groups has Cohen's h > 0.1
   h_rf <- (h_r > 0.1 | unlist(h_f) > .1)
-  
+
   # Check for changes (boolean)
-  r_bool <- s_full[,1] < s_del1[,1] 
+  r_bool <- s_full[,1] < s_del1[,1]
   f_bool_leq1 <- s_full[, 2:num_g, drop = FALSE] <= s_del1[, 2:num_g, drop = FALSE]
   f_bool_leq <- apply(f_bool_leq1, MARGIN = 1, FUN = all) # across focal group(s)
   f_bool_geq1 <- s_full[, 2:num_g, drop = FALSE] >= s_del1[, 2:num_g, drop = FALSE]
@@ -145,19 +145,19 @@ err_improv_acai <- function(i, s_full, s_del1, num_g) {
 #'
 #' multi_eq_w <- c(1:9)
 #' redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2)
-#' redistribute_weights(multi_eq_w, n_dim = 3, n_i_per_dim = c(3, 3, 3), 
+#' redistribute_weights(multi_eq_w, n_dim = 3, n_i_per_dim = c(3, 3, 3),
 #' del_i = 2)
 #' sum(multi_eq_w)==sum(redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2))
 #'
 #' multi_uneq_w <- c(1:12)
-#' redistribute_weights(multi_uneq_w, n_dim = 3, n_i_per_dim = c(3, 6, 3), 
+#' redistribute_weights(multi_uneq_w, n_dim = 3, n_i_per_dim = c(3, 6, 3),
 #' del_i=2)
 #' sum(multi_uneq_w)==sum(redistribute_weights(multi_uneq_w, n_dim = 3,
 #'                                             n_i_per_dim = c(3, 6, 3),
 #'                                             del_i=2))
 #' @export
 redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
-                               del_i) {
+                                 del_i) {
   n_items <- length(weights_item)
   new_w <- weights_item
   new_w[del_i] <- 0
@@ -177,7 +177,7 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
   # Multidimensional, number of items per dimension is not specified
   } else if ((n_dim > 1) && is.null(n_i_per_dim)) {
     # Split indices into dimensions assuming dimensions have the same length.
-    i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), n_dim, 
+    i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), n_dim,
                                      labels = FALSE))
     new_w <- multidim_redist(n_dim, del_i, i_by_dim, new_w, del_weight)
 
@@ -206,6 +206,25 @@ multidim_redist <- function(n_dim, del_i, i_by_dim, new_w, del_weight) {
     }
   }
   return(new_w)
+}
+
+redistribute_weights2 <- function(
+  w,
+  del_i,
+  item_which_dim = NULL,
+  reweigh_by_dim = !is.null(item_which_dim)
+) {
+  new_w <- w
+  new_w[del_i] <- 0
+  if (!reweigh_by_dim) {
+    return(new_w / sum(new_w) * sum(w))
+  } else {
+    target_dim <- item_which_dim[del_i]
+    items_in_target_dim <- which(item_which_dim == target_dim)
+    new_w[items_in_target_dim] <- new_w[items_in_target_dim] /
+      sum(new_w[items_in_target_dim]) * sum(w[items_in_target_dim])
+    return(new_w)
+  }
 }
 
 #' @title
@@ -322,7 +341,7 @@ delta_h <- function(h_R, h_i_del) {
 #' @description
 #' \code{determine_biased_items} takes in the factor loadings, intercepts, and
 #'  uniqueness, and returns indices of noninvariant items.
-#' @param nu_r,nu_f,Theta_r,Theta_f,lambda_r,lambda_f Deprecated; included only 
+#' @param nu_r,nu_f,Theta_r,Theta_f,lambda_r,lambda_f Deprecated; included only
 #' for backward compatibility.
 #' @param lambda Factor loadings.
 #' @param nu Measurement intercepts.
@@ -339,7 +358,7 @@ delta_h <- function(h_R, h_i_del) {
 #'                                  c(.225, -.05, .240, -.025, .125)),
 #'                        theta = list(diag(1, 5), diag(c(1, .95, .80, .75, 1))))
 #' @export
-determine_biased_items <- function(lambda, nu, theta, 
+determine_biased_items <- function(lambda, nu, theta,
                                    lambda_r = NULL, lambda_f = lambda_r,
                                    nu_r = NULL, nu_f = nu_r,
                                    Theta_r = NULL, Theta_f = Theta_r) {
@@ -356,7 +375,7 @@ determine_biased_items <- function(lambda, nu, theta,
     theta <- vector(2, mode = "list")
     theta[[1]] <- Theta_r; theta[[2]] <- Theta_f
   }
-  
+
   biased_items <- c()
   mismatched_on_param <- function(param, biased) {
     mismatch <- find_mismatched_indices(param)
@@ -367,7 +386,7 @@ determine_biased_items <- function(lambda, nu, theta,
   biased_items <- mismatched_on_param(theta, biased_items)
   biased_items <- mismatched_on_param(nu, biased_items)
   biased <- unique(biased_items)
-  
+
   if (length(biased) == 0) {
     message("Strict invariance holds for all items.")
     return(NULL)
@@ -381,7 +400,7 @@ find_mismatched_indices <- function(lst) {
   if (!all(sapply(lst, function(x) is.numeric(x) || is.matrix(x)))) {
     stop("All elements must be numeric.")
   }
-  if (all(sapply(lst, is.vector))) { 
+  if (all(sapply(lst, is.vector))) {
     if (!all(sapply(lst, length) == length(lst[[1]]))) {
       stop("Vectors have unequal lengths.")
     }
@@ -394,7 +413,7 @@ find_mismatched_indices <- function(lst) {
     return(data.frame(which(mismatches)))
   } else {    # handle lists of matrices or mixed inputs
     lst <- lapply(lst, function(x) if (is.vector(x)) matrix(x, nrow = 1) else x)
-    
+
     dims <- sapply(lst, dim)
     if (!all(apply(dims, 1, function(x) length(unique(x)) == 1))) {
       stop("All elements must have the same dimensions.")
@@ -403,7 +422,7 @@ find_mismatched_indices <- function(lst) {
     combined_array <- array(unlist(lst), dim = c(dim(lst[[1]]), length(lst)))
     # check for mismatches across the third dimension
     mismatches <- apply(combined_array, c(1, 2), function(x) length(unique(x)) > 1)
-    
+
     if (!any(mismatches)) return(NULL)
     return(which(mismatches, arr.ind = TRUE))
   }
