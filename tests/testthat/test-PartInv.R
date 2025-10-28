@@ -234,3 +234,8 @@ test_that("`show_mi_result = TRUE` uses same cut_z if specified", {
   expect_equal(piout1_pstrict$summary_mi, piout1_strict$summary[, 1:2])
 })
 
+test_that("reference_first() works properly", {
+  new_params <- reference_first(
+    piout$params, labels = c("A", "B"), reference = "B")
+  expect_type(new_params$pmix, "double")
+})

@@ -119,15 +119,17 @@ check_labels <- function(x, num_g, reference) {
 
 reference_first <- function(x, labels, reference) {
   ind <- which(labels == reference)
+  new_order <- c(ind, seq_along(labels)[-ind])
   names_to_reorder <- c("alpha", "nu", "theta", "lambda", "psi",
                          "pmix", "custom_colors", "labels")
   for (nm in names_to_reorder) {
     if (!is.null(x[[nm]])) {
-      x[[nm]] <- c(list(x[[nm]][[ind]]), x[[nm]][-ind])
+      x[[nm]] <- x[[nm]][new_order]
     } else {
       next
     }
   }
+  x
 }
 
 get_params_cfa <- function(cfa_fit, pmix = NULL, labels = NULL) {
