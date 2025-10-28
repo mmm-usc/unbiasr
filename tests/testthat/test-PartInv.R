@@ -239,3 +239,20 @@ test_that("reference_first() works properly", {
     piout$params, labels = c("A", "B"), reference = "B")
   expect_type(new_params$pmix, "double")
 })
+
+test_that("Handle pmix_ref properly", {
+  piout_pmix_ref <- PartInv(
+    propsel = .10,
+    alpha = list(0.5, 0),
+    psi = list(1, 1),
+    lambda = rep(list(c(.3, .5, .9, .7, .8)), 2),
+    nu = list(
+      c(.225, .025, .010, .240, .123),
+      c(.125, .025, .110, .140, .223)
+    ),
+    theta = rep(list(diag(.96, 5)), 2),
+    labels = c("female", "male"),
+    pmix_ref = 0.3
+  )
+  expect_equal(piout_pmix_ref$params$pmix, c(0.3, 0.7))
+})

@@ -234,9 +234,7 @@ CESD_partinv <- PartInv(
   nu = list(nu_r, nu_f),
   theta = list(Theta_r, Theta_f),
   plot_contour = FALSE,
-  n_dim = 4,
-  n_i_per_dim = c(7, 7, 4, 2),
-  pmix_ref = pmix_r
+  pmix = c(pmix_r, 1 - pmix_r)
 )
 CESD <- item_deletion_h(
   CESD_partinv, item_which_dim = rep(1:4, c(7, 7, 4, 2)))
@@ -314,7 +312,17 @@ CESD_del1_cutoff
 ```
 
 Let's assume for the sake of illustration that the researcher decides to drop
-item 15 ($good$). We can repeat the process with the new item weights:
+item 15 ($good$). We can repeat the process with the new item weights, with
+the `update_latent_weights = TRUE` argument to adjust the latent weights
+to reflect less weight on the dimension with the deleted item:
+
+```{r}
+CESD_del1_cutoff <- 
+  item_deletion_h(CESD_partinv,
+                  item_which_dim = rep(1:4, c(7, 7, 4, 2)),
+                  delete_one_cutoff = 16 / 60 * (60 - 3),
+                  update_latent_weights = TRUE)
+```
 
 ```{r}
 CESD_drop15_partinv <- CESD_del1_cutoff$delete_one_outputs$`|15`
@@ -351,7 +359,7 @@ CESD_som_partinv <- PartInv(
   lambda = list(lambda_som_r, lambda_som_f),
   nu = list(nu_som_r, nu_som_f),
   theta = list(Theta_som_r, Theta_som_f),
-  pmix_ref = pmix_r,
+  pmix = c(pmix_r, 1 - pmix_r),
   plot_contour = FALSE
 )
 CESD_som <- item_deletion_h(CESD_som_partinv)
@@ -382,7 +390,7 @@ CESD_dep_partinv <- PartInv(
   lambda = list(lambda_dep_r, lambda_dep_f),
   nu = list(nu_dep_r, nu_dep_f),
   theta = list(Theta_dep_r, Theta_dep_f),
-  pmix_ref = pmix_r,
+  pmix = c(pmix_r, 1 - pmix_r),
   plot_contour = FALSE
 )
 CESD_dep <- item_deletion_h(CESD_dep_partinv)
@@ -426,10 +434,10 @@ CESD_pos_partinv <- PartInv(
   lambda = list(lambda_pos_r, lambda_pos_f),
   nu = list(nu_pos_r, nu_pos_f),
   theta = list(Theta_pos_r, Theta_pos_f),
-  pmix_ref = pmix_r,
+  pmix = c(pmix_r, 1 - pmix_r),
   plot_contour = FALSE
 )
-CESD_pos <- item_deletion_h(CESD_pos_partinv, delete_items = 1:4)
+CESD_pos <- item_deletion_h(CESD_pos_partinv)
 CESD_pos
 ```
  
@@ -473,7 +481,7 @@ CESD_int_partinv <- PartInv(
   lambda = list(lambda_int_r, lambda_int_f),
   nu = list(nu_int_r, nu_int_f),
   theta = list(Theta_int_r, Theta_int_f),
-  pmix_ref = pmix_r,
+  pmix = c(pmix_r, 1 - pmix_r),
   plot_contour = FALSE
 )
 CESD_int <- item_deletion_h(CESD_int_partinv)
@@ -505,7 +513,7 @@ CESD_pos_partinv <- PartInv(
   lambda = list(lambda_pos_r, lambda_pos_f),
   nu = list(nu_pos_r, nu_pos_f),
   theta = list(Theta_pos_r, Theta_pos_f),
-  pmix_ref = pmix_r,
+  pmix = c(pmix_r, 1 - pmix_r),
   plot_contour = FALSE
 )
 CESD_pos <- item_deletion_h(CESD_pos_partinv, delete_items = 1:3)
@@ -515,10 +523,11 @@ CESD_pos
 Print the full output:
 
 ```{r }
+CESD_pos <- item_deletion_h(CESD_pos_partinv)
 print(CESD_pos, full_result = TRUE)
 ```
 
-We can obtain plots using `plot_contour = TRUE`. Additional optional parameters allow the plots to be customized with colors, group labels, and quadrant labeling (A, B, C, D or TR, FP, TN, FN).
+We can obtain plots using the `plot` method. Additional optional parameters allow the plots to be customized with colors, group labels, and quadrant labeling (A, B, C, D or TR, FP, TN, FN).
 
 ```{r fig.width=7, fig.height=6}
 plot(CESD_pos_partinv, 

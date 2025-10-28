@@ -163,7 +163,7 @@ PartInv <- function(cfa_fit = NULL,
                     weights_item = NULL, weights_latent = NULL,
                     alpha = NULL, psi = NULL, lambda = NULL, theta = NULL, nu = NULL,
                     pmix = NULL,
-                    pmix_ref = 0.5, # deprecated
+                    pmix_ref = NULL, # deprecated
                     plot_contour = FALSE,
                     show_mi_result = FALSE,
                     labels = NULL,

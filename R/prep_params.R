@@ -1,6 +1,7 @@
 .old_rf_names <- c("alpha_r", "alpha_f", "nu_r", "nu_f", "Theta_r", "Theta_f",
                    "psi_r", "psi_f", "lambda_r", "lambda_f",
-                   "kappa_r", "kappa_f", "phi_r", "phi_f", "tau_r", "tau_f")
+                   "kappa_r", "kappa_f", "phi_r", "phi_f", "tau_r", "tau_f",
+                   "pmix_ref")
 
 prep_params <- function(x) {
   if (!is.null(x$cfa_fit)) {
@@ -11,9 +12,7 @@ prep_params <- function(x) {
     warning("The arguments with suffixes '_r' and '_f' are deprecated. ",
             "Please use 'alpha', 'nu', 'theta', 'psi', 'lambda', 'pmix' ",
             "instead. See ?PartInv for details.")
-    rf_list <- rf_params_to_list(x)
-    x[names(rf_list)] <- rf_list
-    x[c(.old_rf_names, "pmix_ref")] <- NULL
+    x <- stanitize_rf_params(x)
   }
   stopifnot("Number of groups as indicated in the estimates must match." = 
               length(x$alpha) == lengths(x[c("psi", "lambda", "nu", "theta")]))
@@ -159,31 +158,40 @@ all_nonnull <- function(x) {
   return(all(!sapply(x, is.null)))
 }
 
-rf_params_to_list <- function(x) {
-  if (all_null(x[c("alpha_r", "alpha_f")]) &&
-      all_nonnull(x[c("kappa_r", "kappa_f")])) {
-    x$alpha_r <- x$kappa_r
-    x$alpha_f <- x$kappa_f
+stanitize_rf_params <- function(x) {
+  if (is.null(x$alpha)) {
+    if (all_null(x[c("alpha_r", "alpha_f")]) &&
+        all_nonnull(x[c("kappa_r", "kappa_f")])) {
+      x$alpha_r <- x$kappa_r
+      x$alpha_f <- x$kappa_f
+    }
+    x$alpha <- list(x$alpha_r, x$alpha_f)
   }
-  if (all_null(x[c("nu_r", "nu_f")]) &&
-      all_nonnull(x[c("tau_r", "tau_f")])) {
-    x$nu_r <- x$tau_r
-    x$nu_f <- x$tau_f
+  if (is.null(x$nu)) {
+    if (all_null(x[c("nu_r", "nu_f")]) &&
+        all_nonnull(x[c("tau_r", "tau_f")])) {
+      x$nu_r <- x$tau_r
+      x$nu_f <- x$tau_f
+    }
+    x$nu <- list(x$nu_r, x$nu_f)
   }
-  if (all_null(x[c("psi_r", "psi_f")]) &&
-      all_nonnull(x[c("phi_r", "phi_f")])) {
-    x$psi_r <- x$phi_r
-    x$psi_f <- x$phi_f
+  if (is.null(x$psi)) {
+    if (all_null(x[c("psi_r", "psi_f")]) &&
+        all_nonnull(x[c("phi_r", "phi_f")])) {
+      x$psi_r <- x$phi_r
+      x$psi_f <- x$phi_f
+    }
+    x$psi <- list(x$psi_r, x$psi_f)
+  }
+  if (is.null(x$lambda)) {
+    x$lambda <- list(x$lambda_r, x$lambda_f)
+  }
+  if (is.null(x$theta)) {
+    x$theta <- list(x$Theta_r, x$Theta_f)
   }
   if (!is.null(x$pmix_ref) && is.null(x$pmix)) {
     x$pmix <- c(x$pmix_ref, 1 - x$pmix_ref)
   }
-  return(list(
-    "nu" = list(x$nu_r, x$nu_f),
-    "alpha" = list(x$alpha_r, x$alpha_f),
-    "psi" = list(x$psi_r, x$psi_f),
-    "lambda" = list(x$lambda_r, x$lambda_f),
-    "theta" = list(x$Theta_r, x$Theta_f),
-    "pmix" = x$pmix
-  ))
+  x[.old_rf_names] <- NULL
+  x
 }
