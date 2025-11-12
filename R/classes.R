@@ -40,7 +40,8 @@ new_PartInv <- function() {
                     weights_latent = numeric(),
                     labels = character(),
                     num_g = integer(),
-                    pmix = numeric())
+                    pmix = numeric(),
+                    functioncall = character())
     ),
     class = "PartInv"
   )
@@ -218,10 +219,10 @@ new_itemdeletion <- function() {
 print.itemdeletion <- function(x, digits = 3L, cols = 5:8,
                                full_result = FALSE, ...) {
   cat("\n", stars,
-      "\nAdverse Impact (AI) ratios under partial invariance by group\n",
+      "\nAdverse Impact ratios (AIRs) under partial invariance by group\n",
       stars, "\n", sep = "")
   print(x$AI, digits, ...)
-  cat("\n(Note: AI ratios equal 1 under strict invariance by definition.)\n\n",
+  cat("\n(Note: AIRs equal 1 under strict invariance by definition.)\n\n",
       sep = "")
   cat(stars, "\nAGGREGATE CLASSIFICATION ACCURACY INDICES (CAI*)\n", stars,
       sep = "")

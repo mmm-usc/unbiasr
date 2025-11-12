@@ -2,14 +2,13 @@
                    "psi_r", "psi_f", "lambda_r", "lambda_f",
                    "kappa_r", "kappa_f", "phi_r", "phi_f", "tau_r", "tau_f",
                    "pmix_ref")
-
 prep_params <- function(x) {
   if (!is.null(x$cfa_fit)) {
     cfa_params <- get_params_cfa(x$cfa_fit, x$pmix, x$labels)
     x[names(cfa_params)] <- cfa_params
     x$cfa_fit <- NULL
   } else if (any(!sapply(x[.old_rf_names], is.null))) {
-    warning("The arguments with suffixes '_r' and '_f' are deprecated. ",
+    warning("Arguments with suffixes '_r' and '_f' are deprecated. ",
             "Please use 'alpha', 'nu', 'theta', 'psi', 'lambda', 'pmix' ",
             "instead. See ?PartInv for details.")
     x <- stanitize_rf_params(x)
@@ -34,7 +33,7 @@ prep_params <- function(x) {
 
   #### 'labels' #### 
   x$labels <- check_labels(x$labels, num_g, x$reference)
-  
+
   #### set the reference group and reorder appropriately ####
   if (!is.null(x$reference)) {
     x <- reference_first(x, x$labels, x$reference)
@@ -50,9 +49,11 @@ prep_params <- function(x) {
   x$p <- p
   x$q <- q
   x$num_g <- num_g
+  
   return(x)
 }
 
+# Converts a vector into a matrix, optionally enforcing specific dimensions
 to_matrix <- function(x, dims = NULL) {
   if (is.null(dims)) {
     return(as.matrix(x))
@@ -69,6 +70,8 @@ to_matrix <- function(x, dims = NULL) {
   }
 }
 
+# Converts each element of a list into a matrix, optionally enforcing specific
+# dimensions for the matrices
 to_list_matrices <- function(x, dims = NULL) {
   if (!is.list(x)) {
     stop("input must be a list.")
@@ -116,8 +119,18 @@ check_labels <- function(x, num_g, reference) {
   return(x)
 }
 
+# Reorders all group-specific parameter lists in a PartInv model object so 
+# that the specified reference group appears first
 reference_first <- function(x, labels, reference) {
   ind <- which(labels == reference)
+  
+  # Return original object if the provided reference is not found in labels
+  if (length(ind) == 0L) {
+    warning("Reference group '", reference, "' not found in labels: ",
+            paste(labels, collapse = ", "), ". Skipping reordering.")
+    x$labels <- labels
+    return(x)
+  }
   new_order <- c(ind, seq_along(labels)[-ind])
   names_to_reorder <- c("alpha", "nu", "theta", "lambda", "psi",
                          "pmix", "custom_colors", "labels")
@@ -158,6 +171,8 @@ all_nonnull <- function(x) {
   return(all(!sapply(x, is.null)))
 }
 
+# Standardizes deprecated reference-focal parameter names to the format expected
+# by downstream functions, supporting backward compatibility.
 stanitize_rf_params <- function(x) {
   if (is.null(x$alpha)) {
     if (all_null(x[c("alpha_r", "alpha_f")]) &&

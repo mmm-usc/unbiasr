@@ -110,18 +110,22 @@ l_mat <- matrix(0, nrow = 5, ncol = 2)
 l_mat[1:2, 1] <- c(.322, .655); l_mat[3:5, 2] <- c(.398, .745, .543)
 multi_dim_partinv <- PartInv(propsel = .05,
     weights_item = c(1/4, 1/4, 1/6, 1/6, 1/6),
-    weights_latent = c(0.5, 0.5), alpha_r = c(0, 0), alpha_f = c(-0.3, 0.1),
-    psi_r = matrix(c(1, 0.5, 0.5, 1), nrow = 2), lambda_r = l_mat,
-    nu_r = c(.225, .025, .010, .240, .125),
-    nu_f = c(.225, -.05, .240, -.025, .125), Theta_r = diag(1, 5),
-    Theta_f = diag(c(1, .95, .80, .75, 1)))
+    weights_latent = c(0.5, 0.5), 
+    alpha = list(c(0, 0), c(-0.3, 0.1)),
+    psi = list(matrix(c(1, 0.5, 0.5, 1), nrow = 2), 
+               matrix(c(1, 0.5, 0.5, 1), nrow = 2)), 
+    lambda = list(l_mat,l_mat),
+    nu = list(c(.225, .025, .010, .240, .125),
+              c(.225, -.05, .240, -.025, .125)), 
+    theta = list(diag(1, 5), diag(c(1, .95, .80, .75, 1))))
 item_deletion_h(multi_dim_partinv, item_which_dim = rep(1:2, each = 5))
 # Single dimension example
 partinv_single_dim <- PartInv(propsel = .10,
     weights_item = c(1, 0.9, 1, 1),
-    weights_latent = 0.9, alpha_r = 0.5, alpha_f = 0, psi_r = 1,
-    lambda_r = c(.3, .5, .9, .7), nu_r = c(.225, .025, .240, .240),
-    nu_f = c(.225, -.05, .240, -.025), Theta_r = diag(.96, 4))
+    weights_latent = 0.9, alpha = list(0.5, 0), psi = list(1, 1),
+    lambda = list(c(.3, .5, .9, .7), c(.3, .5, .9, .7)), 
+    nu = list(c(.225, .025, .240, .240), c(.225, -.05, .240, -.025)), 
+    theta = list(diag(.96, 4), diag(.96, 4)))
 item_deletion_h(partinv_single_dim)
 # Using cfa_fit
 HS <- HolzingerSwineford1939

@@ -188,6 +188,8 @@ PartInv <- function(cfa_fit = NULL,
   out$params <- params[
     c("alpha", "psi", "lambda", "nu", "theta",
       "weights_item", "weights_latent", "labels", "num_g", "pmix")]
+  out$params[["functioncall"]] <- match.call()
+
   out_pi <- do.call(compute_cai, params)
   names_to_update <- intersect(names(out), names(out_pi))
   out[names_to_update] <- out_pi[names_to_update]
