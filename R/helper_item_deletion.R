@@ -30,15 +30,18 @@ print_dfs_from_list <- function(ls, items) {
 }
 
 # Backward-compatible mapping from n_i_per_dim / n_dim to item_which_dim
-to_item_which_dim <- function(x) {
+to_item_which_dim <- function(x, p = NULL) {
+  
   # if item_which_dim is provided, return as is
   if (!is.null(x$item_which_dim)) return(x)
   
-  # check that the scale length was provided and is in the correct format
-  if (is.null(x$p) || length(x$p) != 1L) {
-    stop("`x$p` (number of items) must be a single numeric value.")
+  if(is.null(p)) {
+    # check that the scale length was provided and is in the correct format
+    if (is.null(x$p) || length(x$p) != 1L) {
+      stop("`x$p` (number of items) must be a single numeric value.")
+    }
+    p <- as.integer(x$p)
   }
-  p <- as.integer(x$p)
   
   # if legacy n_i_per_dim was provided, derive item_which_dim from it
   if (!is.null(x$n_i_per_dim)) {
@@ -60,7 +63,6 @@ to_item_which_dim <- function(x) {
   
   if (n_dim == 1) {
     x$item_which_dim <- rep(1, p)
-    x$reweigh_by_dim <- TRUE
     return(x)
   }
   # n_dim > 1: assume equal items per dimension

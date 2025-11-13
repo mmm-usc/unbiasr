@@ -19,7 +19,7 @@ prep_params <- function(x) {
   d <- length(x$alpha[[1]])
   p <- length(x$nu[[1]])
   num_g <- length(x$alpha)
-  #print(paste0("d: ", d, "\n p: ", p, "\n num_g: ", num_g))
+  
   x$alpha <- to_list_matrices(x$alpha)
   x$psi <- to_list_matrices(x$psi, dims = c(d, d))
   x$lambda <- to_list_matrices(x$lambda, dims = c(p, d))

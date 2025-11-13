@@ -142,22 +142,24 @@ item_deletion_h <- function(x = NULL,
 
   # make adjustments for formatting and backward compatibility:
   
-  # if a PartInv object was not provided, run PartInv() using the args in the env
+  #if a PartInv object was not provided, run PartInv() using the args in the env
   if (is.null(x)) {
     # Standardize legacy rf-suffixed params / CFA extraction / weights / pmix / labels
     argg <- prep_params(argg)
-    # Create a PartInv object (ensure MI results are available for downstream comparisons)
+    # Create a PartInv object
     x <- do.call(PartInv, c(argg, list(show_mi_result = FALSE)))
     x$params$functioncall <- NULL
     # populate item_which_dim
-    argg <- to_item_which_dim(argg) 
+    argg <- to_item_which_dim(argg)
     x
   }
+  
   if (!inherits(x, "PartInv")) {
     stop("`x` must be a PartInv object, or provide legacy parameters so a PartInv can be constructed.")
   }
-
-
+  # populate item_which_dim (if a PartInv object was provided, make sure 
+  # item_which_dim is correctly populated
+  argg <- to_item_which_dim(argg, p = length(x$params$nu[[1]]))
   
   x <- add_mi_partinv(x)  # add MI results if not present
   x <- validate_PartInv(x)
