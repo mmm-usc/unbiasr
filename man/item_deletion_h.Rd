@@ -5,13 +5,43 @@
 \title{Impact of deleting biased item(s) on classification accuracy indices (CAI)}
 \usage{
 item_deletion_h(
-  x,
+  x = NULL,
   item_which_dim = NULL,
   reweigh_by_dim = !is.null(item_which_dim),
   delete_items = NULL,
   delete_one_cutoff = NULL,
   update_latent_weights = FALSE,
-  ...
+  ...,
+  cfa_fit = NULL,
+  propsel = NULL,
+  cut_z = NULL,
+  weights_item = NULL,
+  weights_latent = NULL,
+  alpha = NULL,
+  psi = NULL,
+  lambda = NULL,
+  theta = NULL,
+  nu = NULL,
+  pmix = NULL,
+  pmix_ref = 0.5,
+  plot_contour = FALSE,
+  labels = NULL,
+  n_dim = 1,
+  n_i_per_dim = NULL,
+  alpha_r = NULL,
+  alpha_f = alpha_r,
+  psi_r = NULL,
+  psi_f = psi_r,
+  lambda_r = NULL,
+  lambda_f = lambda_r,
+  nu_r = NULL,
+  nu_f = nu_r,
+  Theta_r = NULL,
+  Theta_f = Theta_r,
+  reference = NULL,
+  custom_colors = NULL,
+  quadrantsABCD = TRUE,
+  digits = 3
 )
 }
 \arguments{
@@ -37,6 +67,9 @@ updated so that the dimension for the deleted item will be reduced
 proportionally. Default is \code{FALSE}.}
 
 \item{...}{Other arguments for \code{\link[graphics]{contour}}.}
+
+\item{cfa_fit, propsel, cut_z, weights_item, weights_latent, alpha, psi, lambda, theta, nu, pmix, pmix_ref, plot_contour, labels, n_dim, n_i_per_dim, alpha_r, alpha_f, psi_r, psi_f, lambda_r, lambda_f, nu_r, nu_f, Theta_r, Theta_f, reference, custom_colors, digits, quadrantsABCD}{Deprecated; included for backward compatibility. With two groups, '_r'
+and '_f' suffixes refer to the reference group and the focal group.}
 }
 \value{
 \code{item_deletion_h} returns an object of class \code{itemdeletion}

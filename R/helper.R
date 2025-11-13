@@ -393,9 +393,12 @@ get_ai_ratio_partInv <- function(x) {
 }
 
 add_mi_partinv <- function(x) {
+  #print("in add_mi_partinv()")
   if (length(x$summary_mi) == 0) {
     pl <- c(x$params, propsel = list(x$propsel), cut_z = list(x$cutpt_z))
-    return(do.call(PartInv, c(pl, list(show_mi_result = TRUE))))
+    x <- do.call(PartInv, c(pl, list(show_mi_result = TRUE)))
+    x$params$functioncall <- NULL
+    return(x)
   }
   x
 }

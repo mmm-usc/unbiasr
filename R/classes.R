@@ -227,35 +227,35 @@ print.itemdeletion <- function(x, digits = 3L, cols = 5:8,
   cat(stars, "\nAGGREGATE CLASSIFICATION ACCURACY INDICES (CAI*)\n", stars,
       sep = "")
   cat("\nAggregate CAI under partial invariance:\n", sep = "")
-  .print_idel_tbl(x$ACAI, digits, cols = cols, ...)
+  .print_idel_tbl(x$ACAI, digits = digits, cols = cols, ...)
   cat(dashes,
       "\nImpact of deleting an item on aggregate CAI under PFI:\n",
       sep = "")
-  .print_idel_tbl(x$h_acai_p, digits, cols = cols, ...)
+  .print_idel_tbl(x$h_acai_p, digits = digits, cols = cols, ...)
   if (full_result) {
     cat(dashes,
         "\nImpact of deleting an item on the discrepancy between ACAI under\n",
         "SFI vs. PFI:\n", sep = "")
-    .print_idel_tbl(x$delta_h_acai_s_p, digits, cols = cols, ...)
+    .print_idel_tbl(x$delta_h_acai_s_p, digits = digits, cols = cols, ...)
   }
   cat("\n", stars,
       "\nCOMPARING CAI FOR REFERENCE AND (EXPECTED) FOCAL GROUPS\n", stars,
       sep = "")
   cat("\nDiscrepancy between CAI of reference vs. Efocal groups under PFI:\n",
       sep = "")
-  .print_idel_tbl(x$h_R_Ef, digits, cols = cols, ...)
+  .print_idel_tbl(x$h_R_Ef, digits = digits, cols = cols, ...)
   cat(dashes,
       "\nImpact of deleting an item on the discrepancy between observed\n",
       "CAI for the reference group and expected CAI for the focal groups\n",
       "(Efocal):\n", sep = "")
-  .print_idel_tbl(x$delta_h_R_Ef, digits, cols = cols, ...)
+  .print_idel_tbl(x$delta_h_R_Ef, digits = digits, cols = cols, ...)
   if (full_result) {
     cat("\nDiscrepancy between CAI under SFI vs. PFI:\n")
-    .print_idel_tbl(x$h_s_p, digits, cols = cols, first_is_ref = TRUE, ...)
+    .print_idel_tbl(x$h_s_p, digits = digits, cols = cols, first_is_ref = TRUE, ...)
     cat(dashes,
         "\nImpact of deleting an item on the discrepancy between CAI under\n",
         "SFI vs. PFI:\n")
-    .print_idel_tbl(x$delta_h_s_p, digits, cols = cols, first_is_ref = TRUE,
+    .print_idel_tbl(x$delta_h_s_p, digits = digits, cols = cols, first_is_ref = TRUE,
                     ...)
   }
   invisible(NULL)
@@ -271,11 +271,20 @@ print.itemdeletion <- function(x, digits = 3L, cols = 5:8,
         glab <- "Focal"
       }
       cat(glab, " group: ", names(x[i]), "\n", sep = "")
-      .print_idel_tbl(x[[i]], digits, cols, ...)
+      .print_idel_tbl(x[[i]], digits = digits, cols = cols, ...)
     })
-  }
-  else {
-    print(x[, cols, drop = FALSE], digits = digits, ...)
+  } else {
+    df <- as.data.frame(x[, cols, drop = FALSE])
+    
+    # round and format numeric columns, control # of digits after the decimal
+    num_cols <- sapply(df, is.numeric)
+    if (any(num_cols)) { 
+      df[num_cols] <- lapply(df[num_cols], function(v)
+        # format = "f" to prevent scientific notation, drop0trailing = F to keep 0s
+        formatC(v, digits = digits, format = "f", drop0trailing = FALSE))
+    }
+    
+    print(df, right = TRUE,  ...)
   }
   invisible(NULL)
 }

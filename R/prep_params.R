@@ -3,6 +3,7 @@
                    "kappa_r", "kappa_f", "phi_r", "phi_f", "tau_r", "tau_f",
                    "pmix_ref")
 prep_params <- function(x) {
+  #print("in prep_params()")
   if (!is.null(x$cfa_fit)) {
     cfa_params <- get_params_cfa(x$cfa_fit, x$pmix, x$labels)
     x[names(cfa_params)] <- cfa_params
@@ -15,18 +16,19 @@ prep_params <- function(x) {
   }
   stopifnot("Number of groups as indicated in the estimates must match." = 
               length(x$alpha) == lengths(x[c("psi", "lambda", "nu", "theta")]))
-  q <- length(x$alpha[[1]])
+  d <- length(x$alpha[[1]])
   p <- length(x$nu[[1]])
   num_g <- length(x$alpha)
+  #print(paste0("d: ", d, "\n p: ", p, "\n num_g: ", num_g))
   x$alpha <- to_list_matrices(x$alpha)
-  x$psi <- to_list_matrices(x$psi, dims = c(q, q))
-  x$lambda <- to_list_matrices(x$lambda, dims = c(p, q))
+  x$psi <- to_list_matrices(x$psi, dims = c(d, d))
+  x$lambda <- to_list_matrices(x$lambda, dims = c(p, d))
   x$theta <- to_list_matrices(x$theta, dims = c(p, p))
   x$nu <- to_list_matrices(x$nu)
   
   #### 'weights_item' and 'weights_latent' ####
   x$weights_item <- check_weights(x$weights_item, p)
-  x$weights_latent <- check_weights(x$weights_latent, q)
+  x$weights_latent <- check_weights(x$weights_latent, d)
   
   #### 'pmix' ####
   x$pmix <- check_pmix(x$pmix, num_g)
@@ -47,7 +49,7 @@ prep_params <- function(x) {
   # names(theta) <- paste("theta", g_labs, sep = "_")
 
   x$p <- p
-  x$q <- q
+  x$d <- d
   x$num_g <- num_g
   
   return(x)
@@ -174,6 +176,7 @@ all_nonnull <- function(x) {
 # Standardizes deprecated reference-focal parameter names to the format expected
 # by downstream functions, supporting backward compatibility.
 stanitize_rf_params <- function(x) {
+  #print("in stanitize_rf_params()")
   if (is.null(x$alpha)) {
     if (all_null(x[c("alpha_r", "alpha_f")]) &&
         all_nonnull(x[c("kappa_r", "kappa_f")])) {

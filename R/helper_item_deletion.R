@@ -29,6 +29,53 @@ print_dfs_from_list <- function(ls, items) {
   })
 }
 
+# Backward-compatible mapping from n_i_per_dim / n_dim to item_which_dim
+to_item_which_dim <- function(x) {
+  # if item_which_dim is provided, return as is
+  if (!is.null(x$item_which_dim)) return(x)
+  
+  # check that the scale length was provided and is in the correct format
+  if (is.null(x$p) || length(x$p) != 1L) {
+    stop("`x$p` (number of items) must be a single numeric value.")
+  }
+  p <- as.integer(x$p)
+  
+  # if legacy n_i_per_dim was provided, derive item_which_dim from it
+  if (!is.null(x$n_i_per_dim)) {
+    if (!is.numeric(x$n_i_per_dim) || any(x$n_i_per_dim <= 0)) {
+      stop("`n_i_per_dim` must be a numeric vector of positive counts.")
+    }
+    if (sum(x$n_i_per_dim) != p) {
+      stop("Sum of `n_i_per_dim` (", sum(x$n_i_per_dim),
+           ") must equal the number of items `p` (", p, ").")
+    }
+    x$item_which_dim <- rep(seq_along(x$n_i_per_dim), times = x$n_i_per_dim)
+    x$reweigh_by_dim <- TRUE
+    return(x)
+  }
+  
+  # if n_dim was provided, derive item_which_dim using it
+  n_dim <- if (!is.null(x$n_dim)) as.integer(x$n_dim) else 1
+  if (n_dim <= 0) stop("`n_dim` must be a positive integer.")
+  
+  if (n_dim == 1) {
+    x$item_which_dim <- rep(1, p)
+    x$reweigh_by_dim <- TRUE
+    return(x)
+  }
+  # n_dim > 1: assume equal items per dimension
+  if (p %% n_dim != 0) {
+    stop(
+      "`p = ", p, "` items cannot be split equally across `n_dim = ", n_dim, "`.\n",
+      "Provide `item_which_dim` to indicate which dimension each item belongs to instead."
+    )
+  }
+  dimn <- as.integer(p / n_dim)
+  x$item_which_dim <- rep(seq_len(n_dim), each = dimn)
+  x$reweigh_by_dim <- TRUE
+  x
+}
+
 
 #' @title
 #' Compute PS, SR, SE, SP weighted by group proportions

@@ -28,6 +28,9 @@
 #'   updated so that the dimension for the deleted item will be reduced
 #'   proportionally. Default is `FALSE`.
 #' @param ... Other arguments for \code{\link[graphics]{contour}}.
+#' @param cfa_fit,propsel,cut_z,weights_item,weights_latent,alpha,psi,lambda,theta,nu,pmix,pmix_ref,plot_contour,labels,n_dim,n_i_per_dim,alpha_r,alpha_f,psi_r,psi_f,lambda_r,lambda_f,nu_r,nu_f,Theta_r,Theta_f,reference,custom_colors,digits,quadrantsABCD
+#'     Deprecated; included for backward compatibility. With two groups, '_r' 
+#'     and '_f' suffixes refer to the reference group and the focal group.
 #' @return `item_deletion_h` returns an object of class `itemdeletion`
 #'     containing the following elements.
 #'     \item{AI}{A data frame storing Adverse Impact (AI) values under partial
@@ -116,24 +119,52 @@
 #' partinv_fit <- PartInv(cfa_fit = fit, propsel = .05)
 #' item_deletion_h(partinv_fit)
 #' @export
-item_deletion_h <- function(x,
+item_deletion_h <- function(x = NULL,
                             item_which_dim = NULL,
                             reweigh_by_dim = !is.null(item_which_dim),
                             delete_items = NULL,
                             delete_one_cutoff = NULL,
                             update_latent_weights = FALSE,
-                            ...) {
+                            ...,
+                            ## legacy args (backward compatibility)
+                            cfa_fit = NULL, propsel = NULL, cut_z = NULL,
+                            weights_item = NULL, weights_latent = NULL,
+                            alpha = NULL, psi = NULL, lambda = NULL, theta = NULL, nu = NULL,
+                            pmix = NULL, pmix_ref = 0.5, plot_contour = FALSE, labels = NULL,
+                            n_dim = 1, n_i_per_dim = NULL, alpha_r = NULL, alpha_f = alpha_r,
+                            psi_r = NULL, psi_f = psi_r, lambda_r = NULL, lambda_f = lambda_r,
+                            nu_r = NULL, nu_f = nu_r, Theta_r = NULL, Theta_f = Theta_r,
+                            reference = NULL, custom_colors = NULL, quadrantsABCD = TRUE, digits = 3) {
   CAIs <- c("TP", "FP", "TN", "FN", "PS", "SR", "SE", "SP")
   CAIs_star <- paste0(CAIs, "*")
-  # make adjustments for formatting and backward compatibility
-  # argg <- c(as.list(environment()), list(...))
-  # pl <- prep_params(argg)
+  # Build a unified argument list from the environment
+  argg <- c(as.list(environment()), list(...))
+
+  # make adjustments for formatting and backward compatibility:
+  
+  # if a PartInv object was not provided, run PartInv() using the args in the env
+  if (is.null(x)) {
+    # Standardize legacy rf-suffixed params / CFA extraction / weights / pmix / labels
+    argg <- prep_params(argg)
+    # Create a PartInv object (ensure MI results are available for downstream comparisons)
+    x <- do.call(PartInv, c(argg, list(show_mi_result = FALSE)))
+    x$params$functioncall <- NULL
+    # populate item_which_dim
+    argg <- to_item_which_dim(argg) 
+    x
+  }
+  if (!inherits(x, "PartInv")) {
+    stop("`x` must be a PartInv object, or provide legacy parameters so a PartInv can be constructed.")
+  }
+
+
+  
   x <- add_mi_partinv(x)  # add MI results if not present
   x <- validate_PartInv(x)
 
   pl <- c(x$params, propsel = list(x$propsel), cut_z = list(x$cutpt_z),
-          item_which_dim = list(item_which_dim),
-          reweigh_by_dim = list(reweigh_by_dim),
+          item_which_dim = list(argg$item_which_dim),
+          reweigh_by_dim = list(argg$reweigh_by_dim),
           update_latent_weights = list(update_latent_weights),
           list(...))
   pmix <- pl$pmix
@@ -168,6 +199,7 @@ item_deletion_h <- function(x,
     pl_del$cut_z <- delete_one_cutoff
     pl_del$propsel <- NULL
   }
+ 
   for (i in seq_along(delete_items)) {
     store_del_i[[i]] <- partinv_del_i(
       c(pl_del, list(show_mi_result = TRUE)), delete_items[i])
@@ -252,22 +284,25 @@ item_deletion_h <- function(x,
       "h_s_p" = tbl_h_s_p,
       "delta_h_s_p" = tbl_delta_h_s_p,
       "delete_one_outputs" = store_del_i,
-      "items" = delete_items
-    ),
+      "items" = delete_items),
     class = "itemdeletion"
   )
 }
 
 partinv_del_i <- function(x, i) {
+  # print("in partinv_del_i()")
   x$weights_item <- redistribute_weights2(
-    x$weights_item, item_which_dim = x$item_which_dim,
-    reweigh_by_dim = x$reweigh_by_dim, del_i = i)
+    w = x$weights_item, del_i = i, item_which_dim = x$item_which_dim,
+    reweigh_by_dim = x$reweigh_by_dim)
+
   if (x$update_latent_weights) {
     x$weights_latent <- update_lw(
-      x$weights_latent, del_i = i, item_which_dim = x$item_which_dim)
+      w = x$weights_latent, del_i = i, item_which_dim = x$item_which_dim)
   }
   # Call PartInv with the new weights ####
-  do.call(PartInv, x)
+  out <- do.call(PartInv, x)
+  out$params$functioncall <- NULL
+  out
 }
 
 to_tbl_itemdeletion <- function(x, rn, cn, labels = NULL) {

@@ -1,6 +1,105 @@
-# Create sample output
 
-test_that("redistribute_weights works properly", {
+
+
+
+
+
+test_that("item_deletion_h() handles matrix input", {
+
+  CESD_v <- PartInv(
+    cut_z = 16/60 * 12,
+    weights_item = rep(1, 4),
+    weights_latent = 1,
+    alpha = list(0, -0.125),                 
+    psi = list(0.354^2, 0.329^2),
+    lambda = list(c(1.00, 1.66, 2.30, 2.29), 
+                  c(1.00, 1.66, 2.30, 2.29)),
+    nu = list(c(1.54, 1.36, 1.16, 1.08),
+              c(0.68, 1.36, 1.16, 1.08)),
+    theta = list(diag(c(1.20, 0.81, 0.32, 0.32)),
+                 diag(c(0.72, 0.81, 0.32, 0.32))),
+    pmix = c(4903/(1903 + 4903), 1 - (4903/(1903 + 4903))),
+    plot_contour = FALSE
+  )
+  CESD_mat <- PartInv(
+    cut_z = 16 / 60 * 12,
+    weights_item = c(rep(1, 4)),
+    weights_latent = 1,
+    alpha = list(matrix(0), matrix(-0.125)),
+    psi = list(matrix(0.354^2), matrix(0.329^2)),
+    lambda = list(matrix(c(1.00, 1.66, 2.30, 2.29)), 
+                  matrix(c(1.00, 1.66, 2.30, 2.29))),
+    nu = list(matrix(c(1.54, 1.36, 1.16, 1.08)), 
+              matrix(c(0.68, 1.36, 1.16, 1.08))),
+    theta = list(diag(c(1.20, 0.81, 0.32, 0.32)), 
+                 diag(c(0.72, 0.81, 0.32, 0.32))),
+    pmix = c(4903/(1903 + 4903), 1 - (4903/(1903 + 4903))),
+    plot_contour = FALSE
+  )
+  
+  out_vec <- item_deletion_h(CESD_v)
+  out_mat <- item_deletion_h(CESD_mat)
+  # # outputs should be equivalent aside from the function calls, remove these
+  # out_vec$delete_one_outputs <- lapply(out_vec$delete_one_outputs, function(x) {
+  #   x$params$functioncall <- NULL
+  #   x
+  # })
+  # out_mat$delete_one_outputs <- lapply(out_mat$delete_one_outputs, function(x) {
+  #   x$params$functioncall <- NULL
+  #   x
+  # })
+  expect_equal(out_vec, out_mat)
+})
+
+test_that("item_deletion_h() is backwards compatible", {
+  CESD_v <- PartInv(
+    cut_z = 16/60 * 12,
+    weights_item = rep(1, 4),
+    weights_latent = 1,
+    alpha = list(0, -0.125),                 
+    psi = list(0.354^2, 0.329^2),
+    lambda = list(c(1.00, 1.66, 2.30, 2.29), 
+                  c(1.00, 1.66, 2.30, 2.29)),
+    nu = list(c(1.54, 1.36, 1.16, 1.08),
+              c(0.68, 1.36, 1.16, 1.08)),
+    theta = list(diag(c(1.20, 0.81, 0.32, 0.32)),
+                 diag(c(0.72, 0.81, 0.32, 0.32))),
+    pmix = c(4903/(1903 + 4903), 1 - (4903/(1903 + 4903))),
+    plot_contour = FALSE
+  )
+  out_vec <- item_deletion_h(CESD_v)
+  
+  out_old <- item_deletion_h(
+     cut_z = 16/60 * 12,
+     weights_item = rep(1, 4),
+     weights_latent = 1,
+     alpha = list(0, -0.125),                 
+     psi = list(0.354^2, 0.329^2),
+     lambda = list(c(1.00, 1.66, 2.30, 2.29), 
+                   c(1.00, 1.66, 2.30, 2.29)),
+     nu = list(c(1.54, 1.36, 1.16, 1.08),
+               c(0.68, 1.36, 1.16, 1.08)),
+     theta = list(diag(c(1.20, 0.81, 0.32, 0.32)),
+                  diag(c(0.72, 0.81, 0.32, 0.32))),
+     pmix = c(4903/(1903 + 4903), 1 - (4903/(1903 + 4903))),
+     plot_contour = FALSE)
+
+  
+  # out_vec$delete_one_outputs <- lapply(out_vec$delete_one_outputs, function(x) {
+  #   x$params$functioncall <- NULL
+  #   x
+  # })
+  # out_mat$delete_one_outputs <- lapply(out_mat$delete_one_outputs, function(x) {
+  #   x$params$functioncall <- NULL
+  #   x
+  # })
+  expect_equal(out_vec, out_old)
+})
+
+
+
+### Helper functions
+test_that("redistribute_weights2 works properly", {
   w <- rep(1, 20)
   new_w <- redistribute_weights(w, del_i = 8)
   expect_length(new_w, 20)
@@ -15,59 +114,6 @@ test_that("redistribute_weights works properly", {
   expect_equal(new_w3[9], 1 + 1 / 6)
 })
 
-
-
-
-
-
-test_that("item_deletion_h() handles matrix input", {
-  CESD_pos <- PartInv(
-    cut_z = 16/60 * 12,
-    weights_item = rep(1, 4),
-    weights_latent = 1,
-    alpha = list(0, -0.125),                 
-    psi = list(0.354^2, 0.329^2),
-    lambda = list(c(1.00, 1.66, 2.30, 2.29),
-                  c(1.00, 1.66, 2.30, 2.29)),
-    nu = list(c(1.54, 1.36, 1.16, 1.08),
-              c(0.68, 1.36, 1.16, 1.08)),
-    theta = list(diag(c(1.20, 0.81, 0.32, 0.32)),
-                 diag(c(0.72, 0.81, 0.32, 0.32))),
-    pmix = c(4903 / (1903 + 4903), 1 - 4903 / (1903 + 4903)),
-    plot_contour = FALSE
-  )
-  CESD_pos_mat <- PartInv(
-    cut_z = 16 / 60 * 12,
-    weights_item = c(rep(1, 4)),
-    weights_latent = 1,
-    alpha = list(matrix(0), matrix(-0.125)),
-    psi = list(matrix(0.354^2), matrix(0.329^2)),
-    lambda = list(matrix(c(1.00, 1.66, 2.30, 2.29)), 
-                  matrix(c(1.00, 1.66, 2.30, 2.29))),
-    nu = list(matrix(c(1.54, 1.36, 1.16, 1.08)), 
-              matrix(c(0.68, 1.36, 1.16, 1.08))),
-    theta = list(diag(c(1.20, 0.81, 0.32, 0.32)), 
-                 diag(c(0.72, 0.81, 0.32, 0.32))),
-    pmix = c(4903 / (1903 + 4903), 1 - 4903 / (1903 + 4903)),
-    plot_contour = FALSE
-  )
-  out_vec <- item_deletion_h(CESD_pos)
-  out_mat <- item_deletion_h(CESD_pos_mat)
-  
-  # outputs should be equivalent aside from the function calls, remove these
-  # from params
-  out_vec$delete_one_outputs <- lapply(out_vec$delete_one_outputs, function(x) {
-    x$params$functioncall <- NULL
-    x
-  })
-  out_mat$delete_one_outputs <- lapply(out_mat$delete_one_outputs, function(x) {
-    x$params$functioncall <- NULL
-    x
-  })
-  expect_equal(out_vec, out_mat)
-})
-
-### Helper functions
 test_that("redistribute_weights() is working properly", {
   error_ex <- c(1:12)
   one_dim_w <- c(1:7)
