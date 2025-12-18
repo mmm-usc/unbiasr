@@ -65,6 +65,10 @@ plot.PartInv <- function(x, labels = x[["params"]][["labels"]],
                          custom_colors = NULL, 
                          quadrantsABCD = TRUE, 
                          ...) {
+  old_par <- par(no.readonly = TRUE)
+  on.exit(par(old_par), add = TRUE)
+  #           bottom left top right
+  par(mar = c(5,    6,    4,   2) + 0.1)
   
   valid_results <- c("pi", "mi")
   if (is.null(which_result)) {
@@ -133,7 +137,7 @@ plot.PartInv <- function(x, labels = x[["params"]][["labels"]],
                    xlab = bquote("Latent Composite" ~ (zeta)),
                    ylab = bquote("Observed Composite" ~ (italic(Z))),
                    lwd = 2, col = colorlist[1], xlim = x_lim, ylim = y_lim,
-                   main = title)
+                   main = title, cex.main = 1.6, cex.lab  = 1.4, cex.axis = 1.2)
     # Add on the ellipses for the focal groups
     for (i in 2:n_g) {
       contour_bvnorm(plot_dat$mn_xi[i], plot_dat$sd_xi[i],
