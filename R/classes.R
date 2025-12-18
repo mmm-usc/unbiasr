@@ -134,7 +134,7 @@ print.PartInv <- function(x, digits = 3L, ...) {
     print(summ[, 1:(ceiling(nc / 2))], ...)
     cat("\n")
     cat("Expected Results if Latent Distributions Matched the Reference Group:\n")
-    print(summ[, (ceiling(nc / 2) + 2):nc], ...)
+    print(summ[, (ceiling(nc / 2) + 1):nc], ...)
   } else {
     print(format_p(summ, ...))
   }

@@ -1,4 +1,4 @@
-#' @importFrom graphics legend abline text contour
+#' @importFrom graphics legend abline text contour par
 NULL
 
 #' Plot contour for a bivariate normal distribution
@@ -67,8 +67,19 @@ plot.PartInv <- function(x, labels = x[["params"]][["labels"]],
                          ...) {
   old_par <- par(no.readonly = TRUE)
   on.exit(par(old_par), add = TRUE)
+  
+  pin <- par("pin") # plotting region size
+
+  scale <- min(pin) / 5 # 5 inches as a baseline
+  scale <- max(0.85, min(scale, 1.15)) # don't shrink < 85% | grow > 115%
   #           bottom left top right
-  par(mar = c(5,    6,    4,   2) + 0.1)
+  par(mar = (c(5, 6, 4, 2) + 0.1) * scale)
+  cex_main <- 1.6 * scale
+  cex_lab  <- 1.4 * scale
+  cex_axis <- 1.2 * scale
+  cex_leg  <- 1 * scale
+  lwd_base <- max(1, 2 * scale)
+  
   
   valid_results <- c("pi", "mi")
   if (is.null(which_result)) {
@@ -136,18 +147,18 @@ plot.PartInv <- function(x, labels = x[["params"]][["labels"]],
                    cov12 = plot_dat$cov_z_xi[1],
                    xlab = bquote("Latent Composite" ~ (zeta)),
                    ylab = bquote("Observed Composite" ~ (italic(Z))),
-                   lwd = 2, col = colorlist[1], xlim = x_lim, ylim = y_lim,
-                   main = title, cex.main = 1.6, cex.lab  = 1.4, cex.axis = 1.2)
+                   lwd = lwd_base, col = colorlist[1], xlim = x_lim, ylim = y_lim,
+                   main = title, cex.main = cex_main, cex.lab  = cex_lab, cex.axis = cex_axis)
     # Add on the ellipses for the focal groups
     for (i in 2:n_g) {
       contour_bvnorm(plot_dat$mn_xi[i], plot_dat$sd_xi[i],
                      plot_dat$mn_z[i], plot_dat$sd_z[i],
                      cov12 = plot_dat$cov_z_xi[i],
-                     add = TRUE, lwd = 2, col = colorlist[i], 
+                     add = TRUE, lwd = lwd_base, col = colorlist[i], 
                      lty = ltylist[i])
     }
     legend("topleft", labels, lty = c("solid", ltylist[2:n_g]), 
-           col = colorlist[1:n_g])
+           col = colorlist[1:n_g], cex = cex_leg)
     abline(h = cut_z, v = cut_xi)
     x_cord <- rep(cut_xi + c(.8, -.8) * plot_dat$sd_xi[1], 2)
     y_cord <- rep(cut_z + c(.8, -.8) * plot_dat$sd_z[1], each = 2)

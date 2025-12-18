@@ -222,14 +222,10 @@ PartInv <- function(cfa_fit = NULL,
     } else {
       which_result <- c("pi")
     }
-    dots <- list(...)
-    dots$x <- NULL  # remove potential duplicate
-    do.call(plot.PartInv, 
-            c(list(x = out, which_result = which_result, 
-                   custom_colors = custom_colors, quadrantsABCD = quadrantsABCD),
-              dots))
+    plot.PartInv(out, which_result = which_result,
+                custom_colors = custom_colors, quadrantsABCD = quadrantsABCD,
+                ...)
   }
-
   out
 }
 
