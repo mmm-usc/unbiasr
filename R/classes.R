@@ -284,7 +284,7 @@ print.itemdeletion <- function(x, digits = 3L, cols = 5:8,
         formatC(v, digits = digits, format = "f", drop0trailing = FALSE))
     }
     
-    print(df, right = TRUE,  ...)
+    print(df, ...)
   }
   invisible(NULL)
 }
