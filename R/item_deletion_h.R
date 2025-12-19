@@ -81,7 +81,7 @@
 #' print(del, full_result = TRUE) #formatted with additional output
 #' del$AI # can access all outputs without rounding or formatting
 #' del$ACAI
-#' del$PartInv_outputs$`Full item set`$summary
+#' del$delete_one_outputs$`|1`$summary
 #' # choose Japanese as the reference group and use a cutoff:
 #' partinv_sim <- PartInv(cfa_fit = fit_sim, cut_z = 15, reference = "Japanese")
 #' del <- item_deletion_h(partinv_sim)
