@@ -1,5 +1,7 @@
 #' @importFrom stats qchisq pnorm qnorm nlminb
 #' @importFrom mnormt pmnorm
+#' @importFrom blavaan bcfa blavInspect
+#' @importFrom future plan multisession
 NULL
 
 #' (Multivariate) Classification Accuracy Analysis (MCAA)
@@ -51,6 +53,14 @@ NULL
 #'   to the reference group.
 #' @param quadrantsABCD Whether to label the quadrants with A, B, C, D or TR,
 #'   FP, TN, FN. `TRUE` by default.
+#' @param bayesian Whether to refit the model in the Bayesian paradigm and 
+#'   construct credible intervals for CAI. For `bayesian=TRUE`, a fitted lavaan
+#'   object (`cfa_fit`) and the dataset for the analysis (`dataset`) should be 
+#'   provided.
+#' @param dataset Dataset for the analyses. Should contain a column with scale
+#'   sums.
+#' @param col_name_scores String variable. The name of the column containing the sum
+#'   scores in `dataset`.
 #' @param ... Other arguments for \code{\link[graphics]{contour}}.
 #' @param alpha_r,alpha_f,nu_r,nu_f,Theta_r,Theta_f,psi_r,psi_f,lambda_r,lambda_f,phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f,pmix_ref
 #'     Deprecated; included for backward compatibility. With two groups, '_r' 
@@ -170,6 +180,9 @@ PartInv <- function(cfa_fit = NULL,
                     custom_colors = NULL,
                     reference = NULL,
                     quadrantsABCD = TRUE,
+                    bayesian = FALSE,
+                    dataset = NULL,
+                    col_name_scores = NULL,
                     ...,
                     kappa_r = NULL, kappa_f = kappa_r,
                     alpha_r = NULL, alpha_f = alpha_r,
@@ -179,8 +192,10 @@ PartInv <- function(cfa_fit = NULL,
                     tau_r = NULL, tau_f = tau_r,
                     nu_r = NULL, nu_f = nu_r,
                     Theta_r = NULL, Theta_f = Theta_r) {
+  
   argg <- c(as.list(environment()), list(...))
   argg <- prep_params(argg)
+  
   out <- new_PartInv()
   params <- argg[c("weights_item", "weights_latent", "alpha", "psi",
                    "lambda", "theta", "nu", "pmix", "propsel", "labels",
@@ -213,7 +228,6 @@ PartInv <- function(cfa_fit = NULL,
     out[names_to_update] <- out_mi[names_to_update]
     # colnames(out_mi$summary) <- params$labels
     # names(out_mi) <- paste0(names(out_mi), "_mi")
-
   }
 
   if (plot_contour) {
@@ -226,8 +240,27 @@ PartInv <- function(cfa_fit = NULL,
                 custom_colors = custom_colors, quadrantsABCD = quadrantsABCD,
                 ...)
   }
-  out
+  
+  # Refit the model in the Bayesian paradigm. If either the cfa_fit object or the
+  # dataset is missing, or if there is more than one factor, return the point estimates but provide warnings to user.
+  if (bayesian == TRUE) {
+    if (length(weights_latent) > 1) { 
+      warning("Only point estimates are returned. Bayesian results are provided for unidimensional data.")
+      return(invisible(NULL))
+    }    
+    
+    b_out <- bayesian_refit(cfa_fit, dataset = dataset, col_name_scores = col_name_scores, 
+                            propsel = propsel, cut_z = cut_z,
+                            labels = params$labels, n.chains = 3,
+                            post_burnin_sample = 1000)
+    
+
+  }
+  list(out, b_out)
 }
+
+
+
 
 #' @rdname PartInv
 #' @export
