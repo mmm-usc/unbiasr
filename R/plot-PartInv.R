@@ -162,12 +162,7 @@ plot.PartInv <- function(x, labels = x[["params"]][["labels"]],
     abline(h = cut_z, v = cut_xi)
     x_cord <- rep(cut_xi + c(.8, -.8) * plot_dat$sd_xi[1], 2)
     y_cord <- rep(cut_z + c(.8, -.8) * plot_dat$sd_z[1], each = 2)
-    if (quadrantsABCD) { 
-      text(x_cord, y_cord, c("A", "B", "D", "C"))
-    } else {
-      text(x_cord, y_cord, c("TP", "FP", "FN", "TN"))
-    }
-    
+    text(x_cord, y_cord, c("TP", "FP", "FN", "TN"))
     if (n_g > 20) {
       warning("If you would like to plot the contours of more than 20 groups, 
               please provide a list of 20 color names.")

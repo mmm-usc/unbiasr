@@ -49,8 +49,9 @@ NULL
 #'   Currently only functional when `cfa_fit` is provided. If providing parameter
 #'   estimates instead, reorder estimates such that the first estimates belong
 #'   to the reference group.
-#' @param quadrantsABCD Whether to label the quadrants with A, B, C, D or TR,
-#'   FP, TN, FN. `TRUE` by default.
+#' @param quadrantsABCD Deprecated. Whether to label the quadrants with A, B, C, D
+#'   or TR, FP, TN, FN. This argument is retained for backward compatibility and
+#'   is ignored; quadrant will be labelled as TP, FP, FN, TN.
 #' @param ... Other arguments for \code{\link[graphics]{contour}}.
 #' @param alpha_r,alpha_f,nu_r,nu_f,Theta_r,Theta_f,psi_r,psi_f,lambda_r,lambda_f,phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f,pmix_ref
 #'     Deprecated; included for backward compatibility. With two groups, '_r' 

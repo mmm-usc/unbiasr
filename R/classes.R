@@ -9,12 +9,13 @@ stars <-
 dashes <-
   "-----------------------------------------------------------------------"
 
-summary_print <- function(x, ...) {
-  # rownames(x) <- c("True Positive", "False Positive", "True Negative",
-  #                  "False Negative", "Proportion Selected",
-  #                  "Success Ratio", "Sensitivity", "Specificity")
-  print(round(x, digits = 3))
-}
+.cai_names <- c("True Positive", "False Positive", "True Negative",
+                 "False Negative", "Proportion Selected",
+                 "Success Ratio", "Sensitivity", "Specificity")
+
+# summary_print <- function(x, ...) {
+#   print(round(x, digits = 3))
+# }
 
 # Constructor
 new_PartInv <- function() {
@@ -112,6 +113,7 @@ print.PartInv <- function(x, digits = 3L, ...) {
   cut_xi <- x[[2]]
   cut_z <- x[[3]]
   summ <- x[[4]]
+  rownames(summ) <- .cai_names
   first_word <- switch(type,
                        pi = "Partial",
                        mi = "Strict")

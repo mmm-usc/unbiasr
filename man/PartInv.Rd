@@ -102,8 +102,9 @@ Currently only functional when \code{cfa_fit} is provided. If providing paramete
 estimates instead, reorder estimates such that the first estimates belong
 to the reference group.}
 
-\item{quadrantsABCD}{Whether to label the quadrants with A, B, C, D or TR,
-FP, TN, FN. \code{TRUE} by default.}
+\item{quadrantsABCD}{Deprecated. Whether to label the quadrants with A, B, C, D
+or TR, FP, TN, FN. This argument is retained for backward compatibility and
+is ignored; quadrant will be labelled as TP, FP, FN, TN.}
 
 \item{...}{Other arguments for \code{\link[graphics]{contour}}.}
 
