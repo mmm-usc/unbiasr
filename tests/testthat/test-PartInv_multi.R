@@ -181,13 +181,13 @@ pimout_eq <- PartInv(
                    -0.048775, -0.048775, -0.048775, -0.048775,
                    0.0309, 0.0309, 0.0309, 0.0309),
   weights_latent = c(0.0325, 0.1795, 0.4693, -0.1951, 0.1236),
-  alpha_r = result[[2]]$alpha, 
-  alpha_f = result[[1]]$alpha,
-  psi_r = result[[2]]$psi, 
-  psi_f = result[[1]]$psi,
-  lambda_r = (result[[2]]$lambda + result[[1]]$lambda) / 2,
-  nu_r = (result[[2]]$nu + result[[1]]$nu) / 2,
-  Theta_r = (result[[2]]$theta + result[[1]]$theta) / 2
+  alpha = list(result[[2]]$alpha, result[[1]]$alpha),
+  psi = list(result[[2]]$psi, result[[1]]$psi),
+  lambda = list((result[[2]]$lambda + result[[1]]$lambda) / 2,
+                  (result[[2]]$lambda + result[[1]]$lambda) / 2),
+  nu = list((result[[2]]$nu + result[[1]]$nu) / 2, 
+              (result[[2]]$nu + result[[1]]$nu) / 2),
+  theta = list((result[[2]]$theta + result[[1]]$theta) / 2, (result[[2]]$theta + result[[1]]$theta) / 2)
 )
 
 pimout <- PartInv(
@@ -199,15 +199,11 @@ pimout <- PartInv(
                    0.0309, 0.0309, 0.0309, 0.0309),
   # Agreeableness Conscientiousness Extraversion Neuroticism Openness
   weights_latent = c(0.0325, 0.1795, 0.4693, -0.1951, 0.1236),
-  alpha_r = result[[2]]$alpha,
-  alpha_f = result[[1]]$alpha,
-  psi_r = result[[2]]$psi,
-  psi_f = result[[1]]$psi,
-  lambda_r = result[[2]]$lambda,
-  nu_r = result[[2]]$nu,
-  nu_f = result[[1]]$nu,
-  Theta_r = result[[2]]$theta,
-  Theta_f = result[[1]]$theta
+  alpha = list(result[[2]]$alpha, result[[1]]$alpha),
+  psi = list(result[[2]]$psi, result[[1]]$psi),
+  lambda = list(result[[2]]$lambda, result[[2]]$lambda),
+  nu = list(result[[2]]$nu, result[[1]]$nu),
+  theta = list(result[[2]]$theta, result[[1]]$theta)
 )
 
 ## test weights_latent is null
@@ -220,15 +216,11 @@ test_that("PartInv() runs with no latent weight input", {
                      0.117325, 0.117325, 0.117325, 0.117325,
                      -0.048775, -0.048775, -0.048775, -0.048775,
                      0.0309, 0.0309, 0.0309, 0.0309),
-    alpha_r = result[[2]]$alpha,
-    alpha_f = result[[1]]$alpha,
-    psi_r = result[[2]]$psi,
-    psi_f = result[[1]]$psi,
-    lambda_r = result[[2]]$lambda,
-    nu_r = result[[2]]$nu,
-    nu_f = result[[1]]$nu,
-    Theta_r = result[[2]]$theta,
-    Theta_f = result[[1]]$theta
+    alpha = list(result[[2]]$alpha, result[[1]]$alpha),
+    psi = list(result[[2]]$psi, result[[1]]$psi),
+    lambda = list(result[[2]]$lambda, result[[2]]$lambda),
+    nu = list(result[[2]]$nu, result[[1]]$nu),
+    theta = list(result[[2]]$theta, result[[1]]$theta)
   )
   pimout_latwei_ba <- PartInv(
     propsel = .25,
@@ -238,15 +230,11 @@ test_that("PartInv() runs with no latent weight input", {
                      -0.048775, -0.048775, -0.048775, -0.048775,
                      0.0309, 0.0309, 0.0309, 0.0309),
     weights_latent = c(rep(1, 5)),
-    alpha_r = result[[2]]$alpha,
-    alpha_f = result[[1]]$alpha,
-    psi_r = result[[2]]$psi,
-    psi_f = result[[1]]$psi,
-    lambda_r = result[[2]]$lambda,
-    nu_r = result[[2]]$nu,
-    nu_f = result[[1]]$nu,
-    Theta_r = result[[2]]$theta,
-    Theta_f = result[[1]]$theta
+    alpha = list(result[[2]]$alpha, result[[1]]$alpha),
+    psi = list(result[[2]]$psi, result[[1]]$psi),
+    lambda = list(result[[2]]$lambda, result[[2]]$lambda),
+    nu = list(result[[2]]$nu, result[[1]]$nu),
+    theta = list(result[[2]]$theta, result[[1]]$theta)
   )
   
   expect_equal(pimout_latwei_ba[1:4], pimout_latwei_null[1:4])
@@ -259,30 +247,22 @@ test_that("PartInv() runs with no item weight input", {
     propsel = .25,
     weights_latent = c(0.0325, 0.1795, 
                        0.4693, -0.1951, 0.1236),
-    alpha_r = result[[2]]$alpha,
-    alpha_f = result[[1]]$alpha,
-    psi_r = result[[2]]$psi,
-    psi_f = result[[1]]$psi,
-    lambda_r = result[[2]]$lambda,
-    nu_r = result[[2]]$nu,
-    nu_f = result[[1]]$nu,
-    Theta_r = result[[2]]$theta,
-    Theta_f = result[[1]]$theta
+    alpha = list(result[[2]]$alpha, result[[1]]$alpha),
+    psi = list(result[[2]]$psi, result[[1]]$psi),
+    lambda = list(result[[2]]$lambda, result[[2]]$lambda),
+    nu = list(result[[2]]$nu, result[[1]]$nu),
+    theta = list(result[[2]]$theta, result[[1]]$theta)
   )
   pimout_itwei_ba <- PartInv(
     propsel = .25,
     weights_item = c(rep(1, 20)),
     weights_latent = c(0.0325, 0.1795, 
                        0.4693, -0.1951, 0.1236),
-    alpha_r = result[[2]]$alpha,
-    alpha_f = result[[1]]$alpha,
-    psi_r = result[[2]]$psi,
-    psi_f = result[[1]]$psi,
-    lambda_r = result[[2]]$lambda,
-    nu_r = result[[2]]$nu,
-    nu_f = result[[1]]$nu,
-    Theta_r = result[[2]]$theta,
-    Theta_f = result[[1]]$theta
+    alpha = list(result[[2]]$alpha, result[[1]]$alpha),
+    psi = list(result[[2]]$psi, result[[1]]$psi),
+    lambda = list(result[[2]]$lambda, result[[2]]$lambda),
+    nu = list(result[[2]]$nu, result[[1]]$nu),
+    theta = list(result[[2]]$theta, result[[1]]$theta)
   )
   expect_equal(pimout_itwei_ba[1:4], pimout_itwei_null[1:4])
 })
@@ -294,15 +274,11 @@ test_that("PartInv() runs with no latent weight input", {
     pimout_latwei_null <- PartInv(
       cut_z = 80,
       weights_item = c(rep(1/3, 20)),
-      alpha_r = result[[2]]$alpha,
-      alpha_f = result[[1]]$alpha,
-      psi_r = result[[2]]$psi,
-      psi_f = result[[1]]$psi,
-      lambda_r = result[[2]]$lambda,
-      nu_r = result[[2]]$nu,
-      nu_f = result[[1]]$nu,
-      Theta_r = result[[2]]$theta,
-      Theta_f = result[[1]]$theta
+      alpha = list(result[[2]]$alpha, result[[1]]$alpha),
+      psi = list(result[[2]]$psi, result[[1]]$psi),
+      lambda = list(result[[2]]$lambda, result[[2]]$lambda),
+      nu = list(result[[2]]$nu, result[[1]]$nu),
+      theta = list(result[[2]]$theta, result[[1]]$theta)
     ), 
     "Proportion selected is 1% or less")
 })
@@ -319,15 +295,11 @@ test_that("PartInv() runs with no item weight input", {
                      0.0309, 0.0309, 0.0309, 0.0309),
     weights_latent = c(0.0325, 0.1795, 
                        0.4693, -0.1951, 0.1236),
-    alpha_r = result[[2]]$alpha,
-    alpha_f = result[[1]]$alpha,
-    psi_r = result[[2]]$psi,
-    psi_f = result[[1]]$psi,
-    lambda_r = result[[2]]$lambda,
-    nu_r = result[[2]]$nu,
-    nu_f = result[[1]]$nu,
-    Theta_r = result[[2]]$theta,
-    Theta_f = result[[1]]$theta
+    alpha = list(result[[2]]$alpha, result[[1]]$alpha),
+    psi = list(result[[2]]$psi, result[[1]]$psi),
+    lambda = list(result[[2]]$lambda, result[[2]]$lambda),
+    nu = list(result[[2]]$nu, result[[1]]$nu),
+    theta = list(result[[2]]$theta, result[[1]]$theta)
   )
   expect_equal(pi_res_eq[1:4], pimout[1:4])
 })
@@ -344,15 +316,11 @@ test_that("PartInvMulti_we with customized label", {
                      0.0309, 0.0309, 0.0309, 0.0309),
     weights_latent = c(0.0325, 0.1795, 
                        0.4693, -0.1951, 0.1236),
-    alpha_r = result[[2]]$alpha,
-    alpha_f = result[[1]]$alpha,
-    psi_r = result[[2]]$psi,
-    psi_f = result[[1]]$psi,
-    lambda_r = result[[2]]$lambda,
-    nu_r = result[[2]]$nu,
-    nu_f = result[[1]]$nu,
-    Theta_r = result[[2]]$theta,
-    Theta_f = result[[1]]$theta,
+    alpha = list(result[[2]]$alpha, result[[1]]$alpha),
+    psi = list(result[[2]]$psi, result[[1]]$psi),
+    lambda = list(result[[2]]$lambda, result[[2]]$lambda),
+    nu = list(result[[2]]$nu, result[[1]]$nu),
+    theta = list(result[[2]]$theta, result[[1]]$theta),
     labels = c("Female", "Male")
   )
   expect_identical(colnames(pimout_label[[4]]), c("Female", "Male", "E_R(Male)"))

@@ -1,23 +1,22 @@
 # Create sample output
 piout <- PartInv(
   propsel = .10,
-  kappa_r = 0.5,
-  kappa_f = 0,
-  phi_r = 1,
-  lambda_r = c(.3, .5, .9, .7, .8),
-  tau_r = c(.225, .025, .010, .240, .123),
-  Theta_r = diag(.96, 5),
+  alpha = list(0.5, 0),
+  psi =  list(1, 1),
+  lambda = list(c(.3, .5, .9, .7, .8), c(.3, .5, .9, .7, .8)),
+  nu =  list(c(.225, .025, .010, .240, .123), c(.225, .025, .010, .240, .123)),
+  theta =  list(diag(.96, 5), diag(.96, 5)),
   labels = c("female", "male")
 )
 
 # Create sample output 2
 piout_eq <- PartInv(
   propsel = .10,
-  kappa_r = 0.5,
-  phi_r = 1,
-  lambda_r = c(.3, .5, .9, .7, .8),
-  tau_r = c(.225, .025, .010, .240, .123),
-  Theta_r = diag(.96, 5),
+  alpha = list(0.5, 0.5),
+  psi =  list(1, 1),
+  lambda = list(c(.3, .5, .9, .7, .8), c(.3, .5, .9, .7, .8)),
+  nu =  list(c(.225, .025, .010, .240, .123), c(.225, .025, .010, .240, .123)),
+  theta =  list(diag(.96, 5), diag(.96, 5)),
   labels = c("female", "male")
 )
 
@@ -28,40 +27,55 @@ test_that("PartInv() returns a data frame", {
 })
 
 test_that("plot.PartInv() works successfully", {
-  expect_error(plot(piout, labels = c("female", "male")),
-               regexp = NA)
+  # case where which_result=NULL, uses piout to determine which results are 
+  # available
+  expect_no_error(plot(piout, labels = c("female", "male")))
   expect_no_error(plot(piout))
+  # case where which_result="mi" but mi results were not previously requested
   expect_error(plot(piout, which_result = "mi"))
   piout_with_mi <- PartInv(
     propsel = .10,
-    kappa_r = 0.5,
-    kappa_f = 0,
-    phi_r = 1,
-    lambda_r = c(.3, .5, .9, .7, .8),
-    tau_r = c(.225, .025, .010, .240, .123),
-    Theta_r = diag(.96, 5),
+    alpha = list(0.5, 0.5),
+    psi = list(1, 1),
+    lambda = list(c(.3, .5, .9, .7, .8), c(.3, .5, .9, .7, .8)),
+    nu = list(c(.225, .025, .010, .240, .123), c(.225, .025, .010, .240, .123)),
+    theta = list(diag(.96, 5), diag(.96, 5)),
     labels = c("female", "male"),
     show_mi_result = TRUE
   )
-  expect_error(plot(piout_with_mi, labels = c("female", "male"),
-                    which_result = "mi"),
-               regexp = NA)
+  # case where which_result=mi, and mi results had been requested
+  expect_no_error(plot(piout_with_mi, labels = c("female", "male"),
+                    which_result = "mi"))
+  # case where which_result=NULL, and mi results had been requested
+  expect_no_error(plot(piout_with_mi, labels = c("female", "male")))
 })
 
 test_that("Identical selection with the same parameters", {
-  expect_equal(piout_eq$summary[ , 1],
-               piout_eq$summary[ , 2])
+  expect_equal(piout_eq$summary[, 1],
+               piout_eq$summary[, 2])
   expect_equal(piout_eq$summary["Proportion selected", 1], .10)
 })
+
+# if alpha or alpha_r or kappa_r or cfa_fit not provided
+expect_error(PartInv(
+  propsel = .10,
+  psi = c(1, 1),
+  lambda = list(c(.3, .5, .9, .7, .8), c(.3, .5, .9, .7, .8)),
+  nu = list(c(.225, .025, .010, .240, .123),c(.225, .025, .010, .240, .123)),
+  theta = list(diag(.96, 5), diag(.96, 5)),
+  labels = c("female", "male"),
+  show_mi_result = TRUE
+)
+)
 
 test_that("Duplicated results with `show_mi_result = TRUE` when inputting invariant model", {
   piout_eq2 <- PartInv(
     propsel = .10,
-    kappa_r = 0.5,
-    phi_r = 1,
-    lambda_r = c(.3, .5, .9, .7, .8),
-    tau_r = c(.225, .025, .010, .240, .123),
-    Theta_r = diag(.96, 5),
+    alpha = list(0.5, 0.5),
+    psi =  list(1, 1),
+    lambda = list(c(.3, .5, .9, .7, .8), c(.3, .5, .9, .7, .8)),
+    nu =  list(c(.225, .025, .010, .240, .123), c(.225, .025, .010, .240, .123)),
+    theta =  list(diag(.96, 5), diag(.96, 5)),
     labels = c("female", "male"),
     show_mi_result = TRUE
   )
@@ -69,59 +83,75 @@ test_that("Duplicated results with `show_mi_result = TRUE` when inputting invari
 })
 
 test_that("PartInv() handles matrix input", {
-  piout_mat <- PartInv(
-    propsel = .10,
-    kappa_r = matrix(0.5),
-    kappa_f = matrix(0),
-    phi_r = matrix(1),
-    lambda_r = matrix(c(.3, .5, .9, .7, .8)),
-    tau_r = matrix(c(.225, .025, .010, .240, .123)),
-    Theta_r = diag(.96, 5),
-    labels = c("female", "male")
+  piout_mat <- suppressWarnings( # warning for deprecated parameters suppressed
+    PartInv(
+      propsel = .10,
+      kappa_r = matrix(0.5),
+      kappa_f = matrix(0),
+      phi_r = matrix(1),
+      lambda_r = matrix(c(.3, .5, .9, .7, .8)),
+      tau_r = matrix(c(.225, .025, .010, .240, .123)),
+      Theta_r = diag(.96, 5),
+      labels = c("female", "male")
+    )
   )
   expect_equal(piout[1:4], piout_mat[1:4])
 })
 
 test_that("PartInv() handles diagonal input for Theta", {
-  piout_diag <- PartInv(
-    propsel = .10,
-    kappa_r = matrix(0.5),
-    kappa_f = matrix(0),
-    phi_r = matrix(1),
-    lambda_r = matrix(c(.3, .5, .9, .7, .8)),
-    tau_r = matrix(c(.225, .025, .010, .240, .123)),
-    Theta_r = rep(.96, 5),
-    labels = c("female", "male")
+  piout_diag <- suppressWarnings( # warning for deprecated parameters
+    PartInv(
+      propsel = .10,
+      kappa_r = matrix(0.5),
+      kappa_f = matrix(0),
+      phi_r = matrix(1),
+      lambda_r = matrix(c(.3, .5, .9, .7, .8)),
+      tau_r = matrix(c(.225, .025, .010, .240, .123)),
+      Theta_r = rep(.96, 5),
+      labels = c("female", "male")
+    )
   )
   expect_equal(piout[1:4], piout_diag[1:4])
 })
+
+
+test_that("PartInv() issues a deprecation warning for '_r' and '_f' parameters", {
+  # Expect the specific warning message from prep_params()
+  expect_warning(
+    PartInv(
+      propsel = .10,
+      kappa_r = matrix(0.5),
+      kappa_f = matrix(0),
+      phi_r = matrix(1),
+      lambda_r = matrix(c(.3, .5, .9, .7, .8)),
+      tau_r = matrix(c(.225, .025, .010, .240, .123)),
+      Theta_r = rep(.96, 5),
+      labels = c("female", "male")),
+    regexp = "Arguments with suffixes '_r' and '_f' are deprecated\\.",
+    fixed = FALSE
+  )
+})
+
 
 test_that("PartInv() output passes logical test", {
   psel <- .2
   # Example favoring reference group
   piout1_pstrict <- PartInv(
     propsel = psel,
-    kappa_r = 0,
-    kappa_f = -0.1,
-    phi_r = 1.3,
-    phi_f = 1.2,
-    lambda_r = c(1, .5, .9, .7, .8),
-    lambda_f = c(1, .8, .9, .7, .8),
-    tau_r = c(.225, .025, .010, .240, .123),
-    tau_f = c(.025, .025, .010, .240, .053),
-    Theta_r = diag(.96, 5),
-    Theta_f = diag(c(1, .65, .75, .9, .8)),
+    alpha = list(0, -0.1),
+    psi = list(1.3, 1.2),
+    lambda = list(c(1, .5, .9, .7, .8), c(1, .8, .9, .7, .8)),
+    nu = list(c(.225, .025, .010, .240, .123), c(.025, .025, .010, .240, .053)),
+    theta = list(diag(.96, 5), diag(c(1, .65, .75, .9, .8))),
     labels = c("reference", "focal")
   )
   piout1_strict <- PartInv(
     propsel = psel,
-    kappa_r = 0,
-    kappa_f = -0.1,
-    phi_r = 1.3,
-    phi_f = 1.2,
-    lambda_r = c(1, .5, .9, .7, .8),
-    tau_r = c(.225, .025, .010, .240, .123),
-    Theta_r = diag(.96, 5),
+    alpha = list(0, -0.1),
+    psi = list(1.3, 1.2),
+    lambda = list(c(1, .5, .9, .7, .8), c(1, .8, .9, .7, .8)),
+    nu = list(c(.225, .025, .010, .240, .123), c(.225, .025, .010, .240, .123)),
+    theta = list(diag(.96, 5), diag(.96, 5)),
     labels = c("reference", "focal")
   )
   sum_ps <- piout1_pstrict$summary
@@ -141,39 +171,32 @@ test_that("PartInv() output passes logical test", {
 
 test_that("`show_mi_result = TRUE` works properly", {
   psel <- .2
-  lambda_r <- c(1, .5, .9, .7, .8)
-  lambda_f <- c(1, .8, .9, .7, .8)
-  tau_r <- c(.225, .025, .010, .240, .123)
-  tau_f <- c(.025, .025, .010, .240, .053)
-  Theta_r <- diag(.96, 5)
-  Theta_f <- diag(c(1, .65, .75, .9, .8))
+  lambda <- list(c(1, .5, .9, .7, .8), c(1, .8, .9, .7, .8))
+  nu <- list(c(.225, .025, .010, .240, .123), c(.025, .025, .010, .240, .053))
+  theta <- list(diag(.96, 5), diag(c(1, .65, .75, .9, .8)))
   # Example favoring reference group
   piout1_pstrict <- PartInv(
     propsel = psel,
-    kappa_r = 0,
-    kappa_f = -0.1,
-    phi_r = 1.3,
-    phi_f = 1.2,
-    lambda_r = lambda_r,
-    lambda_f = lambda_f,
-    tau_r = tau_r,
-    tau_f = tau_f,
-    Theta_r = Theta_r,
-    Theta_f = Theta_f,
+    alpha = list(0, -0.1),
+    psi = list(1.3, 1.2),
+    lambda = lambda,
+    nu = nu,
+    theta = theta,
     labels = c("reference", "focal"),
-    pmix_ref = .2,
+    pmix = c(.2, .8),
     show_mi_result = TRUE
   )
   piout1_strict <- PartInv(
     propsel = psel,
-    kappa_r = 0,
-    kappa_f = -0.1,
-    phi_r = 1.3,
-    phi_f = 1.2,
-    lambda_r = lambda_r * .2 + lambda_f * .8,
-    tau_r = tau_r * .2 + tau_f * .8,
-    Theta_r = Theta_r * .2 + Theta_f * .8,
-    pmix_ref = .2,
+    alpha = list(0, -0.1),
+    psi = list(1.3, 1.2),
+    lambda = list(lambda[[1]] * .2 + lambda[[2]] * .8, 
+                  lambda[[1]] * .2 + lambda[[2]] * .8),
+    nu = list(nu[[1]] * .2 + nu[[2]] * .8, 
+              nu[[1]] * .2 + nu[[2]] * .8),
+    theta = list(theta[[1]] * .2 + theta[[2]] * .8, 
+                 theta[[1]] * .2 + theta[[2]] * .8),
+    pmix = c(.2, .8),
     labels = c("reference", "focal")
   )
   expect_equal(piout1_pstrict$summary_mi, piout1_strict$summary[, 1:2])
@@ -181,40 +204,77 @@ test_that("`show_mi_result = TRUE` works properly", {
 
 test_that("`show_mi_result = TRUE` uses same cut_z if specified", {
   cut_score <- 4
-  lambda_r <- c(1, .5, .9, .7, .8)
-  lambda_f <- c(1, .8, .9, .7, .8)
-  tau_r <- c(.225, .025, .010, .240, .123)
-  tau_f <- c(.025, .025, .010, .240, .053)
-  Theta_r <- diag(.96, 5)
-  Theta_f <- diag(c(1, .65, .75, .9, .8))
+  lambda <- list(c(1, .5, .9, .7, .8), c(1, .8, .9, .7, .8))
+  nu <- list(c(.225, .025, .010, .240, .123), c(.025, .025, .010, .240, .053))
+  theta <- list(diag(.96, 5), diag(c(1, .65, .75, .9, .8)))
   # Example favoring reference group
   piout1_pstrict <- PartInv(
     cut_z = cut_score,
-    kappa_r = 0,
-    kappa_f = -0.1,
-    phi_r = 1.3,
-    phi_f = 1.2,
-    lambda_r = lambda_r,
-    lambda_f = lambda_f,
-    tau_r = tau_r,
-    tau_f = tau_f,
-    Theta_r = Theta_r,
-    Theta_f = Theta_f,
+    alpha = list(0, -0.1),
+    psi = list(1.3, 1.2),
+    lambda = lambda,
+    nu = nu,
+    theta = theta,
     labels = c("reference", "focal"),
-    pmix_ref = .2,
+    pmix = c(.2, .8),
     show_mi_result = TRUE
   )
   piout1_strict <- PartInv(
     cut_z = cut_score,
-    kappa_r = 0,
-    kappa_f = -0.1,
-    phi_r = 1.3,
-    phi_f = 1.2,
-    lambda_r = lambda_r * .2 + lambda_f * .8,
-    tau_r = tau_r * .2 + tau_f * .8,
-    Theta_r = Theta_r * .2 + Theta_f * .8,
-    pmix_ref = .2,
+    alpha = list(0, -0.1),
+    psi = list(1.3, 1.2),
+    lambda = list(lambda[[1]] * .2 + lambda[[2]] * .8, 
+                  lambda[[1]] * .2 + lambda[[2]] * .8),
+    nu = list(nu[[1]] * .2 + nu[[2]] * .8, 
+              nu[[1]] * .2 + nu[[2]] * .8),
+    theta = list(theta[[1]] * .2 + theta[[2]] * .8, 
+                 theta[[1]] * .2 + theta[[2]] * .8),
+    pmix = c(.2, .8),
     labels = c("reference", "focal")
   )
   expect_equal(piout1_pstrict$summary_mi, piout1_strict$summary[, 1:2])
 })
+
+test_that("reference_first() works properly", {
+  new_params <- reference_first(
+    piout$params, labels = c("A", "B"), reference = "B")
+  expect_type(new_params$pmix, "double")
+})
+
+test_that("Handle pmix_ref properly", {
+  piout_pmix_ref <- suppressWarnings( # warning for deprecated parameters
+    PartInv(
+      propsel = .10,
+      alpha = list(0.5, 0),
+      psi = list(1, 1),
+      lambda = rep(list(c(.3, .5, .9, .7, .8)), 2),
+      nu = list(c(.225, .025, .010, .240, .123),
+                c(.125, .025, .110, .140, .223)),
+      theta = rep(list(diag(.96, 5)), 2),
+      labels = c("female", "male"),
+      pmix_ref = 0.3
+    )
+  )
+  expect_equal(piout_pmix_ref$params$pmix, c(0.3, 0.7))
+})
+
+test_that("AI ratio is > 0 for all cells", {
+  CESD_pos <- PartInv(
+    cut_z = 16/60 * 12,
+    weights_item = rep(1, 4),
+    weights_latent = 1,
+    alpha = list(0, -0.125),                 
+    psi = list(0.354^2, 0.329^2),
+    lambda = list(c(1.00, 1.66, 2.30, 2.29),
+                  c(1.00, 1.66, 2.30, 2.29)),
+    nu = list(c(1.54, 1.36, 1.16, 1.08),
+              c(0.68, 1.36, 1.16, 1.08)),
+    theta = list(diag(c(1.20, 0.81, 0.32, 0.32)),
+                 diag(c(0.72, 0.81, 0.32, 0.32))),
+    pmix = rep(4903/(1903 + 4903), 2),
+    plot_contour = FALSE
+  )
+  
+  expect_true(all(CESD_pos$`AI Ratio` > 0))
+})
+

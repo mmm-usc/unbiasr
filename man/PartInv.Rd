@@ -3,24 +3,28 @@
 \name{PartInv}
 \alias{PartInv}
 \alias{PartInvMulti_we}
-\title{Evaluating selection accuracy for two or more groups based on the MCAA
-Framework}
+\title{(Multivariate) Classification Accuracy Analysis (MCAA)}
 \usage{
 PartInv(
+  cfa_fit = NULL,
   propsel = NULL,
   cut_z = NULL,
   weights_item = NULL,
   weights_latent = NULL,
-  alpha,
-  psi,
-  lambda,
-  theta,
-  nu,
-  pmix = 0.5,
-  pmix_ref = 0.5,
+  alpha = NULL,
+  psi = NULL,
+  lambda = NULL,
+  theta = NULL,
+  nu = NULL,
+  pmix = NULL,
+  pmix_ref = NULL,
   plot_contour = FALSE,
   show_mi_result = FALSE,
   labels = NULL,
+  custom_colors = NULL,
+  reference = NULL,
+  quadrantsABCD = TRUE,
+  ...,
   kappa_r = NULL,
   kappa_f = kappa_r,
   alpha_r = NULL,
@@ -36,17 +40,18 @@ PartInv(
   nu_r = NULL,
   nu_f = nu_r,
   Theta_r = NULL,
-  Theta_f = Theta_r,
-  ...
+  Theta_f = Theta_r
 )
 
 PartInvMulti_we(...)
 }
 \arguments{
+\item{cfa_fit}{CFA model output from lavaan.}
+
 \item{propsel}{Proportion of selection. If missing, computed using \code{cut_z}.}
 
-\item{cut_z}{Pre-specified cutoff score on the observed composite. This
-argument is ignored when \code{propsel} has input.}
+\item{cut_z}{Pre-specified cutoff score on the observed composite. Ignored
+when \code{propsel} has input.}
 
 \item{weights_item}{A vector of item weights.}
 
@@ -63,22 +68,20 @@ to the reference group.}
 
 \item{lambda}{A list of length \code{g} containing \verb{n x d} factor loading matrices
 where \code{g} is the number of groups, \code{d} is the number of latent dimensions,
-and \code{n} is the number of items in the scale. The first element is assumed
+and \code{n} is the number of items. The first element is assumed
 to belong to the reference group.}
 
 \item{theta}{A list of length \code{g} containing \verb{1 x n} vectors or \verb{n x n}
 matrices of unique factor variances and covariances, where \code{g} is the
-number of groups and \code{n} is the number of items in the scale. The first
-element is assumed to belong to the reference group.}
+number of groups and \code{n} is the number of items. The first element is
+assumed to belong to the reference group.}
 
 \item{nu}{A list of length \code{g} containing \verb{1 x n} measurement intercept
-vectors where \code{g} is the number of groups and \code{n} is the number of items
-in the scale. The first element is assumed to belong to the reference
-group.}
+vectors where \code{g} is the number of groups and \code{n} is the number of items.
+The first element is assumed to belong to the reference group.}
 
 \item{pmix}{List of length \code{g} containing the mixing proportions of each
-group. If \code{NULL}, defaults to \code{1/g} for each group (i.e., the populations
-have equal size).}
+group. If \code{NULL}, defaults to \code{1/g} for each group (i.e., equal sizes).}
 
 \item{plot_contour}{Logical; whether the contour of the populations should be
 plotted; \code{TRUE} by default.}
@@ -89,17 +92,24 @@ strict invariance model, with common parameter values as weighted
 averages of the input values using \code{pmix}.}
 
 \item{labels}{A character vector with \code{g} elements to label the reference
-and focal groups on the plot, where \code{g} is the number of groups. If not
-provided, groups are labeled automatically as 'Reference' (for the first
-group) and 'Focal_1' through 'Focal_(g-1)', where \code{g} is the number of
-groups.}
+and focal groups on the plot, where \code{g} is the number of groups. If \code{NULL}
+groups are labeled as 'Reference' and 'Focal_1' through 'Focal_(g-1)'.}
 
-\item{alpha_r, alpha_f, nu_r, nu_f, Theta_r, Theta_f, psi_r, psi_f, lambda_r, lambda_f, phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f, pmix_ref}{Deprecated; included only for backward compatibility. When comparing two
-groups, parameters with the '_r' suffix refer to the reference group while
-parameters with the '_f' suffix refer to the focal group.}
+\item{custom_colors}{Optional argument for specifying group colors.}
 
-\item{...}{Other arguments passed to the \code{\link[graphics]{contour}}
-function.}
+\item{reference}{Optional character argument for specifying the reference group.
+Currently only functional when \code{cfa_fit} is provided. If providing parameter
+estimates instead, reorder estimates such that the first estimates belong
+to the reference group.}
+
+\item{quadrantsABCD}{Deprecated. Whether to label the quadrants with A, B, C, D
+or TR, FP, TN, FN. This argument is retained for backward compatibility and
+is ignored; quadrant will be labelled as TP, FP, FN, TN.}
+
+\item{...}{Other arguments for \code{\link[graphics]{contour}}.}
+
+\item{alpha_r, alpha_f, nu_r, nu_f, Theta_r, Theta_f, psi_r, psi_f, lambda_r, lambda_f, phi_r, phi_f, tau_r, tau_f, kappa_r, kappa_f, pmix_ref}{Deprecated; included for backward compatibility. With two groups, '_r'
+and '_f' suffixes refer to the reference group and the focal group.}
 }
 \value{
 The output will be a list of six elements and a plot if
@@ -108,7 +118,7 @@ The output will be a list of six elements and a plot if
 \item{cutpt_xi}{Cut point on the latent scale (xi).}
 \item{cutpt_z}{Cut point on the observed scale (Z).}
 \item{summary}{A \verb{8 x (g + g - 1)} table, with columns representing
-the reference and \code{g - 1} focal groups, and the expected results
+the reference and \code{g - 1} focal groups, and  the expected results
 if the latent distribution of \code{g - 1} focal group match the
 reference group. The rows represent probabilities of true
 positive (A), false positive (B), true negative (C), false
@@ -137,70 +147,78 @@ success ratio, sensitivity, and specificity.}
 \item{bivardata_mi}{List of length \code{5} containing \verb{1 x g} vectors of
 latent and observed means, standard deviations, and covariances
 computed for each group under strict invariance.}
+\item{labels}{List of labels.}
+\item{functioncall}{Function call to PartInv.}
 }
 \description{
 \code{PartInv, PartInvMulti_we} evaluates partial measurement invariance
-using the multidimensional classification accuracy analysis
+using the multidimensional classification accuracy analysis framework
 (Lai & Zhang, 2022), which is an extension of Millsap & Kwok's (2004)
 approach.
 }
 \examples{
+set.seed(7)
+cols <- c("salmon1", "lightgreen", "skyblue1", "pink")
+# Simulate random data to fit a multigroup CFA, invariance across languages
+sim_m <-
+  "f =~ c(1, .7, 1) * x1 + c(.8, 1.1, 1) * x2 + 1 * x3 + 1 * x4 + 1 * x5
+   f ~~ c(1, 1.3, 1.5) * f
+   f ~  c(0, .5, 1) * 1
+   x1 ~ c(0, .3, 0) * 1
+   x3 ~ c(.3, 0, -.3) * 1
+   x1 ~~ c(1, .5, 1) * x1"
+dat_sim <- lavaan::simulateData(sim_m, sample.nobs = c(120, 90, 50))
+dat_sim$group <- ifelse(dat_sim$group == 1, "English",
+                 ifelse(dat_sim$group == 2, "Japanese",
+                 ifelse(dat_sim$group == 3, "Swahili", NA)))
+fit_sim <- lavaan::cfa(model = sim_m, data = dat_sim, group = "group")
+PartInv(cfa_fit = fit_sim, propsel = .05, plot_contour = TRUE,
+        custom_colors = cols[1:3], show_mi_result = TRUE)
+
+library(lavaan)
+HS <- HolzingerSwineford1939
+HS$sex <- as.factor(HS$sex)
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+fit <- cfa(HS.model, data = HS, group = "sex")
+PartInv(fit, propsel = .7, plot_contour = TRUE, show_mi_result = TRUE,
+        labels = c("Male", "Female"))
 # Two groups, single dimension
-PartInv(propsel = .30,
-        weights_item = c(1, 1, 1, 1),
-        weights_latent = 1,
-        alpha = list(0, 0),
-        psi = list(1, 1),
-        lambda = list(c(1, 1, 1, 1), c(1, 1, 1, 1)),
-        nu = list(c(1, 1, 1, 2), c(1, 1, 1, 1)),
-        theta = list(diag(1, 4), diag(1, 4)),
-        labels = c("Female", "Male"),
-        show_mi_result = TRUE)
+PartInv(cfa_fit = NULL, propsel = .30, weights_item = rep(1, 4),
+        alpha = list(0, 0), psi = list(1, 1),
+        lambda = list(rep(1, 4), c(1, 1, .7, .4)),
+        nu = list(rep(1, 4), rep(1, 4)), theta = list(diag(1, 4), diag(1, 4)),
+        labels = c("Public", "Private "), show_mi_result = TRUE,
+        plot_contour = TRUE)
 # Two groups, two dimensions
-lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
-lambda_matrix[1:2, 1] <- c(.322, .655)
-lambda_matrix[3:5, 2] <- c(.398, .745, .543)
-PartInv(propsel = .05,
-        weights_latent = c(0.5, 0.5),
-        alpha = list(c(0, 0), c(-0.3, 0.1)),
-        psi = list(matrix(c(1, 0.5, 0.5, 1), nrow = 2),
-                   matrix(c(1, 0.5, 0.5, 1), nrow = 2)),
-        lambda = list(lambda_matrix, lambda_matrix),
-        nu = list(c(.225, .25, .010, .30, .125),
-                  c(.225, -.05, .240, -.025, .125)),
-        theta = list(diag(1, 5), c(1, .95, .80, .75, 1)),
-        plot_contour = TRUE, show_mi_result = TRUE)
+l_mat <- matrix(0, nrow = 5, ncol = 2)
+l_mat[1:2, 1] <- c(.3, .7); l_mat[3:5, 2] <- c(.4, .8, .5)
+PartInv(propsel = .05, weights_latent = c(.5, .5),
+        alpha = list(c(0, 0), c(-.3, .1)),
+        psi = list(matrix(c(1, .5, .5, 1), nrow = 2),
+                   matrix(c(1, .5, .5, 1), nrow = 2)),
+        lambda = list(l_mat, l_mat),
+        nu = list(c(.3, .3, .01, .3, .1), c(.3, -.05, .3, -.03, .1)),
+        theta = list(diag(1, 5), c(1, .9, .8, .8, 1)),
+        plot_contour = TRUE, show_mi_result = TRUE, quadrantsABCD = FALSE)
 # Multiple groups, multiple dimensions
-lambda_matrix <- matrix(0, nrow = 15, ncol = 1)
-lambda_matrix[1:15, 1] <- c(0.68, 0.79, -0.39, 0.74, 0.59, 0.46, 0.78, -0.30,
-                            0.59, 0.59, 0.64, 0.66, 0.59, 0.63, 0.64);
-nu_matrix <- nu_matrix1 <- nu_matrix2 <- nu_matrix3 <-
-  matrix(0, nrow = 15, ncol = 1)
-nu_matrix[1:15, 1] <- c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
-                        3.51, 3.26, 2.45, 3.39, 2.47);
-nu_matrix1[1:15, 1] <- c(3.9, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
-                         3.51, 3.26, 2.45, 3.76, 2.81);
-nu_matrix2[1:15, 1] <- c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.6, 3.18,
-                         3.51, 3.54, 2.45, 3.39, 2.81);
-nu_matrix3[1:15, 1] <- c(3.6, 3.1, 2.7, 2.6, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
-                         3.51, 3.26, 2.45, 3.39, 2.81);
-theta_matrix <- c(0.35, 0.62, 0.83, 0.61, 0.81, 0.87, 0.39, 1.05, 0.84, 0.92,
-                  0.36, 0.66, 0.8, 0.66, 0.9);
-theta_matrix1 <- c(0.61, 0.62, 0.83, 0.61, 0.81, 0.5, 0.7, 1.05, 0.84, 0.92,
-                   0.61, 0.66, 0.8, 0.54, 0.9);
-theta_matrix2 <- c(0.61, 0.62, 0.826, 0.61, 0.81, 0.87, 0.5, 1.05, 0.84,
-                   0.92, 0.61, 0.66, 0.8, 0.66, 0.9);
-theta_matrix3 <- c(0.61, 0.62, 0.826, 0.61, 0.81, 0.5, 0.7, 1.05, 0.84, 0.92,
-                   0.61, 0.66, 0.8, 0.66, 0.9);
-PartInv(propsel = 0.25, pmix = c(1/4, 1/4, 1/4, 1/4),
-        alpha = list(0, -0.70, -1.05, -1.10), psi = list(1, 1.2, 1.29, 1.3),
-        nu = list(nu_matrix, nu_matrix1, nu_matrix2, nu_matrix3),
-        lambda = list(lambda_matrix, lambda_matrix, lambda_matrix,
-                      lambda_matrix),
-        theta = list(theta_matrix, theta_matrix1, theta_matrix2,
-                     theta_matrix3),
+l_mat <- matrix(c(.7, .8, -.4, .7, .6, .5, .8, -.3, .6, .6, .6, .7, .6,
+                  .6, .6), nrow = 15, ncol = 1)
+nu_mat <- matrix(c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.5, 2.6, 3.2, 2.8,
+                   3.5, 3.3, 2.5, 3.4, 2.5), nrow = 15, ncol = 1)
+nu_mat1 <- nu_mat2 <- nu_mat3 <- nu_mat
+nu_mat1[c(1, 14:15), 1] <- c(3.9, 3.8, 2.8)
+nu_mat2[c(9:10, 12, 15), 1] <- c(3.6, 3.2, 3.5, 2.8); nu_mat3[15] <- 2.9
+th_mat <- (c(.6, .6, .8, .6, .8, .5, .7, 1.1, .8, .9, .6, .7, .8, .5, .9))
+th_mat1 <- th_mat2 <- th_mat3 <- th_mat
+th_mat1[1] <- .4; th_mat2[c(6, 14)] <- c(.9, .7); th_mat3[14] <- .7
+PartInv(propsel = .25, pmix = rep(1/4, 4),
+        alpha = list(0, -.7, -1.1, -1.1), psi = list(1, 1.2, 1.3, 1.3),
+        nu = list(nu_mat, nu_mat1, nu_mat2, nu_mat3),
+        lambda = list(l_mat, l_mat, l_mat, l_mat),
+        theta = list(th_mat, th_mat1, th_mat2, th_mat3),
         plot_contour = TRUE, show_mi_result = TRUE,
-        labels = c("Group 1", "Group 2", "Group 3", "Group 4"),
-        custom_colors = c("salmon1", "lightgreen", "skyblue1", "pink")
-        )
+        labels = c("G1", "G2", "G3", "G4"),
+        custom_colors = cols, reference = "G1", quadrantsABCD = FALSE)
 }

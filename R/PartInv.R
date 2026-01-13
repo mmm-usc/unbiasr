@@ -2,17 +2,17 @@
 #' @importFrom mnormt pmnorm
 NULL
 
-#' Evaluating selection accuracy for two or more groups based on the MCAA
-#' Framework
+#' (Multivariate) Classification Accuracy Analysis (MCAA)
 #'
 #' \code{PartInv, PartInvMulti_we} evaluates partial measurement invariance
-#' using the multidimensional classification accuracy analysis
+#' using the multidimensional classification accuracy analysis framework
 #' (Lai & Zhang, 2022), which is an extension of Millsap & Kwok's (2004)
 #' approach.
 #'
+#' @param cfa_fit CFA model output from lavaan.
 #' @param propsel Proportion of selection. If missing, computed using `cut_z`.
-#' @param cut_z Pre-specified cutoff score on the observed composite. This
-#'   argument is ignored when `propsel` has input.
+#' @param cut_z Pre-specified cutoff score on the observed composite. Ignored
+#'   when `propsel` has input.
 #' @param weights_item A vector of item weights.
 #' @param weights_latent A vector of latent factor weights.
 #' @param alpha A list of length `g` containing `1 x d` latent factor mean
@@ -24,43 +24,45 @@ NULL
 #'   to the reference group.
 #' @param lambda A list of length `g` containing `n x d` factor loading matrices
 #'   where `g` is the number of groups, `d` is the number of latent dimensions,
-#'   and `n` is the number of items in the scale. The first element is assumed
+#'   and `n` is the number of items. The first element is assumed
 #'   to belong to the reference group.
 #' @param nu A list of length `g` containing `1 x n` measurement intercept
-#'   vectors where `g` is the number of groups and `n` is the number of items
-#'   in the scale. The first element is assumed to belong to the reference
-#'   group.
+#'   vectors where `g` is the number of groups and `n` is the number of items.
+#'   The first element is assumed to belong to the reference group.
 #' @param theta A list of length `g` containing `1 x n` vectors or `n x n`
 #'   matrices of unique factor variances and covariances, where `g` is the
-#'   number of groups and `n` is the number of items in the scale. The first
-#'   element is assumed to belong to the reference group.
+#'   number of groups and `n` is the number of items. The first element is
+#'   assumed to belong to the reference group.
 #' @param pmix List of length `g` containing the mixing proportions of each
-#'   group. If `NULL`, defaults to `1/g` for each group (i.e., the populations
-#'   have equal size).
+#'   group. If `NULL`, defaults to `1/g` for each group (i.e., equal sizes).
 #' @param plot_contour Logical; whether the contour of the populations should be
 #'   plotted; `TRUE` by default.
 #' @param show_mi_result If \code{TRUE}, perform selection accuracy analysis
-#'     for both the input parameters and the implied parameters based on a
-#'     strict invariance model, with common parameter values as weighted
+#'   for both the input parameters and the implied parameters based on a
+#'   strict invariance model, with common parameter values as weighted
 #'   averages of the input values using `pmix`.
 #' @param labels A character vector with `g` elements to label the reference
-#'   and focal groups on the plot, where `g` is the number of groups. If not
-#'   provided, groups are labeled automatically as 'Reference' (for the first
-#'   group) and 'Focal_1' through 'Focal_(g-1)', where `g` is the number of
-#'   groups.
-#' @param ... Other arguments passed to the \code{\link[graphics]{contour}}
-#'   function.
+#'   and focal groups on the plot, where `g` is the number of groups. If `NULL`
+#'   groups are labeled as 'Reference' and 'Focal_1' through 'Focal_(g-1)'.
+#' @param custom_colors Optional argument for specifying group colors.
+#' @param reference Optional character argument for specifying the reference group.
+#'   Currently only functional when `cfa_fit` is provided. If providing parameter
+#'   estimates instead, reorder estimates such that the first estimates belong
+#'   to the reference group.
+#' @param quadrantsABCD Deprecated. Whether to label the quadrants with A, B, C, D
+#'   or TR, FP, TN, FN. This argument is retained for backward compatibility and
+#'   is ignored; quadrant will be labelled as TP, FP, FN, TN.
+#' @param ... Other arguments for \code{\link[graphics]{contour}}.
 #' @param alpha_r,alpha_f,nu_r,nu_f,Theta_r,Theta_f,psi_r,psi_f,lambda_r,lambda_f,phi_r,phi_f,tau_r,tau_f,kappa_r,kappa_f,pmix_ref
-#'   Deprecated; included only for backward compatibility. When comparing two
-#'   groups, parameters with the '_r' suffix refer to the reference group while
-#'   parameters with the '_f' suffix refer to the focal group.
+#'     Deprecated; included for backward compatibility. With two groups, '_r' 
+#'     and '_f' suffixes refer to the reference group and the focal group.
 #' @return The output will be a list of six elements and a plot if
 #'     \code{plot_contour == TRUE}:
 #'         \item{propsel}{Proportion selected.}
 #'         \item{cutpt_xi}{Cut point on the latent scale (xi).}
 #'         \item{cutpt_z}{Cut point on the observed scale (Z).}
 #'         \item{summary}{A `8 x (g + g - 1)` table, with columns representing
-#'             the reference and `g - 1` focal groups, and the expected results
+#'             the reference and `g - 1` focal groups, and  the expected results
 #'             if the latent distribution of `g - 1` focal group match the
 #'             reference group. The rows represent probabilities of true
 #'             positive (A), false positive (B), true negative (C), false
@@ -89,74 +91,87 @@ NULL
 #'          \item{bivardata_mi}{List of length `5` containing `1 x g` vectors of
 #'             latent and observed means, standard deviations, and covariances
 #'             computed for each group under strict invariance.}
+#'          \item{labels}{List of labels.}
+#'          \item{functioncall}{Function call to PartInv.}
 #' @examples
+#' set.seed(7)
+#' cols <- c("salmon1", "lightgreen", "skyblue1", "pink")
+#' # Simulate random data to fit a multigroup CFA, invariance across languages
+#' sim_m <-
+#'   "f =~ c(1, .7, 1) * x1 + c(.8, 1.1, 1) * x2 + 1 * x3 + 1 * x4 + 1 * x5
+#'    f ~~ c(1, 1.3, 1.5) * f
+#'    f ~  c(0, .5, 1) * 1
+#'    x1 ~ c(0, .3, 0) * 1
+#'    x3 ~ c(.3, 0, -.3) * 1
+#'    x1 ~~ c(1, .5, 1) * x1"
+#' dat_sim <- lavaan::simulateData(sim_m, sample.nobs = c(120, 90, 50))
+#' dat_sim$group <- ifelse(dat_sim$group == 1, "English",
+#'                  ifelse(dat_sim$group == 2, "Japanese",
+#'                  ifelse(dat_sim$group == 3, "Swahili", NA)))
+#' fit_sim <- lavaan::cfa(model = sim_m, data = dat_sim, group = "group")
+#' PartInv(cfa_fit = fit_sim, propsel = .05, plot_contour = TRUE,
+#'         custom_colors = cols[1:3], show_mi_result = TRUE)
+#'
+#' library(lavaan)
+#' HS <- HolzingerSwineford1939
+#' HS$sex <- as.factor(HS$sex)
+#' HS.model <- ' visual  =~ x1 + x2 + x3
+#'               textual =~ x4 + x5 + x6
+#'               speed   =~ x7 + x8 + x9 '
+#' fit <- cfa(HS.model, data = HS, group = "sex")
+#' PartInv(fit, propsel = .7, plot_contour = TRUE, show_mi_result = TRUE,
+#'         labels = c("Male", "Female"))
 #' # Two groups, single dimension
-#' PartInv(propsel = .30,
-#'         weights_item = c(1, 1, 1, 1),
-#'         weights_latent = 1,
-#'         alpha = list(0, 0),
-#'         psi = list(1, 1),
-#'         lambda = list(c(1, 1, 1, 1), c(1, 1, 1, 1)),
-#'         nu = list(c(1, 1, 1, 2), c(1, 1, 1, 1)),
-#'         theta = list(diag(1, 4), diag(1, 4)),
-#'         labels = c("Female", "Male"),
-#'         show_mi_result = TRUE)
+#' PartInv(cfa_fit = NULL, propsel = .30, weights_item = rep(1, 4),
+#'         alpha = list(0, 0), psi = list(1, 1),
+#'         lambda = list(rep(1, 4), c(1, 1, .7, .4)),
+#'         nu = list(rep(1, 4), rep(1, 4)), theta = list(diag(1, 4), diag(1, 4)),
+#'         labels = c("Public", "Private "), show_mi_result = TRUE,
+#'         plot_contour = TRUE)
 #' # Two groups, two dimensions
-#' lambda_matrix <- matrix(0, nrow = 5, ncol = 2)
-#' lambda_matrix[1:2, 1] <- c(.322, .655)
-#' lambda_matrix[3:5, 2] <- c(.398, .745, .543)
-#' PartInv(propsel = .05,
-#'         weights_latent = c(0.5, 0.5),
-#'         alpha = list(c(0, 0), c(-0.3, 0.1)),
-#'         psi = list(matrix(c(1, 0.5, 0.5, 1), nrow = 2),
-#'                    matrix(c(1, 0.5, 0.5, 1), nrow = 2)),
-#'         lambda = list(lambda_matrix, lambda_matrix),
-#'         nu = list(c(.225, .25, .010, .30, .125),
-#'                   c(.225, -.05, .240, -.025, .125)),
-#'         theta = list(diag(1, 5), c(1, .95, .80, .75, 1)),
-#'         plot_contour = TRUE, show_mi_result = TRUE)
+#' l_mat <- matrix(0, nrow = 5, ncol = 2)
+#' l_mat[1:2, 1] <- c(.3, .7); l_mat[3:5, 2] <- c(.4, .8, .5)
+#' PartInv(propsel = .05, weights_latent = c(.5, .5),
+#'         alpha = list(c(0, 0), c(-.3, .1)),
+#'         psi = list(matrix(c(1, .5, .5, 1), nrow = 2),
+#'                    matrix(c(1, .5, .5, 1), nrow = 2)),
+#'         lambda = list(l_mat, l_mat),
+#'         nu = list(c(.3, .3, .01, .3, .1), c(.3, -.05, .3, -.03, .1)),
+#'         theta = list(diag(1, 5), c(1, .9, .8, .8, 1)),
+#'         plot_contour = TRUE, show_mi_result = TRUE, quadrantsABCD = FALSE)
 #' # Multiple groups, multiple dimensions
-#' lambda_matrix <- matrix(0, nrow = 15, ncol = 1)
-#' lambda_matrix[1:15, 1] <- c(0.68, 0.79, -0.39, 0.74, 0.59, 0.46, 0.78, -0.30,
-#'                             0.59, 0.59, 0.64, 0.66, 0.59, 0.63, 0.64);
-#' nu_matrix <- nu_matrix1 <- nu_matrix2 <- nu_matrix3 <-
-#'   matrix(0, nrow = 15, ncol = 1)
-#' nu_matrix[1:15, 1] <- c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
-#'                         3.51, 3.26, 2.45, 3.39, 2.47);
-#' nu_matrix1[1:15, 1] <- c(3.9, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
-#'                          3.51, 3.26, 2.45, 3.76, 2.81);
-#' nu_matrix2[1:15, 1] <- c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.45, 2.62, 3.6, 3.18,
-#'                          3.51, 3.54, 2.45, 3.39, 2.81);
-#' nu_matrix3[1:15, 1] <- c(3.6, 3.1, 2.7, 2.6, 2.5, 2.1, 3.45, 2.62, 3.2, 2.84,
-#'                          3.51, 3.26, 2.45, 3.39, 2.81);
-#' theta_matrix <- c(0.35, 0.62, 0.83, 0.61, 0.81, 0.87, 0.39, 1.05, 0.84, 0.92,
-#'                   0.36, 0.66, 0.8, 0.66, 0.9);
-#' theta_matrix1 <- c(0.61, 0.62, 0.83, 0.61, 0.81, 0.5, 0.7, 1.05, 0.84, 0.92,
-#'                    0.61, 0.66, 0.8, 0.54, 0.9);
-#' theta_matrix2 <- c(0.61, 0.62, 0.826, 0.61, 0.81, 0.87, 0.5, 1.05, 0.84,
-#'                    0.92, 0.61, 0.66, 0.8, 0.66, 0.9);
-#' theta_matrix3 <- c(0.61, 0.62, 0.826, 0.61, 0.81, 0.5, 0.7, 1.05, 0.84, 0.92,
-#'                    0.61, 0.66, 0.8, 0.66, 0.9);
-#' PartInv(propsel = 0.25, pmix = c(1/4, 1/4, 1/4, 1/4),
-#'         alpha = list(0, -0.70, -1.05, -1.10), psi = list(1, 1.2, 1.29, 1.3),
-#'         nu = list(nu_matrix, nu_matrix1, nu_matrix2, nu_matrix3),
-#'         lambda = list(lambda_matrix, lambda_matrix, lambda_matrix,
-#'                       lambda_matrix),
-#'         theta = list(theta_matrix, theta_matrix1, theta_matrix2,
-#'                      theta_matrix3),
+#' l_mat <- matrix(c(.7, .8, -.4, .7, .6, .5, .8, -.3, .6, .6, .6, .7, .6,
+#'                   .6, .6), nrow = 15, ncol = 1)
+#' nu_mat <- matrix(c(3.6, 3.1, 2.7, 2.9, 2.5, 2.1, 3.5, 2.6, 3.2, 2.8,
+#'                    3.5, 3.3, 2.5, 3.4, 2.5), nrow = 15, ncol = 1)
+#' nu_mat1 <- nu_mat2 <- nu_mat3 <- nu_mat
+#' nu_mat1[c(1, 14:15), 1] <- c(3.9, 3.8, 2.8)
+#' nu_mat2[c(9:10, 12, 15), 1] <- c(3.6, 3.2, 3.5, 2.8); nu_mat3[15] <- 2.9
+#' th_mat <- (c(.6, .6, .8, .6, .8, .5, .7, 1.1, .8, .9, .6, .7, .8, .5, .9))
+#' th_mat1 <- th_mat2 <- th_mat3 <- th_mat
+#' th_mat1[1] <- .4; th_mat2[c(6, 14)] <- c(.9, .7); th_mat3[14] <- .7
+#' PartInv(propsel = .25, pmix = rep(1/4, 4),
+#'         alpha = list(0, -.7, -1.1, -1.1), psi = list(1, 1.2, 1.3, 1.3),
+#'         nu = list(nu_mat, nu_mat1, nu_mat2, nu_mat3),
+#'         lambda = list(l_mat, l_mat, l_mat, l_mat),
+#'         theta = list(th_mat, th_mat1, th_mat2, th_mat3),
 #'         plot_contour = TRUE, show_mi_result = TRUE,
-#'         labels = c("Group 1", "Group 2", "Group 3", "Group 4"),
-#'         custom_colors = c("salmon1", "lightgreen", "skyblue1", "pink")
-#'         )
+#'         labels = c("G1", "G2", "G3", "G4"),
+#'         custom_colors = cols, reference = "G1", quadrantsABCD = FALSE)
 #' @export
-PartInv <- function(propsel = NULL, cut_z = NULL,
-                    weights_item = NULL,
-                    weights_latent = NULL,
-                    alpha, psi, lambda, theta, nu,
-                    pmix = 0.5,
-                    pmix_ref = 0.5, plot_contour = FALSE,
+PartInv <- function(cfa_fit = NULL,
+                    propsel = NULL, cut_z = NULL,
+                    weights_item = NULL, weights_latent = NULL,
+                    alpha = NULL, psi = NULL, lambda = NULL, theta = NULL, nu = NULL,
+                    pmix = NULL,
+                    pmix_ref = NULL, # deprecated
+                    plot_contour = FALSE,
                     show_mi_result = FALSE,
                     labels = NULL,
+                    custom_colors = NULL,
+                    reference = NULL,
+                    quadrantsABCD = TRUE,
+                    ...,
                     kappa_r = NULL, kappa_f = kappa_r,
                     alpha_r = NULL, alpha_f = alpha_r,
                     phi_r = NULL, phi_f = phi_r,
@@ -164,162 +179,54 @@ PartInv <- function(propsel = NULL, cut_z = NULL,
                     lambda_r = NULL, lambda_f = lambda_r,
                     tau_r = NULL, tau_f = tau_r,
                     nu_r = NULL, nu_f = nu_r,
-                    Theta_r = NULL, Theta_f = Theta_r,
-                    ...) {
+                    Theta_r = NULL, Theta_f = Theta_r) {
+  argg <- c(as.list(environment()), list(...))
+  argg <- prep_params(argg)
+  out <- new_PartInv()
+  params <- argg[c("weights_item", "weights_latent", "alpha", "psi",
+                   "lambda", "theta", "nu", "pmix", "propsel", "labels",
+                   "cut_z", "num_g")]
+  out$params <- params[
+    c("alpha", "psi", "lambda", "nu", "theta",
+      "weights_item", "weights_latent", "labels", "num_g", "pmix")]
+  out$params[["functioncall"]] <- match.call()
 
-  # for backward compatibility with different input names
-  if (missing(nu) && !is.null(nu_r)) {
-    nu <- vector(2, mode = "list")
-    nu[[1]] <- nu_r
-    nu[[2]] <- nu_f
-  }
-  if (missing(nu) && !is.null(tau_r)) {
-    nu <- vector(2, mode = "list")
-    nu[[1]] <- tau_r
-    nu[[2]] <- tau_f
-  }
-  if ((missing(alpha) || is.logical(alpha)) && !is.null(kappa_r)) {
-    alpha <- vector(2, mode = "list")
-    alpha[[1]] <- kappa_r
-    alpha[[2]] <- kappa_f
-  }
-  if ((missing(alpha) || is.logical(alpha)) && !is.null(alpha_r)) {
-    alpha <- vector(2, mode = "list")
-    alpha[[1]] <- as.numeric(alpha_r)
-    alpha[[2]] <- as.numeric(alpha_f)
-  }
-  
-  if ((missing(psi) || is.logical(psi)) && !is.null(phi_r)) {
-    psi <- vector(2, mode = "list")
-    psi[[1]] <- phi_r
-    psi[[2]] <- phi_f
-  }
-  if ((missing(psi) || is.logical(psi)) && !is.null(psi_r)) {
-    psi <- vector(2, mode = "list")
-    psi[[1]] <- as.numeric(psi_r)
-    psi[[2]] <- as.numeric(psi_f)
-  }
-
-  if (missing(lambda) && !is.null(lambda_r)) {
-    lambda <- vector(2, mode = "list")
-    lambda[[1]] <- lambda_r
-    lambda[[2]] <- lambda_f
-  }
-  if (missing(theta) && !is.null(Theta_r)) {
-    theta <- vector(2, mode = "list")
-    theta[[1]] <- Theta_r
-    theta[[2]] <- Theta_f
-  }
-  if (missing(pmix) && !is.null(pmix_ref)) {
-    pmix <- c(pmix_ref, 1 - pmix_ref) # assuming two groups
-  }
-  
-  stopifnot("theta, nu, and lambda must be lists. Consider using `format_cfa_partinv()`." =
-              (all(is.list(theta) & is.list(nu) & is.list(lambda))))
-  stopifnot("Number of groups as indicated in the lengths of parameters must 
-              match." = length(alpha) == lengths(list(psi, lambda, nu, theta)))
-  stopifnot(
-    "Number of dimensions must match." =
-      (((lengths(alpha) == dim(psi)[1]) & (dim(psi)[1] == dim(psi)[2]) &
-          lengths(alpha) == unlist(lapply(lambda, ncol))))
-    )
-  stopifnot(
-    "Provide the correct number of mixing proportions." =
-      length(pmix) == length(alpha)
-    )
-
-  num_g <- length(alpha)
-  n <- length(nu[[1]])
-  d <- length(alpha[[1]])
-
-  if (is.null(pmix)) pmix <- as.matrix(c(rep(1 / num_g, num_g)), ncol = num_g)
-  pmix <- as.vector(pmix)
-
-  if (length(weights_latent) == 1) weights_latent <- rep(1, d)
-  
-  if(length(alpha) == 1 & length(psi) == 1) {
-    stop("Check whether alpha and psi have the correct dimensions.")
-  }
-
-  # If labels were not provided by the user or the number of labels provided or
-  # the number of labels provided does not match num_g, define new labels
-  if (is.null(labels) || (length(labels) != num_g)) {
-    labels <- c("Reference", paste0("Focal_", 1:(num_g - 1)))
-  }
-
-  g <- c("r", paste0("f", 1:(num_g - 1)))
-  names(alpha) <- paste("alpha", g, sep = "_")
-  names(nu) <- paste("nu", g, sep = "_")
-  names(lambda) <- paste("lambda", g, sep = "_")
-  names(psi) <- paste("psi", g, sep = "_")
-  names(theta) <- paste("theta", g, sep = "_")
-
-  # Change any vector elements within the list theta into diagonal matrices
-  theta <- lapply(seq_along(theta), function(x) {
-    if (is.vector(theta[[x]])) {
-      theta[[x]] <- diag(theta[[x]])
-    } else {
-      theta[[x]] <- theta[[x]] # necessary to ensure conformable arguments later
-    }
-  })
-
-  alpha <- lapply(alpha, as.matrix)
-  psi <- lapply(psi, matrix, nrow = d, ncol = d)
-
-  if (is.null(weights_item)) weights_item <- rep(1, n)
-  if (is.null(weights_latent)) weights_latent <- rep(1, d)
-
-  out <- compute_cai(weights_item, weights_latent, alpha, psi, lambda, nu,
-    theta, pmix, propsel, labels, cut_z,
-    is_mi = FALSE
-  )
+  out_pi <- do.call(compute_cai, params)
+  names_to_update <- intersect(names(out), names(out_pi))
+  out[names_to_update] <- out_pi[names_to_update]
 
   if (out$propsel <= 0.01) warning("Proportion selected is 1% or less.")
 
-  ai_ratio <- as.data.frame(out$summary[5, (num_g + 1):(num_g + num_g - 1)] /
-    out$summary[5, 1])
-
-#    message("Note: The first group is being used as the reference group. 
-#Rearrange the inputs to designate a different group as the reference.\n\n")
-  
-  names(ai_ratio) <- labels[-1]
-  row.names(ai_ratio) <- c("")
-  out[["ai_ratio"]] <- ai_ratio
+  out[["ai_ratio"]] <- get_ai_ratio_partInv(out)
 
   if (show_mi_result) {
-    pop_weights <- pmix
-    lambda_average <- .weighted_average_list(lambda, weights = pop_weights)
-    nu_average <- .weighted_average_list(nu, weights = pop_weights)
-    theta_average <- .weighted_average_list(theta, weights = pop_weights)
+    lambda_avg <- .weighted_average_list(params$lambda, weights = params$pmix)
+    nu_avg <- .weighted_average_list(params$nu, weights = params$pmix)
+    theta_avg <- .weighted_average_list(params$theta, weights = params$pmix)
 
-    lambda_average_g <- nu_average_g <- theta_average_g <-
-      vector(mode = "list", length = num_g)
+    params[["lambda"]] <- replicate(params$num_g, lambda_avg, simplify = FALSE)
+    params[["nu"]] <- replicate(params$num_g, nu_avg, simplify = FALSE)
+    params[["theta"]] <- replicate(params$num_g, theta_avg, simplify = FALSE)
 
-    for (i in 1:num_g) {
-      lambda_average_g[[i]] <- lambda_average
-      nu_average_g[[i]] <- nu_average
-      theta_average_g[[i]] <- theta_average
-    }
-
-    out_mi <- compute_cai(weights_item, weights_latent, alpha, psi,
-      lambda_average_g, nu_average_g, theta_average_g,
-      pmix, propsel, labels, cut_z,
-      is_mi = TRUE
-    )
-    colnames(out_mi$summary) <- labels
+    out_mi <- do.call(compute_cai, c(params, list(is_mi = TRUE)))
     names(out_mi) <- paste0(names(out_mi), "_mi")
-    out <- c(out, out_mi)
-  }
+    names_to_update <- intersect(names(out), names(out_mi))
+    out[names_to_update] <- out_mi[names_to_update]
+    # colnames(out_mi$summary) <- params$labels
+    # names(out_mi) <- paste0(names(out_mi), "_mi")
 
+  }
 
   if (plot_contour) {
-    plot.PartInv(out, labels = labels, which_result = "pi", ...)
     if (show_mi_result == TRUE) {
-      plot.PartInv(out, labels = labels, which_result = "mi", ...)
+      which_result <- c("pi", "mi")
+    } else {
+      which_result <- c("pi")
     }
+    plot.PartInv(out, which_result = which_result,
+                custom_colors = custom_colors, quadrantsABCD = quadrantsABCD,
+                ...)
   }
-  out[["labels"]] <- labels
-  class(out) <- "PartInv"
   out
 }
 
@@ -330,3 +237,4 @@ PartInvMulti_we <- function(...)
   .Deprecated("PartInv")
   # PartInv(...)
 }
+
