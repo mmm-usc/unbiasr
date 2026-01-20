@@ -35,10 +35,10 @@ NULL
 #' @param plot_only_g Optional argument, vector of strings specifying the
 #'   labels of the subset of groups to be plotted. The reference group is
 #'   always plotted. Ignored if all elements do not appear in `labels`.
-#'   Currently not used
-#' @return Eight plots illustrating how proportion selected (PS), success
+#' @return Plots illustrating how proportion selected (PS), success
 #'   ratio (SR), sensitivity (SE), and specificity (SP) change across different
 #'   proportions of selection under partial and strict invariance conditions.
+#'   The number of plots depends on `cai_names` and `mod_names`.
 #' @examples
 #' \dontrun{
 #' library(lavaan)
@@ -121,14 +121,8 @@ plot_CAI_across_range <- function(
   ls <- res$ls
 
   # subset groups for plotting
-  # grp <- resolve_group_indices(labels, plot_only_g)
-  # labels <- grp$labels
-  # ind <- grp$ind
-  # num_g <- length(labels)
-  if (!is.null(plot_only_g)) {
-    warning("`plot_only_g` is currently not used.")
-  }
-  ind <- seq_len(num_g)
+  ind <- resolve_group_indices(labels, plot_only_g)
+  num_g <- length(ind)
 
   colorlist <- set_colors(custom_colors, num_g)
 
@@ -137,18 +131,19 @@ plot_CAI_across_range <- function(
     plot_CAI_panels(
       ls = ls,
       xl = xl,
-      labels = labels,
-      colorlist = colorlist[ind],
+      ind = ind,
+      labels = labels[ind],
+      colorlist = colorlist,
       add_vertical_threshold_at = add_vertical_threshold_at
     )
   }
   # plot AIRs if requested
   if (plotAIRs && !(num_g == 1)) {
     plot_AI_panel(
-      AIRs = AIRs,
+      AIRs = AIRs[labels[ind[-1]], , drop = FALSE],
       xl = xl,
-      labels = labels,
-      colorlist = colorlist[ind],
+      labels = labels[ind],
+      colorlist = colorlist,
       add_AIR_threshold_lines = add_AIR_threshold_lines
     )
   }
@@ -175,9 +170,15 @@ compute_CAI_and_AIR <- function(
     mod = mod_names
   )
   
-  cai_matrix <- matrix(NA, nrow = nrow(ls_df), ncol = n_vals)
+  cai_matrix <- matrix(
+    NA_real_,  # Use typed NA
+    nrow = nrow(ls_df), 
+    ncol = n_vals,
+    dimnames = list(NULL, as.character(rangeVals))
+  )
   
-  AIRs <- matrix(NA, ncol = n_vals, nrow = max(0, num_g - 1))
+  AIRs <- matrix(NA, ncol = n_vals, nrow = max(0, num_g - 1),
+                 dimnames = list(labels[-1], as.character(rangeVals)))
 
   # call PartInv across the requested range and extract and store CAI, AIR
   # values
@@ -188,45 +189,36 @@ compute_CAI_and_AIR <- function(
       extract_CAI_from_PartInv(pinv, cai_names, mod_names)
     )
 
-    if (nrow(AIRs) > 0) {
-      # pinv$ai_ratio should have length num_g - 1
-      AIRs[, p] <- pinv$ai_ratio
-    }
-  }
-  
-  colnames(cai_matrix) <- rangeVals
-  ls <- cbind(ls_df, cai_matrix)
-
-  if (nrow(AIRs) > 0) {
-    rownames(AIRs) <- labels[-1]
-    colnames(AIRs) <- rangeVals
-  } else {
-    colnames(AIRs) <- rangeVals
+    AIRs[, p] <- pinv$ai_ratio
   }
 
-  list(AIRs = AIRs, ls = ls)
+  list(AIRs = AIRs, ls = cbind(ls_df, cai_matrix))
 }
 
 plot_CAI_panels <- function(
   ls,
   xl,
+  ind,
   labels,
   colorlist,
   add_vertical_threshold_at = NULL
 ) {
   rangeVals <- as.numeric(colnames(ls)[-(1:3)])
   
+  # Pre-convert once before the loops:
+  cai_matrix <- as.matrix(ls[, -(1:3)])
+
   for (cc in unique(ls$cai)) {
     for (mm in unique(ls$mod)) {
       # More efficient subsetting and conversion
       idx <- ls$cai == cc & ls$mod == mm
-      mat <- as.matrix(ls[idx, -(1:3)])
+      mat <- cai_matrix[idx, , drop = FALSE]
       
       ylab <- paste0(lab_cai(cc), " (", toupper(cc), ")")
       main <- paste0(lab_cai(cc), " under ", lab_mod(mm))
       
-      matplot(rangeVals, t(mat), type = "l", ylim = c(0, 1),
-              col = colorlist, lwd = 1.5, xlab = xl,
+      matplot(rangeVals, t(mat[ind, , drop = FALSE]), type = "l",
+              ylim = c(0, 1), col = colorlist, lwd = 1.5, xlab = xl,
               ylab = ylab, main = main, cex = 1.1)
       
       if (!is.null(add_vertical_threshold_at)) {
@@ -388,17 +380,11 @@ set_colors <- function(custom_colors, num_g) {
 
 resolve_group_indices <- function(labels, plot_only_g) {
   labels_all <- labels
-  ind <- seq_along(labels)
 
   if (!is.null(plot_only_g) && all(plot_only_g %in% labels)) {
     labels <- unique(c(labels[1], plot_only_g))
-    ind <- which(labels_all %in% labels)
   }
-  # Handle edge case where all groups are filtered out:
-  if (length(ind) == 0) {
-    stop("No groups to plot after filtering")
-  }
-  list(labels = labels, ind = ind)
+  match(labels, labels_all)
 }
 
 fill_CAI_matrices <- function(ls, vals, p) {
