@@ -82,8 +82,8 @@ plot_CAI_across_range <- function(
   suffix = ""
 ) {
   # validate inputs and preprocess CAI/condition selection
+  x <- validate_PartInv(x)
   prep <- prep_CAI_inputs(x, cai_names, mod_names)
-  x <- prep$x
   cai_names <- prep$cai_names
   plotAIRs <- prep$plotAIRs
 
@@ -95,36 +95,29 @@ plot_CAI_across_range <- function(
   }
   labels_all <- labels # make copy for AIR indexing
 
+  # validate range parameters
+  validate_range_params(from, to, by, cutoffs_from, cutoffs_to)
+
   # determine plotting range (propsel or cutoff)
   rng <- make_range(from, to, by, cutoffs_from, cutoffs_to)
   rangeVals <- rng$rangeVals
   xl <- rng$xl
   use <- rng$use
-  # initialize storage for AIRs and CAIs
-  AIRs <- matrix(NA, ncol = length(rangeVals), nrow = num_g - 1)
-  ls_names <- c(t(outer(cai_names, Y = mod_names, FUN = paste, sep = "_")))
-  ls <- lapply(ls_names, function(x) matrix(NA, num_g, length(rangeVals)))
-  names(ls) <- ls_names
-  # generate y labels and panel titles
-  labs <- make_CAI_labels(cai_names, mod_names)
-  ylabs <- labs$ylabs
-  mains <- labs$mains
 
-  # call PartInv across the requested range and extract and store CAI, AIR values
-  for (p in seq_along(rangeVals)) {
-    pinv <- run_PartInv_at_value(pl, use, rangeVals[p])
-    vals <- extract_CAI_from_PartInv(pinv, cai_names, mod_names, num_g)
-    ls <- fill_CAI_matrices(ls, vals, p)
-    AIRs[, p] <- pinv$ai_ratio
-  }
-  rownames(AIRs) <- labels[-1]
-  colnames(AIRs) <- rangeVals
-
-  # attach dimensions to CAI matrices
-  ls <- lapply(ls, function(mat) {
-    dimnames(mat) <- list(labels, rangeVals)
-    mat
-  })
+  res <- compute_CAI_and_AIR(
+    pl = pl,
+    use = use,
+    rangeVals = rangeVals,
+    cai_names = cai_names,
+    mod_names = mod_names,
+    num_g = num_g,
+    labels = labels
+  )
+  AIRs <- res$AIRs
+  ls <- res$ls
+  ls_names <- res$ls_names
+  ylabs <- res$ylabs
+  mains <- res$mains
 
   # subset groups for plotting
   grp <- resolve_group_indices(labels, plot_only_g)
@@ -171,6 +164,82 @@ plot_CAI_across_range <- function(
 
 
 ############ HELPER FUNCTIONS ############
+
+# New helper: compute CAIs and AIRs across a sequence of values
+compute_CAI_and_AIR <- function(
+  pl,
+  use,
+  rangeVals,
+  cai_names,
+  mod_names,
+  num_g,
+  labels
+) {
+  # initialize storage for AIRs and CAIs
+  AIRs <- matrix(NA, ncol = length(rangeVals), nrow = max(0, num_g - 1))
+
+  ls_names <- if (!is.null(cai_names) && length(cai_names) > 0) {
+    c(t(outer(cai_names, Y = mod_names, FUN = paste, sep = "_")))
+  } else {
+    character(0)
+  }
+
+  ls <- if (length(ls_names) > 0) {
+    lapply(ls_names, function(x) matrix(NA, num_g, length(rangeVals)))
+  } else {
+    list()
+  }
+  if (length(ls_names) > 0) {
+    names(ls) <- ls_names
+  }
+
+  # generate y labels and panel titles
+  labs <- if (!is.null(cai_names) && length(cai_names) > 0) {
+    make_CAI_labels(cai_names, mod_names)
+  } else {
+    list(ylabs = character(0), mains = character(0))
+  }
+  ylabs <- labs$ylabs
+  mains <- labs$mains
+
+  # call PartInv across the requested range and extract and store CAI, AIR values
+  if (length(rangeVals) > 10) {
+    message("Computing CAI across ", length(rangeVals), " values...")
+  }
+  for (p in seq_along(rangeVals)) {
+    if (length(rangeVals) > 20 && p %% 10 == 0) {
+      message("  Progress: ", p, "/", length(rangeVals))
+    }
+    pinv <- run_PartInv_at_value(pl, use, rangeVals[p])
+
+    if (length(ls_names) > 0) {
+      vals <- extract_CAI_from_PartInv(pinv, cai_names, mod_names, num_g)
+      ls <- fill_CAI_matrices(ls, vals, p)
+    }
+
+    if (nrow(AIRs) > 0) {
+      # pinv$ai_ratio should have length num_g - 1
+      AIRs[, p] <- pinv$ai_ratio
+    }
+  }
+
+  if (nrow(AIRs) > 0) {
+    rownames(AIRs) <- labels[-1]
+    colnames(AIRs) <- rangeVals
+  } else {
+    colnames(AIRs) <- rangeVals
+  }
+
+  # attach dimensions to CAI matrices
+  if (length(ls) > 0) {
+    ls <- lapply(ls, function(mat) {
+      dimnames(mat) <- list(labels, rangeVals)
+      mat
+    })
+  }
+
+  list(AIRs = AIRs, ls = ls, ls_names = ls_names, ylabs = ylabs, mains = mains)
+}
 
 plot_CAI_panels <- function(
   ls,
@@ -270,8 +339,12 @@ plot_AI_panel <- function(
     l_lwd <- c(l_lwd, 0.8, 0.8)
   }
 
-  for (i in ind[-1]) {
-    lines(rangeVals, AIRs[labels_all[i], ], lwd = 1.5, col = colorlist[i])
+  # Map ind to AIR row indices (excluding reference group)
+  air_indices <- ind[-1] - 1 # Subtract 1 because AIRs excludes reference group
+
+  for (i in air_indices) {
+    # Use numeric index directly, not label
+    lines(rangeVals, AIRs[i, ], lwd = 1.5, col = colorlist[ind[-1][i]])
   }
   legend("bottomright", l_lab, col = l_col, lty = l_lty, lwd = l_lwd, cex = 0.8)
 
@@ -280,7 +353,6 @@ plot_AI_panel <- function(
 
 prep_CAI_inputs <- function(x, cai_names, mod_names) {
   validate_inputs(x, cai_names, mod_names)
-  x <- validate_PartInv(x)
 
   plotAIRs <- "AIR" %in% cai_names
   cai_names <- setdiff(cai_names, "AIR")
@@ -288,7 +360,7 @@ prep_CAI_inputs <- function(x, cai_names, mod_names) {
     cai_names <- NULL
   }
 
-  list(x = x, cai_names = cai_names, plotAIRs = plotAIRs)
+  list(cai_names = cai_names, plotAIRs = plotAIRs)
 }
 
 validate_inputs <- function(x, cai_names, mod_names) {
@@ -300,6 +372,34 @@ validate_inputs <- function(x, cai_names, mod_names) {
   }
   if (!all(mod_names %in% c("par", "str"))) {
     stop("`mod_names` can only be 'par' or 'str'.")
+  }
+}
+
+validate_range_params <- function(from, to, by, cutoffs_from, cutoffs_to) {
+  # Validate proportion-based range
+  if (!is.null(from) && !is.null(to)) {
+    if (!is.numeric(from) || !is.numeric(to) || !is.numeric(by)) {
+      stop("from, to, and by must be numeric")
+    }
+    if (from < 0 || to < 0 || from > 1 || to > 1) {
+      stop("from and to must be between 0 and 1 for proportions")
+    }
+    if (from >= to) {
+      stop("from must be less than to")
+    }
+    if (by <= 0) {
+      stop("by must be positive")
+    }
+  }
+
+  # Validate cutoff-based range
+  if (!is.null(cutoffs_from) && !is.null(cutoffs_to)) {
+    if (!is.numeric(cutoffs_from) || !is.numeric(cutoffs_to)) {
+      stop("cutoffs_from and cutoffs_to must be numeric")
+    }
+    if (by <= 0) {
+      stop("by must be positive")
+    }
   }
 }
 
@@ -386,29 +486,23 @@ make_CAI_labels <- function(cai_names, mod_names) {
 make_range <- function(from, to, by, cutoffs_from, cutoffs_to) {
   use <- "propsels"
   xl <- "Proportion of selection"
+
+  # Use length.out instead of by when possible
   rangeVals <- seq(from = from, to = to, by = by)
-
-  if (
-    (is.null(cutoffs_from) && !is.null(cutoffs_to)) ||
-      (!is.null(cutoffs_from) && is.null(cutoffs_to))
-  ) {
-    warning(
-      "Provide both `cutoffs_from` and `cutoffs_to` to plot CAI across thresholds; ",
-      "otherwise, proportions of selection are used."
-    )
-  }
-
-  if (
-    !is.null(cutoffs_from) && !is.null(cutoffs_to) && cutoffs_from > cutoffs_to
-  ) {
-    stop("`cutoffs_from` must be <= `cutoffs_to`.")
+  # Ensure 'to' is included even if 'by' doesn't divide evenly
+  if (abs(rangeVals[length(rangeVals)] - to) > .Machine$double.eps) {
+    rangeVals <- c(rangeVals, to)
   }
 
   if (!is.null(cutoffs_from) && !is.null(cutoffs_to)) {
     rangeVals <- seq(from = cutoffs_from, to = cutoffs_to, by = by)
+    if (abs(rangeVals[length(rangeVals)] - cutoffs_to) > .Machine$double.eps) {
+      rangeVals <- c(rangeVals, cutoffs_to)
+    }
     xl <- "Thresholds"
     use <- "cutoffs"
   }
+
   list(rangeVals = rangeVals, xl = xl, use = use)
 }
 
@@ -419,6 +513,10 @@ resolve_group_indices <- function(labels, plot_only_g) {
   if (!is.null(plot_only_g) && all(plot_only_g %in% labels)) {
     labels <- unique(c(labels[1], plot_only_g))
     ind <- which(labels_all %in% labels)
+  }
+  # Handle edge case where all groups are filtered out:
+  if (length(ind) == 0) {
+    stop("No groups to plot after filtering")
   }
   list(labels = labels, ind = ind)
 }
@@ -432,27 +530,22 @@ fill_CAI_matrices <- function(ls, vals, p) {
 
 save_current_plot <- function(
   base_name,
-  plot_folder,
+  plot_folder = ".", # Set default in signature
   suffix = "",
   width = 1600,
   height = 1200,
   res = 200
 ) {
-  if (is.null(plot_folder)) {
-    plot_folder <- "."
-  } # default to working dir
   if (!dir.exists(plot_folder)) {
     dir.create(plot_folder, recursive = TRUE)
   }
 
   fname <- paste0(base_name, if (nzchar(suffix)) paste0("_", suffix), ".png")
-  p <- recordPlot()
-  invisible(png(
-    file.path(plot_folder, fname),
-    width = width,
-    height = height,
-    res = res
-  ))
-  replayPlot(p)
-  invisible(dev.off())
+  fpath <- file.path(plot_folder, fname)
+
+  # Copy current plot more reliably
+  dev.copy(png, filename = fpath, width = width, height = height, res = res)
+  dev.off()
+
+  message("Saved plot to: ", fpath)
 }
