@@ -1,5 +1,5 @@
 #' @importFrom graphics lines
-#' @importFrom grDevices dev.off png replayPlot recordPlot
+#' @importFrom grDevices dev.off png dev.copy
 NULL
 
 #' Plot classification accuracy indices (CAI) and Adverse Impact ratios (AIR)
@@ -32,10 +32,6 @@ NULL
 #' @param plot_only_g Optional argument, vector of strings specifying the labels
 #'   of the subset of groups to be plotted. The reference group is always
 #'   plotted. Ignored if all elements do not appear in `labels`.
-#' @param saveplots Logical; if TRUE, saves plots to files. `FALSE` by default.
-#' @param plot_folder Optional folder name for saved plots. Created if missing.
-#'   If no folder name is provided, saves plots in the current working directory.
-#' @param suffix Optional string suffix appended to plot filenames. `""` by default.
 #' @return Eight plots illustrating how proportion selected (PS), success ratio
 #'   (SR), sensitivity (SE), and specificity (SP) change across different
 #'   proportions of selection under partial and strict invariance conditions.
@@ -76,10 +72,7 @@ plot_CAI_across_range <- function(
   custom_colors = NULL,
   add_AIR_threshold_lines = TRUE,
   add_vertical_threshold_at = NULL,
-  plot_only_g = NULL,
-  saveplots = FALSE,
-  plot_folder = NULL,
-  suffix = ""
+  plot_only_g = NULL
 ) {
   # validate inputs and preprocess CAI/condition selection
   x <- validate_PartInv(x)
@@ -139,10 +132,7 @@ plot_CAI_across_range <- function(
       labels = labels,
       colorlist = colorlist,
       ind = ind,
-      add_vertical_threshold_at = add_vertical_threshold_at,
-      saveplots = saveplots,
-      plot_folder = plot_folder,
-      suffix = suffix
+      add_vertical_threshold_at = add_vertical_threshold_at
     )
   }
   # plot AIRs if requested
@@ -154,10 +144,7 @@ plot_CAI_across_range <- function(
       labels_all = labels_all,
       ind = ind,
       colorlist = colorlist,
-      add_AIR_threshold_lines = add_AIR_threshold_lines,
-      saveplots = saveplots,
-      plot_folder = plot_folder,
-      suffix = suffix
+      add_AIR_threshold_lines = add_AIR_threshold_lines
     )
   }
 }
@@ -251,10 +238,7 @@ plot_CAI_panels <- function(
   labels,
   colorlist,
   ind,
-  add_vertical_threshold_at = NULL,
-  saveplots = FALSE,
-  plot_folder = ".",
-  suffix = ""
+  add_vertical_threshold_at = NULL
 ) {
   legends <- make_legend_positions(ls_names)
 
@@ -294,8 +278,6 @@ plot_CAI_panels <- function(
       lwd = 1.5,
       cex = 0.8
     )
-
-    if (saveplots) save_current_plot(ls_names[l], plot_folder, suffix)
   }
 }
 
@@ -306,10 +288,7 @@ plot_AI_panel <- function(
   labels_all,
   ind,
   colorlist,
-  add_AIR_threshold_lines = TRUE,
-  saveplots = FALSE,
-  plot_folder = NULL,
-  suffix = ""
+  add_AIR_threshold_lines = TRUE
 ) {
   ylim_u <- ifelse(
     max(AIRs, na.rm = TRUE) < 1.5,
@@ -347,8 +326,6 @@ plot_AI_panel <- function(
     lines(rangeVals, AIRs[i, ], lwd = 1.5, col = colorlist[ind[-1][i]])
   }
   legend("bottomright", l_lab, col = l_col, lty = l_lty, lwd = l_lwd, cex = 0.8)
-
-  if (saveplots) save_current_plot("AIR", plot_folder, suffix)
 }
 
 prep_CAI_inputs <- function(x, cai_names, mod_names) {
