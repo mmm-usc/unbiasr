@@ -109,16 +109,6 @@ plot_CAI_across_range <- function(
 
   AIRs <- res$AIRs
   ls <- res$ls
-  ls_names <- res$ls_names
-
-  # generate y labels and panel titles
-  labs <- if (!is.null(cai_names) && length(cai_names) > 0) {
-    make_CAI_labels(cai_names, mod_names)
-  } else {
-    list(ylabs = character(0), mains = character(0))
-  }
-  ylabs <- labs$ylabs
-  mains <- labs$mains
 
   # subset groups for plotting
   grp <- resolve_group_indices(labels, plot_only_g)
@@ -132,14 +122,9 @@ plot_CAI_across_range <- function(
   if (!is.null(cai_names)) {
     plot_CAI_panels(
       ls = ls,
-      ls_names = ls_names,
-      ylabs = ylabs,
-      mains = mains,
-      rangeVals = rangeVals,
       xl = xl,
       labels = labels,
-      colorlist = colorlist,
-      ind = ind,
+      colorlist = colorlist[ind],
       add_vertical_threshold_at = add_vertical_threshold_at
     )
   }
@@ -147,11 +132,8 @@ plot_CAI_across_range <- function(
   if (plotAIRs && !(num_g == 1 && labels[1] == labels_all[1])) {
     plot_AI_panel(
       AIRs = AIRs,
-      rangeVals = rangeVals,
       labels = labels,
-      labels_all = labels_all,
-      ind = ind,
-      colorlist = colorlist,
+      colorlist = colorlist[ind],
       add_AIR_threshold_lines = add_AIR_threshold_lines
     )
   }
@@ -173,29 +155,13 @@ compute_CAI_and_AIR <- function(
   # initialize storage for AIRs and CAIs
   AIRs <- matrix(NA, ncol = length(rangeVals), nrow = max(0, num_g - 1))
 
-  ls_names <- if (!is.null(cai_names) && length(cai_names) > 0) {
-    c(t(outer(cai_names, Y = mod_names, FUN = paste, sep = "_")))
-  } else {
-    character(0)
-  }
+  ls_df <- expand.grid(
+    cai = cai_names,
+    g = seq_len(num_g),
+    mod = mod_names
+  )
 
-  ls <- if (length(ls_names) > 0) {
-    lapply(ls_names, function(x) matrix(NA, num_g, length(rangeVals)))
-  } else {
-    list()
-  }
-  if (length(ls_names) > 0) {
-    names(ls) <- ls_names
-  }
-
-  # generate y labels and panel titles
-  labs <- if (!is.null(cai_names) && length(cai_names) > 0) {
-    make_CAI_labels(cai_names, mod_names)
-  } else {
-    list(ylabs = character(0), mains = character(0))
-  }
-  ylabs <- labs$ylabs
-  mains <- labs$mains
+  ls <- vector("list", length(rangeVals))
 
   # call PartInv across the requested range and extract and store CAI, AIR values
   if (length(rangeVals) > 10) {
@@ -207,16 +173,17 @@ compute_CAI_and_AIR <- function(
     }
     pinv <- run_PartInv_at_value(pl, use, rangeVals[p])
 
-    if (length(ls_names) > 0) {
-      vals <- extract_CAI_from_PartInv(pinv, cai_names, mod_names, num_g)
-      ls <- fill_CAI_matrices(ls, vals, p)
-    }
+    ls[[p]] <- unlist(extract_CAI_from_PartInv(pinv, cai_names, mod_names))
 
     if (nrow(AIRs) > 0) {
       # pinv$ai_ratio should have length num_g - 1
       AIRs[, p] <- pinv$ai_ratio
     }
   }
+  
+  ls <- do.call(cbind, ls)
+  colnames(ls) <- rangeVals
+  ls <- cbind(ls_df, ls)
 
   if (nrow(AIRs) > 0) {
     rownames(AIRs) <- labels[-1]
@@ -225,68 +192,56 @@ compute_CAI_and_AIR <- function(
     colnames(AIRs) <- rangeVals
   }
 
-  # attach dimensions to CAI matrices
-  if (length(ls) > 0) {
-    ls <- lapply(ls, function(mat) {
-      dimnames(mat) <- list(labels, rangeVals)
-      mat
-    })
-  }
-
-  list(AIRs = AIRs, ls = ls, ls_names = ls_names, ylabs = ylabs, mains = mains)
+  list(AIRs = AIRs, ls = ls)
 }
 
 plot_CAI_panels <- function(
   ls,
-  ls_names,
-  ylabs,
-  mains,
-  rangeVals,
   xl,
   labels,
   colorlist,
-  ind,
   add_vertical_threshold_at = NULL
 ) {
-  legends <- make_legend_positions(ls_names)
+  rangeVals <- as.numeric(colnames(ls)[-(1:3)])
+  for (cc in unique(ls$cai)) {
+    for (mm in unique(ls$mod)) {
+      mat <- ls[which(ls$cai == cc & ls$mod == mm), -(1:3), drop = FALSE]
+      ylab <- paste0(lab_cai(cc), " (", toupper(cc), ")")
+      main <- paste0(lab_cai(cc), " under ", lab_mod(mm))
+      matplot(rangeVals, t(mat), type = "l", ylim = c(0, 1),
+              col = colorlist, lwd = 1.5, xlab = xl,
+              ylab = ylab, main = main, cex = 1.1)
 
-  for (l in seq_along(ls_names)) {
-    l_col <- colorlist[ind]
-    matplot(rangeVals, t(ls[[l]]), type = "l", ylim = c(0, 1),
-            col = l_col, lwd = 1.5, xlab = xl,
-            ylab = ylabs[l], main = mains[l], cex = 1.1)
+      if (!is.null(add_vertical_threshold_at)) {
+        abline(v = add_vertical_threshold_at, col = "gray", lty = 3)
+      }
 
-    if (!is.null(add_vertical_threshold_at)) {
-      abline(v = add_vertical_threshold_at, col = "gray", lty = 3)
+      legend(
+        make_legend_positions(paste0(cc, "_", mm)),
+        legend = labels,
+        col = colorlist,
+        lty = 1,
+        lwd = 1.5,
+        cex = 0.8
+      )
     }
-
-    legend(
-      legends[l],
-      legend = labels,
-      col = colorlist[ind],
-      lty = 1,
-      lwd = 1.5,
-      cex = 0.8
-    )
   }
 }
 
 plot_AI_panel <- function(
   AIRs,
-  rangeVals,
   labels,
-  labels_all,
-  ind,
   colorlist,
   add_AIR_threshold_lines = TRUE
 ) {
+  rangeVals <- as.numeric(colnames(AIRs))
   ylim_u <- ifelse(
     max(AIRs, na.rm = TRUE) < 1.5,
     1.5,
     round(max(AIRs, na.rm = TRUE))
   )
   l_lab <- labels[-1]
-  l_col <- colorlist[ind][-1]
+  l_col <- colorlist[-1]
   l_lty <- rep(1, length(l_lab))
   l_lwd <- rep(1.5, length(l_lab))
 
@@ -300,7 +255,7 @@ plot_AI_panel <- function(
     ylim = c(0, ylim_u),
     cex.main = 1.1,
     cex.lab = 1.1,
-    col = colorlist[ind[-1]]
+    col = l_col
   )
 
   if (add_AIR_threshold_lines) {
@@ -383,28 +338,11 @@ run_PartInv_at_value <- function(pl, use, value) {
 }
 
 extract_CAI_from_PartInv <- function(pinv, cai_names, mod_names, num_g) {
-  cai_list <- vector("list", length(cai_names) * length(mod_names))
-  names(cai_list) <- as.vector(outer(cai_names, mod_names, paste, sep = "_"))
-
-  ind <- 1
-  for (cai_nm in cai_names) {
-    cai <- lab_cai(substr(cai_nm, 1, 2))
-
-    if (!cai %in% rownames(pinv$summary)) {
-      stop("CAI '", cai, "' not found in PartInv summary.")
-    }
-
-    for (mod in mod_names) {
-      cai_list[[ind]] <-
-        if (mod == "par") {
-          as.numeric(pinv$summary[cai, 1:num_g])
-        } else {
-          as.numeric(pinv$summary_mi[cai, 1:num_g])
-        }
-      ind <- ind + 1
-    }
-  }
-  cai_list
+  lapply(mod_names, function(mod) {
+    summ <- if (mod == "par") pinv$summary else pinv$summary_mi
+    out <- summ[lab_cai(cai_names), seq_len(pinv$params$num_g), drop = FALSE]
+    as.vector(out)
+  })
 }
 
 make_legend_positions <- function(ls_names) {
@@ -412,16 +350,25 @@ make_legend_positions <- function(ls_names) {
 }
 
 set_colors <- function(custom_colors, num_g) {
-  colorlist <- colorlist()
-
-  if (!is.null(custom_colors) && length(custom_colors) == num_g) {
-    colorlist <- custom_colors
-  } else if (!is.null(custom_colors)) {
-    warning(
-      "`custom_colors` must have length == number of groups. Using default colors instead."
-    )
+  if (is.null(custom_colors)) {
+    custom_colors <- colorlist()
+  } else {
+    if (length(custom_colors) > num_g) {
+      warning(
+        "Length of `custom_colors` > number of groups. Only the first `num_g` ",
+        "colors will be used."
+      )
+    } else {
+      if (length(custom_colors) < num_g) {
+        warning(
+          "`custom_colors` must have length == number of groups. ",
+          "Using default colors instead."
+        )
+        custom_colors <- colorlist()
+      }
+    }
   }
-  return(colorlist)
+  custom_colors[seq_len(num_g)]
 }
 
 # index x invariance level
