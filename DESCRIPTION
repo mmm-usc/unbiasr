@@ -1,19 +1,19 @@
 Package: unbiasr
 Title: Multidimensional Classification Accuracy Analysis Framework
-Version: 0.0.2
+Version: 0.1.0
 Authors@R: c(
-    person("Clay", "Cantrell", , "clay.cantrell@me.com",
-            role = c("aut", "cre"), 
-           comment = c(ORCID = "0000-0002-2969-7089")),
-    person("Hok Chio (Mark)", "Lai", , "marklhc@gmail.com", 
+    person("Meltem", "Ozcan", , "ozcan@usc.edu",
            role = c("aut"),
+           comment = c(ORCID = "0000-0002-5054-8264")),
+    person("Hok Chio (Mark)", "Lai", , "marklhc@gmail.com", 
+           role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9196-7406")),
     person("Yichi", "Zhang", , "yzhang97@usc.edu",
            role = c("aut"),
            comment = c(ORCID = "0000-0002-4112-2106")),
-     person("Meltem", "Ozcan", , "ozcan@usc.edu",
-           role = c("aut"),
-           comment = c(ORCID = "0000-0002-5054-8264"))       
+    person("Clay", "Cantrell", , "clay.cantrell@me.com",
+            role = c("aut"), 
+           comment = c(ORCID = "0000-0002-2969-7089"))
     )
 Description: The multidimensional classification accuracy analysis 
     framework (MCAA) is an extension of the selection accuracy 
@@ -30,15 +30,13 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Suggests: 
     testthat (>= 3.0.0),
-    waldo,
     shinytest,
     rmarkdown,
     knitr,
-    readxl,
-    sjmisc
+    lavaan
 Imports: 
     methods,
     mnormt,
@@ -46,8 +44,7 @@ Imports:
     shinydashboard,
     shinyjs,
     shinyMatrix,
-    shinyWidgets,
-    lavaan
+    shinyWidgets
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://mmm-usc.github.io/unbiasr/

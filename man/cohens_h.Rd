@@ -4,12 +4,14 @@
 \alias{cohens_h}
 \title{Compute Cohen's h effect size for the difference in two proportions.}
 \usage{
-cohens_h(p1, p2)
+cohens_h(p1, p2, ...)
 }
 \arguments{
 \item{p1}{The first proportion.}
 
 \item{p2}{The second proportion.}
+
+\item{...}{Additional arguments passed to other methods.}
 }
 \value{
 \code{h} The computed Cohen's h value.

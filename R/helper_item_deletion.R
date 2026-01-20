@@ -8,18 +8,74 @@ create_list_of_dfs <- function(ls_len, ncol, nrow, df_cn, df_rn, groups) {
   lst
 }
 
+create_list_of_mats <- function(names, rn, cn) {
+  sapply(names, function(x) {
+    matrix(ncol = length(cn), nrow = length(rn),
+             dimnames = list(rn, cn))
+  }, simplify = FALSE, USE.NAMES = TRUE)
+}
+
 update_rows_in_lists_of_dfs <- function(l1, l2, ind) {
   Map(function(df, df2) {
     df[ind,] <- df2
     df
   }, l1, l2)
 }
- 
+
 print_dfs_from_list <- function(ls, items) {
   lapply(seq_along(ls), function(i) {
-    cat(paste0("Focal group: ", names(ls)[i], "\n"))  
+    cat(paste0("Focal group: ", names(ls)[i], "\n"))
     print(ls[[i]][items, ])
   })
+}
+
+# Backward-compatible mapping from n_i_per_dim / n_dim to item_which_dim
+to_item_which_dim <- function(x, p = NULL) {
+  
+  # if item_which_dim is provided, return as is
+  if (!is.null(x$item_which_dim)) return(x)
+  
+  if(is.null(p)) {
+    # check that the scale length was provided and is in the correct format
+    if (is.null(x$p) || length(x$p) != 1L) {
+      stop("`x$p` (number of items) must be a single numeric value.")
+    }
+    p <- as.integer(x$p)
+  }
+  
+  # if legacy n_i_per_dim was provided, derive item_which_dim from it
+  if (!is.null(x$n_i_per_dim)) {
+    if (!is.numeric(x$n_i_per_dim) || any(x$n_i_per_dim <= 0)) {
+      stop("`n_i_per_dim` must be a numeric vector of positive counts.")
+    }
+    if (sum(x$n_i_per_dim) != p) {
+      stop("Sum of `n_i_per_dim` (", sum(x$n_i_per_dim),
+           ") must equal the number of items `p` (", p, ").")
+    }
+    x$item_which_dim <- rep(seq_along(x$n_i_per_dim), times = x$n_i_per_dim)
+    x$reweigh_by_dim <- TRUE
+    return(x)
+  }
+  
+  # if n_dim was provided, derive item_which_dim using it
+  n_dim <- if (!is.null(x$n_dim)) as.integer(x$n_dim) else 1
+  if (n_dim <= 0) stop("`n_dim` must be a positive integer.")
+  
+  if (n_dim == 1) {
+    x$item_which_dim <- rep(1, p)
+    return(x)
+  }
+  # n_dim > 1: assume equal items per dimension
+  if (p %% n_dim != 0) {
+    stop(
+      "`p = ", p, "` items cannot be split equally across `n_dim = ", n_dim, "`.\n",
+      "Provide `item_which_dim` to indicate which dimension each item belongs to instead."
+    )
+  }
+  dimn <- as.integer(p / n_dim)
+  x$item_which_dim <- rep(seq_len(n_dim), each = dimn)
+  x$reweigh_by_dim <- TRUE
+  x
 }
 
 
@@ -31,12 +87,11 @@ print_dfs_from_list <- function(ls, items) {
 #'
 #' @description
 #' \code{get_aggregate_CAI} computes aggregate PS, SR, SE, SP under partial or
-#'    strict invariance by weighting the TP, TF, TN, FP values for the reference
-#'    and focal groups with the group proportions.
-#' @param pmix Proportion of the reference group.
-#' @param store_summary The summary table from [PartInv()] under partial or 
-#'    strict invariance.
-#' @param inv_cond Strict vs. partial.
+#'   strict invariance by weighting the TP, TF, TN, FP values for groups with
+#'   the group proportions.
+#' @param x An object of class [`PartInv`]
+#' @param which_result Character; whether to operate on the partial (`"mi"`)
+#'   or the strict invariance (`"mi"`) plot.
 #'
 #' @return A vector of length 4.
 #'          \item{PS}{Proportion selected, computed as \eqn{TP + FP}.}
@@ -44,47 +99,28 @@ print_dfs_from_list <- function(ls, items) {
 #'          \item{SE}{Sensitivity, computed as \eqn{TP/(TP + FN)}.}
 #'          \item{SP}{Specificity, computed as \eqn{TN/(TN + FP)}.}
 #' @export
-get_aggregate_CAI <- function(pmix, store_summary, inv_cond) {
+get_aggregate_CAI <- function(x, which_result = c("pi", "mi")) {
   # Ensure pmix sums to 1
+  pmix <- x$params$pmix
   if (abs(sum(pmix) - 1) > 1e-6) {
     stop("The sum of pmix must be equal to 1.")
   }
-  
-  num_g <- length(pmix)
-  # Check for consistency between pmix and store_summary
-  if ((inv_cond == "partial") && ((2 * length(pmix) - 1) != ncol(store_summary))) {
-    stop("Length of pmix must match the number of groups in store_summary.")
-  }  
-  if ((inv_cond == "strict") && (length(pmix) != ncol(store_summary))) {
-    stop("Length of pmix must match the number of groups in store_summary.")
-  }
-  # Compute weighted aggregates for TP, FP, TN, FN 
+
+  # Validate the input object
+  x <- validate_PartInv(x)
+  # Compute weighted aggregates for TP, FP, TN, FN
   # TP <- sum(pmix * store_summary[1, seq_len(num_g)]) # this gets the aggregate across groups, it should be aggregates between the reference and one focal group
   # FP <- sum(pmix * store_summary[2, seq_len(num_g)])
   # TN <- sum(pmix * store_summary[3, seq_len(num_g)])
   # FN <- sum(pmix * store_summary[4, seq_len(num_g)])
-
-  weighted_pair_sum <- function(vec) {
-    as.numeric(
-      sapply(2:num_g, function(i) vec[1] * pmix[1] + vec[i] * pmix[i])
-    )
+  store_summary <- extract_summary(x, which_result = which_result)
+  if (length(store_summary) == 0) {
+    stop("No summary data available for the specified which_result.")
   }
-  store <- store_summary[, seq_len(num_g)]
-  TP <- weighted_pair_sum(store[1,])
-  FP <- weighted_pair_sum(store[2,])
-  TN <- weighted_pair_sum(store[3,])
-  FN <- weighted_pair_sum(store[4,])
-  
-  PS <- TP + FP
-  SR <- TP / (TP + FP)
-  SE <- TP / (TP + FN)
-  SP <- TN / (TN + FP)
-  
-  df <- rbind(TP, FP, TN, FN, PS, SR, SE, SP)
-  ls <- split(as.matrix(df), col(df))
-  return(ls)
+  num_g <- x$params$num_g
+  tp_fp_tn_fn <- as.matrix(store_summary[1:4, seq_len(num_g)]) %*% pmix
+  .compute_cai(tp_fp_tn_fn)
 }
-
 
 #' @title
 #' Check for misleading improvements in aggregate CAI
@@ -108,9 +144,9 @@ err_improv_acai <- function(i, s_full, s_del1, num_g) {
   h_f <- Map(cohens_h, s_full, s_del1)[-1]
   # check the difference for the reference or focal groups has Cohen's h > 0.1
   h_rf <- (h_r > 0.1 | unlist(h_f) > .1)
-  
+
   # Check for changes (boolean)
-  r_bool <- s_full[,1] < s_del1[,1] 
+  r_bool <- s_full[,1] < s_del1[,1]
   f_bool_leq1 <- s_full[, 2:num_g, drop = FALSE] <= s_del1[, 2:num_g, drop = FALSE]
   f_bool_leq <- apply(f_bool_leq1, MARGIN = 1, FUN = all) # across focal group(s)
   f_bool_geq1 <- s_full[, 2:num_g, drop = FALSE] >= s_del1[, 2:num_g, drop = FALSE]
@@ -158,19 +194,19 @@ err_improv_acai <- function(i, s_full, s_del1, num_g) {
 #'
 #' multi_eq_w <- c(1:9)
 #' redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2)
-#' redistribute_weights(multi_eq_w, n_dim = 3, n_i_per_dim = c(3, 3, 3), 
+#' redistribute_weights(multi_eq_w, n_dim = 3, n_i_per_dim = c(3, 3, 3),
 #' del_i = 2)
 #' sum(multi_eq_w)==sum(redistribute_weights(multi_eq_w, n_dim = 3, del_i = 2))
 #'
 #' multi_uneq_w <- c(1:12)
-#' redistribute_weights(multi_uneq_w, n_dim = 3, n_i_per_dim = c(3, 6, 3), 
+#' redistribute_weights(multi_uneq_w, n_dim = 3, n_i_per_dim = c(3, 6, 3),
 #' del_i=2)
 #' sum(multi_uneq_w)==sum(redistribute_weights(multi_uneq_w, n_dim = 3,
 #'                                             n_i_per_dim = c(3, 6, 3),
 #'                                             del_i=2))
 #' @export
 redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
-                               del_i) {
+                                 del_i) {
   n_items <- length(weights_item)
   new_w <- weights_item
   new_w[del_i] <- 0
@@ -190,7 +226,7 @@ redistribute_weights <- function(weights_item, n_dim = 1, n_i_per_dim = NULL,
   # Multidimensional, number of items per dimension is not specified
   } else if ((n_dim > 1) && is.null(n_i_per_dim)) {
     # Split indices into dimensions assuming dimensions have the same length.
-    i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), n_dim, 
+    i_by_dim <- split(1:n_items, cut(seq_along(1:n_items), n_dim,
                                      labels = FALSE))
     new_w <- multidim_redist(n_dim, del_i, i_by_dim, new_w, del_weight)
 
@@ -221,6 +257,33 @@ multidim_redist <- function(n_dim, del_i, i_by_dim, new_w, del_weight) {
   return(new_w)
 }
 
+redistribute_weights2 <- function(
+  w,
+  del_i,
+  item_which_dim = NULL,
+  reweigh_by_dim = !is.null(item_which_dim)
+) {
+  new_w <- w
+  new_w[del_i] <- 0
+  if (!reweigh_by_dim) {
+    return(new_w / sum(new_w) * sum(w))
+  } else {
+    target_dim <- item_which_dim[del_i]
+    items_in_target_dim <- which(item_which_dim == target_dim)
+    new_w[items_in_target_dim] <- new_w[items_in_target_dim] /
+      sum(new_w[items_in_target_dim]) * sum(w[items_in_target_dim])
+    return(new_w)
+  }
+}
+
+update_lw <- function(w, del_i, item_which_dim) {
+  # Update latent weights
+  target_dim <- item_which_dim[del_i]
+  len_target_dim <- sum(item_which_dim == target_dim)
+  w[target_dim] <- w[target_dim] * (len_target_dim - 1) / len_target_dim
+  w
+}
+
 #' @title
 #' Compute Cohen's h effect size for the difference in two proportions.
 #'
@@ -233,14 +296,76 @@ multidim_redist <- function(n_dim, del_i, i_by_dim, new_w, del_weight) {
 #'
 #' @param p1 The first proportion.
 #' @param p2 The second proportion.
+#' @param ... Additional arguments passed to other methods.
 #' @return `h` The computed Cohen's h value.
 #' @examples
 #' cohens_h(0.7, 0.75)
 #' cohens_h(0.3, 0.4)
 #' @export
-cohens_h <- function(p1, p2) {
+cohens_h <- function(p1, p2, ...) {
+  UseMethod("cohens_h")
+}
+
+#' @export
+cohens_h.default <- function(p1, p2, ...) {
   h <- 2 * asin(sqrt(p1)) - 2 * asin(sqrt(p2))
   return(h)
+}
+
+#' @export
+cohens_h.PartInv <- function(p1, p2, comp1, comp2, ...) {
+  if (missing(p2)) {
+    p2 <- p1
+  }
+  cai1 <- extract_cai(p1, key = comp1)
+  cai2 <- extract_cai(p2, key = comp2)
+  if (ncol(cai1) == 1 && ncol(cai2) > 1) {
+    cai1 <- cai1[, rep(1, ncol(cai2)), drop = FALSE]
+  }
+  if (ncol(cai2) == 1 && ncol(cai1) > 1) {
+    cai2 <- cai2[, rep(1, ncol(cai1)), drop = FALSE]
+  }
+  cohens_h(cai1, cai2)
+}
+
+extract_cai <- function(x, key) {
+  group <- sub("_[^_]*$", "", key)
+  which_result <- sub("^[^_]*_", "", key)
+  group <- match.arg(group, c("r", "f", "Ef", "a", "rf"))
+  which_result <- match.arg(which_result, c("pi", "mi"))
+  if (which_result == "mi") {
+    if (length(x$summary_mi) == 0) {
+      stop("No strict invariance results available in the PartInv object.")
+    }
+    which_result <- "mi"
+    summ <- x$summary_mi
+  } else if (which_result == "pi") {
+    which_result <- "pi"
+    summ <- x$summary
+  } else {
+    stop("Please specify key to contain either 'pi' or 'mi'.")
+  }
+  num_g <- x$params$num_g
+  out <- switch(group,
+                "f" = summ[, seq_len(num_g - 1) + 1, drop = FALSE],
+                "Ef" = summ[, seq_len(num_g - 1) + num_g, drop = FALSE],
+                "r" = summ[, 1, drop = FALSE],
+                "rf" = summ[, seq_len(num_g), drop = FALSE],
+                "a" = {
+                  acai <- get_aggregate_CAI(x, which_result = which_result)
+                  matrix(acai, ncol = 1)
+                }
+  )
+  out
+}
+
+extract_summary <- function(p, which_result = c("pi", "mi")) {
+  which_result <- match.arg(which_result)
+  if (which_result == "mi") {
+    return(p$summary_mi)
+  } else if (which_result == "pi") {
+    return(p$summary)
+  }
 }
 
 #' @title
@@ -274,7 +399,7 @@ delta_h <- function(h_R, h_i_del) {
 #' @description
 #' \code{determine_biased_items} takes in the factor loadings, intercepts, and
 #'  uniqueness, and returns indices of noninvariant items.
-#' @param nu_r,nu_f,Theta_r,Theta_f,lambda_r,lambda_f Deprecated; included only 
+#' @param nu_r,nu_f,Theta_r,Theta_f,lambda_r,lambda_f Deprecated; included only
 #' for backward compatibility.
 #' @param lambda Factor loadings.
 #' @param nu Measurement intercepts.
@@ -291,7 +416,7 @@ delta_h <- function(h_R, h_i_del) {
 #'                                  c(.225, -.05, .240, -.025, .125)),
 #'                        theta = list(diag(1, 5), diag(c(1, .95, .80, .75, 1))))
 #' @export
-determine_biased_items <- function(lambda, nu, theta, 
+determine_biased_items <- function(lambda, nu, theta,
                                    lambda_r = NULL, lambda_f = lambda_r,
                                    nu_r = NULL, nu_f = nu_r,
                                    Theta_r = NULL, Theta_f = Theta_r) {
@@ -308,7 +433,7 @@ determine_biased_items <- function(lambda, nu, theta,
     theta <- vector(2, mode = "list")
     theta[[1]] <- Theta_r; theta[[2]] <- Theta_f
   }
-  
+
   biased_items <- c()
   mismatched_on_param <- function(param, biased) {
     mismatch <- find_mismatched_indices(param)
@@ -319,7 +444,7 @@ determine_biased_items <- function(lambda, nu, theta,
   biased_items <- mismatched_on_param(theta, biased_items)
   biased_items <- mismatched_on_param(nu, biased_items)
   biased <- unique(biased_items)
-  
+
   if (length(biased) == 0) {
     message("Strict invariance holds for all items.")
     return(NULL)
@@ -333,7 +458,7 @@ find_mismatched_indices <- function(lst) {
   if (!all(sapply(lst, function(x) is.numeric(x) || is.matrix(x)))) {
     stop("All elements must be numeric.")
   }
-  if (all(sapply(lst, is.vector))) { 
+  if (all(sapply(lst, is.vector))) {
     if (!all(sapply(lst, length) == length(lst[[1]]))) {
       stop("Vectors have unequal lengths.")
     }
@@ -346,7 +471,7 @@ find_mismatched_indices <- function(lst) {
     return(data.frame(which(mismatches)))
   } else {    # handle lists of matrices or mixed inputs
     lst <- lapply(lst, function(x) if (is.vector(x)) matrix(x, nrow = 1) else x)
-    
+
     dims <- sapply(lst, dim)
     if (!all(apply(dims, 1, function(x) length(unique(x)) == 1))) {
       stop("All elements must have the same dimensions.")
@@ -355,7 +480,7 @@ find_mismatched_indices <- function(lst) {
     combined_array <- array(unlist(lst), dim = c(dim(lst[[1]]), length(lst)))
     # check for mismatches across the third dimension
     mismatches <- apply(combined_array, c(1, 2), function(x) length(unique(x)) > 1)
-    
+
     if (!any(mismatches)) return(NULL)
     return(which(mismatches, arr.ind = TRUE))
   }

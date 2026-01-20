@@ -41,7 +41,7 @@ A table of selection accuracy indices
 }
 \examples{
 \dontrun{
-.partit_bvnorm(cut1 = 2, cut2 = 2, mean1 = 0, sd1 = 1, 
+.partit_bvnorm(cut1 = 2, cut2 = 2, mean1 = 0, sd1 = 1,
                mean2 = 1.53, sd2 = 0.89, cov12 = 0.80)
 }
 }
