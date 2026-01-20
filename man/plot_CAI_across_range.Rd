@@ -2,21 +2,13 @@
 % Please edit documentation in R/plot_CAI_across_range.R
 \name{plot_CAI_across_range}
 \alias{plot_CAI_across_range}
-\title{Plot classification accuracy indices at different proportions of selection
-or at different threshold (cutoff) values}
+\title{Plot classification accuracy indices (CAI) and Adverse Impact ratios (AIR)
+at different proportions of selection or at different threshold (cutoff) values}
 \usage{
 plot_CAI_across_range(
-  cfa_fit = NULL,
-  pmix = NULL,
-  weights_item = NULL,
-  weights_latent = NULL,
-  alpha = NULL,
-  psi = NULL,
-  lambda = NULL,
-  theta = NULL,
-  nu = NULL,
+  x = NULL,
   labels = NULL,
-  cai_names = c("PS", "SR", "SE", "SP", "AI"),
+  cai_names = c("PS", "SR", "SE", "SP", "AIR"),
   mod_names = c("par", "str"),
   from = 0.01,
   to = 0.25,
@@ -24,58 +16,22 @@ plot_CAI_across_range(
   cutoffs_from = NULL,
   cutoffs_to = NULL,
   custom_colors = NULL,
-  reference = NULL,
-  add_AI_threshold_lines = TRUE,
+  add_AIR_threshold_lines = TRUE,
   add_vertical_threshold_at = NULL,
   plot_only_g = NULL,
   saveplots = FALSE,
   plot_folder = NULL,
-  suffix = "",
-  ...
+  suffix = ""
 )
 }
 \arguments{
-\item{cfa_fit}{CFA model output from lavaan. \code{NULL} by default.}
-
-\item{pmix}{List of length \code{g} containing the mixing proportions of each
-group (where \code{g} is the number of groups). If \code{NULL}, defaults to \code{1/g}
-for each group (i.e., the populations have equal size).}
-
-\item{weights_item}{A vector of item weights.}
-
-\item{weights_latent}{A vector of latent factor weights.}
-
-\item{alpha}{A list of length \code{g} containing \verb{1 x d} latent factor mean
-vectors where \code{g} is the number of groups and \code{d} is the number of latent
-dimensions. The first element is assumed to belong to the reference group.}
-
-\item{psi}{A list of length \code{g} containing \verb{d x d} latent factor
-variance-covariance matrices where \code{g} is the number of groups and \code{d} is
-the number of latent dimensions. The first element is assumed to belong
-to the reference group.}
-
-\item{lambda}{A list of length \code{g} containing \verb{n x d} factor loading matrices
-where \code{g} is the number of groups, \code{d} is the number of latent dimensions,
-and \code{n} is the number of items. The first element is assumed
-to belong to the reference group.}
-
-\item{theta}{A list of length \code{g} containing \verb{1 x n} vectors or \verb{n x n}
-matrices of unique factor variances and covariances, where \code{g} is the
-number of groups and \code{n} is the number of items. The first element is
-assumed to belong to the reference group.}
-
-\item{nu}{A list of length \code{g} containing \verb{1 x n} measurement intercept
-vectors where \code{g} is the number of groups and \code{n} is the number of items.
-The first element is assumed to belong to the reference group.}
+\item{x}{An object of class \code{\link{PartInv}} obtained from \code{\link{PartInv}}.}
 
 \item{labels}{A character vector with \code{g} elements to label the reference
-and focal groups on the plot, where \code{g} is the number of groups. If not
-provided, groups are labeled automatically as 'Reference' (for the first
-group) and 'Focal_1' through 'Focal_(g-1)', where \code{g} is the number of
-groups.}
+and focal groups on the plot, where \code{g} is the number of groups.}
 
 \item{cai_names}{A vector of strings indicating the classification accuracy
-indices of interest. c("PS", "SR", "SE", "SP", "AI) by default.}
+indices of interest. c("PS", "SR", "SE", "SP", "AIR") by default.}
 
 \item{mod_names}{A vector of strings indicating the invariance conditions of
 interest. c("par", "str") by default.}
@@ -84,7 +40,9 @@ interest. c("par", "str") by default.}
 
 \item{to}{The largest proportion of selection to consider. \code{0.25} by default.}
 
-\item{by}{The increment of the sequence of proportions. \code{0.1} by default.}
+\item{by}{The increment of the sequence of proportions. \code{0.1} by default. Note
+that this argument is used with both cutoffs and proportions of selection,
+which have different scales.}
 
 \item{cutoffs_from}{The lowest threshold to consider. \code{NULL} by default.}
 
@@ -92,9 +50,7 @@ interest. c("par", "str") by default.}
 
 \item{custom_colors}{Optional argument for specifying colors. \code{NULL} by default.}
 
-\item{reference}{Optional argument for specifying the reference group.}
-
-\item{add_AI_threshold_lines}{Whether horizontal lines at Adverse Impact
+\item{add_AIR_threshold_lines}{Whether horizontal lines at Adverse Impact
 ratios of 1 and 0.8 should be plotted. \code{TRUE} by default.}
 
 \item{add_vertical_threshold_at}{Adds a vertical line at a specified threshold
@@ -110,8 +66,6 @@ plotted. Ignored if all elements do not appear in \code{labels}.}
 If no folder name is provided, saves plots in the current working directory.}
 
 \item{suffix}{Optional string suffix appended to plot filenames. \code{""} by default.}
-
-\item{...}{Additional arguments.}
 }
 \value{
 Eight plots illustrating how proportion selected (PS), success ratio
@@ -119,35 +73,13 @@ Eight plots illustrating how proportion selected (PS), success ratio
 proportions of selection under partial and strict invariance conditions.
 }
 \description{
-\code{plot_CAI_across_range} plots classification accuracy indices at different
-proportions of selection under partial and strict invariance conditions for
-a given CFA fit or set of parameter estimates.
+\code{plot_CAI_across_range} plots CAI and AIR across a range of proportions
+of selection or thresholds under partial and strict invariance conditions
+for a given \code{PartInv} object, using the same reference group and parameter
+specifications.
 }
 \examples{
 \dontrun{
-set.seed(7)  
-# Simulate random data to fit a multigroup CFA, invariance across languages
-library(lavaan)
-sim_m <-
-  "f =~ c(1, .7, 1) * x1 + c(.8, 1.1, 1) * x2 + 1 * x3 + 1 * x4 + 1 * x5
-   f ~~ c(1, 1.3, 1.5) * f
-   f ~  c(0, .5, 1) * 1
-   x1 ~ c(0, .3, 0) * 1
-   x3 ~ c(.3, 0, -.3) * 1
-   x1 ~~ c(1, .5, 1) * x1"
-dat_sim <- simulateData(sim_m, sample.nobs = c(120, 90, 50))
-dat_sim$group <- ifelse(dat_sim$group == 1, "English",
-                 ifelse(dat_sim$group == 2, "Japanese",
-                 ifelse(dat_sim$group == 3, "Swahili", NA)))
-fit_sim <- lavaan::cfa(model = sim_m, data = dat_sim, group = "group")
-plot_CAI_across_range(cfa_fit = fit_sim)
-plot_CAI_across_range(cfa_fit = fit_sim, custom_colors = c("blue", "pink", "red"))
-plot_CAI_across_range(cfa_fit = fit_sim, plot_only_g = "Japanese")
-plot_CAI_across_range(cfa_fit = fit_sim, add_vertical_threshold_at = 0.07)
-# use parameter estimates rather than cfa_fit object
-ests <- unnest_list(lavInspect(fit_sim, "est"))
-plot_CAI_across_range(alpha = ests$alpha, lambda = ests$lambda, 
-  psi = ests$psi, theta = ests$theta, nu = ests$nu)
 library(lavaan)
 HS <- HolzingerSwineford1939
 HS$sex <- as.factor(HS$sex)
@@ -155,11 +87,18 @@ HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed   =~ x7 + x8 + x9 '
 fit <- cfa(HS.model, data = HS, group = "sex")
-plot_CAI_across_range(cfa_fit = fit, pmix = table(HS$sex) / sum(table(HS$sex)), 
-                 cutoffs_from = 35, cutoffs_to = 50)
+p1f <- PartInv(fit, propsel = .7, plot_contour = TRUE, show_mi_result = TRUE,
+               labels = c("Male", "Female"), reference = "Female")
+p1m <- PartInv(fit, propsel = .7, plot_contour = TRUE, show_mi_result = TRUE,
+               labels = c("Male", "Female"))
+plot_CAI_across_range(x = p1f, by = 0.01)
+plot_CAI_across_range(x = p1f, cutoffs_from = 35, cutoffs_to = 50)
+plot_CAI_across_range(x = p1m, cutoffs_from = 35, cutoffs_to = 50)
 # plot only SR under partial invariance for up to 10\% selection.
-plot_CAI_across_range(cfa_fit = fit, pmix = table(HS$sex)/sum(table(HS$sex)), 
-    from = 0.01, to = 0.10, cai_names = "SR", mod_names = "par", 
-     labels = c("Male", "Female"))
+plot_CAI_across_range(x = p1m, from = 0.01, to = 0.10, cai_names = "AIR",
+                     mod_names = "par", by = .01)
+plot_CAI_across_range(x = p1m, from = 0.01, to = 0.10, cai_names = "SR",
+                     custom_colors = c("green", "orange"), by = 0.01,
+                     add_vertical_threshold_at = c(.06, .08))
 }
 }

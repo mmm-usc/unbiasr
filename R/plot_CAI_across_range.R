@@ -2,14 +2,14 @@
 #' @importFrom grDevices dev.off png replayPlot recordPlot
 NULL
 
-#' Plot classification accuracy indices (CAI) and Adverse Impact ratios (AIR) 
+#' Plot classification accuracy indices (CAI) and Adverse Impact ratios (AIR)
 #' at different proportions of selection or at different threshold (cutoff) values
-#' 
+#'
 #' \code{plot_CAI_across_range} plots CAI and AIR across a range of proportions
-#' of selection or thresholds under partial and strict invariance conditions 
-#' for a given `PartInv` object, using the same reference group and parameter 
+#' of selection or thresholds under partial and strict invariance conditions
+#' for a given `PartInv` object, using the same reference group and parameter
 #' specifications.
-#' 
+#'
 #' @param x An object of class [`PartInv`] obtained from \code{\link{PartInv}}.
 #' @param labels A character vector with `g` elements to label the reference
 #'   and focal groups on the plot, where `g` is the number of groups.
@@ -20,25 +20,25 @@ NULL
 #' @param from The lowest proportion of selection to consider. `0.01` by default.
 #' @param to The largest proportion of selection to consider. `0.25` by default.
 #' @param by The increment of the sequence of proportions. `0.1` by default. Note
-#'  that this argument is used with both cutoffs and proportions of selection, 
+#'  that this argument is used with both cutoffs and proportions of selection,
 #'  which have different scales.
 #' @param cutoffs_from The lowest threshold to consider. `NULL` by default.
 #' @param cutoffs_to The largest threshold to consider. `NULL` by default.
-#' @return Eight plots illustrating how proportion selected (PS), success ratio 
-#'   (SR), sensitivity (SE), and specificity (SP) change across different 
-#'   proportions of selection under partial and strict invariance conditions.
-#' @param custom_colors Optional argument for specifying colors. `NULL` by default.  
-#' @param add_AIR_threshold_lines Whether horizontal lines at Adverse Impact 
+#' @param custom_colors Optional argument for specifying colors. `NULL` by default.
+#' @param add_AIR_threshold_lines Whether horizontal lines at Adverse Impact
 #' ratios of 1 and 0.8 should be plotted. `TRUE` by default.
 #' @param add_vertical_threshold_at Adds a vertical line at a specified threshold
-#'   value for easier comparison. `NULL` by default.  
+#'   value for easier comparison. `NULL` by default.
 #' @param plot_only_g Optional argument, vector of strings specifying the labels
-#'   of the subset of groups to be plotted. The reference group is always 
+#'   of the subset of groups to be plotted. The reference group is always
 #'   plotted. Ignored if all elements do not appear in `labels`.
 #' @param saveplots Logical; if TRUE, saves plots to files. `FALSE` by default.
-#' @param plot_folder Optional folder name for saved plots. Created if missing. 
+#' @param plot_folder Optional folder name for saved plots. Created if missing.
 #'   If no folder name is provided, saves plots in the current working directory.
 #' @param suffix Optional string suffix appended to plot filenames. `""` by default.
+#' @return Eight plots illustrating how proportion selected (PS), success ratio
+#'   (SR), sensitivity (SE), and specificity (SP) change across different
+#'   proportions of selection under partial and strict invariance conditions.
 #' @examples
 #' \dontrun{
 #' library(lavaan)
@@ -52,47 +52,54 @@ NULL
 #'                labels = c("Male", "Female"), reference = "Female")
 #' p1m <- PartInv(fit, propsel = .7, plot_contour = TRUE, show_mi_result = TRUE,
 #'                labels = c("Male", "Female"))
-#' plot_CAI_across_range(x = p1f, by = 0.01)               
+#' plot_CAI_across_range(x = p1f, by = 0.01)
 #' plot_CAI_across_range(x = p1f, cutoffs_from = 35, cutoffs_to = 50)
 #' plot_CAI_across_range(x = p1m, cutoffs_from = 35, cutoffs_to = 50)
 #' # plot only SR under partial invariance for up to 10% selection.
-#' plot_CAI_across_range(x = p1m, from = 0.01, to = 0.10, cai_names = "AIR", 
+#' plot_CAI_across_range(x = p1m, from = 0.01, to = 0.10, cai_names = "AIR",
 #'                      mod_names = "par", by = .01)
-#' plot_CAI_across_range(x = p1m, from = 0.01, to = 0.10, cai_names = "SR", 
-#'                      custom_colors = c("green", "orange"), by = 0.01, 
+#' plot_CAI_across_range(x = p1m, from = 0.01, to = 0.10, cai_names = "SR",
+#'                      custom_colors = c("green", "orange"), by = 0.01,
 #'                      add_vertical_threshold_at = c(.06, .08))
 #' }
 #' @export
-plot_CAI_across_range <- function(x = NULL, 
-    labels = NULL,
-    cai_names = c("PS", "SR", "SE", "SP", "AIR"),
-    mod_names = c("par", "str"),
-    from = 0.01,
-    to = 0.25,
-    by = 0.1,
-    cutoffs_from = NULL,
-    cutoffs_to = NULL, 
-    custom_colors = NULL, 
-    add_AIR_threshold_lines = TRUE, 
-    add_vertical_threshold_at = NULL,
-    plot_only_g = NULL, 
-    saveplots = FALSE,
-    plot_folder = NULL,
-    suffix = "") {
-  
+plot_CAI_across_range <- function(
+  x = NULL,
+  labels = NULL,
+  cai_names = c("PS", "SR", "SE", "SP", "AIR"),
+  mod_names = c("par", "str"),
+  from = 0.01,
+  to = 0.25,
+  by = 0.1,
+  cutoffs_from = NULL,
+  cutoffs_to = NULL,
+  custom_colors = NULL,
+  add_AIR_threshold_lines = TRUE,
+  add_vertical_threshold_at = NULL,
+  plot_only_g = NULL,
+  saveplots = FALSE,
+  plot_folder = NULL,
+  suffix = ""
+) {
   # validate inputs and preprocess CAI/condition selection
   prep <- prep_CAI_inputs(x, cai_names, mod_names)
-  x <- prep$x; cai_names <- prep$cai_names; plotAIRs <- prep$plotAIRs
-  
+  x <- prep$x
+  cai_names <- prep$cai_names
+  plotAIRs <- prep$plotAIRs
+
   # extract model parameters and group information, used when rerunning PartInv
   pl <- c(x$params, propsel = list(x$propsel), cut_z = list(x$cutpt_z))
   num_g <- pl$num_g
-  if (is.null(labels)) labels <- pl$labels
+  if (is.null(labels)) {
+    labels <- pl$labels
+  }
   labels_all <- labels # make copy for AIR indexing
-  
+
   # determine plotting range (propsel or cutoff)
   rng <- make_range(from, to, by, cutoffs_from, cutoffs_to)
-  rangeVals <- rng$rangeVals; xl <- rng$xl; use <- rng$use
+  rangeVals <- rng$rangeVals
+  xl <- rng$xl
+  use <- rng$use
   # initialize storage for AIRs and CAIs
   AIRs <- matrix(NA, ncol = length(rangeVals), nrow = num_g - 1)
   ls_names <- c(t(outer(cai_names, Y = mod_names, FUN = paste, sep = "_")))
@@ -100,8 +107,9 @@ plot_CAI_across_range <- function(x = NULL,
   names(ls) <- ls_names
   # generate y labels and panel titles
   labs <- make_CAI_labels(cai_names, mod_names)
-  ylabs <- labs$ylabs; mains <- labs$mains
-  
+  ylabs <- labs$ylabs
+  mains <- labs$mains
+
   # call PartInv across the requested range and extract and store CAI, AIR values
   for (p in seq_along(rangeVals)) {
     pinv <- run_PartInv_at_value(pl, use, rangeVals[p])
@@ -109,58 +117,93 @@ plot_CAI_across_range <- function(x = NULL,
     ls <- fill_CAI_matrices(ls, vals, p)
     AIRs[, p] <- pinv$ai_ratio
   }
-  rownames(AIRs) <- labels[-1]; colnames(AIRs) <- rangeVals
-  
+  rownames(AIRs) <- labels[-1]
+  colnames(AIRs) <- rangeVals
+
   # attach dimensions to CAI matrices
   ls <- lapply(ls, function(mat) {
     dimnames(mat) <- list(labels, rangeVals)
     mat
   })
-  
+
   # subset groups for plotting
   grp <- resolve_group_indices(labels, plot_only_g)
-  labels <- grp$labels; ind <- grp$ind
+  labels <- grp$labels
+  ind <- grp$ind
   num_g <- length(labels)
-  
+
   colorlist <- set_colors(custom_colors, num_g)
-  
+
   # plot CAI panels (PS, SR, SE, SP) for the specified invariance conditions
   if (!is.null(cai_names)) {
     plot_CAI_panels(
-      ls = ls, ls_names = ls_names, ylabs = ylabs, mains = mains, 
-      rangeVals = rangeVals, xl = xl, labels = labels, colorlist = colorlist, 
-      ind = ind, add_vertical_threshold_at = add_vertical_threshold_at,
-      saveplots = saveplots, plot_folder = plot_folder, suffix = suffix)
+      ls = ls,
+      ls_names = ls_names,
+      ylabs = ylabs,
+      mains = mains,
+      rangeVals = rangeVals,
+      xl = xl,
+      labels = labels,
+      colorlist = colorlist,
+      ind = ind,
+      add_vertical_threshold_at = add_vertical_threshold_at,
+      saveplots = saveplots,
+      plot_folder = plot_folder,
+      suffix = suffix
+    )
   }
   # plot AIRs if requested
   if (plotAIRs && !(num_g == 1 && labels[1] == labels_all[1])) {
     plot_AI_panel(
-      AIRs = AIRs, rangeVals = rangeVals, labels = labels, labels_all = labels_all, 
-      ind = ind, colorlist = colorlist, add_AIR_threshold_lines = add_AIR_threshold_lines,
-      saveplots = saveplots, plot_folder = plot_folder, suffix = suffix
-      )
-    }
+      AIRs = AIRs,
+      rangeVals = rangeVals,
+      labels = labels,
+      labels_all = labels_all,
+      ind = ind,
+      colorlist = colorlist,
+      add_AIR_threshold_lines = add_AIR_threshold_lines,
+      saveplots = saveplots,
+      plot_folder = plot_folder,
+      suffix = suffix
+    )
+  }
 }
-
-
-
-
 
 
 ############ HELPER FUNCTIONS ############
 
-plot_CAI_panels <- function(ls, ls_names, ylabs, mains, rangeVals, xl, labels, 
-                            colorlist, ind, add_vertical_threshold_at = NULL,
-                            saveplots = FALSE, plot_folder = ".", suffix = "") {
-  
+plot_CAI_panels <- function(
+  ls,
+  ls_names,
+  ylabs,
+  mains,
+  rangeVals,
+  xl,
+  labels,
+  colorlist,
+  ind,
+  add_vertical_threshold_at = NULL,
+  saveplots = FALSE,
+  plot_folder = ".",
+  suffix = ""
+) {
   legends <- make_legend_positions(ls_names)
-  
+
   for (l in seq_along(ls_names)) {
     l_col <- colorlist[ind]
-    plot(0, type = "l", ylim = c(0, 1), xlim = c(min(rangeVals), max(rangeVals)),
-         col = l_col[1], lwd = 1.5, xlab = xl, ylab = ylabs[l], main = mains[l], 
-         cex = 1.1)
-    
+    plot(
+      0,
+      type = "l",
+      ylim = c(0, 1),
+      xlim = c(min(rangeVals), max(rangeVals)),
+      col = l_col[1],
+      lwd = 1.5,
+      xlab = xl,
+      ylab = ylabs[l],
+      main = mains[l],
+      cex = 1.1
+    )
+
     if (!is.null(add_vertical_threshold_at)) {
       abline(v = add_vertical_threshold_at, col = "gray", lty = 3)
     }
@@ -174,27 +217,50 @@ plot_CAI_panels <- function(ls, ls_names, ylabs, mains, rangeVals, xl, labels,
         lines(rangeVals, ls[[ls_names[l]]][i, ], col = l_col[k + 1], lwd = 1.5)
       }
     }
-    legend(legends[l], legend = labels, col = colorlist[ind], lty = 1, lwd = 1.5,
-           cex = 0.8)
-    
+    legend(
+      legends[l],
+      legend = labels,
+      col = colorlist[ind],
+      lty = 1,
+      lwd = 1.5,
+      cex = 0.8
+    )
+
     if (saveplots) save_current_plot(ls_names[l], plot_folder, suffix)
-    
   }
 }
 
-plot_AI_panel <- function(AIRs, rangeVals, labels, labels_all, ind, colorlist,
-                          add_AIR_threshold_lines = TRUE, saveplots = FALSE, 
-                          plot_folder = NULL, suffix = "") {
-  ylim_u <- ifelse(max(AIRs, na.rm = TRUE) < 1.5, 1.5, round(max(AIRs, na.rm = TRUE)))
+plot_AI_panel <- function(
+  AIRs,
+  rangeVals,
+  labels,
+  labels_all,
+  ind,
+  colorlist,
+  add_AIR_threshold_lines = TRUE,
+  saveplots = FALSE,
+  plot_folder = NULL,
+  suffix = ""
+) {
+  ylim_u <- ifelse(
+    max(AIRs, na.rm = TRUE) < 1.5,
+    1.5,
+    round(max(AIRs, na.rm = TRUE))
+  )
   l_lab <- labels[-1]
   l_col <- colorlist[ind][-1]
   l_lty <- rep(1, length(l_lab))
   l_lwd <- rep(1.5, length(l_lab))
-  
-  plot(0, xlim = range(rangeVals), ylim = c(0, ylim_u), cex = 1.1,
-       ylab = "Adverse Impact Ratio (AIR)",
-       main = paste0("Adverse Impact Ratios [reference: ", labels[1], "]"))
-  
+
+  plot(
+    0,
+    xlim = range(rangeVals),
+    ylim = c(0, ylim_u),
+    cex = 1.1,
+    ylab = "Adverse Impact Ratio (AIR)",
+    main = paste0("Adverse Impact Ratios [reference: ", labels[1], "]")
+  )
+
   if (add_AIR_threshold_lines) {
     abline(h = 1, lty = 2, col = "lightgray", lwd = 0.8)
     abline(h = 0.8, lty = 2, col = "gray42", lwd = 0.8)
@@ -203,33 +269,33 @@ plot_AI_panel <- function(AIRs, rangeVals, labels, labels_all, ind, colorlist,
     l_lty <- c(l_lty, 2, 2)
     l_lwd <- c(l_lwd, 0.8, 0.8)
   }
-  
+
   for (i in ind[-1]) {
     lines(rangeVals, AIRs[labels_all[i], ], lwd = 1.5, col = colorlist[i])
   }
   legend("bottomright", l_lab, col = l_col, lty = l_lty, lwd = l_lwd, cex = 0.8)
 
   if (saveplots) save_current_plot("AIR", plot_folder, suffix)
-  
-  }
+}
 
 prep_CAI_inputs <- function(x, cai_names, mod_names) {
   validate_inputs(x, cai_names, mod_names)
   x <- validate_PartInv(x)
-  
+
   plotAIRs <- "AIR" %in% cai_names
   cai_names <- setdiff(cai_names, "AIR")
-  if (length(cai_names) == 0) cai_names <- NULL
-  
-  list( x = x, cai_names = cai_names, plotAIRs = plotAIRs
-  )
+  if (length(cai_names) == 0) {
+    cai_names <- NULL
+  }
+
+  list(x = x, cai_names = cai_names, plotAIRs = plotAIRs)
 }
 
 validate_inputs <- function(x, cai_names, mod_names) {
   if (!inherits(x, "PartInv")) {
     stop("`x` must be a PartInv object.")
   }
-  if (!all(cai_names %in% c("PS","SR","SE","SP","AIR"))) {
+  if (!all(cai_names %in% c("PS", "SR", "SE", "SP", "AIR"))) {
     stop("`cai_names` must be one or more of: PS, SR, SE, SP, AIR.")
   }
   if (!all(mod_names %in% c("par", "str"))) {
@@ -241,28 +307,29 @@ run_PartInv_at_value <- function(pl, use, value) {
   args <- pl
   args$show_mi_result <- TRUE
   args$functioncall <- NULL
-  
+
   if (use == "cutoffs") {
-    args$cut_z <- value; args$propsel <- NULL
+    args$cut_z <- value
+    args$propsel <- NULL
   } else {
-    args$propsel <- value; args$cut_z <- NULL
+    args$propsel <- value
+    args$cut_z <- NULL
   }
   do.call(PartInv, args)
 }
 
 extract_CAI_from_PartInv <- function(pinv, cai_names, mod_names, num_g) {
-  
   cai_list <- vector("list", length(cai_names) * length(mod_names))
   names(cai_list) <- as.vector(outer(cai_names, mod_names, paste, sep = "_"))
-  
+
   ind <- 1
   for (cai_nm in cai_names) {
     cai <- lab_cai(substr(cai_nm, 1, 2))
-    
+
     if (!cai %in% rownames(pinv$summary)) {
       stop("CAI '", cai, "' not found in PartInv summary.")
     }
-    
+
     for (mod in mod_names) {
       cai_list[[ind]] <-
         if (mod == "par") {
@@ -282,7 +349,7 @@ make_legend_positions <- function(ls_names) {
 
 set_colors <- function(custom_colors, num_g) {
   colorlist <- colorlist()
-  
+
   if (!is.null(custom_colors) && length(custom_colors) == num_g) {
     colorlist <- custom_colors
   } else if (!is.null(custom_colors)) {
@@ -295,15 +362,22 @@ set_colors <- function(custom_colors, num_g) {
 
 # index x invariance level
 make_CAI_labels <- function(cai_names, mod_names) {
-  ylabs <- character(0); mains <- character(0)
-  
+  ylabs <- character(0)
+  mains <- character(0)
+
   for (cai_nm in cai_names) {
     cai <- lab_cai(substr(cai_nm, 1, 2))
     for (mod in mod_names) {
       ylabs <- c(ylabs, paste0(cai, " (", cai_nm, ")"))
-      mains <- c(mains,
-                 paste0(cai, " under ", ifelse(mod == "par", "partial", "strict"),
-                        " invariance"))
+      mains <- c(
+        mains,
+        paste0(
+          cai,
+          " under ",
+          ifelse(mod == "par", "partial", "strict"),
+          " invariance"
+        )
+      )
     }
   }
   list(ylabs = ylabs, mains = mains)
@@ -313,20 +387,23 @@ make_range <- function(from, to, by, cutoffs_from, cutoffs_to) {
   use <- "propsels"
   xl <- "Proportion of selection"
   rangeVals <- seq(from = from, to = to, by = by)
-  
-  if ((is.null(cutoffs_from) && !is.null(cutoffs_to)) ||
-      (!is.null(cutoffs_from) && is.null(cutoffs_to))) {
+
+  if (
+    (is.null(cutoffs_from) && !is.null(cutoffs_to)) ||
+      (!is.null(cutoffs_from) && is.null(cutoffs_to))
+  ) {
     warning(
       "Provide both `cutoffs_from` and `cutoffs_to` to plot CAI across thresholds; ",
       "otherwise, proportions of selection are used."
     )
   }
-  
-  if (!is.null(cutoffs_from) && !is.null(cutoffs_to) &&
-      cutoffs_from > cutoffs_to) {
+
+  if (
+    !is.null(cutoffs_from) && !is.null(cutoffs_to) && cutoffs_from > cutoffs_to
+  ) {
     stop("`cutoffs_from` must be <= `cutoffs_to`.")
   }
-  
+
   if (!is.null(cutoffs_from) && !is.null(cutoffs_to)) {
     rangeVals <- seq(from = cutoffs_from, to = cutoffs_to, by = by)
     xl <- "Thresholds"
@@ -338,7 +415,7 @@ make_range <- function(from, to, by, cutoffs_from, cutoffs_to) {
 resolve_group_indices <- function(labels, plot_only_g) {
   labels_all <- labels
   ind <- seq_along(labels)
-  
+
   if (!is.null(plot_only_g) && all(plot_only_g %in% labels)) {
     labels <- unique(c(labels[1], plot_only_g))
     ind <- which(labels_all %in% labels)
@@ -353,18 +430,29 @@ fill_CAI_matrices <- function(ls, vals, p) {
   ls
 }
 
-save_current_plot <- function(base_name, plot_folder, suffix = "",
-                              width = 1600, height = 1200, res = 200) {
-
-  if (is.null(plot_folder)) plot_folder <- "."  # default to working dir
-  if (!dir.exists(plot_folder)) dir.create(plot_folder, recursive = TRUE)
+save_current_plot <- function(
+  base_name,
+  plot_folder,
+  suffix = "",
+  width = 1600,
+  height = 1200,
+  res = 200
+) {
+  if (is.null(plot_folder)) {
+    plot_folder <- "."
+  } # default to working dir
+  if (!dir.exists(plot_folder)) {
+    dir.create(plot_folder, recursive = TRUE)
+  }
 
   fname <- paste0(base_name, if (nzchar(suffix)) paste0("_", suffix), ".png")
   p <- recordPlot()
-  invisible(png(file.path(plot_folder, fname), width = width, height = height, res = res))
+  invisible(png(
+    file.path(plot_folder, fname),
+    width = width,
+    height = height,
+    res = res
+  ))
   replayPlot(p)
   invisible(dev.off())
 }
-# plot_CAI_across_range(
-#   x = p1f, saveplots = TRUE, plot_folder = "test_plots", suffix = "demo"
-# )
