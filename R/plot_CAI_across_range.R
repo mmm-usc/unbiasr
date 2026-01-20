@@ -1,4 +1,4 @@
-#' @importFrom graphics lines
+#' @importFrom graphics matplot
 #' @importFrom grDevices dev.off png dev.copy
 NULL
 
@@ -106,11 +106,19 @@ plot_CAI_across_range <- function(
     num_g = num_g,
     labels = labels
   )
+
   AIRs <- res$AIRs
   ls <- res$ls
   ls_names <- res$ls_names
-  ylabs <- res$ylabs
-  mains <- res$mains
+
+  # generate y labels and panel titles
+  labs <- if (!is.null(cai_names) && length(cai_names) > 0) {
+    make_CAI_labels(cai_names, mod_names)
+  } else {
+    list(ylabs = character(0), mains = character(0))
+  }
+  ylabs <- labs$ylabs
+  mains <- labs$mains
 
   # subset groups for plotting
   grp <- resolve_group_indices(labels, plot_only_g)
@@ -244,32 +252,14 @@ plot_CAI_panels <- function(
 
   for (l in seq_along(ls_names)) {
     l_col <- colorlist[ind]
-    plot(
-      0,
-      type = "l",
-      ylim = c(0, 1),
-      xlim = c(min(rangeVals), max(rangeVals)),
-      col = l_col[1],
-      lwd = 1.5,
-      xlab = xl,
-      ylab = ylabs[l],
-      main = mains[l],
-      cex = 1.1
-    )
+    matplot(rangeVals, t(ls[[l]]), type = "l", ylim = c(0, 1),
+            col = l_col, lwd = 1.5, xlab = xl,
+            ylab = ylabs[l], main = mains[l], cex = 1.1)
 
     if (!is.null(add_vertical_threshold_at)) {
       abline(v = add_vertical_threshold_at, col = "gray", lty = 3)
     }
 
-    # reference group
-    lines(rangeVals, ls[[ls_names[l]]][ind[1], ], col = l_col[1], lwd = 1.5)
-    # focal groups
-    if (length(ind) > 1) {
-      for (k in seq_along(ind[-1])) {
-        i <- ind[-1][k]
-        lines(rangeVals, ls[[ls_names[l]]][i, ], col = l_col[k + 1], lwd = 1.5)
-      }
-    }
     legend(
       legends[l],
       legend = labels,
@@ -300,13 +290,17 @@ plot_AI_panel <- function(
   l_lty <- rep(1, length(l_lab))
   l_lwd <- rep(1.5, length(l_lab))
 
-  plot(
-    0,
-    xlim = range(rangeVals),
-    ylim = c(0, ylim_u),
-    cex = 1.1,
+  matplot(
+    rangeVals,
+    t(AIRs),
+    type = "l",
+    xlab = "Proportion of selection",
     ylab = "Adverse Impact Ratio (AIR)",
-    main = paste0("Adverse Impact Ratios [reference: ", labels[1], "]")
+    main = paste0("Adverse Impact Ratios [reference: ", labels[1], "]"),
+    ylim = c(0, ylim_u),
+    cex.main = 1.1,
+    cex.lab = 1.1,
+    col = colorlist[ind[-1]]
   )
 
   if (add_AIR_threshold_lines) {
@@ -318,13 +312,6 @@ plot_AI_panel <- function(
     l_lwd <- c(l_lwd, 0.8, 0.8)
   }
 
-  # Map ind to AIR row indices (excluding reference group)
-  air_indices <- ind[-1] - 1 # Subtract 1 because AIRs excludes reference group
-
-  for (i in air_indices) {
-    # Use numeric index directly, not label
-    lines(rangeVals, AIRs[i, ], lwd = 1.5, col = colorlist[ind[-1][i]])
-  }
   legend("bottomright", l_lab, col = l_col, lty = l_lty, lwd = l_lwd, cex = 0.8)
 }
 
