@@ -86,7 +86,7 @@ Lai, M. H. C., Kwok, O., Yoon, M., & Hsiao, Y.-Y. (2017). Understanding the impa
 
 Lai, M. H. C., & Zhang, Y. (2022). Classification accuracy of multidimensional tests: Quantifying the impact of noninvariance. *Structural Equation Modeling: A Multidisciplinary Journal.* 29(4), 620–629. https://doi.org/10.1080/10705511.2021.1977936
 
-Ozcan, M., Lai, M. H. C. (2025) Exploring the Impact of Deleting (or Retaining) a Biased Item: A Procedure Based on Classification Accuracy. *Assessment*. 32(8), 1211-1225. Epub 2024. https://doi.org/10.1177/10731911241298081
+Ozcan, M., Lai, M. H. C. (2025) Exploring the Impact of Deleting (or Retaining) a Biased Item: A Procedure Based on Classification Accuracy. *Assessment*. 32(8), 1211-1225. https://doi.org/10.1177/10731911241298081
 
 
 The development of this package is supported by the U.S. Army Research Institute for the Behavioral and Social Sciences (ARI) under Grant W911NF2010282. The views, opinions, and/or findings contained in this report (paper) are those of the authors and shall not be construed as an official Department of the Army position, policy, or decision, unless so designated by other documents.
