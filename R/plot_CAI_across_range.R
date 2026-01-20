@@ -1,12 +1,13 @@
 #' @importFrom graphics matplot
-#' @importFrom grDevices dev.off png dev.copy
+#' @importFrom grDevices dev.off png dev.cur
+#' @importFrom grid grid.echo
 NULL
 
 #' Plot classification accuracy indices (CAI) and Adverse Impact ratios (AIR)
-#' at different proportions of selection or at different threshold (cutoff) values
+#' at different proportions of selection or at different cut score values
 #'
 #' \code{plot_CAI_across_range} plots CAI and AIR across a range of proportions
-#' of selection or thresholds under partial and strict invariance conditions
+#' of selection or cut scores under partial and strict invariance conditions
 #' for a given `PartInv` object, using the same reference group and parameter
 #' specifications.
 #'
@@ -17,23 +18,26 @@ NULL
 #'   indices of interest. c("PS", "SR", "SE", "SP", "AIR") by default.
 #' @param mod_names A vector of strings indicating the invariance conditions of
 #'   interest. c("par", "str") by default.
-#' @param from The lowest proportion of selection to consider. `0.01` by default.
-#' @param to The largest proportion of selection to consider. `0.25` by default.
-#' @param by The increment of the sequence of proportions. `0.1` by default. Note
-#'  that this argument is used with both cutoffs and proportions of selection,
-#'  which have different scales.
-#' @param cutoffs_from The lowest threshold to consider. `NULL` by default.
-#' @param cutoffs_to The largest threshold to consider. `NULL` by default.
-#' @param custom_colors Optional argument for specifying colors. `NULL` by default.
+#' @param from The lowest proportion of selection to consider. `0.01` by
+#'   default.
+#' @param to The largest proportion of selection to consider. `0.25` by
+#'   default.
+#' @param by The increment of the sequence of proportions. `0.1` by default.
+#'   Note that this argument is used with both cutoffs and proportions of
+#'   selection, which have different scales.
+#' @param cutoffs_from The lowest cut score to consider. `NULL` by default.
+#' @param cutoffs_to The largest ctu score to consider. `NULL` by default.
+#' @param custom_colors Optional argument for specifying colors. `NULL` by
+#'   default.
 #' @param add_AIR_threshold_lines Whether horizontal lines at Adverse Impact
-#' ratios of 1 and 0.8 should be plotted. `TRUE` by default.
-#' @param add_vertical_threshold_at Adds a vertical line at a specified threshold
-#'   value for easier comparison. `NULL` by default.
-#' @param plot_only_g Optional argument, vector of strings specifying the labels
-#'   of the subset of groups to be plotted. The reference group is always
-#'   plotted. Ignored if all elements do not appear in `labels`.
-#' @return Eight plots illustrating how proportion selected (PS), success ratio
-#'   (SR), sensitivity (SE), and specificity (SP) change across different
+#'   ratios of 1 and 0.8 should be plotted. `TRUE` by default.
+#' @param add_vertical_threshold_at Adds a vertical line at a specified
+#'   threshold value for easier comparison. `NULL` by default.
+#' @param plot_only_g Optional argument, vector of strings specifying the
+#'   labels of the subset of groups to be plotted. The reference group is
+#'   always plotted. Ignored if all elements do not appear in `labels`.
+#' @return Eight plots illustrating how proportion selected (PS), success
+#'   ratio (SR), sensitivity (SE), and specificity (SP) change across different
 #'   proportions of selection under partial and strict invariance conditions.
 #' @examples
 #' \dontrun{
@@ -44,10 +48,11 @@ NULL
 #'               textual =~ x4 + x5 + x6
 #'               speed   =~ x7 + x8 + x9 '
 #' fit <- cfa(HS.model, data = HS, group = "sex")
-#' p1f <- PartInv(fit, propsel = .7, plot_contour = TRUE, show_mi_result = TRUE,
-#'                labels = c("Male", "Female"), reference = "Female")
-#' p1m <- PartInv(fit, propsel = .7, plot_contour = TRUE, show_mi_result = TRUE,
-#'                labels = c("Male", "Female"))
+#' p1f <- PartInv(fit, propsel = .7, plot_contour = TRUE,
+#'                show_mi_result = TRUE, labels = c("Male", "Female"),
+#'                reference = "Female")
+#' p1m <- PartInv(fit, propsel = .7, plot_contour = TRUE,
+#'                show_mi_result = TRUE, labels = c("Male", "Female"))
 #' plot_CAI_across_range(x = p1f, by = 0.01)
 #' plot_CAI_across_range(x = p1f, cutoffs_from = 35, cutoffs_to = 50)
 #' plot_CAI_across_range(x = p1m, cutoffs_from = 35, cutoffs_to = 50)
@@ -92,10 +97,15 @@ plot_CAI_across_range <- function(
   validate_range_params(from, to, by, cutoffs_from, cutoffs_to)
 
   # determine plotting range (propsel or cutoff)
-  rng <- make_range(from, to, by, cutoffs_from, cutoffs_to)
-  rangeVals <- rng$rangeVals
-  xl <- rng$xl
-  use <- rng$use
+  xl <- "Proportion of selection"
+  use <- "propsels"
+  if (!is.null(cutoffs_from) && !is.null(cutoffs_to)) {
+    from <- cutoffs_from
+    to <- cutoffs_to
+    xl <- "Cut score"
+    use <- "cutoffs"
+  }
+  rangeVals <- seq(from, to, by)
 
   res <- compute_CAI_and_AIR(
     pl = pl,
@@ -152,28 +162,26 @@ compute_CAI_and_AIR <- function(
   num_g,
   labels
 ) {
-  # initialize storage for AIRs and CAIs
-  AIRs <- matrix(NA, ncol = length(rangeVals), nrow = max(0, num_g - 1))
-
+  # initialize storage for CAIs and AIRs
+  n_vals <- length(rangeVals)
   ls_df <- expand.grid(
     cai = cai_names,
     g = seq_len(num_g),
     mod = mod_names
   )
+  
+  cai_matrix <- matrix(NA, nrow = nrow(ls_df), ncol = n_vals)
+  
+  AIRs <- matrix(NA, ncol = n_vals, nrow = max(0, num_g - 1))
 
-  ls <- vector("list", length(rangeVals))
-
-  # call PartInv across the requested range and extract and store CAI, AIR values
-  if (length(rangeVals) > 10) {
-    message("Computing CAI across ", length(rangeVals), " values...")
-  }
+  # call PartInv across the requested range and extract and store CAI, AIR
+  # values
   for (p in seq_along(rangeVals)) {
-    if (length(rangeVals) > 20 && p %% 10 == 0) {
-      message("  Progress: ", p, "/", length(rangeVals))
-    }
     pinv <- run_PartInv_at_value(pl, use, rangeVals[p])
 
-    ls[[p]] <- unlist(extract_CAI_from_PartInv(pinv, cai_names, mod_names))
+    cai_matrix[, p] <- unlist(
+      extract_CAI_from_PartInv(pinv, cai_names, mod_names)
+    )
 
     if (nrow(AIRs) > 0) {
       # pinv$ai_ratio should have length num_g - 1
@@ -181,9 +189,8 @@ compute_CAI_and_AIR <- function(
     }
   }
   
-  ls <- do.call(cbind, ls)
-  colnames(ls) <- rangeVals
-  ls <- cbind(ls_df, ls)
+  colnames(cai_matrix) <- rangeVals
+  ls <- cbind(ls_df, cai_matrix)
 
   if (nrow(AIRs) > 0) {
     rownames(AIRs) <- labels[-1]
@@ -267,7 +274,8 @@ plot_AI_panel <- function(
     l_lwd <- c(l_lwd, 0.8, 0.8)
   }
 
-  legend("bottomright", l_lab, col = l_col, lty = l_lty, lwd = l_lwd, cex = 0.8)
+  legend("bottomright", l_lab, col = l_col, lty = l_lty, lwd = l_lwd,
+         cex = 0.8)
 }
 
 prep_CAI_inputs <- function(x, cai_names, mod_names) {
@@ -306,9 +314,6 @@ validate_range_params <- function(from, to, by, cutoffs_from, cutoffs_to) {
     if (from >= to) {
       stop("from must be less than to")
     }
-    if (by <= 0) {
-      stop("by must be positive")
-    }
   }
 
   # Validate cutoff-based range
@@ -316,9 +321,13 @@ validate_range_params <- function(from, to, by, cutoffs_from, cutoffs_to) {
     if (!is.numeric(cutoffs_from) || !is.numeric(cutoffs_to)) {
       stop("cutoffs_from and cutoffs_to must be numeric")
     }
-    if (by <= 0) {
-      stop("by must be positive")
+    if (cutoffs_from >= cutoffs_to) {
+      stop("cutoffs_from must be less than cutoffs_to")
     }
+  }
+  
+  if (by <= 0) {
+    stop("by must be positive")
   }
 }
 
@@ -337,7 +346,7 @@ run_PartInv_at_value <- function(pl, use, value) {
   do.call(PartInv, args)
 }
 
-extract_CAI_from_PartInv <- function(pinv, cai_names, mod_names, num_g) {
+extract_CAI_from_PartInv <- function(pinv, cai_names, mod_names) {
   lapply(mod_names, function(mod) {
     summ <- if (mod == "par") pinv$summary else pinv$summary_mi
     out <- summ[lab_cai(cai_names), seq_len(pinv$params$num_g), drop = FALSE]
@@ -355,8 +364,8 @@ set_colors <- function(custom_colors, num_g) {
   } else {
     if (length(custom_colors) > num_g) {
       warning(
-        "Length of `custom_colors` > number of groups. Only the first `num_g` ",
-        "colors will be used."
+        "Length of `custom_colors` > number of groups. Only the first ",
+        "`num_g` colors will be used."
       )
     } else {
       if (length(custom_colors) < num_g) {
@@ -369,52 +378,6 @@ set_colors <- function(custom_colors, num_g) {
     }
   }
   custom_colors[seq_len(num_g)]
-}
-
-# index x invariance level
-make_CAI_labels <- function(cai_names, mod_names) {
-  ylabs <- character(0)
-  mains <- character(0)
-
-  for (cai_nm in cai_names) {
-    cai <- lab_cai(substr(cai_nm, 1, 2))
-    for (mod in mod_names) {
-      ylabs <- c(ylabs, paste0(cai, " (", cai_nm, ")"))
-      mains <- c(
-        mains,
-        paste0(
-          cai,
-          " under ",
-          ifelse(mod == "par", "partial", "strict"),
-          " invariance"
-        )
-      )
-    }
-  }
-  list(ylabs = ylabs, mains = mains)
-}
-
-make_range <- function(from, to, by, cutoffs_from, cutoffs_to) {
-  use <- "propsels"
-  xl <- "Proportion of selection"
-
-  # Use length.out instead of by when possible
-  rangeVals <- seq(from = from, to = to, by = by)
-  # Ensure 'to' is included even if 'by' doesn't divide evenly
-  if (abs(rangeVals[length(rangeVals)] - to) > .Machine$double.eps) {
-    rangeVals <- c(rangeVals, to)
-  }
-
-  if (!is.null(cutoffs_from) && !is.null(cutoffs_to)) {
-    rangeVals <- seq(from = cutoffs_from, to = cutoffs_to, by = by)
-    if (abs(rangeVals[length(rangeVals)] - cutoffs_to) > .Machine$double.eps) {
-      rangeVals <- c(rangeVals, cutoffs_to)
-    }
-    xl <- "Thresholds"
-    use <- "cutoffs"
-  }
-
-  list(rangeVals = rangeVals, xl = xl, use = use)
 }
 
 resolve_group_indices <- function(labels, plot_only_g) {
@@ -450,13 +413,18 @@ save_current_plot <- function(
   if (!dir.exists(plot_folder)) {
     dir.create(plot_folder, recursive = TRUE)
   }
-
+  
   fname <- paste0(base_name, if (nzchar(suffix)) paste0("_", suffix), ".png")
   fpath <- file.path(plot_folder, fname)
-
-  # Copy current plot more reliably
-  dev.copy(png, filename = fpath, width = width, height = height, res = res)
-  dev.off()
-
-  message("Saved plot to: ", fpath)
+  
+  # More robust approach
+  tryCatch({
+    grDevices::png(filename = fpath, width = width, height = height, res = res)
+    grid::grid.echo()  # or replayPlot() if plot was recorded
+    dev.off()
+    message("Saved plot to: ", fpath)
+  }, error = function(e) {
+    if (dev.cur() > 1) dev.off()  # Clean up on error
+    warning("Failed to save plot: ", e$message)
+  })
 }

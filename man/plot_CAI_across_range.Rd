@@ -3,7 +3,7 @@
 \name{plot_CAI_across_range}
 \alias{plot_CAI_across_range}
 \title{Plot classification accuracy indices (CAI) and Adverse Impact ratios (AIR)
-at different proportions of selection or at different threshold (cutoff) values}
+at different proportions of selection or at different cut score values}
 \usage{
 plot_CAI_across_range(
   x = NULL,
@@ -33,38 +33,41 @@ indices of interest. c("PS", "SR", "SE", "SP", "AIR") by default.}
 \item{mod_names}{A vector of strings indicating the invariance conditions of
 interest. c("par", "str") by default.}
 
-\item{from}{The lowest proportion of selection to consider. \code{0.01} by default.}
+\item{from}{The lowest proportion of selection to consider. \code{0.01} by
+default.}
 
-\item{to}{The largest proportion of selection to consider. \code{0.25} by default.}
+\item{to}{The largest proportion of selection to consider. \code{0.25} by
+default.}
 
-\item{by}{The increment of the sequence of proportions. \code{0.1} by default. Note
-that this argument is used with both cutoffs and proportions of selection,
-which have different scales.}
+\item{by}{The increment of the sequence of proportions. \code{0.1} by default.
+Note that this argument is used with both cutoffs and proportions of
+selection, which have different scales.}
 
-\item{cutoffs_from}{The lowest threshold to consider. \code{NULL} by default.}
+\item{cutoffs_from}{The lowest cut score to consider. \code{NULL} by default.}
 
-\item{cutoffs_to}{The largest threshold to consider. \code{NULL} by default.}
+\item{cutoffs_to}{The largest ctu score to consider. \code{NULL} by default.}
 
-\item{custom_colors}{Optional argument for specifying colors. \code{NULL} by default.}
+\item{custom_colors}{Optional argument for specifying colors. \code{NULL} by
+default.}
 
 \item{add_AIR_threshold_lines}{Whether horizontal lines at Adverse Impact
 ratios of 1 and 0.8 should be plotted. \code{TRUE} by default.}
 
-\item{add_vertical_threshold_at}{Adds a vertical line at a specified threshold
-value for easier comparison. \code{NULL} by default.}
+\item{add_vertical_threshold_at}{Adds a vertical line at a specified
+threshold value for easier comparison. \code{NULL} by default.}
 
-\item{plot_only_g}{Optional argument, vector of strings specifying the labels
-of the subset of groups to be plotted. The reference group is always
-plotted. Ignored if all elements do not appear in \code{labels}.}
+\item{plot_only_g}{Optional argument, vector of strings specifying the
+labels of the subset of groups to be plotted. The reference group is
+always plotted. Ignored if all elements do not appear in \code{labels}.}
 }
 \value{
-Eight plots illustrating how proportion selected (PS), success ratio
-(SR), sensitivity (SE), and specificity (SP) change across different
+Eight plots illustrating how proportion selected (PS), success
+ratio (SR), sensitivity (SE), and specificity (SP) change across different
 proportions of selection under partial and strict invariance conditions.
 }
 \description{
 \code{plot_CAI_across_range} plots CAI and AIR across a range of proportions
-of selection or thresholds under partial and strict invariance conditions
+of selection or cut scores under partial and strict invariance conditions
 for a given \code{PartInv} object, using the same reference group and parameter
 specifications.
 }
@@ -77,10 +80,11 @@ HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed   =~ x7 + x8 + x9 '
 fit <- cfa(HS.model, data = HS, group = "sex")
-p1f <- PartInv(fit, propsel = .7, plot_contour = TRUE, show_mi_result = TRUE,
-               labels = c("Male", "Female"), reference = "Female")
-p1m <- PartInv(fit, propsel = .7, plot_contour = TRUE, show_mi_result = TRUE,
-               labels = c("Male", "Female"))
+p1f <- PartInv(fit, propsel = .7, plot_contour = TRUE,
+               show_mi_result = TRUE, labels = c("Male", "Female"),
+               reference = "Female")
+p1m <- PartInv(fit, propsel = .7, plot_contour = TRUE,
+               show_mi_result = TRUE, labels = c("Male", "Female"))
 plot_CAI_across_range(x = p1f, by = 0.01)
 plot_CAI_across_range(x = p1f, cutoffs_from = 35, cutoffs_to = 50)
 plot_CAI_across_range(x = p1m, cutoffs_from = 35, cutoffs_to = 50)
