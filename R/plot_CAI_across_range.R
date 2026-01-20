@@ -1,6 +1,5 @@
 #' @importFrom graphics matplot
-#' @importFrom grDevices dev.off png dev.cur
-#' @importFrom grid grid.echo
+#' @importFrom grDevices dev.off dev.cur png replayPlot
 NULL
 
 #' Plot classification accuracy indices (CAI) and Adverse Impact ratios (AIR)
@@ -36,6 +35,7 @@ NULL
 #' @param plot_only_g Optional argument, vector of strings specifying the
 #'   labels of the subset of groups to be plotted. The reference group is
 #'   always plotted. Ignored if all elements do not appear in `labels`.
+#'   Currently not used
 #' @return Eight plots illustrating how proportion selected (PS), success
 #'   ratio (SR), sensitivity (SE), and specificity (SP) change across different
 #'   proportions of selection under partial and strict invariance conditions.
@@ -91,7 +91,7 @@ plot_CAI_across_range <- function(
   if (is.null(labels)) {
     labels <- pl$labels
   }
-  labels_all <- labels # make copy for AIR indexing
+  # labels_all <- labels # make copy for AIR indexing
 
   # validate range parameters
   validate_range_params(from, to, by, cutoffs_from, cutoffs_to)
@@ -121,10 +121,14 @@ plot_CAI_across_range <- function(
   ls <- res$ls
 
   # subset groups for plotting
-  grp <- resolve_group_indices(labels, plot_only_g)
-  labels <- grp$labels
-  ind <- grp$ind
-  num_g <- length(labels)
+  # grp <- resolve_group_indices(labels, plot_only_g)
+  # labels <- grp$labels
+  # ind <- grp$ind
+  # num_g <- length(labels)
+  if (!is.null(plot_only_g)) {
+    warning("`plot_only_g` is currently not used.")
+  }
+  ind <- seq_len(num_g)
 
   colorlist <- set_colors(custom_colors, num_g)
 
@@ -139,9 +143,10 @@ plot_CAI_across_range <- function(
     )
   }
   # plot AIRs if requested
-  if (plotAIRs && !(num_g == 1 && labels[1] == labels_all[1])) {
+  if (plotAIRs && !(num_g == 1)) {
     plot_AI_panel(
       AIRs = AIRs,
+      xl = xl,
       labels = labels,
       colorlist = colorlist[ind],
       add_AIR_threshold_lines = add_AIR_threshold_lines
@@ -210,15 +215,20 @@ plot_CAI_panels <- function(
   add_vertical_threshold_at = NULL
 ) {
   rangeVals <- as.numeric(colnames(ls)[-(1:3)])
+  
   for (cc in unique(ls$cai)) {
     for (mm in unique(ls$mod)) {
-      mat <- ls[which(ls$cai == cc & ls$mod == mm), -(1:3), drop = FALSE]
+      # More efficient subsetting and conversion
+      idx <- ls$cai == cc & ls$mod == mm
+      mat <- as.matrix(ls[idx, -(1:3)])
+      
       ylab <- paste0(lab_cai(cc), " (", toupper(cc), ")")
       main <- paste0(lab_cai(cc), " under ", lab_mod(mm))
+      
       matplot(rangeVals, t(mat), type = "l", ylim = c(0, 1),
               col = colorlist, lwd = 1.5, xlab = xl,
               ylab = ylab, main = main, cex = 1.1)
-
+      
       if (!is.null(add_vertical_threshold_at)) {
         abline(v = add_vertical_threshold_at, col = "gray", lty = 3)
       }
@@ -237,6 +247,7 @@ plot_CAI_panels <- function(
 
 plot_AI_panel <- function(
   AIRs,
+  xl,
   labels,
   colorlist,
   add_AIR_threshold_lines = TRUE
@@ -256,7 +267,7 @@ plot_AI_panel <- function(
     rangeVals,
     t(AIRs),
     type = "l",
-    xlab = "Proportion of selection",
+    xlab = xl,
     ylab = "Adverse Impact Ratio (AIR)",
     main = paste0("Adverse Impact Ratios [reference: ", labels[1], "]"),
     ylim = c(0, ylim_u),
@@ -360,24 +371,19 @@ make_legend_positions <- function(ls_names) {
 
 set_colors <- function(custom_colors, num_g) {
   if (is.null(custom_colors)) {
-    custom_colors <- colorlist()
-  } else {
-    if (length(custom_colors) > num_g) {
-      warning(
-        "Length of `custom_colors` > number of groups. Only the first ",
-        "`num_g` colors will be used."
-      )
-    } else {
-      if (length(custom_colors) < num_g) {
-        warning(
-          "`custom_colors` must have length == number of groups. ",
-          "Using default colors instead."
-        )
-        custom_colors <- colorlist()
-      }
-    }
+    return(colorlist()[seq_len(num_g)])
   }
-  custom_colors[seq_len(num_g)]
+  
+  if (length(custom_colors) != num_g) {
+    warning(
+      "Length of `custom_colors` (", length(custom_colors), 
+      ") doesn't match number of groups (", num_g, 
+      "). Using default colors."
+    )
+    return(colorlist()[seq_len(num_g)])
+  }
+  
+  custom_colors
 }
 
 resolve_group_indices <- function(labels, plot_only_g) {
@@ -404,7 +410,7 @@ fill_CAI_matrices <- function(ls, vals, p) {
 
 save_current_plot <- function(
   base_name,
-  plot_folder = ".", # Set default in signature
+  plot_folder = ".",
   suffix = "",
   width = 1600,
   height = 1200,
@@ -417,14 +423,28 @@ save_current_plot <- function(
   fname <- paste0(base_name, if (nzchar(suffix)) paste0("_", suffix), ".png")
   fpath <- file.path(plot_folder, fname)
   
-  # More robust approach
+  # Better approach: capture current plot before opening PNG device
+  current_plot <- tryCatch(
+    recordPlot(),
+    error = function(e) {
+      stop("No plot available to save. Create a plot first.", call. = FALSE)
+    }
+  )
+  
+  # Validate that we actually captured something
+  if (is.null(current_plot) || length(current_plot[[1]]) == 0) {
+    stop("No plot available to save. Create a plot first.", call. = FALSE)
+  }
+  
   tryCatch({
-    grDevices::png(filename = fpath, width = width, height = height, res = res)
-    grid::grid.echo()  # or replayPlot() if plot was recorded
+    png(fpath, width = width, height = height, res = res)
+    replayPlot(current_plot)
     dev.off()
-    message("Saved plot to: ", fpath)
+    message("Plot saved to: ", fpath)
+    invisible(fpath)
   }, error = function(e) {
-    if (dev.cur() > 1) dev.off()  # Clean up on error
-    warning("Failed to save plot: ", e$message)
+    # Clean up device if something goes wrong
+    if (dev.cur() > 1) dev.off()
+    stop("Failed to save plot: ", e$message, call. = FALSE)
   })
 }

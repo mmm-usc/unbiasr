@@ -58,7 +58,8 @@ threshold value for easier comparison. \code{NULL} by default.}
 
 \item{plot_only_g}{Optional argument, vector of strings specifying the
 labels of the subset of groups to be plotted. The reference group is
-always plotted. Ignored if all elements do not appear in \code{labels}.}
+always plotted. Ignored if all elements do not appear in \code{labels}.
+Currently not used}
 }
 \value{
 Eight plots illustrating how proportion selected (PS), success
