@@ -1,13 +1,13 @@
 Package: unbiasr
 Title: Multidimensional Classification Accuracy Analysis Framework
-Version: 0.0.2
+Version: 0.1.0
 Authors@R: c(
-    person("Hok Chio (Mark)", "Lai", , "marklhc@gmail.com", 
-           role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-9196-7406")),
     person("Meltem", "Ozcan", , "ozcan@usc.edu",
            role = c("aut"),
            comment = c(ORCID = "0000-0002-5054-8264")),
+    person("Hok Chio (Mark)", "Lai", , "marklhc@gmail.com", 
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-9196-7406")),
     person("Yichi", "Zhang", , "yzhang97@usc.edu",
            role = c("aut"),
            comment = c(ORCID = "0000-0002-4112-2106")),

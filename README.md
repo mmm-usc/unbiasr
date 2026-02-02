@@ -6,6 +6,7 @@
 MMM <Lab@USC>
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 ## Installation
@@ -27,29 +28,43 @@ library(unbiasr)
 ## Toy example from Millsap & Kwok (2004, doi: 10.1037/1082-989X.9.1.93)
 PartInv(
     propsel = .25,
-    alpha_r = 0.5,
-    alpha_f = 0,
-    psi_r = 1,
-    lambda_r = c(.3, .5, .9, .7),
-    nu_r = c(.225, .025, .010, .240),
-    nu_f = c(.225, -.05, .240, -.025),
-    Theta_r = diag(.96, 4)
+    alpha = list(0.5,0), psi = list(1,1),
+    lambda = list(c(.3, .5, .9, .7), c(.3, .5, .9, .7)),
+    nu = list(c(.225, .025, .010, .240), c(.225, -.05, .240, -.025)),
+    theta = list(diag(.96, 4), diag(.96, 4))
 )
+#> Mixing proportions not provided (pmix). Assuming equal weights.
+#> Partial invariance results:
+#> 
 #> Proportion selected:  0.25 
 #> Cutpoint on the latent scale (xi):  0.946 
-#> Cutpoint on the observed scale (Z):  3.182 
-#> AI ratio:  0.96 
+#> Cutpoint on the observed scale (Z):  3.18 
+#> Adverse impact ratio (reference group: 'Reference'):
+#> Focal_1 
+#>    0.96 
 #> 
 #> Classification Accuracy Indices:
-#>                     Reference Focal E_R(Focal)
-#> True Positive           0.224 0.108      0.219
-#> False Positive          0.092 0.076      0.085
-#> True Negative           0.580 0.752      0.587
-#> False Negative          0.103 0.064      0.109
-#> Proportion Selected     0.316 0.184      0.304
-#> Success Ratio           0.710 0.587      0.720
-#> Sensitivity             0.684 0.627      0.667
-#> Specificity             0.863 0.908      0.873
+#>                     Reference Focal_1 E_R(Focal_1)
+#> True Positive            .224    .108         .219
+#> False Positive           .092    .076         .085
+#> True Negative            .580    .752         .587
+#> False Negative           .103    .064         .109
+#> Proportion Selected      .316    .184         .304
+#> Success Ratio            .710    .587         .720
+#> Sensitivity              .684    .627         .667
+#> Specificity              .863    .908         .873
+
+## Deprecated:
+# PartInv(
+#    propsel = .25,
+#    alpha_r = 0.5,
+#    alpha_f = 0,
+#    psi_r = 1,
+#    lambda_r = c(.3, .5, .9, .7),
+#    nu_r = c(.225, .025, .010, .240),
+#    nu_f = c(.225, -.05, .240, -.025),
+#    Theta_r = diag(.96, 4)
+#)
 ```
 
 ## Shiny Application
@@ -71,8 +86,13 @@ script. *Structural Equation Modeling: A Multidisciplinary Journal,
 
 Lai, M. H. C., & Zhang, Y. (2022). Classification accuracy of
 multidimensional tests: Quantifying the impact of noninvariance.
-*Structural Equation Modeling: A Multidisciplinary Journal.* Advance
-online publication. <https://doi.org/10.1080/10705511.2021.1977936>
+*Structural Equation Modeling: A Multidisciplinary Journal.* 29(4),
+620–629. <https://doi.org/10.1080/10705511.2021.1977936>
+
+Ozcan, M., Lai, M. H. C. (2025) Exploring the Impact of Deleting (or
+Retaining) a Biased Item: A Procedure Based on Classification Accuracy.
+*Assessment*. 32(8), 1211-1225.
+<https://doi.org/10.1177/10731911241298081>
 
 The development of this package is supported by the U.S. Army Research
 Institute for the Behavioral and Social Sciences (ARI) under Grant

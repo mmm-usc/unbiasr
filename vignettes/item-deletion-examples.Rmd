@@ -527,11 +527,10 @@ CESD_pos <- item_deletion_h(CESD_pos_partinv)
 print(CESD_pos, full_result = TRUE)
 ```
 
-We can obtain plots using the `plot` method. Additional optional parameters allow the plots to be customized with colors, group labels, and quadrant labeling (A, B, C, D or TR, FP, TN, FN).
+We can obtain plots using the `plot` method. Additional optional parameters allow the plots to be customized with colors, group labels.
 
 ```{r fig.width=7, fig.height=6}
 plot(CESD_pos_partinv, 
      custom_colors = c("salmon1", "lightgreen"),
-     labels = c("Group 1", "Group 2"),
-     quadrantsABCD = FALSE)
+     labels = c("Group 1", "Group 2"))
 ```

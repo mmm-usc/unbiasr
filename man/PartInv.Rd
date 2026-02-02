@@ -24,6 +24,9 @@ PartInv(
   custom_colors = NULL,
   reference = NULL,
   quadrantsABCD = TRUE,
+  bayesian = FALSE,
+  dataset = NULL,
+  col_name_scores = NULL,
   ...,
   kappa_r = NULL,
   kappa_f = kappa_r,
@@ -102,8 +105,20 @@ Currently only functional when \code{cfa_fit} is provided. If providing paramete
 estimates instead, reorder estimates such that the first estimates belong
 to the reference group.}
 
-\item{quadrantsABCD}{Whether to label the quadrants with A, B, C, D or TR,
-FP, TN, FN. \code{TRUE} by default.}
+\item{quadrantsABCD}{Deprecated. Whether to label the quadrants with A, B, C, D
+or TR, FP, TN, FN. This argument is retained for backward compatibility and
+is ignored; quadrant will be labelled as TP, FP, FN, TN.}
+
+\item{bayesian}{Whether to refit the model in the Bayesian paradigm and
+construct credible intervals for CAI. For \code{bayesian=TRUE}, a fitted lavaan
+object (\code{cfa_fit}) and the dataset for the analysis (\code{dataset}) should be
+provided.}
+
+\item{dataset}{Dataset for the analyses. Should contain a column with scale
+sums.}
+
+\item{col_name_scores}{String variable. The name of the column containing the sum
+scores in \code{dataset}.}
 
 \item{...}{Other arguments for \code{\link[graphics]{contour}}.}
 
@@ -173,6 +188,12 @@ dat_sim$group <- ifelse(dat_sim$group == 1, "English",
 fit_sim <- lavaan::cfa(model = sim_m, data = dat_sim, group = "group")
 PartInv(cfa_fit = fit_sim, propsel = .05, plot_contour = TRUE,
         custom_colors = cols[1:3], show_mi_result = TRUE)
+# bayesian
+dat_sim[["sumscores"]] <- rowSums(dat_sim[,1:5])
+#PartInv(cfa_fit = fit_sim, propsel = .05, plot_contour = TRUE, custom_colors = cols[1:3], show_mi_result = TRUE, bayesian = TRUE, dataset = dat_sim, col_name_scores = "sumscores")
+
+## bayesian: cut_z next
+
 
 library(lavaan)
 HS <- HolzingerSwineford1939

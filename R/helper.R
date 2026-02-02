@@ -40,20 +40,24 @@ unnest_list <- function(ins) {
 #'
 #' @return The output will be a string.
 lab_cai <- function(cai) {
-  out <- ""
-  if(cai == "PS") {
-    out <- "Proportion selected"
+  keys <- c("ps", "sr", "se", "sp")
+  vals <- c("Proportion selected", "Success ratio", "Sensitivity",
+            "Specificity")
+  idx <- match(tolower(cai), keys)
+  if (any(is.na(idx))) {
+    stop("Invalid input for `cai`. Choose from 'PS', 'SR', 'SE', or 'SP'.")
   }
-  if(cai == "SR") {
-    out <- "Success ratio"
+  vals[idx]
+}
+
+lab_mod <- function(mod) {
+  keys <- c("par", "str")
+  vals <- c("partial invariance", "strict invariance")
+  idx <- match(tolower(mod), keys)
+  if (any(is.na(idx))) {
+    stop("Invalid input for `mod`. Choose from 'par' or 'str'.")
   }
-  if(cai == "SE") {
-    out <- "Sensitivity"
-  }
-  if(cai == "SP") {
-    out <- "Specificity"
-  }
-  out
+  vals[idx]
 }
 
 #' Compute the mean, standard deviation, and covariance of latent and observed

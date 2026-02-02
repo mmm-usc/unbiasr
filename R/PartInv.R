@@ -51,8 +51,9 @@ NULL
 #'   Currently only functional when `cfa_fit` is provided. If providing parameter
 #'   estimates instead, reorder estimates such that the first estimates belong
 #'   to the reference group.
-#' @param quadrantsABCD Whether to label the quadrants with A, B, C, D or TR,
-#'   FP, TN, FN. `TRUE` by default.
+#' @param quadrantsABCD Deprecated. Whether to label the quadrants with A, B, C, D
+#'   or TR, FP, TN, FN. This argument is retained for backward compatibility and
+#'   is ignored; quadrant will be labelled as TP, FP, FN, TN.
 #' @param bayesian Whether to refit the model in the Bayesian paradigm and 
 #'   construct credible intervals for CAI. For `bayesian=TRUE`, a fitted lavaan
 #'   object (`cfa_fit`) and the dataset for the analysis (`dataset`) should be 
@@ -120,6 +121,12 @@ NULL
 #' fit_sim <- lavaan::cfa(model = sim_m, data = dat_sim, group = "group")
 #' PartInv(cfa_fit = fit_sim, propsel = .05, plot_contour = TRUE,
 #'         custom_colors = cols[1:3], show_mi_result = TRUE)
+#' # bayesian
+#' dat_sim[["sumscores"]] <- rowSums(dat_sim[,1:5])
+#' #PartInv(cfa_fit = fit_sim, propsel = .05, plot_contour = TRUE, custom_colors = cols[1:3], show_mi_result = TRUE, bayesian = TRUE, dataset = dat_sim, col_name_scores = "sumscores")
+#'
+#' ## bayesian: cut_z next
+#'
 #'
 #' library(lavaan)
 #' HS <- HolzingerSwineford1939
@@ -253,10 +260,10 @@ PartInv <- function(cfa_fit = NULL,
                             propsel = propsel, cut_z = cut_z,
                             labels = params$labels, n.chains = 3,
                             post_burnin_sample = 1000)
-    
-
+    out <- list(out, b_out)
   }
-  list(out, b_out)
+  
+  out
 }
 
 
