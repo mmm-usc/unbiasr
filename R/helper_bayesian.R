@@ -1,4 +1,40 @@
-
+#' @title
+#' Refit the model in the Bayesian framework.
+#'
+#' @name
+#' bayesian_refit
+#'
+#' @description
+#' \code{bayesian_refit} refits the model in the Bayesian framework.
+#'
+#' @param cfa_fit Fitted lavaan object.
+#' @param dataset Dataset for the analyses. Should contain a column with scale sums.
+#' @param col_name_scores String variable. The name of the column containing the sum
+#'   scores in `dataset`.
+#' @param propsel
+#' @param cut_z
+#' @param labels
+#' @param n.chains Number of chains, defaults to 3.
+#' @param post_burnin_sample Length of chain after burnin. 1000 by default.
+#' @param weights_item 
+#' @param pmix
+#' @param ci_probs 
+#' @return The output will be a list containing the elements:
+#'          \item{bcfa_fit}{Fitted blavaan object.}
+#'          \item{lvs}{Posterior samples of the latent variable conditioned on data (list, length n.chains).}
+#'          \item{zeta_draws}{`lvs` collapsed across chains, probably will be dropped.}
+#'          \item{CAI}{List of length (number of groups). Each list element is a
+#'          dataframe with (n.chains x post_burnin_sample) rows and 8 columns, 
+#'          which contain the CAI.}
+#'          \item{summaries}{Data frame containing the CAI medians, means, and CI 
+#'          upper and lower bounds for each group, based on `CAI`.}
+#'          \item{post_params}{List containing objects related to the posterior 
+#'          parameter draws. ptab is a reduced parTable, factorname is a string
+#'          containing the factor name as it was passed to the cfa_fit obj. 
+#'          groups contains a vector of group labels. nu, alpha, theta, lambda,
+#'          psi contain the posterior draws for each of those parameters, with 
+#'          length (n.chains x post_burnin_sample).}
+#' THE DOCUMENTATION WILL BE UPDATED 
 bayesian_refit <- function(cfa_fit, dataset, col_name_scores, propsel = NULL, cut_z = NULL,
                            labels = NULL, n.chains = 3,
                            post_burnin_sample = 1000, weights_item = NULL,# weights_latent = NULL,
@@ -10,18 +46,22 @@ bayesian_refit <- function(cfa_fit, dataset, col_name_scores, propsel = NULL, cu
     warning("Only point estimates are returned. Provide a fitted lavaan object, a dataset, and the name of the column containing total scores to obtain Bayesian results.")
     return(invisible(NULL))
   }
+  if (!is.null(col_name_scores) & !is.character(col_name_scores)) {
+    stop("Specify the sum score column name as a string in `col_name_scores`.")
+  }  
+    
   group_var <- as.character(cfa_fit@call$group)
   groups <- labels
   
   #### Fit Bayesian CFA ####
-  library(blavaan)
   # Enable parallel processing across cores to speed up MCMC
   #future::plan(future::multisession, workers = 3)
   # Increase allowed obj size to prevent errors
   # options(future.globals.maxSize = 2 * 1024^3) 
-  # bfit <- bcfa(cfa_fit, data = dataset, group = group_var,
+  # bfit <- blavaan::bcfa(cfa_fit, data = dataset, group = group_var,
   #              group.label = labels, std.lv = TRUE, save.lvs = TRUE,
   #              sample = post_burnin_sample, n.chains = n.chains)
+  # temporarily reading in saved file instead of refitting to expedite debugging
   #saveRDS(bfit, here::here('tempdata/simulation_bfit.rds'))
   bfit <- readRDS(here::here('tempdata/simulation_bfit.rds'))
   
@@ -36,7 +76,8 @@ bayesian_refit <- function(cfa_fit, dataset, col_name_scores, propsel = NULL, cu
                                   obs_y = dataset[col_name_scores], 
                                   g_vec = dataset[group_var], 
                                   z_c = cut_z, groups = groups)
-  library(dplyr)
+  #library(dplyr)
+  # DIGIT IS TEMP, SHOULD BE HANDLED USING CLASSES
   CAI_summaries <- summarize_cai_by_group(CAI_g, ci_probs = ci_probs, digits = digits)
   
   
@@ -55,7 +96,8 @@ bayesian_refit <- function(cfa_fit, dataset, col_name_scores, propsel = NULL, cu
                 lvs = fit_lvs, 
                 zeta_draws = post_zeta,
                 CAI = CAI_g,
-                summaries = CAI_summaries, post_params = post_params)
+                summaries = CAI_summaries, 
+                post_params = post_params)
 }
 
 
@@ -264,6 +306,7 @@ get_rows_matching_mcmc_cols <- function(ptab, mcmc) {
     dplyr::filter(label %in% colnames(mcmc))
 }
 
+#' @export
 get_parTable_subset <- function(b_fit) {
   # Extract individual parameter draws/samples from the MCMC run 
   mcmc <- blavInspect(b_fit, "mcmc") 
@@ -273,7 +316,7 @@ get_parTable_subset <- function(b_fit) {
     populate_label_to_match_mcmc_cols(factor_name) %>%
     get_rows_matching_mcmc_cols(mcmc[[1]]) %>%
     set_par_label(factor_name) %>% 
-    dplyr::select(lhs, op, rhs, par_lab, label, plabel, prior, start, est, se, psrf) %>%
+  #  dplyr::select(lhs, op, rhs, par_lab, group, label, plabel, prior, start, est, se, psrf) %>%
     dplyr::filter(!is.na(prior) & trimws(prior) != "")
 }
 
@@ -322,4 +365,107 @@ label_varies_across_g <- function(ptab) {
   ptab %>% group_by(base_name) %>%
     mutate(varies_across_g = n_distinct(label) > 1) %>%
     ungroup()
+}
+
+
+
+# function that compares the rhat, ess values to thresholds provided by the user,
+# flags any problematic values, prints message and returns df accordingly
+flag_problematic <- function(df, rhat_cut, ess_cut) {
+  df <- df %>%
+    mutate(
+      flag_rhat = rhat > rhat_cut | is.na(rhat),
+      flag_ess_bulk = ess_bulk < ess_cut | is.na(ess_bulk),
+      flag_ess_tail = ess_tail < ess_cut | is.na(ess_tail)) %>%
+    mutate(any_flag = flag_rhat | flag_ess_bulk | flag_ess_tail)
+  
+  n_flagged <- sum(df$any_flag, na.rm = TRUE) 
+  message(sprintf("Total parameters: %d. Flagged (rhat/ess): %d", nrow(df), n_flagged))
+  if (n_flagged > 0) {
+    message("Top flagged parameters:")
+    print(head(df %>% filter(any_flag) %>% arrange(desc(rhat), ess_bulk)))
+  } else {
+    message("No parameters flagged by thresholds (rhat <= ", rhat_cut, ", ess >= ", ess_cut, ").")
+  }
+  return(df)
+}
+
+
+
+summarise_draws_by_par <- function(mcmc_obj, lb, ub, rounding) {
+  draws <- as_draws_df(mcmc_obj)
+  cbind(
+    summarise_draws(draws, "mean", "median", "mad", "sd", "mcse_mean"),
+    summarise_draws(draws, ~quantile(.x, probs = c(lb, ub)))[,2:3],
+    summarise_draws(draws, "rhat", "ess_bulk", "ess_tail")[, 2:4]) %>%  # ESS rank-nomalized algorithm from vehtari 2021
+    arrange(variable) %>%
+    mutate(across(where(is.numeric), \(x) round(x, rounding))) 
+}
+
+# extracts the MCMC chains from a bcfa object, renames the parameter columns using
+# readable labels from a parameter table, removes duplicated parameters, and 
+# returns the cleaned list of MCMC chains
+mcmc_obj_subset_rename <- function(bcfa_obj, partab_b) {
+  # extract individual parameter draws/samples from the MCMC run 
+  mcmc_obj <- blavInspect(bcfa_obj, "mcmc")
+  # match the column names of f1_mcmc to the corresponding readable names in 
+  # par_lab, get unique subset and rename
+  par_lab_vec <- partab_b$par_lab[match(colnames(mcmc_obj[[1]]), partab_b$label)]
+  for (ch in seq_len(length(mcmc_obj))) { # for each chain
+    colnames(mcmc_obj[[ch]]) <- par_lab_vec
+    mcmc_obj[[ch]] <- mcmc_obj[[ch]][, !duplicated(colnames(mcmc_obj[[ch]]))]
+  }
+  mcmc_obj
+}
+# takes in a list of parameter names and the mcmc object and prints stacked
+# density and trace plots of the draws for each parameter
+print_trace_density_plots_for_par <- function(mcmc_obj, par_names) {
+  if(length(par_names) > 0) {
+    draws <- as_draws_df(mcmc_obj)
+    for (p in par_names) {
+      trace_plot <- mcmc_trace(draws, pars = p) + ggtitle(paste("Trace plot"))# for: ", p))
+      dens_plot <- mcmc_dens_overlay(draws, pars = p) + ggtitle(paste("Density plot"))# for: ", p))
+      # stack vertically
+      combined <- (trace_plot / dens_plot) +
+        plot_annotation(
+          title = paste("MCMC diagnostics for flagged parameter: ", p),
+          theme = theme(plot.title = element_text(size = 14, face = "bold")))
+      print(combined)
+    }
+  } else {
+    message("No parameter name was provided.")
+  }
+
+}
+
+
+# takes in the partinv output object, extracts the df containing median, mean, 
+# and CI bounds of each CAI based on MCMC draws (for each group), pivots 
+# such that CAI are in the rows and the descriptives are in the columns; organized
+# by group
+pivot_summary_by_group <- function(partinv_out) {
+  summaries <- partinv_out[[2]]$summaries
+  groups <- if (is.factor(summaries$group)) {
+    levels(summaries$group)
+  } else {
+    unique(summaries$group)
+  }
+  
+  # expected column names after pivot_wider
+  expected_cols <- with(expand.grid(value = c("median", "mn", "lb", "ub"), 
+                                    grp = groups, stringsAsFactors = FALSE),
+                        paste(value, grp, sep = "_"))
+  df <- summaries  %>%
+    pivot_wider(
+      id_cols = CAI,
+      names_from = group,
+      values_from = c(median, mn, lb, ub),
+      names_glue = "{.value}_{group}",
+      names_sort = FALSE) %>% 
+    select(all_of(c("CAI", intersect(expected_cols, colnames(.))))) %>%
+    as.data.frame()
+  
+  rownames(df) <- df$CAI
+  df <- df %>% select(-CAI)
+  df
 }

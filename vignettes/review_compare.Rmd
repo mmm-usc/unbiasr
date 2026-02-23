@@ -1,0 +1,111 @@
+---
+output: pdf_document
+---
+```{r echo = FALSE, message=FALSE, results='hide'}
+library(dplyr)
+library(unbiasr)
+library(tidyr)
+library(blavaan)
+library(lavaan)
+library(bayesplot)
+library(posterior) # for summarize_draws, as_draws_df
+library(ggplot2)
+library(patchwork)
+source(here::here('./R/helper_bayesian.R'))
+
+roundto <- 2
+```
+
+```{r echo=FALSE}
+fit_partial <- readRDS(here::here('./tempdata/fit_partial.rds'))
+dat <- readRDS(here::here('tempdata/datasim.rds'))
+pinv_out <- PartInv(fit_partial, cut_z = 16, pmix = c(rep(1/3, 3)), show_mi_result = F, 
+               bayesian = TRUE, col_name_scores = "sumscore", dataset = dat)
+pinv_outb <- pinv_out[[2]]
+fit_partial_b <- pinv_outb$bcfa_fit
+
+```
+```{r}
+pt_b <- get_parTable_subset(fit_partial_b) %>% 
+  select(lhs, op, rhs, par_lab, group, label, plabel, est, se, psrf) # can add 'prior' col
+
+# add the unique readable parameter labels, then remove rows w/ equality constraints
+pt_f <- set_par_label(parTable(fit_partial), "F")  %>% 
+  select(lhs, op, rhs, par_lab, group, label, plabel, est, se) %>% 
+  filter(!if_any(everything(), ~ grepl("\\.==\\.", .))) %>% 
+  distinct(par_lab, .keep_all = TRUE)
+# unique(pt_f$par_lab) has two more elements than unique(pt_b$par_lab) bc
+# currently i'm not removing the rows for psi and alpha, which were set to 1, 0
+
+# comparing the parameter estimates and SEs for the freq and bayesian SEMs
+merged_df <- 
+  inner_join(pt_f, pt_b, suffix = c("_f", "_b"), 
+             by = c("par_lab", "lhs", "op", "rhs", "group", "label", "plabel")) %>%   
+  mutate(diff_est = est_f - est_b,
+         diff_se = se_f - se_b) %>% 
+  select(par_lab, est_f, se_f, est_b, se_b, diff_est, diff_se, psrf) %>%
+  mutate(across(where(is.numeric), ~ round(., 3)))
+# the bayesian par estimates are larger, ses are more mixed 
+
+print("Parameter estimates and SEs (frequentist vs. Bayesian), differences, psrf")
+merged_df
+```
+
+```{r echo = FALSE}
+cai_b_summaries <- pivot_summary_by_group(pinv_out)
+print("CAI Distributions: Bayesian")
+print(cai_b_summaries)
+
+# CAI for each group, E_R columns
+cai_f_est <- pinv_out[[1]]$summary %>% round(roundto)
+rownames(cai_f_est) <- rownames(cai_b_summaries) # match rownames
+print("CAI: Frequentist")
+print(cai_f_est)
+
+# print the freq and Bayesian results side by side, one group at a time
+for (g in unique(pinv_outb$summaries$group)) {
+  print(paste0("Printing frequentist and Bayesian results for group: ", g))
+  print(cbind(cai_f_est %>% select(matches(g)), 
+              cai_b_summaries %>% select(matches(g))))
+}
+```
+
+```{r echo=FALSE}
+# extract and clean up the per-chain MCMC posterior draws
+f1_mcmc <- mcmc_obj_subset_rename(bcfa_obj = fit_partial_b, partab_b = pt_b)
+#summary(f1_mcmc)
+
+draw_summary_df <- summarise_draws_by_par(mcmc_obj = f1_mcmc, lb = 0.025, ub = 0.975, 3)
+```
+
+```{r echo = FALSE}
+# add columns that indicate problematic rhat or ess values
+draw_summary_df_flag <- 
+  flag_problematic(draw_summary_df, rhat_cut = 1.01, ess_cut = 1400)
+
+# print the stacked density and trace plots of the draws for parameters that were flagged
+print_trace_density_plots_for_par(
+  mcmc_obj = f1_mcmc, 
+  par_names = draw_summary_df_flag[draw_summary_df_flag$any_flag==TRUE, c("variable")])
+```
+
+
+
+
+
+```{r}
+fitMeasures(fit_partial_b)
+blavFitIndices(fit_partial_b)
+```
+
+
+```{r echo = FALSE}
+# Posterior interval estimates from MCMC draws
+par_typs <- c("alpha", "psi", "lambda", "nu", "theta")
+for(p in par_typs) {
+ # print(mcmc_trace(f1_mcmc, regex_pars = p))
+ print(mcmc_areas(f1_mcmc, regex_pars = p) + 
+    labs(title = paste0("Posterior interval estimates from MCMC draws for ", p, " variables")))
+}
+```
+

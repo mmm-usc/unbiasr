@@ -208,8 +208,8 @@ PartInv <- function(cfa_fit = NULL,
                    "lambda", "theta", "nu", "pmix", "propsel", "labels",
                    "cut_z", "num_g")]
   out$params <- params[
-    c("alpha", "psi", "lambda", "nu", "theta",
-      "weights_item", "weights_latent", "labels", "num_g", "pmix")]
+    c("alpha", "psi", "lambda", "nu", "theta", "weights_item", "weights_latent", 
+      "labels", "num_g", "pmix")]
   out$params[["functioncall"]] <- match.call()
 
   out_pi <- do.call(compute_cai, params)
